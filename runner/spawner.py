@@ -30,5 +30,4 @@ def primer3_runner():
         'PRIMER_PAIR_MAX_COMPL_END': 8,
         'PRIMER_PRODUCT_SIZE_RANGE': [[75,100],[100,125],[125,150],[150,175],[175,200],[200,225]],
     })
-    print(design)
-    return 'test'
+    return design
