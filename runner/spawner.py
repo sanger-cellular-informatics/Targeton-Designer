@@ -1,7 +1,6 @@
 import primer3
 
 def primer3_runner():
-    print('test')
     design = primer3.bindings.designPrimers(
     {
         'SEQUENCE_ID': 'MH1000',
