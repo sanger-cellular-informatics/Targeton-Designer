@@ -1,2 +1,5 @@
-primer3-py
+Cython
 mock
+flask
+redis
+primer3-py
