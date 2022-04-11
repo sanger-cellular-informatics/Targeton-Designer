@@ -4,3 +4,4 @@ flask
 redis
 primer3-py
 remote-pdb
+docker-py
