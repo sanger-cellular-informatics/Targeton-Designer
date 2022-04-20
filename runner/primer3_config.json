@@ -1,4 +1,5 @@
 {
+    "PRIMER_TASK": "pick_cloning_primers",
     "PRIMER_OPT_SIZE": 20,
     "PRIMER_PICK_INTERNAL_OLIGO": 1,
     "PRIMER_INTERNAL_MAX_SELF_END": 8,
