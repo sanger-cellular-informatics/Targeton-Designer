@@ -12,8 +12,6 @@ class TestRunner(unittest.TestCase):
             "SEQUENCE_TEMPLATE": "TCCACACAGGATGCCAGGCCAAGGTGGAGCAAGCGGTGGAGACAGAGCCGGAGCCCGAGCTGCGCCAGCAGACCGAGTGGCAGAGCGGCCAGCGCTGGGAACTGGCACTGGGTCGCTTTTGGGATTACCTGCGCTGGGTGCAGACACTGTCTGAGCAGGTGCAGGAGGAGCTGCTCAGCTCCCAGGTCACCCAGGAACTGAGGTGAGTGTCC"
         }
         result = primer3_runner(design_input)
-        print(result)
-        #self.assertTrue(result['PRIMER_LEFT_0_SEQUENCE'], 'GCATCAGTGAGTACAGCATGC')
-
+        self.assertTrue(result['primer_left_0']['sequence'], 'TCCACACAGGATGCCAGG')
 if __name__ == '__main__':
     unittest.main()
