@@ -33,10 +33,11 @@ test:
     - source venv/bin/activate
     - pip3 install -r $CI_PROJECT_DIR/requirements.txt
     - pip3 install pandas
+    - pip install coverage
   script:
-    - python3 -m unittest
+    - coverage -m unittest discover
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    #- if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 # This file is a template, and might need editing before it works on your project.
 # To contribute improvements to CI/CD templates, please follow the Development guide at:
@@ -81,6 +82,6 @@ docker-build:
     - docker push "$CI_REGISTRY_IMAGE${tag}"
   # Run this job in a branch where a Dockerfile exists
   rules:
-    - if: $CI_COMMIT_BRANCH
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       exists:
         - Dockerfile
