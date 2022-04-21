@@ -1,6 +1,15 @@
 import primer3
+import json
+import pdb
+import re
+import collections
 
 def primer3_runner():
+    design = primer3_design()
+    primers = locate_primers(design)
+    return primers
+
+def primer3_design():
     design = primer3.bindings.designPrimers(
     {
         'SEQUENCE_ID': 'MH1000',
@@ -30,3 +39,14 @@ def primer3_runner():
         'PRIMER_PRODUCT_SIZE_RANGE': [[75,100],[100,125],[125,150],[150,175],[175,200],[200,225]],
     })
     return design
+
+def locate_primers(design):
+    primer_keys = design.keys()
+    primers = collections.defaultdict(dict)
+    for key in primer_keys:
+        match = re.search(r'^(PRIMER_(LEFT|RIGHT)_\d+)\_(\S+)$', key)
+        if match:
+            primer_name = match.group(1).lower()
+            primer_field = match.group(3).lower()
+            primers[primer_name][primer_field] = design[key]
+    return primers
