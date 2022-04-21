@@ -31,7 +31,7 @@ test:
     - pip install virtualenv
     - virtualenv venv
     - source venv/bin/activate
-    - pip3 install $CI_PROJECT_DIR/requirements.txt
+    - pip3 install -r $CI_PROJECT_DIR/requirements.txt
   script:
     - python3 -m unittest
   rules:
@@ -81,6 +81,6 @@ docker-build:
     #- docker push "$CI_REGISTRY_IMAGE${tag}"
   # Run this job in a branch where a Dockerfile exists
   rules:
-    - if: $CI_COMMIT_BRANCH
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       exists:
         - Dockerfile
