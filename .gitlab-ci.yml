@@ -50,13 +50,18 @@ test:
 
 docker-build:
   # Use the official docker image.
-  image: docker:latest
+  image: docker:stable
   stage: build
   tags: 
     - openstack-autoscale
     - autoscale-docker-in-docker
   services:
-    - docker:dind
+    - name: docker:dind
+      alias: thedockerhost
+  variables:
+    DOCKER_HOST: tcp://thedockerhost:2375/
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   # Default branch leaves tag empty (= latest tag)
