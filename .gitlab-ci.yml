@@ -36,7 +36,7 @@ test:
   script:
     - python3 -m unittest
   rules:
-    #- if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 # This file is a template, and might need editing before it works on your project.
 # To contribute improvements to CI/CD templates, please follow the Development guide at:
@@ -77,11 +77,12 @@ docker-build:
         tag=":$CI_COMMIT_REF_SLUG"
         echo "Running on branch '$CI_COMMIT_BRANCH': tag = $tag"
       fi
-    - docker build .
-    #- docker build --pull -t "$CI_REGISTRY_IMAGE${tag}" .
+    #- docker build .
+    - echo "Registry image -> '$CI_REGISTRY_IMAGE'"
+    - docker build --pull -t "$CI_REGISTRY_IMAGE${tag}" .
     #- docker push "$CI_REGISTRY_IMAGE${tag}"
   # Run this job in a branch where a Dockerfile exists
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_BRANCH
       exists:
         - Dockerfile
