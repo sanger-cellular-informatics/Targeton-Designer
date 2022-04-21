@@ -38,7 +38,7 @@ test:
     - apt-get install -y jq
   script:
     - coverage run -m unittest discover
-    - coverage report --fail-under=90
+    - coverage report --fail-under=95
 
   rules:
     #- if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
