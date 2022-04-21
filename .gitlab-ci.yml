@@ -36,6 +36,7 @@ test:
     - pip install coverage
   script:
     - coverage run -m unittest discover
+    - coverage report
   rules:
     #- if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
