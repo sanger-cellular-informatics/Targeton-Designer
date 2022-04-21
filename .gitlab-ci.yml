@@ -35,7 +35,7 @@ test:
     - pip3 install pandas
     - pip install coverage
   script:
-    - coverage -m unittest discover
+    - coverage run -m unittest discover
   rules:
     #- if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
