@@ -7,6 +7,7 @@
 # Official language image. Look for the different tagged releases at:
 # https://hub.docker.com/r/library/python/tags/
 image: python:latest
+tags: openstack-autoscale
 
 # Change pip's cache directory to be inside the project directory since we can
 # only cache local items.
@@ -51,6 +52,7 @@ docker-build:
   # Use the official docker image.
   image: docker:latest
   stage: build
+  tags: openstack-autoscale
   services:
     - docker:dind
   before_script:
