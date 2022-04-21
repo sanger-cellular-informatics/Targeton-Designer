@@ -1,6 +1,5 @@
 import primer3
 import json
-import pdb
 import re
 import os
 import collections
@@ -14,7 +13,7 @@ def primer3_design(primer3_input):
     p3_config_loc = os.environ.get('PRIMER3_CONFIG')
     
     primer3_config = {}
-    with open(os.path.join(os.path.dirname(__file__), p3_config_loc), "r+") as p3:
+    with open(os.path.join(os.path.dirname(__file__), p3_config_loc), "r") as p3:
         primer3_config = json.load(p3)
 
     design = primer3.bindings.designPrimers(primer3_input, primer3_config)
