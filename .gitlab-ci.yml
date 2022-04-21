@@ -38,7 +38,7 @@ test:
     - apt-get install -y jq
   script:
     - coverage run -m unittest discover
-    - total_cover=$(coverage json -o /dev/stdout | jq .totals.percent_covered)
+    - total_cover=$(coverage json | jq .totals.percent_covered)
     - if [ '$total_cover' -lt '90' ]; then exit 1; fi
 
   rules:
