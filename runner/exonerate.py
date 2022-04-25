@@ -1,15 +1,17 @@
-import docker
 import collections
 import re
 import os
+import subprocess
 
-def run_exonerate_docker():
-    client = docker.from_env()
-    test = client.containers.run('exonerate','--version')
-    print(test, flush=True)
-
-def run_ipcress(run_id, primers, dir_path):
+def run_ipcress(run_id, primers, dir_path, reference_file):
     input_path = generate_ipcress_input(run_id, primers, dir_path)
+    
+    ipcress = subprocess.run(
+        ["ipcress", input_path, reference_file], capture_output=True, text=True
+    )
+    print("stdout:", ipcress.stdout)
+    print("stderr:", ipcress.stderr)
+
 
 def generate_ipcress_input(run_id, primers, dir_path):
     pairs = pair_primers(primers)

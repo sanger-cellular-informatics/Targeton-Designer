@@ -4,12 +4,13 @@ import csv
 import argparse
 
 from runner.primer3 import primer3_runner
-from runner.exonerate import generate_ipcress_input 
+from runner.exonerate import run_ipcress
 
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--seqs', action='store', type=str, nargs='+', help='Path to sequences file')
 parser.add_argument('--dir', action='store', type=str, nargs='+', help='Output folder location')
+parser.add_argument('--ref', action='store', type=str, nargs='+', help='Reference file path')
 
 args = parser.parse_args()
 
@@ -29,7 +30,8 @@ design_input = {
 }
 
 dir_path = args.dir[0]
+ref_file = args.ref[0]
+
 os.environ["PRIMER3_CONFIG"] = "./primer3_config.json"
 primers = primer3_runner(design_input)
-run_ipcress(run_id, primers, dir_path)
-print(primers)
+run_ipcress(run_id, primers, dir_path, ref_file)
