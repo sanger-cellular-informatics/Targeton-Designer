@@ -5,16 +5,16 @@ app = Flask(__name__)
 cache = redis.Redis(host='redis', port=6379)
 
 from runner.primer3 import primer3_runner
-from runner.exonerate import run_exonerate
+from runner.exonerate import generate_ipcress_input 
 
 @app.route('/')
 def start():
     design_input = {
         'SEQUENCE_ID': 'MH1000',
         'SEQUENCE_TEMPLATE': 'GCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCCTACATTTTAGCATCAGTGAGTACAGCATGCTTACTGGAAGAGAGGGTCATGCAACAGATTAGGAGGTAAGTTTGCAAAGGCAGGCTAAGGAGGAGACGCACTGAATGCCATGGTAAGAACTCTGGACATAAAAATATTGGAAGTTGTTGAGCAAGTNAAAAAAATGTTTGGAAGTGTTACTTTAGCAATGGCAAGAATGATAGTATGGAATAGATTGGCAGAATGAAGGCAAAATGATTAGACATATTGCATTAAGGTAAAAAATGATAACTGAAGAATTATGTGCCACACTTATTAATAAGAAAGAATATGTGAACCTTGCAGATGTTTCCCTCTAGTAG',
-        'SEQUENCE_INCLUDED_REGION': [36,342]
     }
 
     primers = primer3_runner(design_input)
-    #run_exonerate()
-    return primers   
+    generate_ipcress_input(primers)
+    
+    return primers 
