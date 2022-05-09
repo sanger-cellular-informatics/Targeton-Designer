@@ -15,7 +15,7 @@ test:
     - coverage report --fail-under=90
 
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH == $CI_DEFAULT_BRANCH
 
 docker-build:
   # Use the official docker image.
@@ -37,17 +37,17 @@ docker-build:
   # All other branches are tagged with the escaped branch name (commit ref slug)
   script:
     - |
-      if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
+      if [[ "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" == "$CI_DEFAULT_BRANCH" ]]; then
         tag=""
         echo "Running on default branch '$CI_DEFAULT_BRANCH': tag = 'latest'"
       else
         tag=":$CI_COMMIT_REF_SLUG"
-        echo "Running on branch '$CI_COMMIT_BRANCH': tag = $tag"
+        echo "Running on branch '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME': tag = $tag"
       fi
     - docker build --pull -t "$CI_REGISTRY_IMAGE${tag}" .
     - docker push "$CI_REGISTRY_IMAGE${tag}"
   # Run this job in a branch where a Dockerfile exists
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
       exists:
         - Dockerfile
