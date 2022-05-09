@@ -14,7 +14,7 @@ test:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 docker-build:
-  # Use the official docker image.r
+  # Use the official docker image.
   image: docker:20.10.14
   stage: build
   tags: 
