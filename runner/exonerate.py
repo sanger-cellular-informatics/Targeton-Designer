@@ -5,13 +5,18 @@ import subprocess
 
 def run_ipcress(run_id, primers, dir_path, reference_file):
     input_path = generate_ipcress_input(run_id, primers, dir_path)
-    
-    ipcress = subprocess.run(
-        ["ipcress", input_path, reference_file], capture_output=True, text=True
-    )
-    print("stdout:", ipcress.stdout)
-    print("stderr:", ipcress.stderr)
 
+    input_cmd = '--input ' + input_path
+    seq = ' --sequence ' + reference_file
+    mismatch = ' --mismatch 5'
+    cmd = "ipcress " + input_cmd + seq + mis
+    ipcress = subprocess.Popen(
+        cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
+    
+    stnd, err = ipcress.communicate()
+    print("stdout:", stnd)
+    print("stderr:", err)
 
 def generate_ipcress_input(run_id, primers, dir_path):
     pairs = pair_primers(primers)
