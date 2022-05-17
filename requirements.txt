@@ -4,6 +4,7 @@ flask
 redis
 primer3-py
 pybedtools
+argparse
 remote-pdb
 docker>=2.0.0
 pandas
