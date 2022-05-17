@@ -3,6 +3,7 @@ mock
 flask
 redis
 primer3-py
+pybedtools
 remote-pdb
 docker>=2.0.0
 pandas

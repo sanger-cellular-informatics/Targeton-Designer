@@ -1,23 +1,25 @@
-import pandas as pd
+from pybedtools import BedTool
 
-def import_bed_file(file):
-    col_names = ['chr', 'start', 'end']
-    return pd.read_csv(file, delimiter='\t', names=col_names)
-
-def _generate_slice_coordinates(exon, flank_5, flank_3, length, offset):
-    slices = {}
-    targeton_start =  exon['start'] - flank_5
-    targeton_end = targeton_start + length
-    while targeton_end <= (exon['end'] + flank_3):
-        slices[targeton_start] = targeton_end
-        targeton_start += offset
-        targeton_end += offset
+def _generate_slice_coordinates(exon, params):
+    slices = []
+    start = exon.start - params['flank_5']
+    end = start + params['length']
+    while end <= (exon.end + params['flank_3']):
+        slices.append((exon.chrom, start, end))
+        start += params['offset']
+        end += params['offset']
     return slices
 
-def add_slice_coordinates(exons, flank_5, flank_3, length, offset):
-    exons['slices'] = exons.apply(
-        _generate_slice_coordinates,
-        axis=1,
-        args=(flank_5, flank_3, length, offset)
-    )
-    return exons
+def get_slice_coordinates(bed, params):
+    slices = []
+    for exon in bed:
+        slices.extend(_generate_slice_coordinates(exon, params))
+    return slices
+
+def get_slice_sequences(bed, fasta):
+    seqs = {}
+    results = bed.sequence(fi=fasta, tab=True).print_sequence().strip()
+    for row in results.split('\n'):
+        name, sequence = row.split('\t')
+        seqs[name] = sequence
+    return seqs

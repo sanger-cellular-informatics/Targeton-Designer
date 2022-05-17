@@ -1,46 +1,40 @@
 import unittest
-import pandas as pd
-from io import StringIO
+import pybedtools
 
-from designer.slicer import import_bed_file, add_slice_coordinates
+from designer.slicer import get_slice_coordinates, get_slice_sequences
 
 class TestSlicer(unittest.TestCase):
 
-    def test_import_bed_file(self):
-        expected = pd.DataFrame({
-            'chr': ['chr1'],
-            'start': [123],
-            'end': [456]
-        })
-        fake_bed = StringIO('chr1\t123\t456')
-        actual = import_bed_file(fake_bed)
-        pd.testing.assert_frame_equal(expected, actual)
-
-    def test_add_slice_coordinates(self):
-        expected_slices = {
-            50: 260,
-            55: 265,
-            60: 270,
-            65: 275,
-            70: 280,
-            75: 285,
-            80: 290,
-            85: 295,
-            90: 300
+    def test_get_slice_coordinates(self):
+        expected = [
+            ('chr1', 50, 260),
+            ('chr1', 55, 265),
+            ('chr1', 60, 270),
+            ('chr1', 65, 275),
+            ('chr1', 70, 280),
+            ('chr1', 75, 285),
+            ('chr1', 80, 290),
+            ('chr1', 85, 295),
+            ('chr1', 90, 300)
+        ]
+        bed = pybedtools.BedTool('chr1\t100\t250', from_string=True)
+        params = {
+            'flank_5': 50,
+            'flank_3': 50,
+            'length': 210,
+            'offset': 5
         }
-        expected = pd.DataFrame({
-            'chr': ['chr1'],
-            'start': [100],
-            'end': [250],
-            'slices': [expected_slices]
-        })
-        data = pd.DataFrame({
-            'chr': ['chr1'],
-            'start': [100],
-            'end': [250]
-        })
-        actual = add_slice_coordinates(data, 50, 50, 210, 5)
-        pd.testing.assert_frame_equal(expected, actual)
+        actual = get_slice_coordinates(bed, params)
+        self.assertEqual(expected, actual)
+
+    def test_get_slice_sequences(self):
+        expected = {
+            'chr1:5-10': 'AGTCT',
+            'chr1:15-20': 'ATTTT'
+        }
+        bed = pybedtools.BedTool('chr1\t5\t10\nchr1\t15\t20', from_string=True)
+        actual = get_slice_sequences(bed, pybedtools.example_filename('test.fa'))
+        self.assertEqual(expected, actual)
 
 if __name__ == '__main__':
     unittest.main()
