@@ -5,6 +5,7 @@ ENV PYTHONUNBUFFERED: 1
 ENV FLASK_APP=./targeton_designer.py
 ENV FLASK_RUN_HOST=0.0.0.0
 #RUN apt-get install -y --no-cache gcc musl-dev linux-headers make
+RUN apt-get install -y make
 RUN apt-get update && apt-get install -y libz-dev bedtools
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
