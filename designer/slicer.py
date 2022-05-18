@@ -3,25 +3,29 @@ from pybedtools import BedTool
 import argparse
 import sys
 
-def _generate_slice_coordinates(exon, params):
+def _generate_slice_coordinates(exon, count, params):
     slices = []
+    name = exon.name if exon.name != '.' else count
     start = exon.start - params['flank_5']
     end = start + params['length']
     while end <= (exon.end + params['flank_3']):
-        slices.append((exon.chrom, start, end))
+        slices.append((exon.chrom, start, end, name))
         start += params['offset']
         end += params['offset']
     return slices
 
 def get_slice_coordinates(bed, params):
     slices = []
+    count = 1
     for exon in bed:
-        slices.extend(_generate_slice_coordinates(exon, params))
+        slices.extend(_generate_slice_coordinates(exon, count, params))
+        count += 1
     return slices
 
 def get_slice_sequences(bed, fasta):
     seqs = {}
-    results = bed.sequence(fi=fasta, tab=True).print_sequence().strip()
+    results = bed.sequence(fi=fasta, tab=True,
+        name=True).print_sequence().strip()
     for row in results.split('\n'):
         name, sequence = row.split('\t')
         seqs[name] = sequence
