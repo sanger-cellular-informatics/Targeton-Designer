@@ -56,11 +56,16 @@ def parse_args(args):
     parser.add_argument('-o', '--offset',
         help='offset between each slice',
         type=positive_int, default=5)
+    parser.add_argument('--output_slice_bed',
+        help='output bed file with slice coordinates',
+        nargs='?', const='slices.bed')
     return parser.parse_args(args)
 
 def main(params):
     bed = BedTool(params['bed'])
     slice_bed = BedTool(get_slice_coordinates(bed, params))
+    if 'output_slice_bed' in params:
+        slice_bed.saveas(params['output_slice_bed'])
     return get_slice_sequences(slice_bed, params['fasta'])
 
 if __name__ == '__main__':
