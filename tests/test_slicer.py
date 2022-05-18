@@ -10,15 +10,15 @@ class TestSlicer(unittest.TestCase):
 
     def test_get_slice_coordinates(self):
         expected = [
-            ('chr1', 50, 260),
-            ('chr1', 55, 265),
-            ('chr1', 60, 270),
-            ('chr1', 65, 275),
-            ('chr1', 70, 280),
-            ('chr1', 75, 285),
-            ('chr1', 80, 290),
-            ('chr1', 85, 295),
-            ('chr1', 90, 300)
+            ('chr1', 50, 260, 1),
+            ('chr1', 55, 265, 1),
+            ('chr1', 60, 270, 1),
+            ('chr1', 65, 275, 1),
+            ('chr1', 70, 280, 1),
+            ('chr1', 75, 285, 1),
+            ('chr1', 80, 290, 1),
+            ('chr1', 85, 295, 1),
+            ('chr1', 90, 300, 1)
         ]
         bed = pybedtools.BedTool('chr1\t100\t250', from_string=True)
         params = {
@@ -29,13 +29,27 @@ class TestSlicer(unittest.TestCase):
         }
         actual = get_slice_coordinates(bed, params)
         self.assertEqual(expected, actual)
+        expected = [
+            ('chr1', 50, 260, 'exon1'),
+            ('chr1', 55, 265, 'exon1'),
+            ('chr1', 60, 270, 'exon1'),
+            ('chr1', 65, 275, 'exon1'),
+            ('chr1', 70, 280, 'exon1'),
+            ('chr1', 75, 285, 'exon1'),
+            ('chr1', 80, 290, 'exon1'),
+            ('chr1', 85, 295, 'exon1'),
+            ('chr1', 90, 300, 'exon1')
+        ]
+        bed = pybedtools.BedTool('chr1\t100\t250\texon1', from_string=True)
+        actual = get_slice_coordinates(bed, params)
+        self.assertEqual(expected, actual)
 
     def test_get_slice_sequences(self):
         expected = {
-            'chr1:5-10': 'AGTCT',
-            'chr1:15-20': 'ATTTT'
+            '1::chr1:5-10': 'AGTCT',
+            '1::chr1:15-20': 'ATTTT'
         }
-        bed = pybedtools.BedTool('chr1\t5\t10\nchr1\t15\t20',
+        bed = pybedtools.BedTool('chr1\t5\t10\t1\nchr1\t15\t20\t1',
             from_string=True)
         actual = get_slice_sequences(bed,
             pybedtools.example_filename('test.fa'))
@@ -59,8 +73,8 @@ class TestSlicer(unittest.TestCase):
 
     def test_main(self):
         expected = {
-            'chr1:5-10': 'AGTCT',
-            'chr1:15-20': 'ATTTT'
+            '1::chr1:5-10': 'AGTCT',
+            '1::chr1:15-20': 'ATTTT'
         }
         bed = StringIO('chr1\t5\t20')
         fasta = pybedtools.example_filename('test.fa')
@@ -72,6 +86,12 @@ class TestSlicer(unittest.TestCase):
             'length': 5,
             'offset': 10
         }
+        self.assertEqual(expected, main(params))
+        expected = {
+            'exon1::chr1:5-10': 'AGTCT',
+            'exon1::chr1:15-20': 'ATTTT'
+        }
+        params['bed'] = StringIO('chr1\t5\t20\texon1')
         self.assertEqual(expected, main(params))
 
 if __name__ == '__main__':
