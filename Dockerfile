@@ -8,8 +8,7 @@ RUN apk add --no-cache gcc musl-dev linux-headers make
 RUN apk update && apk add zlib-dev 
 RUN wget https://github.com/arq5x/bedtools2/releases/download/v2.29.1/bedtools-2.29.1.tar.gz
 RUN tar -zxvf bedtools-2.29.1.tar.gz
-RUN cd bedtools2
-RUN make
+RUN cd bedtools2 && make
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 EXPOSE 5000
