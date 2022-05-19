@@ -4,9 +4,11 @@ import re
 import os
 import collections
 
-def primer3_runner(design_input):
+def primer3_runner(design_input, slice_name, strand):
+    print('Designing primers for the region')
     design = primer3_design(design_input)
-    primers = locate_primers(design)
+    print('Pick primers')
+    primers = locate_primers(design, slice_name, strand)
     return primers
 
 def primer3_design(primer3_input):
@@ -20,13 +22,56 @@ def primer3_design(primer3_input):
 
     return design
 
-def locate_primers(design):
+def locate_primers(design, slice_name, strand):
     primer_keys = design.keys()
     primers = collections.defaultdict(dict)
     for key in primer_keys:
-        match = re.search(r'^(PRIMER_(LEFT|RIGHT)_\d+)\_(\S+)$', key)
-        if match:
-            primer_name = match.group(1).lower()
-            primer_field = match.group(3).lower()
+        primer_details = capture_primer_details(key)
+        if primer_details:
+            primer_id = primer_details['id']
+            primer_field = primer_details['field']
+            pair_number = primer_details['pair']
+            
+            libamp_name = name_primers(primer_details, strand)
+            
+            primer_name = slice_name + "_" + libamp_name + "_" + pair_number
             primers[primer_name][primer_field] = design[key]
+    
     return primers
+
+def capture_primer_details(primer_name):
+    match = re.search(r'^(primer_(left|right)_(\d+))\_(\S+)$', primer_name.lower())
+    result = {}
+    if match:
+        primer_id = match.group(1)
+        primer_side = match.group(2)
+        pair_number = match.group(3)
+        primer_field = match.group(4)
+
+        result = {
+            'id' : primer_id,
+            'side' : primer_side,
+            'field' : primer_field,
+            'pair' : pair_number
+        }
+
+    return result
+
+def name_primers(primer_details, strand):
+    fwd_primers = {
+        'left' : 'LibAmpF',
+        'right' : 'LibAmpR',
+    }
+    rev_primers = {
+        'left' : 'LibAmp_R',
+        'right' : 'LibAmp_F',
+    }
+    names = {
+        '1' : fwd_primers,
+        '-1' : rev_primers,
+    }
+
+    primer_name = names[strand][primer_details['side']]
+
+    return primer_name
+

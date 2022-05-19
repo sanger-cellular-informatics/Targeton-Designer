@@ -33,5 +33,5 @@ dir_path = args.dir[0]
 ref_file = args.ref[0]
 
 os.environ["PRIMER3_CONFIG"] = "./primer3_config.json"
-primers = primer3_runner(design_input)
-run_ipcress(run_id, primers, dir_path, ref_file)
+primers = primer3_runner(design_input, 'Slice1', '1')
+#run_ipcress(run_id, primers, dir_path, ref_file)
