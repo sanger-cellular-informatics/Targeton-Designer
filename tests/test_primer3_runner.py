@@ -12,9 +12,9 @@ class TestRunner(unittest.TestCase):
             "SEQUENCE_TEMPLATE": "TCCACACAGGATGCCAGGCCAAGGTGGAGCAAGCGGTGGAGACAGAGCCGGAGCCCGAGCTGCGCCAGCAGACCGAGTGGCAGAGCGGCCAGCGCTGGGAACTGGCACTGGGTCGCTTTTGGGATTACCTGCGCTGGGTGCAGACACTGTCTGAGCAGGTGCAGGAGGAGCTGCTCAGCTCCCAGGTCACCCAGGAACTGAGGTGAGTGTCC"
         }
 
-        result = primer3_runner(design_input)
-        self.assertEqual(result['primer_left_0']['sequence'], 'TCCACACAGGATGCCAGG', 'Left primer ok')
-        self.assertEqual(result['primer_right_0']['sequence'], 'GGACACTCACCTCAGTTCCTG', 'Right primer ok')
+        result = primer3_runner(design_input, '1')
+        self.assertEqual(result['ENSE00000893952_LibAmpF_0']['sequence'], 'TCCACACAGGATGCCAGG', 'Left primer ok')
+        self.assertEqual(result['ENSE00000893952_LibAmpR_0']['sequence'], 'GGACACTCACCTCAGTTCCTG', 'Right primer ok')
 
 if __name__ == '__main__':
     unittest.main()
