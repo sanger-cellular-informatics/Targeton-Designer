@@ -1,7 +1,12 @@
 import unittest
 import os
 
-from runner.primer3 import primer3_runner, name_primers, capture_primer_details
+from runner.primer3 import (
+    primer3_runner,
+    name_primers,
+    capture_primer_details,
+    locate_primers
+)
 
 class TestRunner(unittest.TestCase):
     def test_runner(self):
@@ -41,6 +46,15 @@ class TestRunner(unittest.TestCase):
         self.assertEqual(right_output['side'], 'right', 'Captured right ok')
         self.assertEqual(left_output['pair'], '1', 'Captured pair ok')
         self.assertEqual(left_output['id'], 'primer_left_1', 'Captured id ok')
+
+    def test_locate_primers(self):
+        test_dict = {
+            'primer_left_1_assembly' : 'test_pass'
+        }
+        result = locate_primers(test_dict, 'slice1', '1')
+
+        self.assertEqual(result['slice1_LibAmpF_1']['assembly'], 'test_pass', 'Rename ok')
+
 
 if __name__ == '__main__':
     unittest.main()
