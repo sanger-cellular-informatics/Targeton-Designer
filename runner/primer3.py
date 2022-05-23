@@ -9,7 +9,7 @@ def primer3_runner(design_input, strand):
     design = primer3_design(design_input)
     print('Pick primers')
     primers = locate_primers(design, design_input['SEQUENCE_ID'], strand)
-    print(primers)
+    
     return primers
 
 def primer3_design(primer3_input):
@@ -64,8 +64,8 @@ def name_primers(primer_details, strand):
         'right' : 'LibAmpR',
     }
     rev_primers = {
-        'left' : 'LibAmp_R',
-        'right' : 'LibAmp_F',
+        'left' : 'LibAmpR',
+        'right' : 'LibAmpF',
     }
     names = {
         '1' : fwd_primers,
