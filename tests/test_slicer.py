@@ -3,56 +3,46 @@ import pybedtools
 import argparse
 from io import StringIO
 
-from designer.slicer import (get_slice_coordinates,
-    get_slice_sequences, positive_int, parse_args, main)
+from designer.slicer import (get_slice_data, positive_int, parse_args, main)
 
 class TestSlicer(unittest.TestCase):
 
-    def test_get_slice_coordinates(self):
+    def test_get_slice_data(self):
         expected = [
-            ('chr1', 50, 260, 1),
-            ('chr1', 55, 265, 1),
-            ('chr1', 60, 270, 1),
-            ('chr1', 65, 275, 1),
-            ('chr1', 70, 280, 1),
-            ('chr1', 75, 285, 1),
-            ('chr1', 80, 290, 1),
-            ('chr1', 85, 295, 1),
-            ('chr1', 90, 300, 1)
+            ('chr1', 50, 260, 1, '.', '+'),
+            ('chr1', 55, 265, 1, '.', '+'),
+            ('chr1', 60, 270, 1, '.', '+'),
+            ('chr1', 65, 275, 1, '.', '+'),
+            ('chr1', 70, 280, 1, '.', '+'),
+            ('chr1', 75, 285, 1, '.', '+'),
+            ('chr1', 80, 290, 1, '.', '+'),
+            ('chr1', 85, 295, 1, '.', '+'),
+            ('chr1', 90, 300, 1, '.', '+')
         ]
-        bed = pybedtools.BedTool('chr1\t100\t250', from_string=True)
+        bed = pybedtools.BedTool('chr1\t100\t250\t.\t.\t+',
+            from_string=True)
         params = {
             'flank_5': 50,
             'flank_3': 50,
             'length': 210,
             'offset': 5
         }
-        actual = get_slice_coordinates(bed, params)
+        actual = get_slice_data(bed, params)
         self.assertEqual(expected, actual)
         expected = [
-            ('chr1', 50, 260, 'exon1'),
-            ('chr1', 55, 265, 'exon1'),
-            ('chr1', 60, 270, 'exon1'),
-            ('chr1', 65, 275, 'exon1'),
-            ('chr1', 70, 280, 'exon1'),
-            ('chr1', 75, 285, 'exon1'),
-            ('chr1', 80, 290, 'exon1'),
-            ('chr1', 85, 295, 'exon1'),
-            ('chr1', 90, 300, 'exon1')
+            ('chr1', 50, 260, 'exon1', '.', '-'),
+            ('chr1', 55, 265, 'exon1', '.', '-'),
+            ('chr1', 60, 270, 'exon1', '.', '-'),
+            ('chr1', 65, 275, 'exon1', '.', '-'),
+            ('chr1', 70, 280, 'exon1', '.', '-'),
+            ('chr1', 75, 285, 'exon1', '.', '-'),
+            ('chr1', 80, 290, 'exon1', '.', '-'),
+            ('chr1', 85, 295, 'exon1', '.', '-'),
+            ('chr1', 90, 300, 'exon1', '.', '-')
         ]
-        bed = pybedtools.BedTool('chr1\t100\t250\texon1', from_string=True)
-        actual = get_slice_coordinates(bed, params)
-        self.assertEqual(expected, actual)
-
-    def test_get_slice_sequences(self):
-        expected = {
-            '1::chr1:5-10': 'AGTCT',
-            '1::chr1:15-20': 'ATTTT'
-        }
-        bed = pybedtools.BedTool('chr1\t5\t10\t1\nchr1\t15\t20\t1',
+        bed = pybedtools.BedTool('chr1\t100\t250\texon1\t.\t-',
             from_string=True)
-        actual = get_slice_sequences(bed,
-            pybedtools.example_filename('test.fa'))
+        actual = get_slice_data(bed, params)
         self.assertEqual(expected, actual)
 
     def test_positive_int(self):
@@ -74,11 +64,13 @@ class TestSlicer(unittest.TestCase):
         self.assertEqual(args.output_slice_bed, 'slices.bed')
 
     def test_main(self):
-        expected = {
-            '1::chr1:5-10': 'AGTCT',
-            '1::chr1:15-20': 'ATTTT'
-        }
-        bed = StringIO('chr1\t5\t20')
+        expected = (
+            '>1::chr1:5-10(+)\n'
+            'AGTCT\n'
+            '>1::chr1:15-20(+)\n'
+            'ATTTT'
+        )
+        bed = StringIO('chr1\t5\t20\t.\t.\t+')
         fasta = pybedtools.example_filename('test.fa')
         params = {
             'bed': bed,
@@ -89,11 +81,13 @@ class TestSlicer(unittest.TestCase):
             'offset': 10
         }
         self.assertEqual(expected, main(params))
-        expected = {
-            'exon1::chr1:5-10': 'AGTCT',
-            'exon1::chr1:15-20': 'ATTTT'
-        }
-        params['bed'] = StringIO('chr1\t5\t20\texon1')
+        expected = (
+            '>exon1::chr1:5-10(-)\n'
+            'AGACT\n'
+            '>exon1::chr1:15-20(-)\n'
+            'AAAAT'
+        )
+        params['bed'] = StringIO('chr1\t5\t20\texon1\t.\t-')
         self.assertEqual(expected, main(params))
 
 if __name__ == '__main__':
