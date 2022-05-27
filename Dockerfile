@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM python:3.10-slim-buster AS slicer
+FROM python:3.8-slim-buster AS slicer
 
 WORKDIR /
 
@@ -17,7 +17,7 @@ COPY designer .
 
 ENTRYPOINT [ "python3", "./slicer.py" ]
 
-FROM python:3.10-slim-buster AS primer3
+FROM python:3.8-slim-buster AS primer3
 
 WORKDIR /
 
@@ -25,13 +25,11 @@ ENV PYTHONUNBUFFERED: 1
 
 RUN apt-get update
 RUN apt-get install -y build-essential
-RUN apt-get install -y libz-dev 
-
-COPY runner/requirements.txt requirements.txt
-RUN pip3 install -r requirements.txt
+RUN apt-get install -y libz-dev
 
 COPY runner .
-COPY cmd.py .
+
+RUN pip3 install -r requirements.txt
 
 ENTRYPOINT [ "python3", "./cmd.py" ]
 

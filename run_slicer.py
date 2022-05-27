@@ -45,18 +45,15 @@ def main(params):
         fasta_file = os.path.basename(fasta_path)
         fasta_param = f'--fasta /tmp/{fasta_file}'
 
-    #TODO: Copy bed (and fasta) file to working dir
-
     subprocess.run(['cp', bed_path, f'./{bed_file}'])
     
     if fasta_path:
-        subprocess.run(['cp', fasta_path, f'{fasta_file}'])
+        subprocess.run(['cp', fasta_path, f'./{fasta_file}'])
     
     pwd = subprocess.run(['pwd'], stdout=subprocess.PIPE).stdout.decode('utf-8').strip()
     cmd = f'docker run -i -t --rm -v targeton-designer_data:/data -v {pwd}/:/tmp/ targeton-designer_slicer {bed_param} {fasta_param}'
     
     os.system(cmd)
-    #subprocess.run(['docker', 'run', '-i -t --rm', f'-v {pwd}/:/data/slicer/', 'targeton-designer_slicer', bed_param, fasta_param])
     
     return 1
 
