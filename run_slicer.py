@@ -1,36 +1,8 @@
-#!/usr/bin/env python3
-from pybedtools import BedTool
+import os
 import argparse
 import sys
-import os
+import subprocess
 
-def _generate_slice_coordinates(exon, count, params):
-    slices = []
-    name = exon.name if exon.name != '.' else count
-    start = exon.start - params['flank_5']
-    end = start + params['length']
-    while end <= (exon.end + params['flank_3']):
-        slices.append((exon.chrom, start, end, name))
-        start += params['offset']
-        end += params['offset']
-    return slices
-
-def get_slice_coordinates(bed, params):
-    slices = []
-    count = 1
-    for exon in bed:
-        slices.extend(_generate_slice_coordinates(exon, count, params))
-        count += 1
-    return slices
-
-def get_slice_sequences(bed, fasta):
-    seqs = {}
-    results = bed.sequence(fi=fasta, tab=True,
-        name=True).print_sequence().strip()
-    for row in results.split('\n'):
-        name, sequence = row.split('\t')
-        seqs[name] = sequence
-    return seqs
 
 def positive_int(arg):
     if int(arg) <= 0:
@@ -45,7 +17,7 @@ def parse_args(args):
         help='BED file containing regions of interest')
     parser.add_argument('-f', '--fasta',
         help='FASTA file to retrieve sequences from',
-        default='/data/reference.fa')
+        default='')
     parser.add_argument('-f5', '--flank_5',
         help='how far to extend region at 5\' end',
         type=positive_int, default=0)
@@ -61,9 +33,32 @@ def parse_args(args):
     return parser.parse_args(args)
 
 def main(params):
-    bed = BedTool(params['bed'])
-    slice_bed = BedTool(get_slice_coordinates(bed, params))
-    return get_slice_sequences(slice_bed, params['fasta'])
+    print(params)
+
+    bed_path = params['bed']
+    bed_file = os.path.basename(bed_path)
+    bed_param = f'/tmp/{bed_file}'
+
+    fasta_param = ''
+    fasta_path = params['fasta']
+    if fasta_path:
+        fasta_file = os.path.basename(fasta_path)
+        fasta_param = f'--fasta /tmp/{fasta_file}'
+
+    #TODO: Copy bed (and fasta) file to working dir
+
+    subprocess.run(['cp', bed_path, f'./{bed_file}'])
+    
+    if fasta_path:
+        subprocess.run(['cp', fasta_path, f'{fasta_file}'])
+    
+    pwd = subprocess.run(['pwd'], stdout=subprocess.PIPE).stdout.decode('utf-8').strip()
+    cmd = f'docker run -i -t --rm -v targeton-designer_data:/data -v {pwd}/:/tmp/ targeton-designer_slicer {bed_param} {fasta_param}'
+    
+    os.system(cmd)
+    #subprocess.run(['docker', 'run', '-i -t --rm', f'-v {pwd}/:/data/slicer/', 'targeton-designer_slicer', bed_param, fasta_param])
+    
+    return 1
 
 if __name__ == '__main__':
     args = parse_args(sys.argv[1:])
