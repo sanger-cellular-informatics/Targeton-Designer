@@ -32,6 +32,7 @@ def primer3_design(primer3_input):
 def locate_primers(design, slice_name, strand, slice_start):
     primer_keys = design.keys()
     primers = collections.defaultdict(dict)
+
     for key in primer_keys:
         primer_details = capture_primer_details(key)
         if primer_details:
@@ -45,13 +46,13 @@ def locate_primers(design, slice_name, strand, slice_start):
             primers[primer_name][primer_field] = design[key]
             
             if primer_field == 'coords':
-                primer_coords = calculate_primer_coords(primer_details['side'], design[key], strand, slice_start)
+                primer_coords = calculate_primer_coords(primer_details['side'], design[key], slice_start)
                 primers[primer_name]['primer_start'] = primer_coords[0] 
                 primers[primer_name]['primer_end'] = primer_coords[1] 
     
     return primers
 
-def calculate_primer_coords(side, coords, strand, slice_start):
+def calculate_primer_coords(side, coords, slice_start):
     left_flank = {
         'start' : slice_start,
         'end' : slice_start + int(coords[1])
