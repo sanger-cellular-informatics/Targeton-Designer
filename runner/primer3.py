@@ -145,6 +145,7 @@ def construct_bed_format(primers, chromo, slice_coords, strand):
         primer_data = primers[primer]
 
         #chr,chrStart,chrEnd,name,score,strand
+        #Score unknown until iPCRess
         row = [
             chromo,
             primer_data['primer_start'],
