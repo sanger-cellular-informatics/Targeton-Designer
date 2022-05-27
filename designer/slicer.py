@@ -34,9 +34,8 @@ def parse_args(args):
             ' BED file according to parameters specified')
     parser.add_argument('bed',
         help='BED file containing regions of interest')
-    parser.add_argument('-f', '--fasta',
-        help='FASTA file to retrieve sequences from',
-        default='/data/reference.fa')
+    parser.add_argument('fasta',
+        help='FASTA file to retrieve sequences from')
     parser.add_argument('-f5', '--flank_5',
         help='how far to extend region at 5\' end',
         type=positive_int, default=0)

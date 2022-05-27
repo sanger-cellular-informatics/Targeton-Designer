@@ -3,7 +3,6 @@ import argparse
 import sys
 import subprocess
 
-
 def positive_int(arg):
     if int(arg) <= 0:
         raise argparse.ArgumentTypeError('Parameter must be above 0')
@@ -16,8 +15,7 @@ def parse_args(args):
     parser.add_argument('bed',
         help='BED file containing regions of interest')
     parser.add_argument('-f', '--fasta',
-        help='FASTA file to retrieve sequences from',
-        default='')
+        help='FASTA file to retrieve sequences from')
     parser.add_argument('-f5', '--flank_5',
         help='how far to extend region at 5\' end',
         type=positive_int, default=0)
@@ -38,20 +36,16 @@ def main(params):
     bed_path = params['bed']
     bed_file = os.path.basename(bed_path)
     bed_param = f'/tmp/{bed_file}'
+    subprocess.run(['cp', bed_path, f'./{bed_file}'])
 
-    fasta_param = ''
     fasta_path = params['fasta']
     if fasta_path:
         fasta_file = os.path.basename(fasta_path)
         fasta_param = f'--fasta /tmp/{fasta_file}'
-
-    #TODO: Copy bed (and fasta) file to working dir
-
-    subprocess.run(['cp', bed_path, f'./{bed_file}'])
-    
-    if fasta_path:
         subprocess.run(['cp', fasta_path, f'{fasta_file}'])
-    
+    else:
+        fasta_param = '/data/reference.fa'
+
     pwd = subprocess.run(['pwd'], stdout=subprocess.PIPE).stdout.decode('utf-8').strip()
     cmd = f'docker run -i -t --rm -v targeton-designer_data:/data -v {pwd}/:/tmp/ targeton-designer_slicer {bed_param} {fasta_param}'
     
