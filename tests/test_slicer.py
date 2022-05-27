@@ -3,9 +3,16 @@ import pybedtools
 import argparse
 from io import StringIO
 
-from designer.slicer import (get_slice_data, positive_int, parse_args, main)
+from designer.slicer import (check_files, get_slice_data,
+    positive_int, parse_args, main)
 
 class TestSlicer(unittest.TestCase):
+
+    def test_check_files(self):
+        bed = pybedtools.BedTool('chr1\t100\t250\t.\t.\t+',
+            from_string=True)
+        fasta = pybedtools.example_filename('test.fa')
+        check_files(bed, fasta)
 
     def test_get_slice_data(self):
         expected = [

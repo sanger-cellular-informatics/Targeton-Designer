@@ -3,6 +3,9 @@ from pybedtools import BedTool
 import argparse
 import sys
 
+def check_files(bed, fasta):
+    return
+
 def _generate_slice_data(exon, count, params):
     slices = []
     name = exon.name if exon.name != '.' else count
@@ -54,6 +57,7 @@ def parse_args(args):
 
 def main(params):
     bed = BedTool(params['bed'])
+    check_files(bed, params['fasta'])
     slice_bed = BedTool(get_slice_data(bed, params))
     if 'output_slice_bed' in params:
         slice_bed.saveas(params['output_slice_bed'])
