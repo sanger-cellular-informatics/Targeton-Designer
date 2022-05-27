@@ -1,0 +1,5 @@
+mock
+primer3-py
+pybedtools
+remote-pdb #Both - dev only
+docker>=2.0.0
