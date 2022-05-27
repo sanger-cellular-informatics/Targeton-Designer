@@ -44,7 +44,7 @@ def main(params):
 
     os.system(cmd)
 
-    subprocess.run(['rm', '-rf', '/tmp/primer3'])
+    subprocess.run(['rm', '-r', '/tmp/primer3'])
 
     return 1
 
