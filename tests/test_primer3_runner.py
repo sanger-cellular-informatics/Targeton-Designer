@@ -1,5 +1,6 @@
 import unittest
 import os
+import json
 
 from runner.primer3 import (
     primer3_runner,
@@ -48,13 +49,35 @@ class TestRunner(unittest.TestCase):
         self.assertEqual(left_output['id'], 'primer_left_1', 'Captured id ok')
 
     def test_locate_primers(self):
-        test_dict = {
-            'primer_left_1_assembly' : 'test_pass'
-        }
-        result = locate_primers(test_dict, 'slice1', '1')
+        fwd = './test_data/fwd_primer3_output.json'
+        path = os.path.dirname(__file__)
+        
+        test_dict = {}
 
-        self.assertEqual(result['slice1_LibAmpF_1']['assembly'], 'test_pass', 'Rename ok')
+        with open(os.path.join(path, fwd), "r") as p3:
+            test_dict = json.load(p3)
+        
+        result = locate_primers(test_dict, 'slice1', '1', '1')    
+        self.assertIn('slice1_LibAmpF_0', result, 'Rename ok')
+        self.assertEqual(result['slice1_LibAmpF_0']['sequence'], 'TCCACACAGGATGCCAGG', 'Primer seq left ok')
+        self.assertEqual(result['slice1_LibAmpR_0']['sequence'], 'GGACACTCACCTCAGTTCCTG', 'Primer seq right ok')
+        self.assertEqual(result['slice1_LibAmpF_0']['primer_start'], 1, 'Left start ok')
+        self.assertEqual(result['slice1_LibAmpF_0']['primer_end'], 19, 'Left end ok')
+        self.assertEqual(result['slice1_LibAmpR_0']['primer_start'], 191, 'Right start ok')
+        self.assertEqual(result['slice1_LibAmpR_0']['primer_end'], 212, 'Right end ok')
+        
+        rev = './test_data/rev_primer3_output.json'
+        with open(os.path.join(path, rev), "r") as p3:
+            test_dict = json.load(p3)
 
+        result = locate_primers(test_dict, 'slice2', '-1', '400')    
+        self.assertIn('slice2_LibAmpF_0', result, 'Rename ok')
+        self.assertEqual(result['slice2_LibAmpF_0']['sequence'], 'GGACACTCACCTCAGTTCCTG', 'Primer seq left ok')
+        self.assertEqual(result['slice2_LibAmpR_0']['sequence'], 'TCCACACAGGATGCCAGG', 'Primer seq right ok')
+        self.assertEqual(result['slice2_LibAmpF_0']['primer_start'], 590, 'Left start ok')
+        self.assertEqual(result['slice2_LibAmpF_0']['primer_end'], 611, 'Left end ok')
+        self.assertEqual(result['slice2_LibAmpR_0']['primer_start'], 400, 'Right start ok')
+        self.assertEqual(result['slice2_LibAmpR_0']['primer_end'], 418, 'Right end ok')
 
 if __name__ == '__main__':
     unittest.main()

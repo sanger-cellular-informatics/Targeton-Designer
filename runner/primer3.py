@@ -53,6 +53,7 @@ def locate_primers(design, slice_name, strand, slice_start):
     return primers
 
 def calculate_primer_coords(side, coords, slice_start):
+    slice_start = int(slice_start)
     left_flank = {
         'start' : slice_start,
         'end' : slice_start + int(coords[1])
