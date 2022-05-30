@@ -9,7 +9,8 @@ def primer3_runner(design_input, strand):
     design = primer3_design(design_input)
     print('Pick primers')
     primers = locate_primers(design, design_input['SEQUENCE_ID'], strand)
-    
+    print(primers)
+
     return primers
 
 def primer3_design(primer3_input):
