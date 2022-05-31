@@ -19,10 +19,10 @@ def parse_args(args):
         help='FASTA file to retrieve sequences from')
     parser.add_argument('-f5', '--flank_5',
         help='how far to extend region at 5\' end',
-        type=positive_int, default=0)
+        type=int, default=50)
     parser.add_argument('-f3', '--flank_3',
         help='how far to extend region at 3\' end',
-        type=positive_int, default=0)
+        type=int, default=50)
     parser.add_argument('-l', '--length',
         help='length of each slice',
         type=positive_int, default=210)
@@ -44,19 +44,26 @@ def main(params):
     fasta_path = params['fasta']
     if fasta_path:
         fasta_file = os.path.basename(fasta_path)
-        fasta_param = f'--fasta /tmp/{fasta_file}'
+        fasta_param = f'/tmp/{fasta_file}'
         subprocess.run(['cp', fasta_path, f'/tmp/slicer/{fasta_file}'])
     else:
         fasta_param = '/data/reference.fa'
 
-    pwd = subprocess.run(['pwd'], stdout=subprocess.PIPE).stdout.decode('utf-8').strip()
-    cmd = f'docker run -i -t --rm -v targeton-designer_data:/data -v /tmp/slicer/:/tmp/ targeton-designer_slicer {bed_param} {fasta_param}'
-    
-    os.system(cmd)
+    cmd = ['docker', 'run', '-i', '-t', '--rm',
+           '-v', 'targeton-designer_data:/data',
+           '-v', '/tmp/slicer:/tmp/',
+           'targeton-designer_slicer',
+           bed_param, fasta_param,
+           '--flank_5', str(params['flank_5']),
+           '--flank_3', str(params['flank_3']),
+           '--length', str(params['length']),
+           '--offset', str(params['offset'])]
+    output = subprocess.run(cmd,
+        stdout=subprocess.PIPE).stdout.decode('utf-8').strip()
 
     subprocess.run(['rm', '-r', '/tmp/slicer'])
     
-    return
+    return output
 
 if __name__ == '__main__':
     args = parse_args(sys.argv[1:])

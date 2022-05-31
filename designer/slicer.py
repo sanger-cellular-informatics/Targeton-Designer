@@ -2,7 +2,6 @@
 from pybedtools import BedTool
 import argparse
 import sys
-import os
 
 def _generate_slice_data(exon, count, params):
     slices = []
