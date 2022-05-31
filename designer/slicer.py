@@ -31,7 +31,7 @@ def parse_args(args):
     parser = argparse.ArgumentParser(
         description='Get sequence slices for regions in'\
             ' BED file according to parameters specified')
-    parser.add_argument('bed',
+    parser.add_argument('-b', '--bed',
         help='BED file containing regions of interest')
     parser.add_argument('-f', '--fasta',
         help='FASTA file to retrieve sequences from',

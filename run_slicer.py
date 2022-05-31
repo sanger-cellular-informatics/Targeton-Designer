@@ -13,7 +13,7 @@ def parse_args(args):
     parser = argparse.ArgumentParser(
         description='Get sequence slices for regions in'\
             ' BED file according to parameters specified')
-    parser.add_argument('bed',
+    parser.add_argument('-b', '--bed',
         help='BED file containing regions of interest')
     parser.add_argument('-f', '--fasta',
         help='FASTA file to retrieve sequences from')
@@ -50,14 +50,16 @@ def main(params):
         fasta_param = '/data/reference.fa'
 
     cmd = ['docker', 'run', '-i', '-t', '--rm',
-           '-v', 'targeton-designer_data:/data',
+           '-v', 'targetondesigner_data:/data',
            '-v', '/tmp/slicer:/tmp/',
-           'targeton-designer_slicer',
-           bed_param, fasta_param,
+           'targetondesigner_slicer',
+           '-b', bed_param, 
+           '-f', fasta_param,
            '--flank_5', str(params['flank_5']),
            '--flank_3', str(params['flank_3']),
            '--length', str(params['length']),
            '--offset', str(params['offset'])]
+    print(cmd)
     output = subprocess.run(cmd,
         stdout=subprocess.PIPE).stdout.decode('utf-8').strip()
 
