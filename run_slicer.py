@@ -13,7 +13,7 @@ def parse_args(args):
     parser = argparse.ArgumentParser(
         description='Get sequence slices for regions in'\
             ' BED file according to parameters specified')
-    parser.add_argument('-b', '--bed',
+    parser.add_argument('bed',
         help='BED file containing regions of interest')
     parser.add_argument('-f', '--fasta',
         help='FASTA file to retrieve sequences from')
@@ -53,8 +53,7 @@ def main(params):
            '-v', 'targetondesigner_data:/data',
            '-v', '/tmp/slicer:/tmp/',
            'targetondesigner_slicer',
-           '-b', bed_param, 
-           '-f', fasta_param,
+           bed_param, fasta_param,
            '--flank_5', str(params['flank_5']),
            '--flank_3', str(params['flank_3']),
            '--length', str(params['length']),
