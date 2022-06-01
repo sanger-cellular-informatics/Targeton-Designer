@@ -3,8 +3,8 @@ import sys
 import csv
 import argparse
 
-from runner.primer3 import primer3_runner
-from runner.exonerate import run_ipcress
+from primer3_runner import primer3_runner
+from exonerate import run_ipcress
 
 parser = argparse.ArgumentParser()
 

@@ -1,20 +1,35 @@
 # syntax=docker/dockerfile:1
-FROM python:3.10-slim-buster
+FROM python:3.8-slim-buster AS slicer
 
-WORKDIR ./
+WORKDIR /
 
 ENV PYTHONUNBUFFERED: 1
-ENV FLASK_APP=./targeton_designer.py
-ENV FLASK_RUN_HOST=0.0.0.0
 
-RUN apt-get update && apt-get install -y build-essential
-RUN apt-get install -y libz-dev bedtools
-COPY requirements.txt requirements.txt
+RUN apt-get update 
+RUN apt-get install -y build-essential
+RUN apt-get install -y libz-dev 
+RUN apt-get install -y bedtools
+
+COPY designer/requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 
-EXPOSE 5000
+COPY designer .
 
-COPY . .
+ENTRYPOINT [ "python3", "./slicer.py" ]
 
-CMD ["flask", "run"]
+FROM python:3.8-slim-buster AS primer3
+
+WORKDIR /
+
+ENV PYTHONUNBUFFERED: 1
+
+RUN apt-get update
+RUN apt-get install -y build-essential
+RUN apt-get install -y libz-dev
+
+COPY runner .
+
+RUN pip3 install -r requirements.txt
+
+ENTRYPOINT [ "python3", "./cmd.py" ]
 
