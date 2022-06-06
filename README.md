@@ -64,16 +64,12 @@ python3 runner/cmd.py --seqs targeton_file.csv --dir ./tmp_folder --ref genomic_
 
 ### Docker
 
-Run Primer3:
-docker run --rm Primer3 [-h] [-s SEQ] [-d DIR] [-r REF]
-	Required args:
-		'--seq' - Path to sequences file
-		'--dir' - Output folder location
-		'--ref' - Reference file path
+**Run Slicer**
+```sh
+docker run --rm Slicer [-h] [-f5 FLANK_5] [-f3 FLANK_3] [-l LENGTH] [-o OFFSET] bed fasta
+```
 
-Run Slicer:
-docker run --rm Slicer [-h] [-f5 FLANK_5] [-f3 FLANK_3] [-l LENGTH] [-o OFFSET]
-                 bed fasta
+Slicer Arguments
 
 Get sequence slices for regions in BED file according to parameters specified
 
@@ -81,15 +77,37 @@ positional arguments:
   bed                   BED file containing regions of interest
   fasta                 FASTA file to retrieve sequences from
 
-optional arguments:
-  -h, --help            show this help message and exit
-  -f5 FLANK_5, --flank_5 FLANK_5
+Optional Slicer Arguments:
+  - -h, --help            show this help message and exit
+  - -f5 FLANK_5, --flank_5 FLANK_5
                         how far to extend region at 5' end
-  -f3 FLANK_3, --flank_3 FLANK_3
+  - -f3 FLANK_3, --flank_3 FLANK_3
                         how far to extend region at 3' end
-  -l LENGTH, --length LENGTH
+  - -l LENGTH, --length LENGTH
                         length of each slice
-  -o OFFSET, --offset OFFSET
+  - -o OFFSET, --offset OFFSET
                         offset between each slice
 
+**Run Primer3**
+```sh
+docker run --rm Primer3 [-h] [-s SEQ] [-d DIR] [-r REF]
+```
+
+Required Primer3 args:
+- --seq - Path to sequences file
+- --dir - Output folder location
+- --ref - Reference file path
+
+
 ## File formats
+
+### Slicer Input BED File
+
+### Fasta Input File
+
+### Targeton Slices Input File 
+
+### Genomic Reference File
+
+Either supply a local genome reference file or download one from EnsEMBL:
+http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/
