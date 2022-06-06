@@ -1,10 +1,8 @@
-Cython
-mock
-flask
-redis
-primer3-py
+Cython==0.29.30
+mock==4.0.3
+Flask==2.1.2
+redis==4.3.3
+primer3-py==0.6.1
 pysam==0.16.0.1
-pybedtools
-argparse
-remote-pdb
-docker>=2.0.0
+pybedtools==0.9.0
+docker==5.0.3
