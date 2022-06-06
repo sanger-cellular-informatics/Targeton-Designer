@@ -2,15 +2,7 @@
 
 Standalone targeton designer tool.
 
-- [Targeton Designer] (#targeton-designer)
-  - [Installation] (#installation)
-    - [Python Virtual Environment] (#python-virtual-environment)
-    - [Docker Images] (#docker-images)
-  - [Usage] (#usage)
-    - [Python] (#python)
-    - [Docker] (#docker)
-  - [File Formats] (#file-formats)
-
+[[_TOC_]]
 
 ## Installation
 
@@ -60,6 +52,15 @@ Install docker-compose - https://docs.docker.com/compose/install/
 
 ### Python
 
+Running Slicer tool:
+```sh
+python3 designer/slicer.py bed bedfile fasta fasta_file -l 200
+```
+
+Running Python3:
+```sh
+python3 runner/cmd.py --seqs targeton_file.csv --dir ./tmp_folder --ref genomic_reference_file.fna
+```
 
 ### Docker
 
