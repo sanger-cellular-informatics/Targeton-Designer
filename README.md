@@ -10,7 +10,7 @@ Dependencies:
 
 BedTools
 ```sh
-apt-get install bedtools
+sudo apt-get install bedtools
 ```
 
 ### Python Virtual Environment
@@ -21,7 +21,7 @@ Requirements:
 
 Install venv if you haven't already got it
 ```sh
-apt install python3.8-venv
+sudo apt install python3.8-venv
 ```
 
 Setting up Virtual Env:
