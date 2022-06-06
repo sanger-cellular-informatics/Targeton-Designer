@@ -48,6 +48,45 @@ deactivate
 
 Install docker-compose - https://docs.docker.com/compose/install/
 
+Docker Installation:
+https://docs.docker.com/get-started/
+
+Docker Install
+```sh
+sudo apt-get update
+sudo apt-get install \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-releasesudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpgsudo apt install docker.iosudo apt install docker-compose
+```
+
+Download ref fasta
+```sh
+wget http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
+gunzip Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
+```
+
+Create output folder
+```sh
+mkdir p3_output
+```
+
+Local Install
+```sh
+git clone https://gitlab.internal.sanger.ac.uk/sci/targeton-designer.git
+ 
+cd targeton_designer
+ 
+pip install -r requirements.txt
+```
+
+Run primer3 image
+```sh
+sudo docker-compose build
+```
+
 ## Usage
 
 ### Python
@@ -106,6 +145,11 @@ Required Primer3 args:
 ### Fasta Input File
 
 ### Targeton Slices Input File 
+**To be replaced by fa**
+```sh
+id,seq
+ENSE00000893952,TCCACACAGGATGCCAGGCCAAGGTGGAGCAAGCGGTGGAGACAGAGCCGGAGCCCGAGCTGCGCCAGCAGACCGAGTGGCAGAGCGGCCAGCGCTGGGAACTGGCACTGGGTCGCTTTTGGGATTACCTGCGCTGGGTGCAGACACTGTCTGAGCAGGTGCAGGAGGAGCTGCTCAGCTCCCAGGTCACCCAGGAACTGAGGTGAGTGTCC
+```
 
 ### Genomic Reference File
 
