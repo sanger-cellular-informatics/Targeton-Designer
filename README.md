@@ -1,17 +1,61 @@
 # Targeton Designer
 
-Standalone targeton designer tool
+Standalone targeton designer tool.
 
-Install docker-compose - https://docs.docker.com/compose/install/
+- [Targeton Designer] (#targeton-designer)
+  - [Installation] (#installation)
+    - [Python Virtual Environment] (#python-virtual-environment)
+    - [Docker Images] (#docker-images)
+  - [Usage] (#usage)
+    - [Python] (#python)
+    - [Docker] (#docker)
+  - [File Formats] (#file-formats)
+
+
+## Installation
 
 Dependencies:
 
 BedTools
+```sh
 apt-get install bedtools
+```
 
-Running tests:
+### Python Virtual Environment
+
+Requirements:
+ - Python3.8+
+
+Setting up Virtual Env:
+```sh
+python3 -m venv venv
+
+venv/bin/activate
+
+pip install -r requirements.txt
+
+deactivate
+```
+
+Run the tests:
+```sh
+venv/bin/activate
+
 python3 -m unittest
 
+deactivate
+```
+
+### Docker images
+
+Install docker-compose - https://docs.docker.com/compose/install/
+
+## Usage
+
+### Python
+
+
+### Docker
 
 Run Primer3:
 docker run --rm Primer3 [-h] [-s SEQ] [-d DIR] [-r REF]
@@ -40,3 +84,5 @@ optional arguments:
                         length of each slice
   -o OFFSET, --offset OFFSET
                         offset between each slice
+
+## File formats
