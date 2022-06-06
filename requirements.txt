@@ -3,6 +3,7 @@ mock
 flask
 redis
 primer3-py
+pysam==0.16.0.1
 pybedtools
 argparse
 remote-pdb

@@ -25,14 +25,20 @@ apt-get install bedtools
 
 Requirements:
  - Python3.8+
+ - Python-venv
+
+Install venv if you haven't already got it
+```sh
+apt install python3.8-venv
+```
 
 Setting up Virtual Env:
 ```sh
 python3 -m venv venv
 
-venv/bin/activate
+source venv/bin/activate
 
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 
 deactivate
 ```
