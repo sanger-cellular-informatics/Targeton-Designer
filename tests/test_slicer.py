@@ -3,7 +3,8 @@ import pybedtools
 import argparse
 from io import StringIO
 
-from designer.slicer import (get_slice_data, positive_int, parse_args, main)
+from designer.slicer import (get_slice_data, positive_int, parse_args,
+    get_slices)
 
 class TestSlicer(unittest.TestCase):
 
@@ -53,42 +54,55 @@ class TestSlicer(unittest.TestCase):
         self.assertRaisesRegex(error, msg, positive_int, '0')
 
     def test_parse_args(self):
-        args = parse_args(['bed', 'fasta','-f5', '50',
-            '--length', '200', '--output_slice_bed'])
+        args = parse_args(['bed', 'fasta', '-f5', '50',
+            '--length', '200', '--output_slice_bed', 'slices.bed'])
         self.assertEqual(args.bed, 'bed')
         self.assertEqual(args.fasta, 'fasta')
         self.assertEqual(args.flank_5, 50)
-        self.assertEqual(args.flank_3, 0)
+        self.assertEqual(args.flank_3, 50)
         self.assertEqual(args.length, 200)
         self.assertEqual(args.offset, 5)
         self.assertEqual(args.output_slice_bed, 'slices.bed')
+        self.assertIsNone(args.output_fasta)
 
-    def test_main(self):
-        expected = (
+    def test_get_slices(self):
+        expected_bed = (
+            'chr1\t5\t10\t1\t.\t+\n'
+            'chr1\t15\t20\t1\t.\t+\n'
+        )
+        expected_fasta = (
             '>1::chr1:5-10(+)\n'
             'AGTCT\n'
             '>1::chr1:15-20(+)\n'
-            'ATTTT'
+            'ATTTT\n'
         )
-        bed = StringIO('chr1\t5\t20\t.\t.\t+')
-        fasta = pybedtools.example_filename('test.fa')
+        in_bed = StringIO('chr1\t5\t20\t.\t.\t+')
+        in_fasta = pybedtools.example_filename('test.fa')
         params = {
-            'bed': bed,
-            'fasta': fasta,
+            'bed': in_bed,
+            'fasta': in_fasta,
             'flank_5': 0,
             'flank_3': 0,
             'length': 5,
             'offset': 10
         }
-        self.assertEqual(expected, main(params))
-        expected = (
+        slices = get_slices(params)
+        self.assertEqual(expected_bed, slices.head(as_string=True))
+        self.assertEqual(expected_fasta, slices.print_sequence())
+        expected_bed = (
+            'chr1\t5\t10\texon1\t.\t-\n'
+            'chr1\t15\t20\texon1\t.\t-\n'
+        )
+        expected_fasta = (
             '>exon1::chr1:5-10(-)\n'
             'AGACT\n'
             '>exon1::chr1:15-20(-)\n'
-            'AAAAT'
+            'AAAAT\n'
         )
         params['bed'] = StringIO('chr1\t5\t20\texon1\t.\t-')
-        self.assertEqual(expected, main(params))
+        slices = get_slices(params)
+        self.assertEqual(expected_bed, slices.head(as_string=True))
+        self.assertEqual(expected_fasta, slices.print_sequence())
 
 if __name__ == '__main__':
     unittest.main()

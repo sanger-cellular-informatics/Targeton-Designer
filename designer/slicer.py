@@ -37,30 +37,38 @@ def parse_args(args):
         help='FASTA file to retrieve sequences from')
     parser.add_argument('-f5', '--flank_5',
         help='how far to extend region at 5\' end',
-        type=positive_int, default=0)
+        type=int, default=50)
     parser.add_argument('-f3', '--flank_3',
         help='how far to extend region at 3\' end',
-        type=positive_int, default=0)
+        type=int, default=50)
     parser.add_argument('-l', '--length',
         help='length of each slice',
         type=positive_int, default=210)
     parser.add_argument('-o', '--offset',
         help='offset between each slice',
         type=positive_int, default=5)
+    parser.add_argument('--output_fasta',
+        help='output slice sequences to fasta file')
     parser.add_argument('--output_slice_bed',
-        help='output bed file with slice coordinates',
-        nargs='?', const='slices.bed')
+        help='output bed file with slice coordinates')
     return parser.parse_args(args)
 
-def main(params):
+def get_slices(params):
     bed = BedTool(params['bed'])
     slice_bed = BedTool(get_slice_data(bed, params))
-    if 'output_slice_bed' in params:
-        slice_bed.saveas(params['output_slice_bed'])
-    # return slice sequences on specified strand in fasta format
-    return slice_bed.sequence(fi=params['fasta'],
-        name=True, s=True).print_sequence().strip()
+    # return named slice sequences on specified strand
+    return slice_bed.sequence(fi=params['fasta'], name=True, s=True)
+
+def main(params):
+    slices = get_slices(params)
+    if params['output_slice_bed'] is not None:
+        slices.saveas(params['output_slice_bed'])
+    if params['output_fasta'] is not None:
+        slices.save_seqs(params['output_fasta'])
+        print('Slice sequences saved!')
+    else:
+        print(slices.print_sequence())
 
 if __name__ == '__main__':
     args = parse_args(sys.argv[1:])
-    print(main(vars(args)))
+    main(vars(args))
