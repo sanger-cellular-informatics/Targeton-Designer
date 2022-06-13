@@ -4,53 +4,114 @@ import re
 import os
 import collections
 import csv
+import sys
+import argparse
 
 from pybedtools import BedTool
+from Bio import SeqIO
 
-def primer3_runner(design_input, strand):
-    slice_start = 1
+def parse_args(args):
+    parser = argparse.ArgumentParser(
+        description='Slice analysis using Primer3')
+    parser.add_argument('--seq',
+        help='FASTA file from the slicer tool containing seqs and IDs')
+    parser.add_argument('--bed',
+        help='BED file from the slicer tool containing coords, strand and IDs')
+    parser.add_argument('--ref',
+        help='Genomic Reference file')
+    parser.add_argument('--dir',
+        help='Output folder location')
+    return parser.parse_args(args)
+
+def primer3_runner(params):
+    print('Reading FA file')
+    design_inputs = read_input_fasta(params)
     print('Designing primers for the region')
-    design = primer3_design(design_input)
+    designs = primer3_design(design_inputs)
     print('Naming primers')
-    primers = locate_primers(design, design_input['SEQUENCE_ID'], strand, slice_start)
+    slices = locate_primers(designs)
     print('Exporting to BED and CSV')
-    export_primers(primers, 'chr1', slice_start, strand)
+    export_primers(slices, params['dir'])
  
-    return primers
+    return slices
 
-def primer3_design(primer3_input):
+def read_input_fasta(params):
+    rows = SeqIO.parse(open(params['seq']), 'fasta')    
+    coord_data = read_bed_file(params['bed'])
+   
+    slices = [] 
+    for row in rows:
+        match = re.search(r'(\w*)\([-.+]{1}\)', row.id)        
+        if match:
+            row_id = match.group(1)
+            slice_data = coord_data[row_id]
+            p3_input = {
+                'SEQUENCE_ID' : row_id,
+                'SEQUENCE_TEMPLATE' : str(row.seq),
+            }
+            slice_data['p3_input'] = p3_input
+            slices.append(slice_data)
+
+    return slices
+
+def read_bed_file(bed_file):
+    bed = BedTool(bed_file)
+
+    slices = {}
+    for slice_region in bed:
+        slices[slice_region.name] = {
+            'name'      : slice_region.name,
+            'start'     : slice_region.start,
+            'end'       : slice_region.end,
+            'strand'    : slice_region.strand,
+            'chrom'     : slice_region.chrom,
+        }
+
+    return slices
+
+def primer3_design(primer3_inputs):
     p3_config_loc = os.environ.get('PRIMER3_CONFIG')
-    
-    primer3_config = {}
-    with open(os.path.join(os.path.dirname(__file__), p3_config_loc), "r") as p3:
-        primer3_config = json.load(p3)
+   
+    designs = [] 
+    for slice_data in primer3_inputs:
+        primer3_input = slice_data['p3_input']
+        primer3_config = {}
+        with open(os.path.join(os.path.dirname(__file__), p3_config_loc), "r") as p3:
+            primer3_config = json.load(p3)
 
-    design = primer3.bindings.designPrimers(primer3_input, primer3_config)
+        design = primer3.bindings.designPrimers(primer3_input, primer3_config)
+        slice_data['design'] = design
+        designs.append(slice_data)
 
-    return design
+    return designs
 
-def locate_primers(design, slice_name, strand, slice_start):
-    primer_keys = design.keys()
-    primers = collections.defaultdict(dict)
+def locate_primers(designs):
+    slice_designs = []
+    for slice_data in designs:
+        design = slice_data['design']
+        primer_keys = design.keys()
+        primers = collections.defaultdict(dict)
 
-    for key in primer_keys:
-        primer_details = capture_primer_details(key)
-        if primer_details:
-            primer_id = primer_details['id']
-            primer_field = primer_details['field']
-            pair_number = primer_details['pair']
-            
-            libamp_name = name_primers(primer_details, strand)
-            
-            primer_name = slice_name + "_" + libamp_name + "_" + pair_number
-            primers[primer_name][primer_field] = design[key]
-            
-            if primer_field == 'coords':
-                primer_coords = calculate_primer_coords(primer_details['side'], design[key], slice_start)
-                primers[primer_name]['primer_start'] = primer_coords[0] 
-                primers[primer_name]['primer_end'] = primer_coords[1] 
-    
-    return primers
+        for key in primer_keys:
+            primer_details = capture_primer_details(key)
+            if primer_details:
+                primer_id = primer_details['id']
+                primer_field = primer_details['field']
+                pair_number = primer_details['pair']
+                
+                libamp_name = name_primers(primer_details, slice_data['strand'])
+                
+                primer_name = slice_data['name'] + "_" + libamp_name + "_" + pair_number
+                primers[primer_name][primer_field] = design[key]
+                
+                if primer_field == 'coords':
+                    primer_coords = calculate_primer_coords(primer_details['side'], design[key], slice_data['start'])
+                    primers[primer_name]['primer_start'] = primer_coords[0] 
+                    primers[primer_name]['primer_end'] = primer_coords[1] 
+        del slice_data['design']
+        slice_data['primers'] = primers
+        slice_designs.append(slice_data)
+    return slice_designs
 
 def calculate_primer_coords(side, coords, slice_start):
     slice_start = int(slice_start)
@@ -104,63 +165,79 @@ def name_primers(primer_details, strand):
         'right' : 'LibAmpF',
     }
     names = {
-        '1' : fwd_primers,
-        '-1' : rev_primers,
+        '+' : fwd_primers,
+        '-' : rev_primers,
     }
 
     primer_name = names[strand][primer_details['side']]
 
     return primer_name
 
-def export_primers(primers, chromo, slice_coords, strand):
-    bed_rows = construct_bed_format(primers, chromo, slice_coords, strand)
-    export_to_bed(bed_rows)
-    export_to_csv(primers)
+def export_primers(slices, output_dir):
+    bed_rows = construct_bed_format(slices)
+    export_to_bed(bed_rows, output_dir)
+    export_to_csv(slices, output_dir)
 
-def export_to_csv(primers):
+def export_to_csv(slices, output_dir):
     headers = ['primer', 'sequence', 'tm', 'gc_percent', 'penalty', 'self_any_th', 'self_end_th', 'hairpin_th', 'end_stability']
-    rows = construct_csv_format(primers, headers)
+    rows = construct_csv_format(slices, headers)
 
-    with open('p3_output.csv', "w") as p3_fh:
+    path = output_dir + '/p3_output.csv'
+    with open(path, "w") as p3_fh:
         p3_out = csv.DictWriter(p3_fh, fieldnames = headers)
         p3_out.writeheader()
         p3_out.writerows(rows)
 
         return
 
-def construct_csv_format(primers, headers): 
+def construct_csv_format(slices, headers): 
     rows = []
-    for primer in primers:
-        primers[primer]['primer'] = primer
-        
-        del primers[primer]['primer_start'] 
-        del primers[primer]['primer_end'] 
-        del primers[primer]['coords'] 
 
-        rows.append(primers[primer])
+    for slice_data in slices:
+        primers = slice_data['primers']
+        for primer in primers:
+            primers[primer]['primer'] = primer
+            
+            del primers[primer]['primer_start'] 
+            del primers[primer]['primer_end'] 
+            del primers[primer]['coords'] 
+
+            rows.append(primers[primer])
 
     return rows
 
-def construct_bed_format(primers, chromo, slice_coords, strand):
+def construct_bed_format(slices):
     rows = []
-    for primer in primers:
-        primer_data = primers[primer]
-
-        #chr,chrStart,chrEnd,name,score,strand
-        #Score unknown until iPCRess
-        row = [
-            chromo,
-            primer_data['primer_start'],
-            primer_data['primer_end'],
-            primer,
-            '42',
-            strand
-        ]
-        rows.append(row)
+    for slice_data in slices:
+        primers = slice_data['primers']
+        for primer in primers: 
+            primer_data = primers[primer]
+            #chr,chrStart,chrEnd,name,score,strand
+            #Score unknown until iPCRess
+            row = [
+                slice_data['chrom'],
+                primer_data['primer_start'],
+                primer_data['primer_end'],
+                primer,
+                '0',
+                slice_data['strand']
+            ]
+            rows.append(row)
     return rows
 
-def export_to_bed(bed_rows):
+def export_to_bed(bed_rows, output_dir):
     p3_bed = BedTool(bed_rows)
-    p3_bed.saveas('./p3_output.bed')
+    path = output_dir + '/p3_output.bed'
+    p3_bed.saveas(path)
 
     return
+
+def main(params):
+    if os.environ.get("PRIMER3_CONFIG") is None:
+        os.environ["PRIMER3_CONFIG"] = "./primer3_config.json"
+    primer3_runner(params)
+
+if __name__ == '__main__':
+    args = parse_args(sys.argv[1:])
+    main(vars(args))
+
