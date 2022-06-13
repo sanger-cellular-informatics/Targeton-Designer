@@ -57,7 +57,7 @@ Running Slicer tool:
 python3 designer/slicer.py [-h] [-f5 FLANK_5] [-f3 FLANK_3] [-l LENGTH] [-o OFFSET] [--output_fasta OUTPUT_FASTA] [--output_slice_bed OUTPUT_SLICE_BED] bed fasta
 ```
 
-Running Python3:
+Running Primer3:
 ```sh
 python3 runner/cmd.py --seqs targeton_file.csv --dir ./tmp_folder --ref genomic_reference_file.fna
 ```
