@@ -21,7 +21,7 @@ Requirements:
 
 Install venv if you haven't already got it
 ```sh
-sudo apt install python3.8-venv
+sudo apt-get install python3-venv
 ```
 
 Setting up Virtual Env:
@@ -93,7 +93,7 @@ sudo docker-compose build
 
 Running Slicer tool:
 ```sh
-python3 designer/slicer.py bed bedfile fasta fasta_file -l 200
+python3 designer/slicer.py [-h] [-f5 FLANK_5] [-f3 FLANK_3] [-l LENGTH] [-o OFFSET] [--output_fasta OUTPUT_FASTA] [--output_slice_bed OUTPUT_SLICE_BED] bed fasta
 ```
 
 Running Python3:
@@ -135,14 +135,14 @@ docker run --rm Primer3 [-h] [-s SEQ] [-d DIR] [-r REF]
 Required Primer3 args:
 - --seq - Path to sequences file
 - --dir - Output folder location
-- --ref - Reference file path
+- --ref - Reference genomic file path
 
 
 ## File formats
 
 ### Slicer Input BED File
 
-### Fasta Input File
+### Primer3 Fasta Input File
 
 ### Targeton Slices Input File 
 **To be replaced by fa**
