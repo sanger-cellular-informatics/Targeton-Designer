@@ -1,42 +1,85 @@
 # Targeton Designer
 
-Standalone targeton designer tool
+Standalone targeton designer tool.
 
-Install docker-compose - https://docs.docker.com/compose/install/
+[[_TOC_]]
+
+## Installation
 
 Dependencies:
 
 BedTools
-apt-get install bedtools
+```sh
+sudo apt-get install bedtools
+```
 
-Running tests:
+### Python Virtual Environment
+
+Requirements:
+ - Python3.8+
+ - Python-venv
+
+Install venv if you haven't already got it
+```sh
+sudo apt-get install python3-venv
+```
+
+Setting up Virtual Env:
+```sh
+python3 -m venv venv
+
+source venv/bin/activate
+
+pip3 install -r requirements.txt
+
+deactivate
+```
+
+Run the tests:
+```sh
+venv/bin/activate
+
 python3 -m unittest
 
+deactivate
+```
 
-Run Primer3:
-docker run --rm Primer3 [-h] [-s SEQ] [-d DIR] [-r REF]
-	Required args:
-		'--seq' - Path to sequences file
-		'--dir' - Output folder location
-		'--ref' - Reference file path
+### Docker images
 
-Run Slicer:
-docker run --rm Slicer [-h] [-f5 FLANK_5] [-f3 FLANK_3] [-l LENGTH] [-o OFFSET]
-                 bed fasta
+Upcoming feature in later releases
 
-Get sequence slices for regions in BED file according to parameters specified
+## Usage
 
-positional arguments:
-  bed                   BED file containing regions of interest
-  fasta                 FASTA file to retrieve sequences from
+### Python
 
-optional arguments:
-  -h, --help            show this help message and exit
-  -f5 FLANK_5, --flank_5 FLANK_5
-                        how far to extend region at 5' end
-  -f3 FLANK_3, --flank_3 FLANK_3
-                        how far to extend region at 3' end
-  -l LENGTH, --length LENGTH
-                        length of each slice
-  -o OFFSET, --offset OFFSET
-                        offset between each slice
+Running Slicer tool:
+```sh
+python3 designer/slicer.py [-h] [-f5 FLANK_5] [-f3 FLANK_3] [-l LENGTH] [-o OFFSET] [--output_fasta OUTPUT_FASTA] [--output_slice_bed OUTPUT_SLICE_BED] bed fasta
+```
+
+Running Primer3:
+```sh
+python3 runner/cmd.py --seqs targeton_file.csv --dir ./tmp_folder --ref genomic_reference_file.fna
+```
+
+### Docker
+
+Upcoming feature in later releases
+
+## File formats
+
+### Slicer Input BED File
+
+### Primer3 Fasta Input File
+
+### Targeton Slices Input File 
+**To be replaced by fa**
+```sh
+id,seq
+ENSE00000893952,TCCACACAGGATGCCAGGCCAAGGTGGAGCAAGCGGTGGAGACAGAGCCGGAGCCCGAGCTGCGCCAGCAGACCGAGTGGCAGAGCGGCCAGCGCTGGGAACTGGCACTGGGTCGCTTTTGGGATTACCTGCGCTGGGTGCAGACACTGTCTGAGCAGGTGCAGGAGGAGCTGCTCAGCTCCCAGGTCACCCAGGAACTGAGGTGAGTGTCC
+```
+
+### Genomic Reference File
+
+Either supply a local genome reference file or download one from EnsEMBL:
+http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/
