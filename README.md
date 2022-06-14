@@ -67,19 +67,105 @@ python3 runner/cmd.py --seqs targeton_file.csv --dir ./tmp_folder --ref genomic_
 Upcoming feature in later releases
 
 ## File formats
+### Genomic Reference file
+A Fasta file of latest GRCh38 genome. This is used for gathering the slice sequences and retrieving primer information. 
+Either supply a local genome reference file or download one from EnsEMBL and point to it with the relevant parameters:
+http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/
 
 ### Slicer Input BED File
+A BED file containing the regions you wish to slice across. 
 
-### Primer3 Fasta Input File
+The chromosome column data must match your reference fasta file IDs. If youre reference had >chr1 then you must call chromosome 1 'chr1' in this column and vice-versa.
 
-### Targeton Slices Input File 
-**To be replaced by fa**
-```sh
-id,seq
-ENSE00000893952,TCCACACAGGATGCCAGGCCAAGGTGGAGCAAGCGGTGGAGACAGAGCCGGAGCCCGAGCTGCGCCAGCAGACCGAGTGGCAGAGCGGCCAGCGCTGGGAACTGGCACTGGGTCGCTTTTGGGATTACCTGCGCTGGGTGCAGACACTGTCTGAGCAGGTGCAGGAGGAGCTGCTCAGCTCCCAGGTCACCCAGGAACTGAGGTGAGTGTCC
+Note: BED effectively are applied tsv files so use tabs to separate the values. Headers are optional in BED file and can be a cause of issues if the headers aren't perfect. While the file format leaves strand as optional, it is highly suggested to provide it for primer analysis. Score isn't used but necessary for the file format to be read correctly.
+
+| chrom | chromStart | chromEnd | name | score | strand |
+| ----- | ---------- | -------- | ---- | ----- | ------ |
+| 1 | 42931046 | 42931206 | ENSE00003571441_HG6	| 0	| - |
+| 1	| 42929593 | 42929780 | ENSE00000769557_HG8 | 0 | - |
+
+Raw file
+```
+1	42931046	42931206	ENSE00003571441_HG6	0	-
+1	42929593	42929780	ENSE00000769557_HG8	0	-
 ```
 
-### Genomic Reference File
+More information can be found here: https://en.wikipedia.org/wiki/BED_(file_format)
 
-Either supply a local genome reference file or download one from EnsEMBL:
-http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/
+### Primer3 BED Input File (Slicer BED output)
+This file is outputted by the slicer tool with the --output_bed parameter and is necessary for the primer3 runner. Similar to the input BED, this file details the locations of the slicers and their genomic locations
+
+| chrom | chromStart | chromEnd | name | score | strand |
+| ----- | ---------- | -------- | ---- | ----- | ------ |
+| 1 | 42930996 | 42931206 | ENSE00003571441_HG6_1 | 0 | - | 
+| 1 | 42931001 | 42931211 | ENSE00003571441_HG6_2 | 0 | - | 
+| 1 | 42931006 | 42931216 | ENSE00003571441_HG6_3 | 0 | - |
+| 1 | 42931011 | 42931221 | ENSE00003571441_HG6_4 | 0 | - |
+| 1 | 42931016 | 42931226 | ENSE00003571441_HG6_5 | 0 | - |
+
+Raw file
+```
+1	42930996	42931206	ENSE00003571441_HG6_1	0	-
+1	42931001	42931211	ENSE00003571441_HG6_2	0	-
+1	42931006	42931216	ENSE00003571441_HG6_3	0	-
+1	42931011	42931221	ENSE00003571441_HG6_4	0	-
+1	42931016	42931226	ENSE00003571441_HG6_5	0	-
+```
+
+### Primer3 Fasta Input File (Slicer Fasta output)
+Slicer output of the slice sequences and their IDs plus increment
+
+```
+>ENSE00003571441_HG6_1(-)
+GTGATCGAGGAGTTCTACAACCAGACATGGGTCCACCGCTATGGGGAGAGCATCCTGCCCACCACGCTCACCACGCTCTGGTCCCTCTCAGTGGCCATCTTTTCTGTTGGGGGCATGATTGGCTCCTTCTCTGTGGGCCT
+TTTCGTTAACCGCTTTGGCCGGTAAGTAGGAGAGGTCCTGGCACTGCCCTTGGAGGGCCCATGCCCTCCT
+>ENSE00003571441_HG6_2(-)
+TGCAGGTGATCGAGGAGTTCTACAACCAGACATGGGTCCACCGCTATGGGGAGAGCATCCTGCCCACCACGCTCACCACGCTCTGGTCCCTCTCAGTGGCCATCTTTTCTGTTGGGGGCATGATTGGCTCCTTCTCTGTG
+GGCCTTTTCGTTAACCGCTTTGGCCGGTAAGTAGGAGAGGTCCTGGCACTGCCCTTGGAGGGCCCATGCC
+>ENSE00003571441_HG6_3(-)
+CCCCCTGCAGGTGATCGAGGAGTTCTACAACCAGACATGGGTCCACCGCTATGGGGAGAGCATCCTGCCCACCACGCTCACCACGCTCTGGTCCCTCTCAGTGGCCATCTTTTCTGTTGGGGGCATGATTGGCTCCTTCT
+CTGTGGGCCTTTTCGTTAACCGCTTTGGCCGGTAAGTAGGAGAGGTCCTGGCACTGCCCTTGGAGGGCCC
+>ENSE00003571441_HG6_4(-)
+CATCTCCCCCTGCAGGTGATCGAGGAGTTCTACAACCAGACATGGGTCCACCGCTATGGGGAGAGCATCCTGCCCACCACGCTCACCACGCTCTGGTCCCTCTCAGTGGCCATCTTTTCTGTTGGGGGCATGATTGGCTC
+CTTCTCTGTGGGCCTTTTCGTTAACCGCTTTGGCCGGTAAGTAGGAGAGGTCCTGGCACTGCCCTTGGAG
+>ENSE00003571441_HG6_5(-)
+GGCTGCATCTCCCCCTGCAGGTGATCGAGGAGTTCTACAACCAGACATGGGTCCACCGCTATGGGGAGAGCATCCTGCCCACCACGCTCACCACGCTCTGGTCCCTCTCAGTGGCCATCTTTTCTGTTGGGGGCATGATT
+GGCTCCTTCTCTGTGGGCCTTTTCGTTAACCGCTTTGGCCGGTAAGTAGGAGAGGTCCTGGCACTGCCCT
+```
+
+### Primer3 Output BED file
+Genomic locations of the primers and their names. Names are incremented from 0 and given F and R depending on whether they're 5' or 3'
+
+| chrom | chromStart | chromEnd | name | score | strand |
+| ----- | ---------- | -------- | ---- | ----- | ------ |
+| 1 | 42931021 | 42931039 | ENSE00003571441_HG6_6_LibAmpR_0 | 0 | - |
+| 1 | 42931210 | 42931230 | ENSE00003571441_HG6_6_LibAmpF_0 | 0 | - |
+| 1 | 42931021 | 42931039 | ENSE00003571441_HG6_6_LibAmpR_1 | 0 | - | 
+| 1 | 42931211 | 42931230 | ENSE00003571441_HG6_6_LibAmpF_1 | 0 | - |
+
+Raw file
+```
+1	42931021	42931039	ENSE00003571441_HG6_6_LibAmpR_0	0	-
+1	42931210	42931230	ENSE00003571441_HG6_6_LibAmpF_0	0	-
+1	42931021	42931039	ENSE00003571441_HG6_6_LibAmpR_1	0	-
+1	42931211	42931230	ENSE00003571441_HG6_6_LibAmpF_1	0	-
+```
+
+### Primer3 Output CSV file
+Contains all of the extra information from Primer3 for the individual primers
+
+| primer | sequence | tm | gc_percent | penalty | self_any_th | self_end_th | hairpin_th | end_stability |
+| ------ | -------- | -- | ---------- | ------- | ----------- | ----------- | ---------- | ------------- | 
+| ENSE00003571441_HG6_6_LibAmpR_0 | ACCCAGGCTGCATCTCCC | 61.41508744063151 | 66.66666666666667 | 3.4150874406315097 | 9.564684449038168 | 0.0 | 0.0 | 4.3 |
+| ENSE00003571441_HG6_6_LibAmpF_0 | AGTGCCAGGACCTCTCCTAC | 60.32483047348552 | 60.0 | 0.32483047348551963 | 0.0 | 0.0 | 46.300612411542886 | 3.18 |
+| ENSE00003571441_HG6_6_LibAmpR_1 | ACCCAGGCTGCATCTCCC | 61.41508744063151 | 66.66666666666667 | 3.4150874406315097 | 9.564684449038168 | 0.0 | 0.0 | 4.3 | 
+ENSE00003571441_HG6_6_LibAmpF_1 | AGTGCCAGGACCTCTCCTA | 58.90293358584404 | 57.89473684210526 | 2.097066414155961 | 0.0 | 0.0 | 46.300612411542886 | 2.94 | 
+
+Raw File
+```
+primer,sequence,tm,gc_percent,penalty,self_any_th,self_end_th,hairpin_th,end_stability
+ENSE00003571441_HG6_6_LibAmpR_0,ACCCAGGCTGCATCTCCC,61.41508744063151,66.66666666666667,3.4150874406315097,9.564684449038168,0.0,0.0,4.3
+ENSE00003571441_HG6_6_LibAmpF_0,AGTGCCAGGACCTCTCCTAC,60.32483047348552,60.0,0.32483047348551963,0.0,0.0,46.300612411542886,3.18
+ENSE00003571441_HG6_6_LibAmpR_1,ACCCAGGCTGCATCTCCC,61.41508744063151,66.66666666666667,3.4150874406315097,9.564684449038168,0.0,0.0,4.3
+ENSE00003571441_HG6_6_LibAmpF_1,AGTGCCAGGACCTCTCCTA,58.90293358584404,57.89473684210526,2.097066414155961,0.0,0.0,46.300612411542886,2.94
+```
