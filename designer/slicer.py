@@ -1,10 +1,28 @@
 #!/usr/bin/env python3
 from pybedtools import BedTool
+from os.path import exists
+from Bio import SeqIO
+import csv
 import argparse
 import sys
+import re
 
-def check_files(bed, fasta):
+
+class FileFormatError(Exception):
+    pass
+
+
+def validate_files(bed, fasta):
+    check_file_exists(bed)
+    check_file_exists(fasta)
+
+    validate_bed_format(bed)
+    validate_fasta_format(fasta)
+
+    validate_bed_content(bed)
+
     return
+
 
 def _generate_slice_data(exon, count, params):
     slices = []
@@ -17,6 +35,7 @@ def _generate_slice_data(exon, count, params):
         end += params['offset']
     return slices
 
+
 def get_slice_data(bed, params):
     slices = []
     count = 1
@@ -25,46 +44,117 @@ def get_slice_data(bed, params):
         count += 1
     return slices
 
+
 def positive_int(arg):
     if int(arg) <= 0:
         raise argparse.ArgumentTypeError('Parameter must be above 0')
     return int(arg)
 
+
+def len_positive_int(arg):
+    if 10000 < int(arg) <= 0:
+        raise argparse.ArgumentTypeError('Parameter must be above 0 and below 10000')
+    return int(arg)
+
+
 def parse_args(args):
     parser = argparse.ArgumentParser(
-        description='Get sequence slices for regions in'\
-            ' BED file according to parameters specified')
+        description='Get sequence slices for regions in'
+                    ' BED file according to parameters specified')
     parser.add_argument('bed',
-        help='BED file containing regions of interest')
+                        help='BED file containing regions of interest')
     parser.add_argument('fasta',
-        help='FASTA file to retrieve sequences from')
+                        help='FASTA file to retrieve sequences from')
     parser.add_argument('-f5', '--flank_5',
-        help='how far to extend region at 5\' end',
-        type=positive_int, default=0)
+                        help='how far to extend region at 5\' end',
+                        type=positive_int, default=0)
     parser.add_argument('-f3', '--flank_3',
-        help='how far to extend region at 3\' end',
-        type=positive_int, default=0)
+                        help='how far to extend region at 3\' end',
+                        type=positive_int, default=0)
     parser.add_argument('-l', '--length',
-        help='length of each slice',
-        type=positive_int, default=210)
+                        help='length of each slice',
+                        type=len_positive_int, default=210)
     parser.add_argument('-o', '--offset',
-        help='offset between each slice',
-        type=positive_int, default=5)
+                        help='offset between each slice',
+                        type=positive_int, default=5)
     parser.add_argument('--output_slice_bed',
-        help='output bed file with slice coordinates',
-        nargs='?', const='slices.bed')
+                        help='output bed file with slice coordinates',
+                        nargs='?', const='slices.bed')
     return parser.parse_args(args)
 
+
 def main(params):
-    bed = BedTool(params['bed'])
-    check_files(bed, params['fasta'])
-    slice_bed = BedTool(get_slice_data(bed, params))
-    if 'output_slice_bed' in params:
-        slice_bed.saveas(params['output_slice_bed'])
-    # return slice sequences on specified strand in fasta format
-    return slice_bed.sequence(fi=params['fasta'],
-        name=True, s=True).print_sequence().strip()
+    try:
+        validate_files(params['bed'], params['fasta'])
+        bed = BedTool(params['bed'])
+        slice_bed = BedTool(get_slice_data(bed, params))
+        if 'output_slice_bed' in params:
+            slice_bed.saveas(params['output_slice_bed'])
+        # return slice sequences on specified strand in fasta format
+        return slice_bed.sequence(fi=params['fasta'],
+                                  name=True, s=True).print_sequence().strip()
+    except ValueError as valErr:
+        print('Error occurred while checking file content: {0}'.format(valErr))
+    except FileFormatError as fileErr:
+        print('Error occurred while checking file format: {0}'.format(fileErr))
+    except FileNotFoundError as fileErr:
+        print('Input file not found: {0}'.format(fileErr))
+    except Exception as err:
+        print("Unexpected error occurred: {0}".format(err))
+
+    return ''
+
+
+def check_file_exists(file):
+    if not exists(file):
+        raise FileNotFoundError(f'Unable to find file: {file}')
+
+
+def validate_bed_format(bed):
+    with open(bed) as file:
+        tsv_file = csv.reader(file, delimiter='\t')
+        line = next(tsv_file)
+        if len(line) < 6:
+            raise FileFormatError('Unable to read in BED file correctly. Check file format.')
+
+
+def validate_fasta_format(fasta):
+    with open(fasta) as handle:
+        if not any(SeqIO.parse(handle, "fasta")):
+            raise (FileFormatError('Unable to read in Fasta file correctly, Check file format.'))
+
+
+def validate_bed_content(bed):
+    with open(bed) as file:
+        tsv_file = csv.reader(file, delimiter='\t')
+        line = next(tsv_file)
+
+        if not re.search(r'^(?:[Cc][Hh][Rr])?([XxYy]|[1-9]|1\d|2[012])$', line[0]):  # Regex looks for numbers between 1-22 or X and Y
+            raise ValueError(f'Chromosome format incorrect, check it matches fasta file format: {line[0]}')
+
+        if not re.search(r'^(\d+)$', line[1]):
+            raise ValueError(f'Start coordinate format incorrect: {line[1]}')
+
+        if not re.search(r'^(\d+)$', line[2]):
+            raise ValueError(f'End coordinate format incorrect: {line[2]}')
+
+        if int(line[2]) < int(line[1]):
+            raise ValueError(f'Stop coordinate is lower than start coordinate. Start: {line[1]} Stop: {line[2]}')
+
+        if (int(line[2]) - int(line[1])) > 10000:
+            raise ValueError(f'Difference between start coordinate and stop coordinate must be less than 10000. '
+                             f'Difference: {int(line[2]) - int(line[1])}')
+
+        if not line[3]:
+            raise ValueError(f'Error with name field, if no name is supplied please mark with a \'.\': {line[3]}')
+
+        if not line[4]:
+            raise ValueError(f'Error with score field, if no score is supplied please mark with a \'.\': {line[4]}')
+
+        if not re.search('^([-+])$', line[5]):
+            raise ValueError(f'Strand format incorrect: {line[5]}')
+
 
 if __name__ == '__main__':
-    args = parse_args(sys.argv[1:])
-    print(main(vars(args)))
+    parsed_args = parse_args(sys.argv[1:])
+    print(main(vars(parsed_args)))
