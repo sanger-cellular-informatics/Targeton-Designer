@@ -26,7 +26,7 @@ def validate_files(bed, fasta):
 
 def _generate_slice_data(exon, exon_name, params):
     slices = []
-    name = exon.name if exon.name != '.' else count
+    #name = exon.name if exon.name != '.' else count
     start = exon.start - params['flank_5']
     end = start + params['length']
     count = 1
@@ -69,7 +69,7 @@ def parse_args(args):
     parser.add_argument('input_bed',
                         help='BED file containing regions of interest')
     parser.add_argument('input_fasta',
-                        help='FASTA file to retrieve sequences from')
+                        help='FastA file to retrieve sequences from')
     parser.add_argument('-f5', '--flank_5',
                         help='how far to extend region at 5\' end (default 50nt)',
                         type=int, default=50)
@@ -83,7 +83,7 @@ def parse_args(args):
                         help='offset between each slice (default 5nt)',
                         type=positive_int, default=5)
     parser.add_argument('--output_fasta',
-                        help='output slice sequences to fasta file')
+                        help='output slice sequences to FastA file')
     parser.add_argument('--output_bed',
                         help='output bed file with slice coordinates')
     return parser.parse_args(args)
@@ -119,7 +119,7 @@ def validate_bed_format(bed):
 def validate_fasta_format(fasta):
     with open(fasta) as handle:
         if not any(SeqIO.parse(handle, "fasta")):
-            raise FileFormatError('Unable to read in Fasta file correctly. Check file format.')
+            raise FileFormatError('Unable to read in FastA file correctly. Check file format.')
 
 
 def validate_bed_content(bed):
@@ -147,7 +147,7 @@ def validate_bed_content(bed):
                                  f'Difference: {int(line[2]) - int(line[1])}')
 
             if not line[3]:
-                raise ValueError(f'Error with  name field, if no name is supplied please mark '
+                raise ValueError(f'Error with name field, if no name is supplied please mark '
                                  f'with a \'.\' on line {line_num}: {line[3]}')
 
             if not line[4]:
