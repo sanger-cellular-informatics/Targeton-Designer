@@ -3,12 +3,12 @@ import pybedtools
 import argparse
 from io import StringIO
 
-from designer.slicer import (validate_files, get_slice_data,
+from designer.slicer import (len_positive_int, validate_files, get_slice_data,
     positive_int, parse_args, get_slices)
 
 class TestSlicer(unittest.TestCase):
 
-    def test_check_files(self):
+    def test_validate_files(self):
         bed = pybedtools.BedTool('chr1\t100\t250\t.\t.\t+',
             from_string=True)
         fasta = pybedtools.example_filename('test.fa')
@@ -58,6 +58,42 @@ class TestSlicer(unittest.TestCase):
         msg = 'Parameter must be above 0'
         self.assertRaisesRegex(error, msg, positive_int, '-1')
         self.assertRaisesRegex(error, msg, positive_int, '0')
+
+    def test_len_positive_int_valid_args_success(self):
+        #arrange
+        input = 1
+        expected = 1
+
+        #act
+        actual = len_positive_int(input)
+
+        #assert
+        self.assertEqual(actual, expected)
+
+    def test_len_positive_int_negative_arg_fail(self):
+        #arrange
+        input = -1
+        expected = "Parameter must be above 0 and below 10000"
+
+        #act
+        with self.assertRaises(argparse.ArgumentTypeError) as exception_context:
+            len_positive_int(input)
+
+        #assert
+            self.assertEqual(str(exception_context.exception), expected)
+            
+
+    def test_len_positive_int_large_arg_fail(self):
+        #arrange
+        input = 10001
+        expected = "Parameter must be above 0 and below 10000"
+
+        #act
+        with self.assertRaises(argparse.ArgumentTypeError) as exception_context:
+            len_positive_int(input)
+
+        #assert
+            self.assertEqual(str(exception_context.exception), expected)
 
     def test_parse_args(self):
         args = parse_args(['bed', 'fasta', '-f5', '50',
