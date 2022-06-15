@@ -57,7 +57,7 @@ def positive_int(arg):
 
 
 def len_positive_int(arg):
-    if 10000 < int(arg) <= 0:
+    if 10000 < int(arg) or int(arg) <= 0:
         raise argparse.ArgumentTypeError('Parameter must be above 0 and below 10000')
     return int(arg)
 
