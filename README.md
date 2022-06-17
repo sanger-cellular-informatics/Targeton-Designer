@@ -65,7 +65,7 @@ The input fasta and bed files are intended to be sourced from the slicer tool. E
 
 Example command:
 ```sh
-python3 runner/primer3_runner.py --seq slicer_output.fa --dir ./p3_output/ --ref genomic_reference_file.fna --bed slicer_output.bed
+python3 runner/primer3_runner.py --seq slicer_output.fa --dir ./p3_output/ 
 ```
 
 ### Docker
