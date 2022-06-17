@@ -17,8 +17,6 @@ def parse_args(args):
         help='FASTA file from the slicer tool containing seqs and IDs')
     parser.add_argument('--bed',
         help='BED file from the slicer tool containing coords, strand and IDs')
-    parser.add_argument('--ref',
-        help='Genomic Reference file')
     parser.add_argument('--dir',
         help='Output folder location')
     return parser.parse_args(args)
