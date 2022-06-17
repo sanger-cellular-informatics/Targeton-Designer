@@ -2,7 +2,6 @@
 from pybedtools import BedTool
 from os.path import exists
 from Bio import SeqIO
-from pprint import pprint
 import csv
 import argparse
 import sys
