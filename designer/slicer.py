@@ -2,6 +2,7 @@
 from pybedtools import BedTool
 from os.path import exists
 from Bio import SeqIO
+from pprint import pprint
 import csv
 import argparse
 import sys
@@ -94,9 +95,13 @@ def get_slices(params):
 
     bed = BedTool(params['input_bed'])
     slice_bed = BedTool(get_slice_data(bed, params))
-
-    # return named slice sequences on specified strand
-    return slice_bed.sequence(fi=params['input_fasta'], name=True, s=True)
+    # return named, coords slice sequences on specified strand
+    seq_options = { 
+        "fi"    : params['input_fasta'],
+        "s"     : True,
+        "name+" : True
+    }
+    return slice_bed.sequence(**seq_options)
 
 
 def check_file_exists(file):
