@@ -35,16 +35,16 @@ def primer3_runner(params):
 
 def read_input_fasta(params):
     rows = SeqIO.parse(open(params['seq']), 'fasta')    
-    coord_data = read_bed_file(params['bed'])
    
     slices = [] 
     for row in rows:
-        match = re.search(r'(\w*)\([-.+]{1}\)', row.id)        
+        #Name::Chr:Start-End(Strand)
+        #ENSE00000769557_HG8_1::1:42929543-42929753
+        match = re.search(r'^(\w+)::((chr)?\d+):(\d+)\-(\d+)\(([+-\.]{1})\)$', row.id)        
         if match:
-            row_id = match.group(1)
-            slice_data = coord_data[row_id]
+            slice_data = construct_slice_coord_dict(match)
             p3_input = {
-                'SEQUENCE_ID' : row_id,
+                'SEQUENCE_ID' : slice_data['name'],
                 'SEQUENCE_TEMPLATE' : str(row.seq),
             }
             slice_data['p3_input'] = p3_input
@@ -52,20 +52,15 @@ def read_input_fasta(params):
 
     return slices
 
-def read_bed_file(bed_file):
-    bed = BedTool(bed_file)
-
-    slices = {}
-    for slice_region in bed:
-        slices[slice_region.name] = {
-            'name'      : slice_region.name,
-            'start'     : slice_region.start,
-            'end'       : slice_region.end,
-            'strand'    : slice_region.strand,
-            'chrom'     : slice_region.chrom,
-        }
-
-    return slices
+def construct_slice_coord_dict(match):
+    coord_data = {
+        'name'      : match.group(1),
+        'start'     : match.group(4),
+        'end'       : match.group(5),
+        'strand'    : match.group(6),
+        'chrom'     : match.group(2),
+    }
+    return coord_data
 
 def primer3_design(primer3_inputs):
     p3_config_loc = os.environ.get('PRIMER3_CONFIG')
