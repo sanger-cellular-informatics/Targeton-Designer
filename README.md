@@ -59,10 +59,9 @@ python3 designer/slicer.py [-h] [-f5 FLANK_5] [-f3 FLANK_3] [-l LENGTH] [-o OFFS
 
 Running Primer3:
 ```sh
-python3 runner/primer3_runner.py [--seq INPUT_FASTA] [--dir OUTPUT_FOLDER]  [--ref REFERENCE_FILE] [--bed INPUT_BED] 
+python3 runner/primer3_runner.py [--seq INPUT_FASTA] [--dir OUTPUT_FOLDER] [--bed INPUT_BED] 
 ```
 The input fasta and bed files are intended to be sourced from the slicer tool. Examples of how these files are constructed can be found below.
-Genomic reference files can be sourced from EnsEMBL's FTP site.
 
 Example command:
 ```sh
