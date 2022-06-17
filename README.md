@@ -37,7 +37,7 @@ deactivate
 
 Run the tests:
 ```sh
-venv/bin/activate
+source venv/bin/activate
 
 python3 -m unittest
 
