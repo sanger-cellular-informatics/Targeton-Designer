@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from pybedtools import BedTool
+from pybedtools.helpers import BEDToolsError
 from os.path import exists
 from Bio import SeqIO
 import csv
@@ -103,7 +104,7 @@ def get_slices(params):
     seq = {}
     try:
         seq = slice_bed.sequence(**seq_options)
-    except:
+    except BEDToolsError:
         del seq_options['name+']
         seq_options['name'] = True
         seq = slice_bed.sequence(**seq_options)
