@@ -11,6 +11,8 @@ import re
 class FileFormatError(Exception):
     pass
 
+class SlicerError(Exception):
+    pass
 
 def validate_files(bed, fasta):
     check_file_exists(bed)
@@ -86,6 +88,8 @@ def parse_args(args):
                         help='output slice sequences to fasta file')
     parser.add_argument('--output_bed',
                         help='output bed file with slice coordinates')
+    parser.add_argument('--dir',
+                        help='output directory')
     return parser.parse_args(args)
 
 
@@ -98,7 +102,7 @@ def get_slices(params):
     seq_options = { 
         "fi"    : params['input_fasta'],
         "s"     : True,
-        "name+" : True
+        "name" : True
     }
     return slice_bed.sequence(**seq_options)
 
@@ -177,12 +181,16 @@ def main(params):
 
     except ValueError as valErr:
         print('Error occurred while checking file content: {0}'.format(valErr))
+        raise SlicerError
     except FileFormatError as fileErr:
         print('Error occurred while checking file format: {0}'.format(fileErr))
+        raise SlicerError
     except FileNotFoundError as fileErr:
         print('Input file not found: {0}'.format(fileErr))
+        raise SlicerError
     except Exception as err:
         print('Unexpected error occurred: {0}'.format(err))
+        raise SlicerError
 
     return ''
 
