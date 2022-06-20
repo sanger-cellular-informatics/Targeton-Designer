@@ -100,7 +100,15 @@ def get_slices(params):
         "s"     : True,
         "name+" : True
     }
-    return slice_bed.sequence(**seq_options)
+    seq = {}
+    try:
+        seq = slice_bed.sequence(**seq_options)
+    except:
+        del seq_options['name+']
+        seq_options['name'] = True
+        seq = slice_bed.sequence(**seq_options)
+
+    return seq
 
 
 def check_file_exists(file):
