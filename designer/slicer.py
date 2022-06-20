@@ -108,7 +108,7 @@ def get_slices(params):
         if not re.search(r'\*{5}ERROR:\ Unrecognized parameter: -name\+\ \*{5}', bed_err.args[1]):
             template = "PyBEDTools exited with err type {0}. Arguments:\n{1!r}"
             message = template.format(type(bed_err).__name__, bed_err.args[1])
-            raise RuntimeError(message) 
+            raise BEDToolsError(bed_err, message) 
         del seq_options['name+']
         seq_options['name'] = True
         seq = slice_bed.sequence(**seq_options)
