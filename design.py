@@ -7,7 +7,7 @@ import sys
 def create_slicer_params(input_params):
     return  {
         'input_fasta': input_params['input_fasta'],
-        #'input_bed': input_params['input_bed'],
+        'input_bed': input_params['input_bed'],
         'output_fasta': input_params['output_fasta'],
         'output_bed': input_params['output_bed'],
         'flank_5': input_params['flank_5'],
