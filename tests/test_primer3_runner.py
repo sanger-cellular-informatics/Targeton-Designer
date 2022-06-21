@@ -2,7 +2,7 @@ import unittest
 import os
 import json
 
-from runner.primer3 import (
+from runner.primer3_runner import (
     primer3_runner,
     name_primers,
     capture_primer_details,

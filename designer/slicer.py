@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from pybedtools import BedTool
+from pybedtools.helpers import BEDToolsError
 from os.path import exists
 from Bio import SeqIO
 import csv
@@ -177,10 +178,10 @@ def main(params):
         print('Error occurred while checking file format: {0}'.format(fileErr))
     except FileNotFoundError as fileErr:
         print('Input file not found: {0}'.format(fileErr))
+    except BEDToolsError as bedErr:
+        print('An error has occurred in BedTools: {0}'.format(bedErr))
     except Exception as err:
         print('Unexpected error occurred: {0}'.format(err))
-
-    return ''
 
 
 if __name__ == '__main__':
