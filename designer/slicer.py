@@ -25,7 +25,7 @@ def validate_files(bed, fasta):
 
 def _generate_slice_data(exon, exon_name, params):
     slices = []
-    name+ = exon.name if exon.name != '.' else count
+    name = exon.name if exon.name != '.' else count
     start = exon.start - params['flank_5']
     end = start + params['length']
     count = 1
@@ -99,7 +99,7 @@ def get_slices(params):
     seq_options = { 
         "fi"    : params['input_fasta'],
         "s"     : True,
-        "name" : True
+        "name+" : True
     }
     seq = {}
     try:
