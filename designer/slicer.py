@@ -8,12 +8,8 @@ import argparse
 import sys
 import re
 
-
-class FileFormatError(Exception):
-    pass
-
-class SlicerError(Exception):
-    pass
+from utils.exceptions import FileFormatError as FileFormatError
+from utils.exceptions import SlicerError as SlicerError
 
 def validate_files(bed, fasta):
     check_file_exists(bed)
@@ -193,17 +189,13 @@ def main(params):
             print(slices.print_sequence())
 
     except ValueError as valErr:
-        print('Error occurred while checking file content: {0}'.format(valErr))
-        raise SlicerError
+        raise SlicerError('Error occurred while checking file content: {0}'.format(valErr))
     except FileFormatError as fileErr:
-        print('Error occurred while checking file format: {0}'.format(fileErr))
-        raise SlicerError
+        raise SlicerError('Error occurred while checking file format: {0}'.format(fileErr))
     except FileNotFoundError as fileErr:
-        print('Input file not found: {0}'.format(fileErr))
-        raise SlicerError
+        raise SlicerError('Input file not found: {0}'.format(fileErr))
     except Exception as err:
-        print('Unexpected error occurred: {0}'.format(err))
-        raise SlicerError
+        raise SlicerError('Unexpected error occurred: {0}'.format(err))
 
     return ''
 

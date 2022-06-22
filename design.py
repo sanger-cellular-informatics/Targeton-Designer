@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import designer.slicer as slicer
 import runner.primer3_runner as primer3
+from utils.exceptions import SlicerError as SlicerError
+from utils.exceptions import Primer3Error as Primer3Error
 
 import sys
 
@@ -28,15 +30,14 @@ def main(params):
         slicer_params = create_slicer_params(params)
         slicer.main(slicer_params)
 
-    except Exception:
-        print('Slicer failed')
-        return ''
-
-    try:
         primer3_params = create_primer3_params(params)
         primer3.main(primer3_params)
-    except Exception:
-        print('Primer3 failed')
+
+    except SlicerError as err:
+        print('Slicer error: {0}'.format(err))
+        return ''
+    except Exception as err:
+        print('Primer3 error:: {0}'.format(err))
         return ''
 
     print('Designed successfully')
