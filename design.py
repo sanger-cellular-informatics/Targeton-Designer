@@ -36,8 +36,11 @@ def main(params):
     except SlicerError as err:
         print('Slicer error: {0}'.format(err))
         return ''
+    except Primer3Error as err:
+        print('Primer3 error: {0}'.format(err))
+        return ''
     except Exception as err:
-        print('Primer3 error:: {0}'.format(err))
+        print('Unexpected error occurred: {0}'.format(err))
         return ''
 
     print('Designed successfully')
