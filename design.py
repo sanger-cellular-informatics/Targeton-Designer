@@ -27,10 +27,19 @@ def create_primer3_params(input_params):
     }
 
 def main(params):
+    DEFAULT_SLICER_OUTPUT_FASTA = 'slicer_output_fasta.fasta'
+    DEFAULT_SLICER_OUTPUT_BED = 'slicer_output_bed.bed'
+
     try:
         if not params['dir']:
             FolderCreator.create()
             params['dir'] = FolderCreator.get_dir()
+
+        if not params['output_fasta']:
+            params['output_fasta'] = params['dir'] + '/' + DEFAULT_SLICER_OUTPUT_FASTA
+
+        if not params['output_bed']:
+            params['output_bed'] = params['dir'] + '/' + DEFAULT_SLICER_OUTPUT_BED
 
         slicer_params = create_slicer_params(params)
         slicer.main(slicer_params)
