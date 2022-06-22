@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 import designer.slicer as slicer
 import runner.primer3_runner as primer3
-from utils.exceptions import SlicerError as SlicerError
-from utils.exceptions import Primer3Error as Primer3Error
-from utils.folder_creator import FolderCreator as FolderCreator
+from utils.exceptions import SlicerError
+from utils.exceptions import Primer3Error
+from utils.file_system import FolderCreator
 
 import sys
 
@@ -30,7 +30,7 @@ def main(params):
     try:
         if not params['dir']:
             FolderCreator.create()
-            params['dir'] = FolderCreator.dir
+            params['dir'] = FolderCreator.get_dir()
 
         slicer_params = create_slicer_params(params)
         slicer.main(slicer_params)
