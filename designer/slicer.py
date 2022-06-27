@@ -3,11 +3,12 @@ from pybedtools import BedTool
 from pybedtools.helpers import BEDToolsError
 from os.path import exists
 from Bio import SeqIO
+
+import os
 import csv
 import argparse
 import sys
 import re
-
 
 class FileFormatError(Exception):
     pass
@@ -36,7 +37,7 @@ def _generate_slice_data(exon, exon_name, params):
         slices.append((exon.chrom, start, end, slice_name,
             exon.score, exon.strand))
         start += params['offset']
-        end += params['offset']
+        end += params['offset'] 
         count += 1
     return slices
 
@@ -176,16 +177,47 @@ def validate_bed_content(bed):
 
             line_num = line_num + 1
 
+def correct_fasta_to_1_based(file_path):
+    fasta = SeqIO.parse(open(file_path), 'fasta')
+    os.remove(file_path)
+    with open(file_path, "w") as output: 
+        for row in fasta:
+            regex = r'^(\S+::\S+:)(\d+)(-\d+\([-+.]\))$'
+            row.id = regex_row_name(regex, row.id)
+            row.description = ""
+            SeqIO.write(row, output, 'fasta')
+
+ 
+def regex_row_name(regex, target):
+    name = ''
+    match = re.search(regex, target)
+    if match:
+        start = int(match.group(2)) + 1
+        name = match.group(1) + str(start) + match.group(3)
+    return name
+
+
+def correct_bed_to_1_based(file_path):
+    print(file_path)
+    #with open("train.tsv",encoding='utf8') as tsvfile:
+    #    tsvreader = csv.reader(tsvfile, delimiter="\t")
+    #    for line in tsvreader:
+    #        print(line[1])
 
 def main(params):
     try:
         slices = get_slices(params)
         if params['output_bed'] is not None:
             slices.saveas(params['output_bed'])
+            correct_bed_to_1_based(params['output_bed'])
         if params['output_fasta'] is not None:
             slices.save_seqs(params['output_fasta'])
+            correct_fasta_to_1_based(params['output_fasta'])
             print('Slice sequences saved!')
         else:
+            #TODO Correct STDOUT so that start coord is 1 based.
+            print('When using stdout, start co-ord is 0-based as per BEDTools default. This will be corrected in future releases.')
+            print('Note: Exported files contain only 1-based co-ordinates.') 
             print(slices.print_sequence())
 
     except ValueError as valErr:
