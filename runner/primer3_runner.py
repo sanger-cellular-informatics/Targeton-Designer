@@ -118,7 +118,7 @@ def revcom_reverse_primer(seq, strand):
     seq_obj = Seq(seq)
 
     if strand == '-':
-        seq_obj.reverse_complement()
+        seq_obj = seq_obj.reverse_complement()
 
     return seq_obj
 
