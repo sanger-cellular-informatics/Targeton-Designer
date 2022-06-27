@@ -9,6 +9,7 @@ import argparse
 
 from pybedtools import BedTool
 from Bio import SeqIO
+from Bio.Seq import Seq
 
 def parse_args(args):
     parser = argparse.ArgumentParser(
@@ -88,6 +89,7 @@ def locate_primers(designs):
         for key in primer_keys:
             primer_details = capture_primer_details(key)
             if primer_details:
+                
                 primer_id = primer_details['id']
                 primer_field = primer_details['field']
                 pair_number = primer_details['pair']
@@ -95,18 +97,27 @@ def locate_primers(designs):
                 libamp_name = name_primers(primer_details, slice_data['strand'])
                 
                 primer_name = slice_data['name'] + "_" + libamp_name + "_" + pair_number
-                primers[primer_name][primer_field] = design[key]
-                primers[primer_name]['side'] = primer_details['side']
+                primer = primers[primer_name]
+                
+                primer[primer_field] = design[key]
+                primer['side'] = primer_details['side']
         
                 if primer_field == 'coords':
                     primer_coords = calculate_primer_coords(primer_details['side'], design[key], slice_data['start'])
-                    primers[primer_name]['primer_start'] = primer_coords[0] 
-                    primers[primer_name]['primer_end'] = primer_coords[1]
-                    primers[primer_name]['strand'] = determine_primer_strands(primer_details['side'], slice_data['strand'])
+                    primer['primer_start'] = primer_coords[0] 
+                    primer['primer_end'] = primer_coords[1]
+                    primer['strand'] = determine_primer_strands(primer_details['side'], slice_data['strand'])
+                    primer['sequence'] = revcom_reverse_primer(primer['sequence'], primer['strand']) 
+                primers[primer_name] = primer
         del slice_data['design']
         slice_data['primers'] = primers
         slice_designs.append(slice_data)
     return slice_designs
+
+def revcom_reverse_primer(seq, strand):
+    seq_obj = Seq(seq)
+
+    return seq_obj.reverse_complement()
 
 def determine_primer_strands(side, slice_strand):
     positive = {
@@ -123,7 +134,7 @@ def determine_primer_strands(side, slice_strand):
         '+' : positive,
         '-' : negative,
     }
-    print(slice_strand, side, strands[slice_strand][side]) 
+    
     return strands[slice_strand][side]
 
 def calculate_primer_coords(side, coords, slice_start):
