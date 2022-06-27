@@ -117,7 +117,10 @@ def locate_primers(designs):
 def revcom_reverse_primer(seq, strand):
     seq_obj = Seq(seq)
 
-    return seq_obj.reverse_complement()
+    if strand == '-':
+        seq_obj.reverse_complement()
+
+    return seq_obj
 
 def determine_primer_strands(side, slice_strand):
     positive = {
