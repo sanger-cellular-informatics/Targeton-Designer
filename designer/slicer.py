@@ -8,10 +8,8 @@ import argparse
 import sys
 import re
 
-
-class FileFormatError(Exception):
-    pass
-
+from utils.exceptions import FileFormatError as FileFormatError
+from utils.exceptions import SlicerError as SlicerError
 
 def validate_files(bed, fasta):
     check_file_exists(bed)
@@ -87,6 +85,8 @@ def parse_args(args):
                         help='output slice sequences to FastA file')
     parser.add_argument('--output_bed',
                         help='output bed file with slice coordinates')
+    parser.add_argument('--dir',
+                        help='output directory')
     return parser.parse_args(args)
 
 
@@ -95,9 +95,25 @@ def get_slices(params):
 
     bed = BedTool(params['input_bed'])
     slice_bed = BedTool(get_slice_data(bed, params))
+    # return named, coords slice sequences on specified strand
+    seq_options = { 
+        "fi"    : params['input_fasta'],
+        "s"     : True,
+        "name+" : True
+    }
+    seq = {}
+    try:
+        seq = slice_bed.sequence(**seq_options)
+    except BEDToolsError as bed_err:
+        if not re.search(r'\*{5}ERROR:\ Unrecognized parameter: -name\+\ \*{5}', bed_err.args[1]):
+            template = "PyBEDTools exited with err type {0}. Arguments:\n{1!r}"
+            message = template.format(type(bed_err).__name__, bed_err.args[1])
+            raise BEDToolsError(bed_err, message) 
+        del seq_options['name+']
+        seq_options['name'] = True
+        seq = slice_bed.sequence(**seq_options)
 
-    # return named slice sequences on specified strand
-    return slice_bed.sequence(fi=params['input_fasta'], name=True, s=True)
+    return seq
 
 
 def check_file_exists(file):
@@ -173,15 +189,15 @@ def main(params):
             print(slices.print_sequence())
 
     except ValueError as valErr:
-        print('Error occurred while checking file content: {0}'.format(valErr))
+        raise SlicerError('Error occurred while checking file content: {0}'.format(valErr))
     except FileFormatError as fileErr:
-        print('Error occurred while checking file format: {0}'.format(fileErr))
+        raise SlicerError('Error occurred while checking file format: {0}'.format(fileErr))
     except FileNotFoundError as fileErr:
-        print('Input file not found: {0}'.format(fileErr))
+        raise SlicerError('Input file not found: {0}'.format(fileErr))
     except BEDToolsError as bedErr:
-        print('An error has occurred in BedTools: {0}'.format(bedErr))
+        raise SlicerError('An error has occurred in BedTools: {0}'.format(bedErr))
     except Exception as err:
-        print('Unexpected error occurred: {0}'.format(err))
+        raise SlicerError('Unexpected error occurred: {0}'.format(err))
 
 
 if __name__ == '__main__':
