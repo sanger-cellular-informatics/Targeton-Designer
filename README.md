@@ -10,7 +10,35 @@ Dependencies:
 
 BedTools
 ```sh
+sudo apt-get update
 sudo apt-get install bedtools
+sudo apt-get install build-essential
+```
+
+### Python3
+
+Check Python3 version
+```sh
+python3 --version
+```
+
+Update if less than python3.8
+```sh
+sudo apt-get install python3.8-dev
+
+sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 1
+sudo update-alternatives --config python3
+```
+Select 3.8 then check it's updated successfully
+```sh
+python3 --version
+```
+
+### Clone the repo
+Pull down the Targeton Designer repo and cd into it
+```sh
+git clone https://gitlab.internal.sanger.ac.uk/sci/targeton-designer.git
+cd targeton-designer
 ```
 
 ### Python Virtual Environment
@@ -21,7 +49,7 @@ Requirements:
 
 Install venv if you haven't already got it
 ```sh
-sudo apt-get install python3-venv
+sudo apt-get install python3.8-venv
 ```
 
 Setting up Virtual Env:
@@ -77,6 +105,11 @@ Upcoming feature in later releases
 A Fasta file of latest GRCh38 genome. This is used for gathering the slice sequences and retrieving primer information. 
 Either supply a local genome reference file or download one from EnsEMBL and point to it with the relevant parameters:
 http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/
+
+```sh
+wget http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.alt.fa.gz
+gunzip Homo_sapiens.GRCh38.dna.alt.fa.gz 
+```
 
 ### Slicer Input BED File
 A BED file containing the regions you wish to slice across. 
