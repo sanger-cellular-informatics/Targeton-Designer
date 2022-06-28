@@ -6,3 +6,6 @@ class SlicerError(Exception):
 
 class Primer3Error(Exception):
     pass
+
+class FolderCreatorError(Exception):
+    pass
