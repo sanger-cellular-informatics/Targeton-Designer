@@ -84,18 +84,23 @@ Upcoming feature in later releases
 
 Running Slicer tool:
 ```sh
-python3 designer/slicer.py [-h] [-f5 FLANK_5] [-f3 FLANK_3] [-l LENGTH] [-o OFFSET] [--output_fasta OUTPUT_FASTA] [--output_slice_bed OUTPUT_SLICE_BED] bed fasta
+python3 designer/slicer.py [-h] [-f5 FLANK_5] [-f3 FLANK_3] [-l LENGTH] [-o OFFSET] [-d DIR] bed fasta
+```
+
+Example command:
+```sh
+python3 designer/slicer.py example.bed example.fa -d example_dir
 ```
 
 Running Primer3:
 ```sh
-python3 runner/primer3_runner.py [--seq INPUT_FASTA] [--dir OUTPUT_FOLDER] 
+python3 runner/primer3_runner.py [--seq INPUT_FASTA] [--bed INPUT_BED] [--dir OUTPUT_FOLDER] 
 ```
 The input fasta and bed files are intended to be sourced from the slicer tool. Examples of how these files are constructed can be found below.
 
 Example command:
 ```sh
-python3 runner/primer3_runner.py --seq slicer_output.fa --dir ./p3_output/ 
+python3 runner/primer3_runner.py --seq slices.fa --bed slices.bed --dir p3_output
 ```
 
 ### Docker
@@ -118,7 +123,7 @@ A BED file containing the regions you wish to slice across.
 
 The chromosome column data must match your reference fasta file IDs. If youre reference had >chr1 then you must call chromosome 1 'chr1' in this column and vice-versa.
 
-Note: BED effectively are applied tsv files so use tabs to separate the values. Headers are optional in BED file and can be a cause of issues if the headers aren't perfect. While the file format leaves strand as optional, it is highly suggested to provide it for primer analysis. Score isn't used but necessary for the file format to be read correctly.
+Note: BED effectively are applied tsv files so use tabs to separate the values. Headers are optional in BED file and can be a cause of issues if they aren't perfect. Strand is required for the slicer to ensure sequences are output in the correct orientation. Score isn't used but the field must be present for the file format to be read correctly.
 
 | chrom | chromStart | chromEnd | name | score | strand |
 | ----- | ---------- | -------- | ---- | ----- | ------ |
@@ -133,8 +138,8 @@ Raw file
 
 More information can be found here: https://en.wikipedia.org/wiki/BED_(file_format)
 
-### Slicer BED output
-This file is outputted by the slicer tool with the --output_bed parameter. Will be used in future releases for running VaLiAnt.
+### Primer3 Bed Input File (Slicer Bed output)
+Bed file output with row for each slice. This file will also be used for running VaLiAnt.
 
 | chrom | chromStart | chromEnd | name | score | strand |
 | ----- | ---------- | -------- | ---- | ----- | ------ |
@@ -154,7 +159,7 @@ Raw file
 ```
 
 ### Primer3 Fasta Input File (Slicer Fasta output)
-Slicer output of the slice sequences, their IDs, coordinates plus increment
+Contains the slice sequences, with their IDs including an increment, coordinates and strand in the header
 
 ```
 >ENSE00003571441_HG6_1::1:42930996-42931206(-)
