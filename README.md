@@ -47,8 +47,9 @@ Requirements:
  - Python3.8+
  - Python-venv
 
-Install venv if you haven't already got it
+Install venv if you haven't already got it. First install base then update to 3.8
 ```sh
+sudo apt-get install python3-venv
 sudo apt-get install python3.8-venv
 ```
 
@@ -58,6 +59,7 @@ python3 -m venv venv
 
 source venv/bin/activate
 
+pip3 install --upgrade pip
 pip3 install -r requirements.txt
 
 deactivate
