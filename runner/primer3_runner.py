@@ -10,6 +10,22 @@ import argparse
 from pybedtools import BedTool
 from Bio import SeqIO
 
+def add_modules_to_sys_path():
+    BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    sys.path.append(BASE_PATH)
+
+add_modules_to_sys_path()
+
+from utils.exceptions import Primer3Error
+from utils.file_system import FolderCreator
+
+def timestamped_dir(arg):
+    try:
+        FolderCreator.create_timestamped(arg)
+    except FolderCreatorError as err:
+        raise Primer3Error(f'Error creating folder: {err}')
+    return FolderCreator.get_dir()
+
 def parse_args(args):
     parser = argparse.ArgumentParser(
         description='Slice analysis using Primer3')
@@ -18,7 +34,8 @@ def parse_args(args):
     parser.add_argument('--bed',
         help='BED file from the slicer tool containing coords, strand and IDs')
     parser.add_argument('--dir',
-        help='Output folder location')
+        help='Output folder name to be timestamped (default \'td_output\')',
+        type=timestamped_dir, default='td_output')
     return parser.parse_args(args)
 
 def primer3_runner(params):
