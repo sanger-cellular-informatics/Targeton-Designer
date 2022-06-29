@@ -37,7 +37,7 @@ def _generate_slice_data(exon, exon_name, params):
         slices.append((exon.chrom, start, end, slice_name,
             exon.score, exon.strand))
         start += params['offset']
-        end += params['offset'] 
+        end += params['offset']
         count += 1
     return slices
 
