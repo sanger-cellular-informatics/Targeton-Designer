@@ -197,27 +197,18 @@ def regex_row_name(regex, target):
     return name
 
 
-def correct_bed_to_1_based(file_path):
-    print(file_path)
-    #with open("train.tsv",encoding='utf8') as tsvfile:
-    #    tsvreader = csv.reader(tsvfile, delimiter="\t")
-    #    for line in tsvreader:
-    #        print(line[1])
-
 def main(params):
     try:
         slices = get_slices(params)
         if params['output_bed'] is not None:
             slices.saveas(params['output_bed'])
-            correct_bed_to_1_based(params['output_bed'])
         if params['output_fasta'] is not None:
             slices.save_seqs(params['output_fasta'])
             correct_fasta_to_1_based(params['output_fasta'])
             print('Slice sequences saved!')
         else:
             #TODO Correct STDOUT so that start coord is 1 based.
-            print('When using stdout, start co-ord is 0-based as per BEDTools default. This will be corrected in future releases.')
-            print('Note: Exported files contain only 1-based co-ordinates.') 
+            print('When using stdout, start co-ord is 0-based as per BEDTools default.')
             print(slices.print_sequence())
 
     except ValueError as valErr:
