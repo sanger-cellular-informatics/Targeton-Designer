@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from pybedtools import BedTool
 from pybedtools.helpers import BEDToolsError
-from os.path import exists
+from os import path
 from Bio import SeqIO
 
 import os
@@ -10,9 +10,15 @@ import argparse
 import sys
 import re
 
-class FileFormatError(Exception):
-    pass
+def add_modules_to_sys_path():
+    BASE_PATH = path.dirname(path.dirname(path.abspath(__file__)))
+    sys.path.append(BASE_PATH)
 
+add_modules_to_sys_path()
+
+from utils.exceptions import FileFormatError
+from utils.exceptions import SlicerError
+from utils.file_system import FolderCreator, check_file_exists
 
 def validate_files(bed, fasta):
     check_file_exists(bed)
@@ -28,7 +34,6 @@ def validate_files(bed, fasta):
 
 def _generate_slice_data(exon, exon_name, params):
     slices = []
-    name = exon.name if exon.name != '.' else count
     start = exon.start - params['flank_5']
     end = start + params['length']
     count = 1
@@ -63,6 +68,12 @@ def len_positive_int(arg):
         raise argparse.ArgumentTypeError('Parameter must be above 0 and below 10000')
     return int(arg)
 
+def timestamped_dir(arg):
+    try:
+        FolderCreator.create_timestamped(arg)
+    except FolderCreatorError as err:
+        raise SlicerError(f'Error creating folder: {err}')
+    return FolderCreator.get_dir()
 
 def parse_args(args):
     parser = argparse.ArgumentParser(
@@ -84,10 +95,10 @@ def parse_args(args):
     parser.add_argument('-o', '--offset',
                         help='offset between each slice (default 5nt)',
                         type=positive_int, default=5)
-    parser.add_argument('--output_fasta',
-                        help='output slice sequences to fasta file')
-    parser.add_argument('--output_bed',
-                        help='output bed file with slice coordinates')
+    parser.add_argument('-d', '--dir',
+                        help='output directory name to be timestamped'
+                        ' (default \'td_output\')',
+                        type=timestamped_dir, default='td_output')
     return parser.parse_args(args)
 
 
@@ -115,11 +126,6 @@ def get_slices(params):
         seq = slice_bed.sequence(**seq_options)
 
     return seq
-
-
-def check_file_exists(file):
-    if not exists(file):
-        raise FileNotFoundError(f'Unable to find file: {file}')
 
 
 def validate_bed_format(bed):
@@ -200,27 +206,24 @@ def regex_row_name(regex, target):
 def main(params):
     try:
         slices = get_slices(params)
-        if params['output_bed'] is not None:
-            slices.saveas(params['output_bed'])
-        if params['output_fasta'] is not None:
-            slices.save_seqs(params['output_fasta'])
-            correct_fasta_to_1_based(params['output_fasta'])
-            print('Slice sequences saved!')
-        else:
-            #TODO Correct STDOUT so that start coord is 1 based.
-            print('When using stdout, start co-ord is 0-based as per BEDTools default.')
-            print(slices.print_sequence())
+
+        fasta_path = path.join(params['dir'], 'slices.fa')
+
+        slices.saveas(path.join(params['dir'], 'slices.bed'))
+        slices.save_seqs(fasta_path)
+
+        correct_fasta_to_1_based(fasta_path)
+
+        print('Slice files saved')
 
     except ValueError as valErr:
-        print('Error occurred while checking file content: {0}'.format(valErr))
+        raise SlicerError('Error occurred while checking file content: {0}'.format(valErr))
     except FileFormatError as fileErr:
-        print('Error occurred while checking file format: {0}'.format(fileErr))
+        raise SlicerError('Error occurred while checking file format: {0}'.format(fileErr))
     except FileNotFoundError as fileErr:
-        print('Input file not found: {0}'.format(fileErr))
+        raise SlicerError('Input file not found: {0}'.format(fileErr))
     except Exception as err:
-        print('Unexpected error occurred: {0}'.format(err))
-
-    return ''
+        raise SlicerError('Unexpected error occurred: {0}'.format(err))
 
 
 if __name__ == '__main__':

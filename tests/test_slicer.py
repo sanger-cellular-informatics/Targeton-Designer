@@ -60,16 +60,13 @@ class TestSlicer(unittest.TestCase):
         self.assertRaisesRegex(error, msg, positive_int, '0')
 
     def test_parse_args(self):
-        args = parse_args(['bed', 'fasta', '-f5', '50',
-            '--length', '200', '--output_bed', 'slices.bed'])
+        args = parse_args(['bed', 'fasta', '-f5', '50', '--length', '200'])
         self.assertEqual(args.input_bed, 'bed')
         self.assertEqual(args.input_fasta, 'fasta')
         self.assertEqual(args.flank_5, 50)
         self.assertEqual(args.flank_3, 50)
         self.assertEqual(args.length, 200)
         self.assertEqual(args.offset, 5)
-        self.assertEqual(args.output_bed, 'slices.bed')
-        self.assertIsNone(args.output_fasta)
 
     def test_get_slices(self):
         expected_bed = (

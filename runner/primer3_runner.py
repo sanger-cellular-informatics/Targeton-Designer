@@ -9,6 +9,23 @@ import argparse
 
 from pybedtools import BedTool
 from Bio import SeqIO
+from Bio.Seq import Seq
+
+def add_modules_to_sys_path():
+    BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    sys.path.append(BASE_PATH)
+
+add_modules_to_sys_path()
+
+from utils.exceptions import Primer3Error
+from utils.file_system import FolderCreator
+
+def timestamped_dir(arg):
+    try:
+        FolderCreator.create_timestamped(arg)
+    except FolderCreatorError as err:
+        raise Primer3Error(f'Error creating folder: {err}')
+    return FolderCreator.get_dir()
 
 def parse_args(args):
     parser = argparse.ArgumentParser(
@@ -18,7 +35,8 @@ def parse_args(args):
     parser.add_argument('--bed',
         help='BED file from the slicer tool containing coords, strand and IDs')
     parser.add_argument('--dir',
-        help='Output folder location')
+        help='Output folder name to be timestamped (default \'td_output\')',
+        type=timestamped_dir, default='td_output')
     return parser.parse_args(args)
 
 def primer3_runner(params):
@@ -88,6 +106,7 @@ def locate_primers(designs):
         for key in primer_keys:
             primer_details = capture_primer_details(key)
             if primer_details:
+                
                 primer_id = primer_details['id']
                 primer_field = primer_details['field']
                 pair_number = primer_details['pair']
@@ -95,16 +114,48 @@ def locate_primers(designs):
                 libamp_name = name_primers(primer_details, slice_data['strand'])
                 
                 primer_name = slice_data['name'] + "_" + libamp_name + "_" + pair_number
-                primers[primer_name][primer_field] = design[key]
+                primer = primers[primer_name]
                 
+                primer[primer_field] = design[key]
+                primer['side'] = primer_details['side']
+        
                 if primer_field == 'coords':
                     primer_coords = calculate_primer_coords(primer_details['side'], design[key], slice_data['start'])
-                    primers[primer_name]['primer_start'] = primer_coords[0] 
-                    primers[primer_name]['primer_end'] = primer_coords[1] 
+                    primer['primer_start'] = primer_coords[0] 
+                    primer['primer_end'] = primer_coords[1]
+                    primer['strand'] = determine_primer_strands(primer_details['side'], slice_data['strand'])
+                    primer['sequence'] = revcom_reverse_primer(primer['sequence'], primer['strand']) 
+                primers[primer_name] = primer
         del slice_data['design']
         slice_data['primers'] = primers
         slice_designs.append(slice_data)
     return slice_designs
+
+def revcom_reverse_primer(seq, strand):
+    seq_obj = Seq(seq)
+
+    if strand == '-':
+        seq_obj = seq_obj.reverse_complement()
+
+    return seq_obj
+
+def determine_primer_strands(side, slice_strand):
+    positive = {
+        'left' : '+',
+        'right' : '-',
+    }
+
+    negative = {
+        'left' : '-',
+        'right' : '+',
+    }
+    
+    strands = {
+        '+' : positive,
+        '-' : negative,
+    }
+    
+    return strands[slice_strand][side]
 
 def calculate_primer_coords(side, coords, slice_start):
     slice_start = int(slice_start)
@@ -193,7 +244,9 @@ def construct_csv_format(slices, headers):
             
             del primers[primer]['primer_start'] 
             del primers[primer]['primer_end'] 
-            del primers[primer]['coords'] 
+            del primers[primer]['coords']
+            del primers[primer]['side']
+            del primers[primer]['strand']
 
             rows.append(primers[primer])
 
@@ -213,7 +266,7 @@ def construct_bed_format(slices):
                 primer_data['primer_end'],
                 primer,
                 '0',
-                slice_data['strand']
+                primer_data['strand']
             ]
             rows.append(row)
     return rows
