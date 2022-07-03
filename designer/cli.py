@@ -12,18 +12,22 @@ def get_args():
     return parser.parse_args()
 
 def version_command():
-    td_version = '0.0.0'
     python_version = sys.version
+    version = '0.0.1'
 
-    print('Targeton Designer', 'version: ', td_version)
+    print('Targeton Designer', 'version: ', version)
     print('Python version: ', python_version)
+
+def resolve_command(command):
+    if command == 'version':
+        version_command()
 
 def main():
     args = get_args()
     command = args.command
 
-    if command == 'version':
-        version_command()
+    resolve_command(command)
+
 
 if __name__ == '__main__':
     main()
