@@ -4,7 +4,7 @@ import argparse
 from io import StringIO
 
 from designer.slicer import (validate_files, get_slice_data,
-    positive_int, parse_args, get_slices)
+    positive_int, parse_args, get_slices, decrement_one_based_starts)
 
 class TestSlicer(unittest.TestCase):
 
@@ -106,6 +106,12 @@ class TestSlicer(unittest.TestCase):
         slices = get_slices(params)
         self.assertEqual(expected_bed, slices.head(as_string=True))
         self.assertEqual(expected_fasta, slices.print_sequence())
+
+    def test_decrement_one_based_starts(self):
+        input_file = [['1','200','300','name','0','+']]
+        result = decrement_one_based_starts(input_file, [])
+        expected_row = ['1','199','300','name','0','+']
+        self.assertEqual(expected_row, result[0])
 
 if __name__ == '__main__':
     unittest.main()
