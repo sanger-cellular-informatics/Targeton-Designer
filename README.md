@@ -74,6 +74,22 @@ python3 -m unittest
 deactivate
 ```
 
+### Exonerate iPCRess
+
+Nathan Weeks has placed Exonerate onto GitHub along with maintenance tweaks. The repo can be found here:
+https://github.com/nathanweeks/exonerate
+
+Installing exonerate on your VM.
+```sh
+git clone https://github.com/nathanweeks/exonerate.git
+cd exonerate
+git checkout v2.4.0
+./configure [YOUR_CONFIGURE_OPTIONS]
+make
+make check
+sudo make install
+```
+
 ### Docker images
 
 Upcoming feature in later releases
@@ -101,6 +117,16 @@ The input fasta and bed files are intended to be sourced from the slicer tool. E
 Example command:
 ```sh
 python3 runner/primer3_runner.py --seq slices.fa --bed slices.bed --dir p3_output
+```
+Running Exonerate iPCRess:
+```sh
+To be added
+```
+Input files should flow on from Primer3. To be updated after integration ticket.
+
+Example command:
+```sh
+To be added
 ```
 
 ### Docker
