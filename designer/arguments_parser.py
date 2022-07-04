@@ -11,8 +11,10 @@ class ParsedInputArguments():
 
         parser = add_input_args(parser)
 
-        self.arguments = parser.parse_args()
-        self.command = self.arguments.command
+        self.arguments = vars(parser.parse_args())
+
+        print('-- Parsed: ', self.arguments)
+        self.command = self.arguments['command']
 
     def get_command(self) -> str:
         return self.command
