@@ -6,14 +6,12 @@ class ParsedInputArguments():
             description='Targeton Designer CLI')
 
         parser.add_argument('command',
-                            help='Command to run in Designer CLI',
-                            type=str)
+                            help='Command to run in Designer CLI, available commands: version, slicer, primer3, design',
+                            type=str, default='design')
 
         parser = add_input_args(parser)
 
         self.arguments = vars(parser.parse_args())
-
-        print('-- Parsed: ', self.arguments)
         self.command = self.arguments['command']
 
     def get_command(self) -> str:

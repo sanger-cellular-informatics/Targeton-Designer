@@ -1,6 +1,9 @@
 class FileFormatError(Exception):
     pass
 
+class FileValidationError(Exception):
+    pass
+
 class SlicerError(Exception):
     pass
 
