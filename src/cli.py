@@ -4,8 +4,9 @@ import sys
 
 from utils.arguments_parser import ParsedInputArguments
 from utils.validate_files import validate_files
-from utils.write_output_files import write_slicer_output
+from utils.write_output_files import write_slicer_output, write_primer_output
 from slicer.slicer import main as slicer
+from primer.primer3 import main as primer
 
 def version_command():
     python_version = sys.version
@@ -15,9 +16,15 @@ def version_command():
     print('Python version: ', python_version)
 
 def slicer_command(args):
-    validate_files(args['bed'], args['fasta'])
+    validate_files(bed = args['bed'], fasta = args['fasta'])
     slices = slicer(args)
     write_slicer_output(args['dir'], slices)
+
+def primer_command(args):
+    validate_files(fasta = args['fasta'])
+    primers = primer(args['fasta'])
+    write_primer_output(args['dir'], primers)
+
 
 def resolve_command(args):
     command = args['command']
@@ -29,6 +36,9 @@ def resolve_command(args):
 
         if command == 'slicer':
             slicer_command(args)
+
+        if command == 'primer':
+            primer_command(args)
 
 def main():
     parsed_input = ParsedInputArguments()

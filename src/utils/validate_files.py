@@ -58,23 +58,24 @@ def validate_bed_content(bed):
 
             line_num = line_num + 1
 
-def validate_files(bed, fasta):
+def validate_files(bed = '', fasta = ''):
     try:
-        check_file_exists(bed)
-        check_file_exists(fasta)
+        if bed:
+            check_file_exists(bed)
+            validate_bed_format(bed)
+            validate_bed_content(bed)
 
-        validate_bed_format(bed)
-        validate_fasta_format(fasta)
-
-        validate_bed_content(bed)
+        if fasta:
+            check_file_exists(fasta)
+            validate_fasta_format(fasta)
 
     except ValueError as valErr:
-        raise SlicerError('Error occurred while checking file content: {0}'.format(valErr))
+        print('Error occurred while checking file content: {0}'.format(valErr))
     except FileFormatError as fileErr:
-        raise SlicerError('Error occurred while checking file format: {0}'.format(fileErr))
+        print('Error occurred while checking file format: {0}'.format(fileErr))
     except FileNotFoundError as fileErr:
-        raise FileValidationError('Input file not found: {0}'.format(fileErr))
+        print('Input file not found: {0}'.format(fileErr))
     except Exception as err:
-        raise FileValidationError('Unexpected error occurred: {0}'.format(err))
+        print('Unexpected error occurred: {0}'.format(err))
 
     return
