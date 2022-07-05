@@ -232,8 +232,6 @@ def export_to_csv(slices, output_dir):
         p3_out.writeheader()
         p3_out.writerows(rows)
 
-    return
-
 def construct_csv_format(slices, headers): 
     rows = []
 

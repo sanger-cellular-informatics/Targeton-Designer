@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 from pybedtools import BedTool
 from pybedtools.helpers import BEDToolsError
-from os import path
+from os import path, remove
 from Bio import SeqIO
 
-import os
 import csv
 import argparse
 import sys
@@ -185,7 +184,7 @@ def validate_bed_content(bed):
 
 def correct_fasta_to_1_based(file_path):
     fasta = SeqIO.parse(open(file_path), 'fasta')
-    os.remove(file_path)
+    remove(file_path)
     with open(file_path, "w") as output: 
         for row in fasta:
             regex = r'^(\S+::\S+:)(\d+)(-\d+\([-+.]\))$'
