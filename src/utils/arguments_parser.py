@@ -38,6 +38,9 @@ def add_input_args(parser):
     parser.add_argument('-f5', '--flank_5',
                         help='how far to extend region at 5\' end (default 50nt)',
                         type=int, default=50)
+    parser.add_argument('-1b',
+                        help='Declare if input BED/TSV is one-based',
+                        action='store_true')
     parser.add_argument('-f3', '--flank_3',
                         help='how far to extend region at 3\' end (default 50nt)',
                         type=int, default=50)

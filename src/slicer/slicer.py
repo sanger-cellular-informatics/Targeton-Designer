@@ -6,6 +6,20 @@ from pybedtools.helpers import BEDToolsError
 class SlicerError(Exception):
     pass
 
+def handle_one_based_input(input_bed):
+    adjusted_tsv = []
+    with open(input_bed) as file:
+        tsv = csv.reader(file, delimiter="\t")
+        adjusted_tsv = decrement_one_based_starts(tsv, adjusted_tsv)
+    return adjusted_tsv
+
+def decrement_one_based_starts(tsv, new_tsv):
+    #BED is only 0-based on the start thus only need to edit column 1
+    for row in tsv:
+        row[1] = str(int(row[1]) - 1)
+        new_tsv.append(row)
+    return new_tsv
+
 def _generate_slice_data(exon, exon_name, params):
     slices = []
     start = exon.start - params['flank_5']
@@ -31,7 +45,11 @@ def get_slice_data(bed, params):
 
 def get_slices(params):
 
-    bed = BedTool(params['bed'])
+    input_bed = params['bed']
+    if params['1b']:
+        input_bed = handle_one_based_input(params['bed'])
+    bed = BedTool(input_bed)
+
     slice_bed = BedTool(get_slice_data(bed, params))
     # return named, coords slice sequences on specified strand
     seq_options = {
