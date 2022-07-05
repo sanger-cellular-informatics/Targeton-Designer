@@ -81,7 +81,7 @@ https://github.com/nathanweeks/exonerate
 
 Install glib
 ```sh
-sudo apt-get install glib2.0
+sudo apt-get install libglib2.0-dev
 ```
 
 Installing exonerate on your VM.
