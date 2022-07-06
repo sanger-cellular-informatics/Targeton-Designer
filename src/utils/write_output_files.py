@@ -14,15 +14,17 @@ def timestamped_dir(prefix):
         raise OutputError(f'Error creating folder: {err}')
     return FolderCreator.get_dir()
 
-def write_slicer_output(dir_name, slices):
+def write_slicer_output(dir_prefix, slices):
     BED_OUTPUT = 'slicer_output.bed'
     FASTA_OUTPUT = 'slicer_output.fasta'
 
-    dir = timestamped_dir(dir_name)
+    dir = timestamped_dir(dir_prefix)
 
     slices.saveas(path.join(dir, BED_OUTPUT))
     slices.save_seqs(path.join(dir, FASTA_OUTPUT))
     print('Slice files saved')
+
+    return dir
 
 
 def export_to_csv(slices, output_dir):
@@ -85,8 +87,11 @@ def export_to_bed(bed_rows, output_dir):
 
     return
 
-def write_primer_output(dir_name, primers):
-    dir = timestamped_dir(dir_name)
+def write_primer_output(prefix = '', primers = [], existing_dir = ''):
+    if existing_dir:
+        dir = existing_dir
+    else:
+        dir = timestamped_dir(prefix)
 
     bed_rows = construct_bed_format(primers)
     export_to_bed(bed_rows, dir)
