@@ -83,7 +83,7 @@ Installing exonerate on your VM.
 ```sh
 git clone https://github.com/nathanweeks/exonerate.git
 cd exonerate
-git checkout v2.4.0
+autoreconf -vfi
 ./configure [YOUR_CONFIGURE_OPTIONS]
 make
 make check
