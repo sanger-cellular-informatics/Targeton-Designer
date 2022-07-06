@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 from pybedtools import BedTool
 from pybedtools.helpers import BEDToolsError
-from os import path
+from os import path, remove
 from Bio import SeqIO
+
 import csv
 import argparse
 import sys
@@ -205,12 +206,37 @@ def validate_bed_content(bed):
 
             line_num = line_num + 1
 
+def correct_fasta_to_1_based(file_path):
+    fasta = SeqIO.parse(open(file_path), 'fasta')
+    remove(file_path)
+    with open(file_path, "w") as output: 
+        for row in fasta:
+            regex = r'^(\S+::\S+:)(\d+)(-\d+\([-+.]\))$'
+            row.id = regex_row_name(regex, row.id)
+            row.description = ""
+            SeqIO.write(row, output, 'fasta')
+
+ 
+def regex_row_name(regex, target):
+    name = ''
+    match = re.search(regex, target)
+    if match:
+        start = int(match.group(2)) + 1
+        name = match.group(1) + str(start) + match.group(3)
+    return name
+
 
 def main(params):
     try:
         slices = get_slices(params)
+
+        fasta_path = path.join(params['dir'], 'slices.fa')
+
         slices.saveas(path.join(params['dir'], 'slices.bed'))
-        slices.save_seqs(path.join(params['dir'], 'slices.fa'))
+        slices.save_seqs(fasta_path)
+
+        correct_fasta_to_1_based(fasta_path)
+
         print('Slice files saved')
 
     except ValueError as valErr:
