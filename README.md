@@ -79,6 +79,11 @@ deactivate
 Nathan Weeks has placed Exonerate onto GitHub along with maintenance tweaks. The repo can be found here:
 https://github.com/nathanweeks/exonerate
 
+Install glib
+```sh
+sudo apt-get install libglib2.0-dev
+```
+
 Installing exonerate on your VM.
 ```sh
 git clone https://github.com/nathanweeks/exonerate.git
