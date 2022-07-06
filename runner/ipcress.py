@@ -19,34 +19,30 @@ from utils.file_system import check_file_exists
 def parse_args(args):
     parser = argparse.ArgumentParser(
         description='Primer scoring using Exonerate iPCRess')
-    parser.add_argument('--ref',
-        help='Genomic Reference File.')
-    parser.add_argument('--dir',
+    parser.add_argument('dir',
         help='Output directory created by slicer tool')
+    parser.add_argument('ref',
+        help='Genomic Reference File.')
     parser.add_argument('--min',
         help='Minimum amplicon length',
         default='200')
     parser.add_argument('--max',
         help='Maximum amplicon length',
         default='300')
+    parser.add_argument('--mismatch',
+        help='Number of mismatches to check against',
+        default='5')
+    parser.add_argument('--primers',
+        help='Optional: Supply a preformatted txt file.\nIf left blank, the runner will look for primer3 output in the given director.')
     return parser.parse_args(args)
 
 def run_ipcress(run_id, params):
-    dir_path = params['dir']
-    reference_file = params['ref']
-    
-    print('Building iPCRess input file.')
+    input_path = determine_ipcress_input(params)
 
-    primers = retrieve_p3_output(dir_path)
-    formatted_primers = format_ipcress_primers(primers, params)
-    input_path = write_ipcress_input_file(dir_path, formatted_primers)
+    cmd = "ipcress " + input_path + ' ' + params['ref'] + ' --mismatch ' + params['mismatch']
 
-    input_cmd = '--input ' + input_path
-    seq = ' --sequence ' + reference_file
-    mismatch = ' --mismatch 5'
-    cmd = "ipcress " + input_cmd + seq + mismatch
-
-    print('Running Exonerate iPCRess.')
+    print('Running Exonerate iPCRess with the following command:')
+    print(cmd)
     
     ipcress = subprocess.Popen(
         cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
@@ -58,7 +54,19 @@ def run_ipcress(run_id, params):
     print("stdout:", stnd)
     print("stderr:", err)
 
-def format_ipcress_primers(primers, params):
+def determine_ipcress_input(params):
+    input_path = ''
+    if params['primers']:
+        print('Loading custom iPCRess input file')
+        input_path = params['primers']
+    else:
+        print('Building iPCRess input file.')
+        primers = retrieve_p3_output(params['dir'])
+        formatted_primers = format_ipcress_primers(params, primers)
+        input_path = write_ipcress_input_file(params['dir'], formatted_primers)
+    return input_path
+
+def format_ipcress_primers(params, primers):
     ipcress_input = []
     rows = primers.keys()
     
