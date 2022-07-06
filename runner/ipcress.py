@@ -20,7 +20,7 @@ def parse_args(args):
     parser = argparse.ArgumentParser(
         description='Primer scoring using Exonerate iPCRess')
     parser.add_argument('dir',
-        help='Output directory created by slicer tool')
+        help='Shared output directory of the 3 standalone modules.')
     parser.add_argument('ref',
         help='Genomic Reference File.')
     parser.add_argument('--min',
@@ -36,7 +36,7 @@ def parse_args(args):
         help='Optional: Supply a preformatted txt file.\nIf left blank, the runner will look for primer3 output in the given director.')
     return parser.parse_args(args)
 
-def run_ipcress(run_id, params):
+def run_ipcress(params):
     input_path = determine_ipcress_input(params)
 
     cmd = "ipcress " + input_path + ' ' + params['ref'] + ' --mismatch ' + params['mismatch']
@@ -119,7 +119,7 @@ def extract_primer_sequences(csv_obj):
     return primer_data
 
 def main(params):
-    run_ipcress('test', params)
+    run_ipcress(params)
 
 if __name__ == '__main__':
     args = parse_args(sys.argv[1:])
