@@ -68,7 +68,7 @@ def determine_ipcress_input(params):
         input_path = retrieve_primer3_output(params)
     return input_path
 
-def format_ipcress_primers(params, primers):
+def format_ipcress_primers(min_amp, max_amp, primers):
     ipcress_input = []
     rows = primers.keys()
     
@@ -80,8 +80,8 @@ def format_ipcress_primers(params, primers):
             key,
             left,
             right,
-            params['min'],
-            params['max']
+            min_amp,
+            max_amp
         ])
         ipcress_input.append(line)
 
@@ -91,7 +91,7 @@ def retrieve_primer3_output(params):
     file_data = read_csv_to_dict(params['p3_csv'])
     
     primer_data = extract_primer_sequences(file_data)
-    formatted_primers = format_ipcress_primers(params, primer_data)
+    formatted_primers = format_ipcress_primers(params['min'], params['max'], primer_data)
     
     input_path = write_to_text_file(params['dir'], formatted_primers, 'ipcress_primer_input')
     
