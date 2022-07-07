@@ -14,7 +14,7 @@ def add_modules_to_sys_path():
 
 add_modules_to_sys_path()
 
-from utils.file_system import check_file_exists, write_to_text_file
+from utils.file_system import write_to_text_file, read_csv_to_dict
 
 def parse_args(args):
     parser = argparse.ArgumentParser(
@@ -34,6 +34,8 @@ def parse_args(args):
         default='5')
     parser.add_argument('--primers',
         help='Optional: Supply a preformatted txt file.\nIf left blank, the runner will look for primer3 output in the given director.')
+    parser.add_argument('--p3_csv',
+        help='Optional: Point at specific Primer3 output CSV file.')
     return parser.parse_args(args)
 
 def run_ipcress(params):
@@ -63,9 +65,7 @@ def determine_ipcress_input(params):
         input_path = params['primers']
     else:
         print('Building iPCRess input file.')
-        primers = retrieve_p3_output(params['dir'])
-        formatted_primers = format_ipcress_primers(params, primers)
-        input_path = write_to_text_file(params['dir'], formatted_primers, 'ipcress_primer_input')
+        input_path = retrieve_primer3_output(params)
     return input_path
 
 def format_ipcress_primers(params, primers):
@@ -87,16 +87,20 @@ def format_ipcress_primers(params, primers):
 
     return ipcress_input    
 
-def retrieve_p3_output(dir_path):
-    p3_csv = path.join(dir_path, 'p3_output.csv')
-    check_file_exists(p3_csv)
+def retrieve_primer3_output(params):
+    csv_path = ''
+    if params['p3_csv']:
+        csv_path = params['p3_csv']
+    else:
+        csv_path = path.join(params['dir'], 'p3_output.csv')
+    file_data = read_csv_to_dict(csv_path)
     
-    primer_data = {}
-    with open(p3_csv) as csv_file:
-        csv_obj = csv.DictReader(csv_file, delimiter=',')
-        primer_data = extract_primer_sequences(csv_obj)
+    primer_data = extract_primer_sequences(file_data)
+    formatted_primers = format_ipcress_primers(params, primer_data)
     
-    return primer_data
+    input_path = write_to_text_file(params['dir'], formatted_primers, 'ipcress_primer_input')
+    
+    return input_path
     
 def extract_primer_sequences(csv_obj):
     primer_data = collections.defaultdict(dict)
