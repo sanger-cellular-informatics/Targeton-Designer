@@ -16,6 +16,11 @@ class SlicerOutputData(OutputFilesData):
     bed: str = ''
     fasta: str = ''
 
+@dataclass
+class PrimerOutputData(OutputFilesData):
+    bed: str = ''
+    csv: str = ''
+
 def timestamped_dir(prefix):
     try:
         FolderCreator.create_timestamped(prefix)
@@ -23,7 +28,7 @@ def timestamped_dir(prefix):
         raise OutputError(f'Error creating folder: {err}')
     return FolderCreator.get_dir()
 
-def write_slicer_output(dir_prefix, slices):
+def write_slicer_output(dir_prefix, slices) -> SlicerOutputData:
     dir = timestamped_dir(dir_prefix)
     result = SlicerOutputData(dir = dir)
 
@@ -52,19 +57,21 @@ def write_slicer_fasta_output(dir, slices):
     return fasta_path
 
 
-def export_to_csv(slices, output_dir):
+def export_to_csv(slices, dir):
+    PRIMER3_OUTPUT_CSV = 'p3_output.csv'
+
     headers = ['primer', 'sequence', 'tm', 'gc_percent', 'penalty', 'self_any_th', 'self_end_th', 'hairpin_th',
                'end_stability']
     rows = construct_csv_format(slices, headers)
 
-    path = output_dir + '/p3_output.csv'
-    with open(path, "w") as p3_fh:
+    csv_path = path.join(dir, PRIMER3_OUTPUT_CSV)
+
+    with open(csv_path, "w") as p3_fh:
         p3_out = csv.DictWriter(p3_fh, fieldnames=headers)
         p3_out.writeheader()
         p3_out.writerows(rows)
 
-        return path
-
+        return csv_path
 
 def construct_csv_format(slices, headers):
     rows = []
@@ -105,22 +112,28 @@ def construct_bed_format(slices):
     return rows
 
 
-def export_to_bed(bed_rows, output_dir):
+def export_to_bed(bed_rows, dir):
+    PRIMER_OUTPUT_BED = 'p3_output.bed'
+
     p3_bed = BedTool(bed_rows)
-    path = output_dir + '/p3_output.bed'
-    p3_bed.saveas(path)
+    bed_path = path.join(dir, PRIMER_OUTPUT_BED)
+    p3_bed.saveas(bed_path)
 
-    return path
+    return bed_path
 
-def write_primer_output(prefix = '', primers = [], existing_dir = ''):
+def write_primer_output(prefix = '', primers = [], existing_dir = '') -> PrimerOutputData:
     if existing_dir:
         dir = existing_dir
     else:
         dir = timestamped_dir(prefix)
 
+    result = PrimerOutputData(dir)
+
     bed_rows = construct_bed_format(primers)
 
-    bed_path = export_to_bed(bed_rows, dir)
-    csv_path = export_to_csv(primers, dir)
+    result.bed = export_to_bed(bed_rows, dir)
+    result.csv = export_to_csv(primers, dir)
 
-    print('Primer files saved:', bed_path, csv_path)
+    print('Primer files saved:', result.bed, result.csv)
+
+    return PrimerOutputData
