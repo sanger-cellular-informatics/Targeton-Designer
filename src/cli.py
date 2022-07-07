@@ -18,14 +18,13 @@ def version_command():
 def slicer_command(args):
     validate_files(bed = args['bed'], fasta = args['fasta'])
     slices = slicer(args)
-    created_output_dir = write_slicer_output(args['dir'], slices)
 
-    return created_output_dir
+    return write_slicer_output(args['dir'], slices)
 
-def primer_command(args, output_dir = ''):
-    validate_files(fasta = args['fasta'])
-    primers = primer(args['fasta'])
-    write_primer_output(prefix = args['dir'], primers = primers, existing_dir = output_dir)
+def primer_command(fasta, prefix = '', existing_dir = ''):
+    validate_files(fasta = fasta)
+    primers = primer(fasta)
+    write_primer_output(prefix = prefix, primers = primers, existing_dir = existing_dir)
 
 def resolve_command(args):
     command = args['command']
@@ -33,17 +32,15 @@ def resolve_command(args):
     if command == 'version':
         version_command()
     else:
-        print('args: ', args)
-
         if command == 'slicer':
             slicer_command(args)
 
         if command == 'primer':
-            primer_command(args)
+            primer_command(args['fasta'], prefix = args['dir'])
 
         if command == 'design':
-            output_dir = slicer_command(args)
-            primer_command(args, output_dir)
+            slicer_result = slicer_command(args)
+            primer_command(slicer_result.fasta, existing_dir = slicer_result.dir)
 
 def main():
     parsed_input = ParsedInputArguments()

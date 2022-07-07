@@ -1,11 +1,22 @@
 from os import path
 import csv
+
+from dataclasses import dataclass
 from pybedtools import BedTool
 
 from .file_system import FolderCreator
 
 class OutputError(Exception):
     pass
+
+@dataclass
+class OutputFilesData:
+    dir: str
+
+@dataclass
+class SlicerOutputData(OutputFilesData):
+    bed: str = ''
+    fasta: str = ''
 
 def timestamped_dir(prefix):
     try:
@@ -15,16 +26,32 @@ def timestamped_dir(prefix):
     return FolderCreator.get_dir()
 
 def write_slicer_output(dir_prefix, slices):
+    dir = timestamped_dir(dir_prefix)
+    result = SlicerOutputData(dir = dir)
+
+    result.bed = write_slicer_bed_output(dir, slices)
+    result.fasta = write_slicer_fasta_output(dir, slices)
+
+    print('Slice files saved: ', result.bed, result.fasta)
+
+    return result
+
+def write_slicer_bed_output(dir, slices):
     BED_OUTPUT = 'slicer_output.bed'
+
+    bed_path = path.join(dir, BED_OUTPUT)
+    slices.saveas(bed_path)
+
+    return bed_path
+
+
+def write_slicer_fasta_output(dir, slices):
     FASTA_OUTPUT = 'slicer_output.fasta'
 
-    dir = timestamped_dir(dir_prefix)
+    fasta_path = path.join(dir, FASTA_OUTPUT)
+    slices.save_seqs(fasta_path)
 
-    slices.saveas(path.join(dir, BED_OUTPUT))
-    slices.save_seqs(path.join(dir, FASTA_OUTPUT))
-    print('Slice files saved')
-
-    return dir
+    return fasta_path
 
 
 def export_to_csv(slices, output_dir):
