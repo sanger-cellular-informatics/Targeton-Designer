@@ -32,9 +32,9 @@ def len_positive_int(arg: str) -> int:
 
 def add_input_args(parser):
     parser.add_argument('--bed',
-                        help='BED file from the slicer tool containing coords, strand and IDs')
+                        help='BED file containing coords, strand and IDs')
     parser.add_argument('--fasta',
-                        help='FASTA file from the slicer tool containing seqs and IDs')
+                        help='FASTA file containing seqs and IDs')
     parser.add_argument('-f5', '--flank_5',
                         help='how far to extend region at 5\' end (default 50nt)',
                         type=int, default=50)
