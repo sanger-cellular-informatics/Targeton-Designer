@@ -14,7 +14,7 @@ def add_modules_to_sys_path():
 
 add_modules_to_sys_path()
 
-from utils.file_system import check_file_exists
+from utils.file_system import check_file_exists, write_to_text_file
 
 def parse_args(args):
     parser = argparse.ArgumentParser(
@@ -49,8 +49,10 @@ def run_ipcress(params):
     )
     
     stnd, err = ipcress.communicate()
-
+    
     print('Finished!')
+    write_to_text_file(params['dir'], stnd, 'ipcress_output')
+
     print("stdout:", stnd)
     print("stderr:", err)
 
@@ -63,7 +65,7 @@ def determine_ipcress_input(params):
         print('Building iPCRess input file.')
         primers = retrieve_p3_output(params['dir'])
         formatted_primers = format_ipcress_primers(params, primers)
-        input_path = write_ipcress_input_file(params['dir'], formatted_primers)
+        input_path = write_to_text_file(params['dir'], formatted_primers, 'ipcress_primer_input')
     return input_path
 
 def format_ipcress_primers(params, primers):
@@ -84,16 +86,6 @@ def format_ipcress_primers(params, primers):
         ipcress_input.append(line)
 
     return ipcress_input    
-
-def write_ipcress_input_file(dir_path, rows):
-    path = dir_path + '/' + 'ipcress_primer_input.txt'
-   
-    file_h = open(path, "w")
-    for row in rows:
-        file_h.write(row + "\n")
-    file_h.close
-
-    return path
 
 def retrieve_p3_output(dir_path):
     p3_csv = path.join(dir_path, 'p3_output.csv')

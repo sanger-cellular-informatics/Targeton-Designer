@@ -32,3 +32,19 @@ class FolderCreator:
 def check_file_exists(file):
     if not os.path.exists(file):
         raise FileNotFoundError(f'Unable to find file: {file}')
+
+
+def write_to_text_file(dir_path, data, file_name):
+    path = dir_path + '/' + file_name + '.txt'
+   
+    file_h = open(path, "wb")
+    if isinstance(data, list):
+        for row in data:
+            file_h.write(row + "\n")
+    else:
+        file_h.write(data)
+    file_h.close
+    
+    print('Wrote to file: ' + path)
+
+    return path
