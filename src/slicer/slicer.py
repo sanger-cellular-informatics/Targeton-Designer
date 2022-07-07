@@ -3,8 +3,7 @@ import re
 from pybedtools import BedTool
 from pybedtools.helpers import BEDToolsError
 
-class SlicerError(Exception):
-    pass
+from utils.exceptions import SlicerError
 
 def handle_one_based_input(input_bed):
     adjusted_tsv = []

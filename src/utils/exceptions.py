@@ -12,3 +12,7 @@ class Primer3Error(Exception):
 
 class FolderCreatorError(Exception):
     pass
+
+class OutputError(Exception):
+    pass
+

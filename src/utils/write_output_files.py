@@ -4,10 +4,8 @@ import csv
 from dataclasses import dataclass
 from pybedtools import BedTool
 
-from .file_system import FolderCreator
-
-class OutputError(Exception):
-    pass
+from utils.file_system import FolderCreator
+from utils.exceptions import OutputError
 
 @dataclass
 class OutputFilesData:
@@ -65,7 +63,7 @@ def export_to_csv(slices, output_dir):
         p3_out.writeheader()
         p3_out.writerows(rows)
 
-        return
+        return path
 
 
 def construct_csv_format(slices, headers):
@@ -112,7 +110,7 @@ def export_to_bed(bed_rows, output_dir):
     path = output_dir + '/p3_output.bed'
     p3_bed.saveas(path)
 
-    return
+    return path
 
 def write_primer_output(prefix = '', primers = [], existing_dir = ''):
     if existing_dir:
@@ -121,6 +119,8 @@ def write_primer_output(prefix = '', primers = [], existing_dir = ''):
         dir = timestamped_dir(prefix)
 
     bed_rows = construct_bed_format(primers)
-    export_to_bed(bed_rows, dir)
-    export_to_csv(primers, dir)
 
+    bed_path = export_to_bed(bed_rows, dir)
+    csv_path = export_to_csv(primers, dir)
+
+    print('Primer files saved:', bed_path, csv_path)

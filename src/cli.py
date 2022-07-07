@@ -12,7 +12,7 @@ def version_command():
     python_version = sys.version
     version = '0.0.1'
 
-    print('Targeton Designer', 'version: ', version)
+    print('Targeton Designer version: ', version)
     print('Python version: ', python_version)
 
 def slicer_command(args):
