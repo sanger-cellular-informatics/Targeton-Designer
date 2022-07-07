@@ -33,9 +33,9 @@ def parse_args(args):
         help='Number of mismatches to check against',
         default='5')
     parser.add_argument('--primers',
-        help='Optional: Supply a preformatted txt file.\nIf left blank, the runner will look for primer3 output in the given director.')
+        help='Optional: Supply a preformatted txt file.\nIf left blank, the runner will take the primer3 output csv. Either primers or p3_csv must be supplied.')
     parser.add_argument('--p3_csv',
-        help='Optional: Point at specific Primer3 output CSV file.')
+        help='Optional: Point at specific Primer3 output CSV file. Either primers or p3_csv must be supplied.')
     return parser.parse_args(args)
 
 def run_ipcress(params):
@@ -88,12 +88,7 @@ def format_ipcress_primers(params, primers):
     return ipcress_input    
 
 def retrieve_primer3_output(params):
-    csv_path = ''
-    if params['p3_csv']:
-        csv_path = params['p3_csv']
-    else:
-        csv_path = path.join(params['dir'], 'p3_output.csv')
-    file_data = read_csv_to_dict(csv_path)
+    file_data = read_csv_to_dict(params['p3_csv'])
     
     primer_data = extract_primer_sequences(file_data)
     formatted_primers = format_ipcress_primers(params, primer_data)
