@@ -1,0 +1,7 @@
+{
+    "FLANK_5": 50,
+    "FLANK_3": 50,
+    "SLICE_LENGTH": 210,
+    "SLICE_OFFSET": 5,
+    "1_BASED": true
+}

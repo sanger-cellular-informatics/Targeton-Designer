@@ -1,7 +1,8 @@
 import csv
-
 from os import path, mkdir
 from datetime import datetime
+
+from utils.exceptions import FolderCreatorError
 
 class FolderCreator:
     dir = ''
@@ -14,17 +15,17 @@ class FolderCreator:
         return(self.dir)
 
     @classmethod
-    def create(self, path):
+    def create(self, dir):
         try:
-            if not path.isdir(path):
-                mkdir(path)
-                print(f'Folder {path} is created')
+            if not path.isdir(dir):
+                mkdir(dir)
+                print(f'Folder {dir} is created')
             else:
-                print(f'Warning: {path} already exists and files may be overwritten')
+                print(f'Warning: {dir} already exists and files may be overwritten')
         except OSError as error:
             raise FolderCreatorError(f'Unexpected OSError: {error}')
 
-        self.set_dir(self, path)
+        self.set_dir(self, dir)
 
     @classmethod
     def create_timestamped(self, prefix):
