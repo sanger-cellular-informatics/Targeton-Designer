@@ -185,7 +185,7 @@ def name_primers(primer_details, strand):
 
     return primer_name
 
-def main(fasta):
+def main(params):
     if os.environ.get("PRIMER3_CONFIG") is None:
         os.environ["PRIMER3_CONFIG"] = "./primer3_config.json"
     result = primer3_runner(fasta = fasta)
