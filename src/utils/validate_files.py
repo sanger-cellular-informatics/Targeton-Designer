@@ -58,7 +58,7 @@ def validate_bed_content(bed):
 
             line_num = line_num + 1
 
-def validate_files(bed = '', fasta = ''):
+def validate_files(bed = '', fasta = '', txt = ''):
     try:
         if bed:
             check_file_exists(bed)
@@ -68,6 +68,9 @@ def validate_files(bed = '', fasta = ''):
         if fasta:
             check_file_exists(fasta)
             validate_fasta_format(fasta)
+
+        if txt:
+            check_file_exists(txt)
 
     except ValueError as valErr:
         print('Error occurred while checking file content: {0}'.format(valErr))

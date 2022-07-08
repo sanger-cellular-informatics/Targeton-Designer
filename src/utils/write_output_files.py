@@ -4,7 +4,7 @@ import csv
 from dataclasses import dataclass
 from pybedtools import BedTool
 
-from utils.file_system import FolderCreator
+from utils.file_system import write_to_text_file, FolderCreator
 from utils.exceptions import OutputError
 
 @dataclass
@@ -137,3 +137,11 @@ def write_primer_output(prefix = '', primers = [], existing_dir = '') -> PrimerO
     print('Primer files saved:', result.bed, result.csv)
 
     return PrimerOutputData
+
+def write_ipcress_output(stnd = '', err = '', existing_dir = ''):
+    IPCRESS_OUTPUT_TXT = 'ipcress_output'
+
+    write_to_text_file(existing_dir, stnd, IPCRESS_OUTPUT_TXT)
+
+    print("stdout:", stnd)
+    print("stderr:", err)

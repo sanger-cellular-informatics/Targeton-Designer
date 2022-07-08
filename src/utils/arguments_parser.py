@@ -54,7 +54,20 @@ def add_input_args(parser):
                         help='output directory name to be timestamped'
                              ' (default \'td_output\')',
                         type=str, default='td_output')
-    
+    parser.add_argument('--min',
+                        help='Minimum amplicon length',
+                        default='200')
+    parser.add_argument('--max',
+                        help='Maximum amplicon length',
+                        default='300')
+    parser.add_argument('--mismatch',
+                        help='Number of mismatches to check against',
+                        default='5')
+    parser.add_argument('--primers',
+                        help='Optional: Supply a preformatted txt file.\nIf left blank, the runner will take the primer3 output csv. Either primers or p3_csv must be supplied.')
+    parser.add_argument('--p3_csv',
+                        help='Optional: Point at specific Primer3 output CSV file. Either primers or p3_csv must be supplied.')
+
     return parser
 
     

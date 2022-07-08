@@ -38,21 +38,21 @@ def check_file_exists(file):
 
 
 def write_to_text_file(dir_path, data, file_name):
-    path = dir_path + '/' + file_name + '.txt'
+    file_path = dir_path + '/' + file_name + '.txt'
    
     file_h = {}
     if isinstance(data, list):
-        file_h = open(path, "w")
+        file_h = open(file_path, "w")
         for row in data:
             file_h.write(row + "\n")
     else:
-        file_h = open(path, "wb")
+        file_h = open(file_path, "wb")
         file_h.write(data)
     file_h.close
     
-    print('Wrote to file: ' + path)
+    print('Wrote to file: ' + file_path)
 
-    return path
+    return file_path
 
 
 def read_csv_to_dict(csv_path):

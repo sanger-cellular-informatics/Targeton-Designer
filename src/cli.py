@@ -4,9 +4,10 @@ import sys
 
 from utils.arguments_parser import ParsedInputArguments
 from utils.validate_files import validate_files
-from utils.write_output_files import write_slicer_output, write_primer_output
+from utils.write_output_files import write_slicer_output, write_primer_output, write_ipcress_output
 from slicer.slicer import main as slicer
 from primer.primer3 import main as primer
+from ipcress.ipcress import main as ipcress
 
 def version_command():
     python_version = sys.version
@@ -24,7 +25,25 @@ def slicer_command(args):
 def primer_command(fasta, prefix = '', existing_dir = ''):
     validate_files(fasta = fasta)
     primers = primer(fasta)
-    write_primer_output(prefix = prefix, primers = primers, existing_dir = existing_dir)
+    result = write_primer_output(
+        primers = primers,
+        prefix=prefix,
+        existing_dir = existing_dir
+    )
+
+    return result
+
+def ipcress_command(params, csv = '', existing_dir = ''):
+    validate_files(fasta = params['fasta'], txt = params['primers'])
+    ipcress_result = ipcress(params)
+
+    print('ipcress_result', ipcress_result)
+
+    write_ipcress_output(
+        stnd = ipcress_result.stnd,
+        err = ipcress_result.err,
+        existing_dir = existing_dir
+    )
 
 def resolve_command(args):
     command = args['command']
@@ -37,6 +56,9 @@ def resolve_command(args):
 
         if command == 'primer':
             primer_command(args['fasta'], prefix = args['dir'])
+
+        if command == 'ipcress':
+            ipcress_command(args)
 
         if command == 'design':
             slicer_result = slicer_command(args)
