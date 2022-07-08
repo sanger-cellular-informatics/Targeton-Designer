@@ -14,7 +14,7 @@ def add_modules_to_sys_path():
 
 add_modules_to_sys_path()
 
-from utils.file_system import check_file_exists
+from utils.file_system import write_to_text_file, read_csv_to_dict
 
 def parse_args(args):
     parser = argparse.ArgumentParser(
@@ -33,7 +33,9 @@ def parse_args(args):
         help='Number of mismatches to check against',
         default='5')
     parser.add_argument('--primers',
-        help='Optional: Supply a preformatted txt file.\nIf left blank, the runner will look for primer3 output in the given director.')
+        help='Optional: Supply a preformatted txt file.\nIf left blank, the runner will take the primer3 output csv. Either primers or p3_csv must be supplied.')
+    parser.add_argument('--p3_csv',
+        help='Optional: Point at specific Primer3 output CSV file. Either primers or p3_csv must be supplied.')
     return parser.parse_args(args)
 
 def run_ipcress(params):
@@ -49,8 +51,10 @@ def run_ipcress(params):
     )
     
     stnd, err = ipcress.communicate()
-
+    
     print('Finished!')
+    write_to_text_file(params['dir'], stnd, 'ipcress_output')
+
     print("stdout:", stnd)
     print("stderr:", err)
 
@@ -61,12 +65,10 @@ def determine_ipcress_input(params):
         input_path = params['primers']
     else:
         print('Building iPCRess input file.')
-        primers = retrieve_p3_output(params['dir'])
-        formatted_primers = format_ipcress_primers(params, primers)
-        input_path = write_ipcress_input_file(params['dir'], formatted_primers)
+        input_path = retrieve_primer3_output(params)
     return input_path
 
-def format_ipcress_primers(params, primers):
+def format_ipcress_primers(min_amp, max_amp, primers):
     ipcress_input = []
     rows = primers.keys()
     
@@ -78,33 +80,22 @@ def format_ipcress_primers(params, primers):
             key,
             left,
             right,
-            params['min'],
-            params['max']
+            min_amp,
+            max_amp
         ])
         ipcress_input.append(line)
 
     return ipcress_input    
 
-def write_ipcress_input_file(dir_path, rows):
-    path = dir_path + '/' + 'ipcress_primer_input.txt'
-   
-    file_h = open(path, "w")
-    for row in rows:
-        file_h.write(row + "\n")
-    file_h.close
-
-    return path
-
-def retrieve_p3_output(dir_path):
-    p3_csv = path.join(dir_path, 'p3_output.csv')
-    check_file_exists(p3_csv)
+def retrieve_primer3_output(params):
+    file_data = read_csv_to_dict(params['p3_csv'])
     
-    primer_data = {}
-    with open(p3_csv) as csv_file:
-        csv_obj = csv.DictReader(csv_file, delimiter=',')
-        primer_data = extract_primer_sequences(csv_obj)
+    primer_data = extract_primer_sequences(file_data)
+    formatted_primers = format_ipcress_primers(params['min'], params['max'], primer_data)
     
-    return primer_data
+    input_path = write_to_text_file(params['dir'], formatted_primers, 'ipcress_primer_input')
+    
+    return input_path
     
 def extract_primer_sequences(csv_obj):
     primer_data = collections.defaultdict(dict)
