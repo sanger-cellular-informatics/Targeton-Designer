@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 from pybedtools import BedTool
 from pybedtools.helpers import BEDToolsError
-from os import path
+from os import path, remove
 from Bio import SeqIO
+
 import csv
 import argparse
 import sys
 import re
+
 
 def add_modules_to_sys_path():
     BASE_PATH = path.dirname(path.dirname(path.abspath(__file__)))
@@ -28,6 +30,22 @@ def validate_files(bed, fasta):
     validate_bed_content(bed)
 
     return
+
+
+def handle_one_based_input(input_bed):
+    adjusted_tsv = []
+    with open(input_bed) as file:
+        tsv = csv.reader(file, delimiter="\t")
+        adjusted_tsv = decrement_one_based_starts(tsv, adjusted_tsv) 
+    return adjusted_tsv
+
+
+def decrement_one_based_starts(tsv, new_tsv):
+    #BED is only 0-based on the start thus only need to edit column 1
+    for row in tsv:
+        row[1] = str(int(row[1]) - 1)
+        new_tsv.append(row)
+    return new_tsv
 
 
 def _generate_slice_data(exon, exon_name, params):
@@ -81,6 +99,9 @@ def parse_args(args):
                         help='BED file containing regions of interest')
     parser.add_argument('input_fasta',
                         help='FASTA file to retrieve sequences from')
+    parser.add_argument('-1b',
+                        help='Declare if input BED/TSV is one-based',
+                        action='store_true')
     parser.add_argument('-f5', '--flank_5',
                         help='how far to extend region at 5\' end (default 50nt)',
                         type=int, default=50)
@@ -102,8 +123,12 @@ def parse_args(args):
 
 def get_slices(params):
     validate_files(params['input_bed'], params['input_fasta'])
-
-    bed = BedTool(params['input_bed'])
+    
+    input_bed = params['input_bed']
+    if params['1b']:
+        input_bed = handle_one_based_input(params['input_bed'])
+    
+    bed = BedTool(input_bed)
     slice_bed = BedTool(get_slice_data(bed, params))
     # return named, coords slice sequences on specified strand
     seq_options = { 
@@ -181,12 +206,37 @@ def validate_bed_content(bed):
 
             line_num = line_num + 1
 
+def correct_fasta_to_1_based(file_path):
+    fasta = SeqIO.parse(open(file_path), 'fasta')
+    remove(file_path)
+    with open(file_path, "w") as output: 
+        for row in fasta:
+            regex = r'^(\S+::\S+:)(\d+)(-\d+\([-+.]\))$'
+            row.id = regex_row_name(regex, row.id)
+            row.description = ""
+            SeqIO.write(row, output, 'fasta')
+
+ 
+def regex_row_name(regex, target):
+    name = ''
+    match = re.search(regex, target)
+    if match:
+        start = int(match.group(2)) + 1
+        name = match.group(1) + str(start) + match.group(3)
+    return name
+
 
 def main(params):
     try:
         slices = get_slices(params)
+
+        fasta_path = path.join(params['dir'], 'slices.fa')
+
         slices.saveas(path.join(params['dir'], 'slices.bed'))
-        slices.save_seqs(path.join(params['dir'], 'slices.fa'))
+        slices.save_seqs(fasta_path)
+
+        correct_fasta_to_1_based(fasta_path)
+
         print('Slice files saved')
 
     except ValueError as valErr:
