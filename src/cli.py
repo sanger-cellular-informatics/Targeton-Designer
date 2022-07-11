@@ -40,7 +40,7 @@ def ipcress_command(params, csv = '', existing_dir = ''):
 
     if csv:
         ipcress_input['p3_csv'] = csv
-    if dir:
+    if existing_dir:
         ipcress_input['dir'] = existing_dir
 
     ipcress_result = ipcress(ipcress_input)
@@ -48,7 +48,7 @@ def ipcress_command(params, csv = '', existing_dir = ''):
     write_ipcress_output(
         stnd = ipcress_result.stnd,
         err = ipcress_result.err,
-        existing_dir = existing_dir
+        existing_dir = ipcress_input['dir']
     )
 
 def resolve_command(args):

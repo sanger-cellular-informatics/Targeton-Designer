@@ -1,4 +1,4 @@
 {
   "OUTPUT_PARENT_DIR": 'td_output',
-  "OUTPUT_DIR_PREFIX": 'td_output'
+  "OUTPUT_DIR_PREFIX": 'td_'
 }
