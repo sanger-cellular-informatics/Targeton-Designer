@@ -3,56 +3,24 @@ import json
 import re
 import os
 import collections
-import csv
-import sys
-import argparse
 
-from pybedtools import BedTool
 from Bio import SeqIO
 from Bio.Seq import Seq
 
-def add_modules_to_sys_path():
-    BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    sys.path.append(BASE_PATH)
-
-add_modules_to_sys_path()
-
 from utils.exceptions import Primer3Error
-from utils.file_system import FolderCreator
 
-def timestamped_dir(arg):
-    try:
-        FolderCreator.create_timestamped(arg)
-    except FolderCreatorError as err:
-        raise Primer3Error(f'Error creating folder: {err}')
-    return FolderCreator.get_dir()
-
-def parse_args(args):
-    parser = argparse.ArgumentParser(
-        description='Slice analysis using Primer3')
-    parser.add_argument('--seq',
-        help='FASTA file from the slicer tool containing seqs and IDs')
-    parser.add_argument('--bed',
-        help='BED file from the slicer tool containing coords, strand and IDs')
-    parser.add_argument('--dir',
-        help='Output folder name to be timestamped (default \'td_output\')',
-        type=timestamped_dir, default='td_output')
-    return parser.parse_args(args)
-
-def primer3_runner(params):
+def primer3_runner(fasta = ''):
     print('Reading FA file')
-    design_inputs = read_input_fasta(params)
+    design_inputs = read_input_fasta(fasta)
     print('Designing primers for the region')
     designs = primer3_design(design_inputs)
     print('Naming primers')
     slices = locate_primers(designs)
-    print('Exporting to BED and CSV')
-    export_primers(slices, params['dir'])
  
     return slices
 
-def read_input_fasta(params):
-    rows = SeqIO.parse(open(params['seq']), 'fasta')    
+def read_input_fasta(fasta):
+    rows = SeqIO.parse(open(fasta), 'fasta')
    
     slices = [] 
     for row in rows:
@@ -217,71 +185,13 @@ def name_primers(primer_details, strand):
 
     return primer_name
 
-def export_primers(slices, output_dir):
-    bed_rows = construct_bed_format(slices)
-    export_to_bed(bed_rows, output_dir)
-    export_to_csv(slices, output_dir)
-
-def export_to_csv(slices, output_dir):
-    headers = ['primer', 'sequence', 'tm', 'gc_percent', 'penalty', 'self_any_th', 'self_end_th', 'hairpin_th', 'end_stability']
-    rows = construct_csv_format(slices, headers)
-
-    path = output_dir + '/p3_output.csv'
-    with open(path, "w") as p3_fh:
-        p3_out = csv.DictWriter(p3_fh, fieldnames = headers)
-        p3_out.writeheader()
-        p3_out.writerows(rows)
-
-def construct_csv_format(slices, headers): 
-    rows = []
-
-    for slice_data in slices:
-        primers = slice_data['primers']
-        for primer in primers:
-            primers[primer]['primer'] = primer
-            
-            del primers[primer]['primer_start'] 
-            del primers[primer]['primer_end'] 
-            del primers[primer]['coords']
-            del primers[primer]['side']
-            del primers[primer]['strand']
-
-            rows.append(primers[primer])
-
-    return rows
-
-def construct_bed_format(slices):
-    rows = []
-    for slice_data in slices:
-        primers = slice_data['primers']
-        for primer in primers: 
-            primer_data = primers[primer]
-            #chr,chrStart,chrEnd,name,score,strand
-            #Score unknown until iPCRess
-            row = [
-                slice_data['chrom'],
-                primer_data['primer_start'],
-                primer_data['primer_end'],
-                primer,
-                '0',
-                primer_data['strand']
-            ]
-            rows.append(row)
-    return rows
-
-def export_to_bed(bed_rows, output_dir):
-    p3_bed = BedTool(bed_rows)
-    path = output_dir + '/p3_output.bed'
-    p3_bed.saveas(path)
-
-    return
-
-def main(params):
+def main(fasta):
     if os.environ.get("PRIMER3_CONFIG") is None:
         os.environ["PRIMER3_CONFIG"] = "./primer3_config.json"
-    primer3_runner(params)
+    result = primer3_runner(fasta = fasta)
+
+    return result
 
 if __name__ == '__main__':
-    args = parse_args(sys.argv[1:])
-    main(vars(args))
+    main()
 
