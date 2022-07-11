@@ -34,10 +34,16 @@ def primer_command(fasta, prefix = '', existing_dir = ''):
     return result
 
 def ipcress_command(params, csv = '', existing_dir = ''):
-    validate_files(fasta = params['fasta'], txt = params['primers'])
-    ipcress_result = ipcress(params)
+    ipcress_input = params.copy()
 
-    print('ipcress_result', ipcress_result)
+    validate_files(fasta = ipcress_input['fasta'], txt = ipcress_input['primers'])
+
+    if csv:
+        ipcress_input['p3_csv'] = csv
+    if dir:
+        ipcress_input['dir'] = existing_dir
+
+    ipcress_result = ipcress(ipcress_input)
 
     write_ipcress_output(
         stnd = ipcress_result.stnd,
@@ -62,7 +68,8 @@ def resolve_command(args):
 
         if command == 'design':
             slicer_result = slicer_command(args)
-            primer_command(slicer_result.fasta, existing_dir = slicer_result.dir)
+            primer_result = primer_command(slicer_result.fasta, existing_dir = slicer_result.dir)
+            ipcress_command(args, csv = primer_result.csv,  existing_dir = slicer_result.dir)
 
 def main():
     parsed_input = ParsedInputArguments()

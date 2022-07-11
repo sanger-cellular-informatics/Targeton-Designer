@@ -136,12 +136,10 @@ def write_primer_output(prefix = '', primers = [], existing_dir = '') -> PrimerO
 
     print('Primer files saved:', result.bed, result.csv)
 
-    return PrimerOutputData
+    return result
 
 def write_ipcress_output(stnd = '', err = '', existing_dir = ''):
     IPCRESS_OUTPUT_TXT = 'ipcress_output'
 
     write_to_text_file(existing_dir, stnd, IPCRESS_OUTPUT_TXT)
 
-    print("stdout:", stnd)
-    print("stderr:", err)

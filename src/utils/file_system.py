@@ -31,11 +31,9 @@ class FolderCreator:
     def create_timestamped(self, prefix):
         self.create(f'{prefix}_' + datetime.now().strftime('%Y%m%d%H%M%S%f'))
 
-
 def check_file_exists(file):
     if not path.exists(file):
         raise FileNotFoundError(f'Unable to find file: {file}')
-
 
 def write_to_text_file(dir_path, data, file_name):
     file_path = dir_path + '/' + file_name + '.txt'

@@ -1,21 +1,30 @@
 import argparse
 
-class ParsedInputArguments():
+class ParsedInputArguments:
     def __init__(self) -> None:
+        self.arguments = []
+        self.command = ''
+
+        self.parse_arguments()
+
+    def parse_arguments(self):
         parser = argparse.ArgumentParser(
             description='Targeton Designer CLI')
 
         parser.add_argument('command',
-                            help='Command to run in Designer CLI, available commands: version, slicer, primer3, design',
+                            help='Command to run in Designer CLI, available commands: version, slicer, primer3, ipcress, design',
                             type=str, default='design')
 
         parser = add_input_args(parser)
 
-        self.arguments = vars(parser.parse_args())
-        self.command = self.arguments['command']
+        self.set_args(vars(parser.parse_args()))
 
     def get_command(self) -> str:
         return self.command
+
+    def set_args(self, values) -> None:
+        self.arguments = values
+        self.command = self.arguments['command']
 
     def get_args(self) -> str:
         return self.arguments
