@@ -101,37 +101,63 @@ Upcoming feature in later releases
 
 ## Usage
 
-### Python
+### Command Line
+
+Check Designer Version:
+```sh
+./designer.sh version
+```
+
+#### Designer Workflow
+
+Running full Designer Workflow:
+```sh
+./designer.sh design [-h] [--bed INPUT_BED] [--fasta REF_FASTA]
+```
+
+Example Command
+```sh
+./designer.sh design --bed example_bed --fasta example_genomic_ref.fasta
+```
+
+#### Slicer Tool
 
 Running Slicer tool:
 ```sh
-python3 designer/slicer.py [-h] [-f5 FLANK_5] [-f3 FLANK_3] [-l LENGTH] [-o OFFSET] [-d DIR] bed fasta
+./designer.sh slicer [-h] [-f5 FLANK_5] [-f3 FLANK_3] [-l LENGTH] [-o OFFSET] [-d DIR] [--bed INPUT_BED] [--fasta REF_FASTA]
 ```
 
 Example command:
 ```sh
-python3 designer/slicer.py example.bed example.fa -d example_dir
+./designer.sh slicer --bed example.bed --fasta example_genomic_ref.fa -d example_dir
 ```
+
+#### Primer3 Runner
 
 Running Primer3:
 ```sh
-python3 runner/primer3_runner.py [--seq INPUT_FASTA] [--bed INPUT_BED] [--dir OUTPUT_FOLDER] 
+./designer.sh primer [--seq INPUT_FASTA] [--dir OUTPUT_FOLDER] 
 ```
 The input fasta and bed files are intended to be sourced from the slicer tool. Examples of how these files are constructed can be found below.
 
 Example command:
 ```sh
-python3 runner/primer3_runner.py --seq slices.fa --bed slices.bed --dir p3_output
+./designer.sh primer --fasta slices.fa --dir p3_output
 ```
+
+#### Exonerate iPCRess
+
 Running Exonerate iPCRess:
 ```sh
-To be added
+./designer ipcress [--dir DIR] [--fasta REF_FASTA] [--primers IPCRESS_INPUT] [--p3_csv PRIMER3_OUTPUT_CSV] 
 ```
-Input files should flow on from Primer3. To be updated after integration ticket.
+Supply either a standard iPCRess input file or point P3 CSV to the output csv of the Primer3 runner.
 
 Example command:
 ```sh
-To be added
+./designer ipcress --dir example_dir --fasta example_genomic_ref.fa --primers example_ipcress_input.txt
+or
+./designer ipcress --dir example_dir --fasta example_genomic_ref.fa --p3_csv example_p3_output.csv
 ```
 
 ### Docker
