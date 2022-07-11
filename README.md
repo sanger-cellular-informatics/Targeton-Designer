@@ -117,7 +117,7 @@ Running full Designer Workflow:
 
 Example Command
 ```sh
-./designer.sh design --bed example_bed --fasta example_genomic_ref.fasta
+./designer.sh design --bed example.bed --fasta example_genomic_ref.fasta
 ```
 
 #### Slicer Tool
@@ -136,9 +136,9 @@ Example command:
 
 Running Primer3:
 ```sh
-./designer.sh primer [--seq INPUT_FASTA] [--dir OUTPUT_FOLDER] 
+./designer.sh primer [--fasta INPUT_FASTA] [--dir OUTPUT_FOLDER] 
 ```
-The input fasta and bed files are intended to be sourced from the slicer tool. Examples of how these files are constructed can be found below.
+The input fasta and BED files are intended to be sourced from the slicer tool. Examples of how these files are constructed can be found below.
 
 Example command:
 ```sh
@@ -195,8 +195,8 @@ Raw file
 
 More information can be found here: https://en.wikipedia.org/wiki/BED_(file_format)
 
-### Slicer Bed output
-Bed file output with row for each slice. This file will also be used for running VaLiAnt.
+### Slicer BED output
+BED file output with row for each slice. This file will also be used for running VaLiAnt.
 
 | chrom | chromStart | chromEnd | name | score | strand |
 | ----- | ---------- | -------- | ---- | ----- | ------ |
