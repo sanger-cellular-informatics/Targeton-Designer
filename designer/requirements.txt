@@ -1,6 +1,0 @@
-Cython
-mock
-pybedtools
-biopython
-remote-pdb #Both - dev only
-docker>=2.0.0
