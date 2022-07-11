@@ -74,33 +74,90 @@ python3 -m unittest
 deactivate
 ```
 
+### Exonerate iPCRess
+
+Nathan Weeks has placed Exonerate onto GitHub along with maintenance tweaks. The repo can be found here:
+https://github.com/nathanweeks/exonerate
+
+Install glib
+```sh
+sudo apt-get install libglib2.0-dev
+```
+
+Installing exonerate on your VM.
+```sh
+git clone https://github.com/nathanweeks/exonerate.git
+cd exonerate
+autoreconf -vfi
+./configure [YOUR_CONFIGURE_OPTIONS]
+make
+make check
+sudo make install
+```
+
 ### Docker images
 
 Upcoming feature in later releases
 
 ## Usage
 
-### Python
+### Command Line
+
+Check Designer Version:
+```sh
+./designer.sh version
+```
+
+#### Designer Workflow
+
+Running full Designer Workflow:
+```sh
+./designer.sh design [-h] [--bed INPUT_BED] [--fasta REF_FASTA]
+```
+
+Example Command
+```sh
+./designer.sh design --bed example.bed --fasta example_genomic_ref.fasta
+```
+
+#### Slicer Tool
 
 Running Slicer tool:
 ```sh
-python3 designer/slicer.py [-h] [-f5 FLANK_5] [-f3 FLANK_3] [-l LENGTH] [-o OFFSET] [-d DIR] bed fasta
+./designer.sh slicer [-h] [-f5 FLANK_5] [-f3 FLANK_3] [-l LENGTH] [-o OFFSET] [-d DIR] [--bed INPUT_BED] [--fasta REF_FASTA]
 ```
 
 Example command:
 ```sh
-python3 designer/slicer.py example.bed example.fa -d example_dir
+./designer.sh slicer --bed example.bed --fasta example_genomic_ref.fa -d example_dir
 ```
+
+#### Primer3 Runner
 
 Running Primer3:
 ```sh
-python3 runner/primer3_runner.py [--seq INPUT_FASTA] [--bed INPUT_BED] [--dir OUTPUT_FOLDER] 
+./designer.sh primer [--fasta INPUT_FASTA] [--dir OUTPUT_FOLDER] 
 ```
-The input fasta and bed files are intended to be sourced from the slicer tool. Examples of how these files are constructed can be found below.
+The input fasta and BED files are intended to be sourced from the slicer tool. Examples of how these files are constructed can be found below.
 
 Example command:
 ```sh
-python3 runner/primer3_runner.py --seq slices.fa --bed slices.bed --dir p3_output
+./designer.sh primer --fasta slices.fa --dir p3_output
+```
+
+#### Exonerate iPCRess
+
+Running Exonerate iPCRess:
+```sh
+./designer ipcress [--dir DIR] [--fasta REF_FASTA] [--primers IPCRESS_INPUT] [--p3_csv PRIMER3_OUTPUT_CSV] 
+```
+Supply either a standard iPCRess input file or point P3 CSV to the output csv of the Primer3 runner.
+
+Example command:
+```sh
+./designer ipcress --dir example_dir --fasta example_genomic_ref.fa --primers example_ipcress_input.txt
+or
+./designer ipcress --dir example_dir --fasta example_genomic_ref.fa --p3_csv example_p3_output.csv
 ```
 
 ### Docker
@@ -138,8 +195,8 @@ Raw file
 
 More information can be found here: https://en.wikipedia.org/wiki/BED_(file_format)
 
-### Primer3 Bed Input File (Slicer Bed output)
-Bed file output with row for each slice. This file will also be used for running VaLiAnt.
+### Slicer BED output
+BED file output with row for each slice. This file will also be used for running VaLiAnt.
 
 | chrom | chromStart | chromEnd | name | score | strand |
 | ----- | ---------- | -------- | ---- | ----- | ------ |
@@ -197,7 +254,7 @@ Raw file
 1	42931211	42931230	ENSE00003571441_HG6_6_LibAmpF_1	0	-
 ```
 
-### Primer3 Output CSV file
+### Primer3 Output CSV file (iPCRess Primer3 CSV Input file)
 Contains all of the extra information from Primer3 for the individual primers
 
 | primer | sequence | tm | gc_percent | penalty | self_any_th | self_end_th | hairpin_th | end_stability |
@@ -214,4 +271,18 @@ ENSE00003571441_HG6_6_LibAmpR_0,ACCCAGGCTGCATCTCCC,61.41508744063151,66.66666666
 ENSE00003571441_HG6_6_LibAmpF_0,AGTGCCAGGACCTCTCCTAC,60.32483047348552,60.0,0.32483047348551963,0.0,0.0,46.300612411542886,3.18
 ENSE00003571441_HG6_6_LibAmpR_1,ACCCAGGCTGCATCTCCC,61.41508744063151,66.66666666666667,3.4150874406315097,9.564684449038168,0.0,0.0,4.3
 ENSE00003571441_HG6_6_LibAmpF_1,AGTGCCAGGACCTCTCCTA,58.90293358584404,57.89473684210526,2.097066414155961,0.0,0.0,46.300612411542886,2.94
+```
+
+### iPCRess Standard Input File
+Standard file format input for iPCRess. If you wish to use iPCRess as a standalone, use this file format.
+Otherwise point iPCRess at the Primer3 output CSV.
+Space separated text file containing name, left & right primer, minimum & maximum amplicon lengths.
+
+| name | left | right | min_amplicon_len | max_amplicon_len |
+| ---- | ---- | ----- | ---------------- | ---------------- |
+| ENSE00003571441_HG6_6_LibAmp_0 | AGTGCCAGGACCTCTCCTAC | GGGAGATGCAGCCTGGGT | 200 | 300 |
+
+Raw file
+```
+ENSE00003571441_HG6_6_LibAmp_0 AGTGCCAGGACCTCTCCTAC GGGAGATGCAGCCTGGGT 200 300
 ```
