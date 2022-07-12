@@ -111,6 +111,11 @@ Upcoming feature in later releases
 
 ### Command Line
 
+Make designer.sh executable
+```sh
+chmod +x ./designer.sh
+```
+
 Check Designer Version:
 ```sh
 ./designer.sh version
@@ -157,15 +162,15 @@ Example command:
 
 Running Exonerate iPCRess:
 ```sh
-./designer ipcress [--dir DIR] [--fasta REF_FASTA] [--primers IPCRESS_INPUT] [--p3_csv PRIMER3_OUTPUT_CSV] 
+./designer.sh ipcress [--dir DIR] [--fasta REF_FASTA] [--primers IPCRESS_INPUT] [--p3_csv PRIMER3_OUTPUT_CSV] 
 ```
 Supply either a standard iPCRess input file or point P3 CSV to the output csv of the Primer3 runner.
 
 Example command:
 ```sh
-./designer ipcress --dir example_dir --fasta example_genomic_ref.fa --primers example_ipcress_input.txt
+./designer.sh ipcress --dir example_dir --fasta example_genomic_ref.fa --primers example_ipcress_input.txt
 or
-./designer ipcress --dir example_dir --fasta example_genomic_ref.fa --p3_csv example_p3_output.csv
+./designer.sh ipcress --dir example_dir --fasta example_genomic_ref.fa --p3_csv example_p3_output.csv
 ```
 
 ### Docker
