@@ -79,9 +79,10 @@ deactivate
 Nathan Weeks has placed Exonerate onto GitHub along with maintenance tweaks. The repo can be found here:
 https://github.com/nathanweeks/exonerate
 
-Install glib
+Install glib and autoconf
 ```sh
 sudo apt-get install libglib2.0-dev
+sudo apt install autoconf
 ```
 
 Installing exonerate on your VM.
@@ -93,6 +94,13 @@ autoreconf -vfi
 make
 make check
 sudo make install
+```
+
+If you happen to get the error: no module found 'apt_pkg', create a symbolic link to your apt_pkg.so
+
+```sh
+cd /usr/lib/python3/dist-packages
+sudo ln -s apt_pkg.cpython-{version-number}-x86_64-linux-gnu.so apt_pkg.so
 ```
 
 ### Docker images
