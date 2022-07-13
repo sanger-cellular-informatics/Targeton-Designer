@@ -77,7 +77,7 @@ def add_input_args(parser):
     parser.add_argument('--p3_csv',
                         help='Optional: Point at specific Primer3 output CSV file. Either primers or p3_csv must be supplied.')
     parser.add_argument('--pretty',
-                        help='Include Graphs in the iPCRess output. Default: false',
+                        help='Include Graphs in the iPCRess output. (true / false) Default: false',
                         default='false')
 
     return parser
