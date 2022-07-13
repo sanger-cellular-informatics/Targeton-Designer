@@ -76,6 +76,9 @@ def add_input_args(parser):
                         help='Optional: Supply a preformatted txt file.\nIf left blank, the runner will take the primer3 output csv. Either primers or p3_csv must be supplied.')
     parser.add_argument('--p3_csv',
                         help='Optional: Point at specific Primer3 output CSV file. Either primers or p3_csv must be supplied.')
+    parser.add_argument('--pretty',
+                        help='Include Graphs in the iPCRess output. Default: false',
+                        default='false')
 
     return parser
 
