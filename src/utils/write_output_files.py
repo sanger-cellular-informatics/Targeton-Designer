@@ -60,8 +60,8 @@ def write_slicer_fasta_output(dir, slices):
 def export_to_csv(slices, dir):
     PRIMER3_OUTPUT_CSV = 'p3_output.csv'
 
-    headers = ['primer', 'sequence', 'tm', 'gc_percent', 'penalty', 'self_any_th', 'self_end_th', 'hairpin_th',
-               'end_stability']
+    headers = ['primer', 'sequence', 'chr', 'primer_start', 'primer_end', 'tm', 'gc_percent', 
+        'penalty', 'self_any_th', 'self_end_th', 'hairpin_th', 'end_stability']
     rows = construct_csv_format(slices, headers)
 
     csv_path = path.join(dir, PRIMER3_OUTPUT_CSV)
@@ -80,9 +80,8 @@ def construct_csv_format(slices, headers):
         primers = slice_data['primers']
         for primer in primers:
             primers[primer]['primer'] = primer
-
-            del primers[primer]['primer_start']
-            del primers[primer]['primer_end']
+            primers[primer]['chr'] = slice_data['chrom']
+ 
             del primers[primer]['coords']
             del primers[primer]['side']
             del primers[primer]['strand']
