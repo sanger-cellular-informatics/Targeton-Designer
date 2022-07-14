@@ -170,6 +170,12 @@ A Fasta file of latest GRCh38 genome. This is used for gathering the slice seque
 Either supply a local genome reference file or download one from EnsEMBL and point to it with the relevant parameters:
 http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/
 
+We've included a bash script to download the reference genome:
+```sh
+./download_reference_genome.sh
+```
+
+Otherwise you can download it manually here:
 ```sh
 wget http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.alt.fa.gz
 gunzip Homo_sapiens.GRCh38.dna.alt.fa.gz 
