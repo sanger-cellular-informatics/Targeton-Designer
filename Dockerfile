@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM python:3.8-slim-buster
+FROM python:3.8-slim-buster as base
 
 WORKDIR /
 
@@ -17,5 +17,9 @@ RUN pip3 install -r requirements.txt
 
 COPY . .
 
+FROM base as dev
 ENTRYPOINT [ "python3", "./src/cli.py" ]
+
+FROM base as test
+CMD ["python3", "-m", "unittest"]
 
