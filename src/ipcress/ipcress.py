@@ -20,6 +20,8 @@ def run_ipcress(params) -> IpcressResult:
     input_path = determine_ipcress_input(params, primers_txt=params['primers'])
     cmd = "ipcress " + input_path + ' ' + params['fasta'] + ' --mismatch ' + params['mismatch']
 
+    cmd = prettify_output(params['pretty'], cmd)
+
     print('Running Exonerate iPCRess with the following command:')
     print(cmd)
     
@@ -33,6 +35,13 @@ def run_ipcress(params) -> IpcressResult:
     print('Finished!')
 
     return result
+
+def prettify_output(prettify, cmd):
+    pretty_opt = 'false'
+    if prettify:
+        pretty_opt = 'true'
+
+    return cmd + ' --pretty ' + pretty_opt
 
 def determine_ipcress_input(params, primers_txt = ''):
     input_path = ''
