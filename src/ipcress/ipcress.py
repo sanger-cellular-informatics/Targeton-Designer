@@ -38,7 +38,7 @@ def run_ipcress(params) -> IpcressResult:
 
 def prettify_output(prettify, cmd):
     pretty_opt = 'false'
-    if prettify == 'true':
+    if prettify:
         pretty_opt = 'true'
 
     return cmd + ' --pretty ' + pretty_opt
