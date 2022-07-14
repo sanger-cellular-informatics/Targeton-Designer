@@ -3,7 +3,8 @@ import re
 from pybedtools import BedTool
 from pybedtools.helpers import BEDToolsError
 
-from utils.exceptions import SlicerError
+from src.utils.exceptions import SlicerError
+
 
 def handle_one_based_input(input_bed):
     adjusted_tsv = []
@@ -12,12 +13,14 @@ def handle_one_based_input(input_bed):
         adjusted_tsv = decrement_one_based_starts(tsv, adjusted_tsv)
     return adjusted_tsv
 
+
 def decrement_one_based_starts(tsv, new_tsv):
-    #BED is only 0-based on the start thus only need to edit column 1
+    # BED is only 0-based on the start thus only need to edit column 1
     for row in tsv:
         row[1] = str(int(row[1]) - 1)
         new_tsv.append(row)
     return new_tsv
+
 
 def _generate_slice_data(exon, exon_name, params):
     slices = []
@@ -27,11 +30,12 @@ def _generate_slice_data(exon, exon_name, params):
     while end <= (exon.end + params['flank_3']):
         slice_name = f'{exon_name}_{count}'
         slices.append((exon.chrom, start, end, slice_name,
-            exon.score, exon.strand))
+                       exon.score, exon.strand))
         start += params['offset']
         end += params['offset']
         count += 1
     return slices
+
 
 def get_slice_data(bed, params):
     slices = []
@@ -42,8 +46,8 @@ def get_slice_data(bed, params):
         count += 1
     return slices
 
-def get_slices(params):
 
+def get_slices(params):
     input_bed = params['bed']
     if params['1b']:
         input_bed = handle_one_based_input(params['bed'])
@@ -52,9 +56,9 @@ def get_slices(params):
     slice_bed = BedTool(get_slice_data(bed, params))
     # return named, coords slice sequences on specified strand
     seq_options = {
-        "fi"    : params['fasta'],
-        "s"     : True,
-        "name+" : True
+        "fi": params['fasta'],
+        "s": True,
+        "name+": True
     }
     seq = {}
     try:
@@ -70,6 +74,7 @@ def get_slices(params):
 
     return seq
 
+
 def main(params):
     try:
         slices = get_slices(params)
@@ -77,6 +82,7 @@ def main(params):
 
     except Exception as err:
         raise SlicerError('Unexpected error occurred: {0}'.format(err))
+
 
 if __name__ == '__main__':
     main()
