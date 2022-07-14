@@ -24,9 +24,9 @@ test:
     - |
       if [[ "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" == "$CI_DEFAULT_BRANCH" ]]; then
         tag=""
-        echo "Running on default branch '$CI_DEFAULT_BRANCH': tag = 'latest'"
+        echo "Running on default branch '$CI_DEFAULT_BRANCH': tag = 'latest-test'"
       else
-        tag=":$CI_COMMIT_REF_SLUG"
+        tag=":$CI_COMMIT_REF_SLUG-test"
         echo "Running on branch '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME': tag = $tag"
       fi
     - docker build --pull -t "$CI_REGISTRY_IMAGE${tag}" --target test .
