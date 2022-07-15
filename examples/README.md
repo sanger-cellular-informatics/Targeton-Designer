@@ -1,10 +1,14 @@
 # Example CLI commands with test data
 
-Run Targeton Designer end-to-end (slicer-primer3-ipcress) with test input data:
+### Targeton Designer end-to-end (slicer-primer3-ipcress)
+
+Run **design** command with test input data:
 
 `
 ./designer.sh design --bed ./examples/test_targeton_data.bed --fasta ../Homo_sapiens.GRCh38.dna.primary_assembly.fa --dir ./td_output
 `
+
+### Standalones 
 
 Run only **slicer** with test input data: 
 
