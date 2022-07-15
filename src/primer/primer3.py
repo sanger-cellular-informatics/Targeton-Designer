@@ -43,11 +43,11 @@ def read_input_fasta(fasta):
 
 def construct_slice_coord_dict(match):
     coord_data = {
-        'name': match.group(1),
-        'start': match.group(4),
-        'end': match.group(5),
+        'name'  : match.group(1),
+        'start' : match.group(4),
+        'end'   : match.group(5),
         'strand': match.group(6),
-        'chrom': match.group(2),
+        'chrom' : match.group(2),
     }
     return coord_data
 
@@ -168,10 +168,10 @@ def capture_primer_details(primer_name):
         if primer_field == None:
             primer_field = 'coords'
         result = {
-            'id': primer_id,
-            'side': primer_side,
-            'field': primer_field,
-            'pair': pair_number
+            'id'    : primer_id,
+            'side'  : primer_side,
+            'field' : primer_field,
+            'pair'  : pair_number
         }
 
     return result

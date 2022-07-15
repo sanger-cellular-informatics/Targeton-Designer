@@ -56,9 +56,9 @@ def get_slices(params):
     slice_bed = BedTool(get_slice_data(bed, params))
     # return named, coords slice sequences on specified strand
     seq_options = {
-        "fi": params['fasta'],
-        "s": True,
-        "name+": True
+        "fi"    : params['fasta'],
+        "s"     : True,
+        "name+" : True
     }
     seq = {}
     try:
