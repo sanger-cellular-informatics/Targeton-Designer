@@ -21,7 +21,5 @@ FROM base as dev
 ENTRYPOINT [ "python3", "./src/cli.py" ]
 
 FROM base as test
-
-RUN pip3 install pyfakefs
 CMD ["python3", "-m", "unittest"]
 
