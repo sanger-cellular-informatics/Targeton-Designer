@@ -79,9 +79,10 @@ deactivate
 Nathan Weeks has placed Exonerate onto GitHub along with maintenance tweaks. The repo can be found here:
 https://github.com/nathanweeks/exonerate
 
-Install glib
+Install glib and autoconf
 ```sh
 sudo apt-get install libglib2.0-dev
+sudo apt install autoconf
 ```
 
 Installing exonerate on your VM.
@@ -95,6 +96,13 @@ make check
 sudo make install
 ```
 
+If you happen to get the error: no module found 'apt_pkg', create a symbolic link to your apt_pkg.so
+
+```sh
+cd /usr/lib/python3/dist-packages
+sudo ln -s apt_pkg.cpython-{version-number}-x86_64-linux-gnu.so apt_pkg.so
+```
+
 ### Docker images
 
 Upcoming feature in later releases
@@ -102,6 +110,11 @@ Upcoming feature in later releases
 ## Usage
 
 ### Command Line
+
+Make designer.sh executable
+```sh
+chmod +x ./designer.sh
+```
 
 Check Designer Version:
 ```sh
@@ -149,15 +162,15 @@ Example command:
 
 Running Exonerate iPCRess:
 ```sh
-./designer ipcress [--dir DIR] [--fasta REF_FASTA] [--primers IPCRESS_INPUT] [--p3_csv PRIMER3_OUTPUT_CSV] 
+./designer.sh ipcress [--dir DIR] [--fasta REF_FASTA] [--primers IPCRESS_INPUT] [--p3_csv PRIMER3_OUTPUT_CSV] 
 ```
 Supply either a standard iPCRess input file or point P3 CSV to the output csv of the Primer3 runner.
 
 Example command:
 ```sh
-./designer ipcress --dir example_dir --fasta example_genomic_ref.fa --primers example_ipcress_input.txt
+./designer.sh ipcress --dir example_dir --fasta example_genomic_ref.fa --primers example_ipcress_input.txt
 or
-./designer ipcress --dir example_dir --fasta example_genomic_ref.fa --p3_csv example_p3_output.csv
+./designer.sh ipcress --dir example_dir --fasta example_genomic_ref.fa --p3_csv example_p3_output.csv
 ```
 
 ### Docker
