@@ -12,6 +12,21 @@ class Slicer:
     def __init__(self):
         pass
 
+    def get_slices(self, params):
+        try:
+            input_bed = params['bed']
+            if params['1b']:
+                input_bed = self.handle_one_based_input(params['bed'])
+            bed = BedTool(input_bed)
+
+            slice_bed = BedTool(self.get_slice_data(bed, params))
+            # return named, coords slice sequences on specified strand
+
+            return self.get_seq(slice_bed, params['fasta'])
+
+        except Exception as err:
+            raise SlicerError('Unexpected error occurred: {0}'.format(err))
+
     def handle_one_based_input(self, input_bed):
         adjusted_tsv = []
         with open(input_bed) as file:
@@ -28,36 +43,26 @@ class Slicer:
             count += 1
         return slices
 
-    def get_slices(self, params):
+    @staticmethod
+    def get_seq(slice_bed, fasta_param):
+        seq_options = {
+            "fi": fasta_param,
+            "s": True,
+            "name+": True
+        }
+
         try:
-            input_bed = params['bed']
-            if params['1b']:
-                input_bed = self.handle_one_based_input(params['bed'])
-            bed = BedTool(input_bed)
+            seq = slice_bed.sequence(**seq_options)
+        except BEDToolsError as bed_err:
+            if not re.search(r'\*{5}ERROR:\ Unrecognized parameter: -name\+\ \*{5}', bed_err.args[1]):
+                template = "PyBEDTools exited with err type {0}. Arguments:\n{1!r}"
+                message = template.format(type(bed_err).__name__, bed_err.args[1])
+                raise BEDToolsError(bed_err, message)
+            del seq_options['name+']
+            seq_options['name'] = True
+            seq = slice_bed.sequence(**seq_options)
 
-            slice_bed = BedTool(self.get_slice_data(bed, params))
-            # return named, coords slice sequences on specified strand
-            seq_options = {
-                "fi"    : params['fasta'],
-                "s"     : True,
-                "name+" : True
-            }
-            seq = {}
-            try:
-                seq = slice_bed.sequence(**seq_options)
-            except BEDToolsError as bed_err:
-                if not re.search(r'\*{5}ERROR:\ Unrecognized parameter: -name\+\ \*{5}', bed_err.args[1]):
-                    template = "PyBEDTools exited with err type {0}. Arguments:\n{1!r}"
-                    message = template.format(type(bed_err).__name__, bed_err.args[1])
-                    raise BEDToolsError(bed_err, message)
-                del seq_options['name+']
-                seq_options['name'] = True
-                seq = slice_bed.sequence(**seq_options)
-
-            return seq
-
-        except Exception as err:
-            raise SlicerError('Unexpected error occurred: {0}'.format(err))
+        return seq
 
     @staticmethod
     def decrement_one_based_starts(tsv, new_tsv):
