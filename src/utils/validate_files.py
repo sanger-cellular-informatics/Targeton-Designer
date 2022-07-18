@@ -2,8 +2,9 @@ import csv
 from Bio import SeqIO
 import re
 
-from utils.exceptions import FileFormatError, FileValidationError
-from utils.file_system import check_file_exists
+from src.utils.exceptions import FileFormatError, FileValidationError
+from src.utils.file_system import check_file_exists
+
 
 def validate_bed_format(bed):
     with open(bed) as file:
@@ -16,10 +17,12 @@ def validate_bed_format(bed):
 
             line_num = line_num + 1
 
+
 def validate_fasta_format(fasta):
     with open(fasta) as handle:
         if not any(SeqIO.parse(handle, "fasta")):
-            raise FileFormatError('Unable to read in Fasta file correctly. Check file format.')
+            raise FileFormatError('Unable to read in FastA file correctly. Check file format.')
+
 
 def validate_bed_content(bed):
     with open(bed) as file:
@@ -46,7 +49,7 @@ def validate_bed_content(bed):
                                  f'Difference: {int(line[2]) - int(line[1])}')
 
             if not line[3]:
-                raise ValueError(f'Error with  name field, if no name is supplied please mark '
+                raise ValueError(f'Error with name field, if no name is supplied please mark '
                                  f'with a \'.\' on line {line_num}: {line[3]}')
 
             if not line[4]:
@@ -57,6 +60,7 @@ def validate_bed_content(bed):
                 raise ValueError(f'Strand format incorrect on line {line_num}: {line[5]}')
 
             line_num = line_num + 1
+
 
 def validate_files(bed = '', fasta = '', txt = ''):
     try:
