@@ -1,17 +1,14 @@
 import unittest
 import pybedtools
-import argparse
 
-from io import StringIO
-from unittest.mock import patch
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-from src.slicer.slicer import (get_slice_data, get_slices, decrement_one_based_starts)
+from src.slicer.slicer import Slicer
 
 
 class TestSlicer(TestCase):
-
     def setUp(self):
+        self.slicer = Slicer()
         self.setUpPyfakefs()
         self.bed_file_data = 'chr1\t100\t250\texon1\t.\t+'
         self.fasta_file_data = '>region1_1::chr1:5-10(+)\nAGTCT\n>region1_2::chr1:15-20(+)\nATTTT\n'
@@ -34,7 +31,7 @@ class TestSlicer(TestCase):
         }
 
         # act
-        actual = get_slice_data(bed, params)
+        actual = self.slicer.get_slice_data(bed, params)
 
         # assert
         self.assertEqual(actual, expected)
@@ -54,7 +51,7 @@ class TestSlicer(TestCase):
         }
 
         # act
-        actual = get_slice_data(bed, params)
+        actual = self.slicer.get_slice_data(bed, params)
 
         # assert
         self.assertEqual(actual, expected)
@@ -65,7 +62,7 @@ class TestSlicer(TestCase):
         expected_row = ['1', '199', '300', 'name', '0', '+']
 
         # act
-        result = decrement_one_based_starts(input_file, [])
+        result = self.slicer.decrement_one_based_starts(input_file, [])
 
         # assert
         self.assertEqual(expected_row, result[0])

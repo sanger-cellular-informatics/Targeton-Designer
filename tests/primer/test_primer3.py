@@ -7,16 +7,14 @@ from unittest.mock import patch
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from tests.test_data.primer3_output_data import primer3_output_data
-from src.primer.primer3 import (
-    name_primers,
-    capture_primer_details
-)
+from src.primer.primer3 import Primer
 
 
 class TestPrimer3(TestCase):
     primer3_output_json_data = primer3_output_data
 
     def setUp(self):
+        self.primer = Primer()
         self.setUpPyfakefs()
 
         self.fs.create_file('/primer3_test_config.json', contents='{\
@@ -41,7 +39,7 @@ class TestPrimer3(TestCase):
         expected = 'LibAmpF'
 
         # act
-        actual = name_primers(test_input, '+')
+        actual = self.primer.name_primers(test_input, '+')
 
         # assert
         self.assertEqual(actual, expected)
@@ -52,7 +50,7 @@ class TestPrimer3(TestCase):
         expected = 'LibAmpR'
 
         # act
-        actual = name_primers(test_input, '-')
+        actual = self.primer.name_primers(test_input, '-')
 
         # assert
         self.assertEqual(actual, expected)
@@ -63,7 +61,7 @@ class TestPrimer3(TestCase):
         expected = 'LibAmpR'
 
         # act
-        actual = name_primers(test_input, '+')
+        actual = self.primer.name_primers(test_input, '+')
 
         # assert
         self.assertEqual(actual, expected)
@@ -74,7 +72,7 @@ class TestPrimer3(TestCase):
         expected = 'LibAmpF'
 
         # act
-        actual = name_primers(test_input, '-')
+        actual = self.primer.name_primers(test_input, '-')
 
         # assert
         self.assertEqual(actual, expected)
@@ -85,7 +83,7 @@ class TestPrimer3(TestCase):
         expected = 'left'
 
         # act
-        actual = capture_primer_details(test_input)
+        actual = self.primer.capture_primer_details(test_input)
 
         # assert
         self.assertEqual(actual['side'], expected)
@@ -96,7 +94,7 @@ class TestPrimer3(TestCase):
         expected = 'right'
 
         # act
-        actual = capture_primer_details(test_input)
+        actual = self.primer.capture_primer_details(test_input)
 
         # assert
         self.assertEqual(actual['side'], expected)
@@ -107,7 +105,7 @@ class TestPrimer3(TestCase):
         expected = '1'
 
         # act
-        actual = capture_primer_details(test_input)
+        actual = self.primer.capture_primer_details(test_input)
 
         # assert
         self.assertEqual(actual['pair'], expected)
@@ -118,7 +116,7 @@ class TestPrimer3(TestCase):
         expected = 'primer_left_1'
 
         # act
-        actual = capture_primer_details(test_input)
+        actual = self.primer.capture_primer_details(test_input)
 
         # assert
         self.assertEqual(actual['id'], expected)
