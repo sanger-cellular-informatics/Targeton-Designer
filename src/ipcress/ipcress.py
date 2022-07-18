@@ -9,7 +9,7 @@ import csv
 from os import path
 from dataclasses import dataclass
 
-from utils.file_system import write_to_text_file, read_csv_to_dict
+from src.utils.file_system import write_to_text_file, read_csv_to_dict
 
 @dataclass
 class IpcressResult:
