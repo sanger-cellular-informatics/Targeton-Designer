@@ -9,8 +9,7 @@ from Bio.Seq import Seq
 
 from utils.exceptions import Primer3Error
 
-def primer3_runner(fasta: str, config: str):
-    print('primer3_runner config ---- ', config)
+def primer3_runner(fasta=''):
 
     print('Reading FA file')
     design_inputs = read_input_fasta(fasta)
@@ -196,20 +195,12 @@ def name_primers(primer_details, strand):
 
     return primer_name
 
-def get_config_file():
-    USER_CONFIG = './config/primer3.config.json'
-    DEFAULT_CONFIG = './primer3_config.json'
-
-    config_file_path = USER_CONFIG if os.path.exists(USER_CONFIG) else DEFAULT_CONFIG
-
-    return config_file_path
-
 
 def main(fasta):
     if os.environ.get("PRIMER3_CONFIG") is None:
         os.environ["PRIMER3_CONFIG"] = "./primer3_config.json"
 
-    result = primer3_runner(fasta=fasta, config=get_config_file())
+    result = primer3_runner(fasta=fasta)
 
     return result
 
