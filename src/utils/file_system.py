@@ -2,7 +2,7 @@ import csv
 from os import path, mkdir
 from datetime import datetime
 
-from src.utils.exceptions import FolderCreatorError
+from utils.exceptions import FolderCreatorError
 
 
 class FolderCreator:
