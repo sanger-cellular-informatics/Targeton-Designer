@@ -1,5 +1,4 @@
 import primer3
-import json
 import re
 import os
 import collections
@@ -8,6 +7,7 @@ from Bio import SeqIO
 from Bio.Seq import Seq
 
 from utils.exceptions import Primer3Error
+from utils.file_system import parse_json
 
 def primer3_runner(fasta: str, config: dict):
     print('Reading FA file')
@@ -190,29 +190,24 @@ def name_primers(primer_details, strand):
     return primer_name
 
 
-def parse_json(file_path: str) -> dict:
-    with open(os.path.join(os.path.dirname(__file__), file_path), "r") as p3:
-        result = json.load(p3)
-
-    return result
-
-
 def get_config_file():
     USER_CONFIG = './config/primer3.config.json'
-    DEFAULT_CONFIG = './primer3_config.json'
+    DEFAULT_CONFIG = './src/primer/primer3_config.json'
 
     config_file_path = USER_CONFIG if os.path.exists(USER_CONFIG) else DEFAULT_CONFIG
 
     return config_file_path
 
-def get_config():
+
+def get_config_data():
     config_file = get_config_file()
     config_data = parse_json(config_file)
 
     return config_data
 
+
 def main(fasta):
-    result = primer3_runner(fasta=fasta, config=get_config())
+    result = primer3_runner(fasta=fasta, config=get_config_data())
 
     return result
 

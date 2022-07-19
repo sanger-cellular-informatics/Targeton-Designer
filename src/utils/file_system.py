@@ -1,4 +1,5 @@
 import csv
+import json
 from os import path, mkdir
 from datetime import datetime
 
@@ -64,3 +65,10 @@ def read_csv_to_dict(csv_path):
             data.append(row)
      
     return data
+
+
+def parse_json(file_path: str) -> dict:
+    with open(file_path, "r") as file:
+        result = json.load(file)
+
+    return result
