@@ -7,10 +7,10 @@ import collections
 from Bio import SeqIO
 from Bio.Seq import Seq
 
-from src.utils.exceptions import Primer3Error
-
+from utils.exceptions import Primer3Error
 
 def primer3_runner(fasta=''):
+
     print('Reading FA file')
     design_inputs = read_input_fasta(fasta)
     print('Designing primers for the region')
@@ -199,6 +199,7 @@ def name_primers(primer_details, strand):
 def main(fasta):
     if os.environ.get("PRIMER3_CONFIG") is None:
         os.environ["PRIMER3_CONFIG"] = "./primer3_config.json"
+
     result = primer3_runner(fasta=fasta)
 
     return result

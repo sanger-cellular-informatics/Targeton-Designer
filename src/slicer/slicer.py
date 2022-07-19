@@ -3,7 +3,7 @@ import re
 from pybedtools import BedTool
 from pybedtools.helpers import BEDToolsError
 
-from src.utils.exceptions import SlicerError
+from utils.exceptions import SlicerError
 
 
 def handle_one_based_input(input_bed):

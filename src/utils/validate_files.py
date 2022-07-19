@@ -2,8 +2,8 @@ import csv
 from Bio import SeqIO
 import re
 
-from src.utils.exceptions import FileFormatError, FileValidationError
-from src.utils.file_system import check_file_exists
+from utils.exceptions import FileFormatError, FileValidationError
+from utils.file_system import check_file_exists
 
 
 def validate_bed_format(bed):
