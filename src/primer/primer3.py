@@ -9,12 +9,11 @@ from Bio.Seq import Seq
 
 from utils.exceptions import Primer3Error
 
-def primer3_runner(fasta=''):
-
+def primer3_runner(fasta: str, config: dict):
     print('Reading FA file')
     design_inputs = read_input_fasta(fasta)
     print('Designing primers for the region')
-    designs = primer3_design(design_inputs)
+    designs = primer3_design(design_inputs, config)
     print('Naming primers')
     slices = locate_primers(designs)
 
@@ -51,16 +50,11 @@ def construct_slice_coord_dict(match):
     }
     return coord_data
 
-
-def primer3_design(primer3_inputs):
-    p3_config_loc = os.environ.get('PRIMER3_CONFIG')
+def primer3_design(primer3_inputs, primer3_config):
 
     designs = []
     for slice_data in primer3_inputs:
         primer3_input = slice_data['p3_input']
-        primer3_config = {}
-        with open(os.path.join(os.path.dirname(__file__), p3_config_loc), "r") as p3:
-            primer3_config = json.load(p3)
 
         design = primer3.bindings.designPrimers(primer3_input, primer3_config)
         slice_data['design'] = design
@@ -196,11 +190,29 @@ def name_primers(primer_details, strand):
     return primer_name
 
 
-def main(fasta):
-    if os.environ.get("PRIMER3_CONFIG") is None:
-        os.environ["PRIMER3_CONFIG"] = "./primer3_config.json"
+def parse_json(file_path: str) -> dict:
+    with open(os.path.join(os.path.dirname(__file__), file_path), "r") as p3:
+        result = json.load(p3)
 
-    result = primer3_runner(fasta=fasta)
+    return result
+
+
+def get_config_file():
+    USER_CONFIG = './config/primer3.config.json'
+    DEFAULT_CONFIG = './primer3_config.json'
+
+    config_file_path = USER_CONFIG if os.path.exists(USER_CONFIG) else DEFAULT_CONFIG
+
+    return config_file_path
+
+def get_config():
+    config_file = get_config_file()
+    config_data = parse_json(config_file)
+
+    return config_data
+
+def main(fasta):
+    result = primer3_runner(fasta=fasta, config=get_config())
 
     return result
 
