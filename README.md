@@ -147,9 +147,6 @@ Example command:
 
 #### Primer3 Runner
 
-To set up user defined configuration for primer3, you can create file named ``primer3.config.json`` inside of ``/config`` folder. 
-You can use ``primer3_example.config.json`` file as a template. 
-
 Running Primer3:
 ```sh
 ./designer.sh primer [--fasta INPUT_FASTA] [--dir OUTPUT_FOLDER] 

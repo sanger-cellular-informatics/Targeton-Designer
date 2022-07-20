@@ -6,7 +6,7 @@ import collections
 from Bio import SeqIO
 from Bio.Seq import Seq
 
-from utils.exceptions import Primer3Error
+from utils.exceptions import Primer3Error, InvalidConfigError
 from utils.file_system import parse_json
 
 def primer3_runner(fasta: str, config: dict):
@@ -190,24 +190,31 @@ def name_primers(primer_details, strand):
     return primer_name
 
 
-def get_config_file():
-    USER_CONFIG = './config/primer3.config.json'
-    DEFAULT_CONFIG = './src/primer/primer3_config.json'
-
-    config_file_path = USER_CONFIG if os.path.exists(USER_CONFIG) else DEFAULT_CONFIG
+def get_config_file(default_config: str, user_config:str) -> str:
+    config_file_path = user_config if os.path.exists(user_config) else default_config
 
     return config_file_path
 
 
-def get_config_data():
-    config_file = get_config_file()
-    config_data = parse_json(config_file)
+def get_config_data(default_config: str, user_config: str) -> dict:
+    config_file = get_config_file(default_config, user_config)
+
+    try:
+        config_data = parse_json(config_file)
+
+    except Exception as err:
+        raise InvalidConfigError(f'Primer3 config file is not a correct JSON')
 
     return config_data
 
 
 def main(fasta):
-    result = primer3_runner(fasta=fasta, config=get_config_data())
+    USER_CONFIG = './config/primer3.config.json'
+    DEFAULT_CONFIG = './src/primer/primer3.config.json'
+
+    config = get_config_data(DEFAULT_CONFIG, USER_CONFIG)
+
+    result = primer3_runner(fasta=fasta, config=config)
 
     return result
 
