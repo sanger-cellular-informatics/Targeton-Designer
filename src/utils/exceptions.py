@@ -16,3 +16,7 @@ class FolderCreatorError(Exception):
 class OutputError(Exception):
     pass
 
+class InvalidConfigError(Exception):
+    """Config file is not a valid JSON"""
+    pass
+
