@@ -1,5 +1,5 @@
 import csv
-from os import path, mkdir
+from os import path, makedirs
 from datetime import datetime
 
 from utils.exceptions import FolderCreatorError
@@ -8,18 +8,18 @@ from utils.exceptions import FolderCreatorError
 class FolderCreator:
     dir = ''
 
-    def set_dir(self, dir):
+    def set_dir(self, dir: str) -> None:
         self.dir = dir
 
     @classmethod
-    def get_dir(self):
+    def get_dir(self) -> str:
         return(self.dir)
 
     @classmethod
-    def create(self, dir):
+    def create(self, dir: str) -> None:
         try:
             if not path.isdir(dir):
-                mkdir(dir)
+                makedirs(dir)
                 print(f'Folder {dir} is created')
             else:
                 print(f'Warning: {dir} already exists and files may be overwritten')
@@ -29,8 +29,13 @@ class FolderCreator:
         self.set_dir(self, dir)
 
     @classmethod
-    def create_timestamped(self, prefix):
-        self.create(f'{prefix}_' + datetime.now().strftime('%Y%m%d%H%M%S%f'))
+    def create_timestamped(self, parent: str) -> None:
+        PREFIX = 'td'
+
+        dir_name = f'{PREFIX}_' + datetime.now().strftime('%Y%m%d%H%M%S%f')
+        dir_full_path = path.join(parent, dir_name)
+
+        self.create(dir_full_path)
 
 def check_file_exists(file):
     if not path.exists(file):

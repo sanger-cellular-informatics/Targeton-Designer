@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from pybedtools import BedTool
 
 from utils.file_system import write_to_text_file, FolderCreator
-from utils.exceptions import OutputError
+from utils.exceptions import OutputError, FolderCreatorError
 
 @dataclass
 class OutputFilesData:
