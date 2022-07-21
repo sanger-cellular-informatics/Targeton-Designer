@@ -1,5 +1,4 @@
 import primer3
-import json
 import re
 import os
 import collections
@@ -7,14 +6,14 @@ import collections
 from Bio import SeqIO
 from Bio.Seq import Seq
 
-from utils.exceptions import Primer3Error
+from utils.exceptions import Primer3Error, InvalidConfigError
+from utils.file_system import parse_json
 
-def primer3_runner(fasta=''):
-
+def primer3_runner(fasta: str, config: dict):
     print('Reading FA file')
     design_inputs = read_input_fasta(fasta)
     print('Designing primers for the region')
-    designs = primer3_design(design_inputs)
+    designs = primer3_design(design_inputs, config)
     print('Naming primers')
     slices = locate_primers(designs)
 
@@ -51,16 +50,11 @@ def construct_slice_coord_dict(match):
     }
     return coord_data
 
-
-def primer3_design(primer3_inputs):
-    p3_config_loc = os.environ.get('PRIMER3_CONFIG')
+def primer3_design(primer3_inputs, primer3_config):
 
     designs = []
     for slice_data in primer3_inputs:
         primer3_input = slice_data['p3_input']
-        primer3_config = {}
-        with open(os.path.join(os.path.dirname(__file__), p3_config_loc), "r") as p3:
-            primer3_config = json.load(p3)
 
         design = primer3.bindings.designPrimers(primer3_input, primer3_config)
         slice_data['design'] = design
@@ -196,11 +190,31 @@ def name_primers(primer_details, strand):
     return primer_name
 
 
-def main(fasta):
-    if os.environ.get("PRIMER3_CONFIG") is None:
-        os.environ["PRIMER3_CONFIG"] = "./primer3_config.json"
+def get_config_file(default_config: str, user_config:str) -> str:
+    config_file_path = user_config if os.path.exists(user_config) else default_config
 
-    result = primer3_runner(fasta=fasta)
+    return config_file_path
+
+
+def get_config_data(default_config: str, user_config: str) -> dict:
+    config_file = get_config_file(default_config, user_config)
+
+    try:
+        config_data = parse_json(config_file)
+
+    except Exception as err:
+        raise InvalidConfigError(f'Primer3 config file is not a correct JSON')
+
+    return config_data
+
+
+def main(fasta):
+    USER_CONFIG = './config/primer3.config.json'
+    DEFAULT_CONFIG = './src/primer/primer3.config.json'
+
+    config = get_config_data(DEFAULT_CONFIG, USER_CONFIG)
+
+    result = primer3_runner(fasta=fasta, config=config)
 
     return result
 
