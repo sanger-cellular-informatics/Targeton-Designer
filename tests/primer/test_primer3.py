@@ -182,6 +182,28 @@ class TestPrimer3(TestCase):
 
         # assert
         self.assertEqual(actual, expected)
+
+    @patch('Primer.build_primers_dict')
+    def test_locate_primers_fwd_design_success(self, dict_mock):
+
+
+# TODO: Finish test
+    @patch('Primer.capture_primer_details')
+    @patch('Primer.name_primers')
+    @patch('Primer.build_primer_dict')
+    def test_build_primers_dict_valid_success(self, details_mock, name_mock, dict_mock):
+        # arrange
+        details_mock.return_value = {'pair': '2'}
+        name_mock.return_value = 'libamp_name'
+        dict_mock.return_value = 'build_primer_dict'
+        expected = {'region1_1_libamp_name_2': 'build_primer_dict'}
+        input_design = {}
+
+        # act
+        actual = self.primer.locate_primers(input_design)
+        self.assertEqual()
+
+
 ###
 # TODO: Refactor to new inputs
     # def test_locate_primers_fwd_success(self):

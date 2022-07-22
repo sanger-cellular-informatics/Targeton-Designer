@@ -23,3 +23,5 @@ ENTRYPOINT [ "python3", "./src/cli.py" ]
 FROM base as test
 CMD ["python3", "-m", "unittest"]
 
+
+# TODO: Flesh out loading data into Docker Container ticket

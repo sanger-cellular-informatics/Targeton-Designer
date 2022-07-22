@@ -66,38 +66,50 @@ class Primer:
 
     def locate_primers(self, designs):
         slice_designs = []
+
         for slice_data in designs:
             design = slice_data['design']
             primer_keys = design.keys()
-            primers = collections.defaultdict(dict)
 
-            for key in primer_keys:
-                primer_details = self.capture_primer_details(key)
-                if primer_details:
+            primers = self.build_primers_dict(design, primer_keys, slice_data)
 
-                    primer_id = primer_details['id']
-                    primer_field = primer_details['field']
-                    pair_number = primer_details['pair']
-
-                    libamp_name = self.name_primers(primer_details, slice_data['strand'])
-
-                    primer_name = slice_data['name'] + "_" + libamp_name + "_" + pair_number
-                    primer = primers[primer_name]
-
-                    primer[primer_field] = design[key]
-                    primer['side'] = primer_details['side']
-
-                    if primer_field == 'coords':
-                        primer_coords = self.calculate_primer_coords(primer_details['side'], design[key], slice_data['start'])
-                        primer['primer_start'] = primer_coords[0]
-                        primer['primer_end'] = primer_coords[1]
-                        primer['strand'] = self.determine_primer_strands(primer_details['side'], slice_data['strand'])
-                        primer['sequence'] = self.revcom_reverse_primer(primer['sequence'], primer['strand'])
-                    primers[primer_name] = primer
             del slice_data['design']
             slice_data['primers'] = primers
             slice_designs.append(slice_data)
+
         return slice_designs
+
+    def build_primers_dict(self, design, primer_keys, slice_data):
+        primers = collections.defaultdict(dict)
+
+        for key in primer_keys:
+            primer_details = self.capture_primer_details(key)
+
+            if primer_details:
+                libamp_name = self.name_primers(primer_details, slice_data['strand'])
+                primer_name = slice_data['name'] + "_" + libamp_name + "_" + primer_details['pair']
+
+                primers[primer_name] = self.build_primer_loci(key, design, primer_details, slice_data)
+
+        return primers
+
+    def build_primer_loci(self, key, design, primer_details, slice_data):
+        primer = collections.defaultdict(dict)
+
+        primer_field = primer_details['field']
+
+        primer[primer_field] = design[key]
+        primer['side'] = primer_details['side']
+
+        if primer_field == 'coords':
+            primer_coords = self.calculate_primer_coords(primer_details['side'], design[key], slice_data['start'])
+
+            primer['primer_start'] = primer_coords[0]
+            primer['primer_end'] = primer_coords[1]
+            primer['strand'] = self.determine_primer_strands(primer_details['side'], slice_data['strand'])
+            primer['sequence'] = self.revcom_reverse_primer(primer['sequence'], primer['strand'])
+
+        return primer
 
     @staticmethod
     def name_primers(primer_details, strand):
