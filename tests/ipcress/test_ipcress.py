@@ -3,15 +3,18 @@ import unittest
 from pyfakefs.fake_filesystem_unittest import TestCase
 from unittest.mock import patch
 
-from src.ipcress.ipcress import (prettify_output, validate_primers)
+from ipcress.ipcress import Ipcress
 
-class TestSlicer(TestCase):
+class TestIpcress(TestCase):
+    def setUp(self):
+        self.ipcress = Ipcress()
+
     def test_prettify_output_defined(self):
         expected = 'test_cmd --pretty true'
         prettify_param = True
         cmd = 'test_cmd'
         
-        actual = prettify_output(prettify_param, cmd)
+        actual = self.ipcress.prettify_output(prettify_param, cmd)
 
         self.assertEqual(actual, expected)       
  
@@ -20,7 +23,7 @@ class TestSlicer(TestCase):
         prettify_param = ''
         cmd = 'test_cmd'
         
-        actual = prettify_output(prettify_param, cmd)
+        actual = self.ipcress.prettify_output(prettify_param, cmd)
 
         self.assertEqual(actual, expected)       
 
@@ -30,7 +33,7 @@ class TestSlicer(TestCase):
         primer_data = {}
         pretty = True
 
-        validate_primers(ipcress_output, primer_data, pretty)
+        self.ipcress.validate_primers(ipcress_output, primer_data, pretty)
 
         mock_print.assert_called_with(
             'Output is pretty, skipping validation'
@@ -46,7 +49,7 @@ class TestSlicer(TestCase):
         }}
         pretty = False
 
-        validate_primers(ipcress_output, primer_data, pretty)
+        self.ipcress.validate_primers(ipcress_output, primer_data, pretty)
 
         mock_print.assert_called_with(
             'No valid primer pair found for test-primer-pair'
@@ -62,7 +65,7 @@ class TestSlicer(TestCase):
         }}
         pretty = False
 
-        validate_primers(ipcress_output, primer_data, pretty)
+        self.ipcress.validate_primers(ipcress_output, primer_data, pretty)
 
         mock_print.assert_called_with(
             'No valid primer pair found for test-primer-pair'
@@ -78,7 +81,7 @@ class TestSlicer(TestCase):
         }}
         pretty = False
 
-        validate_primers(ipcress_output, primer_data, pretty)
+        self.ipcress.validate_primers(ipcress_output, primer_data, pretty)
 
         mock_print.assert_called_with(
             'No valid primer pair found for test-primer-pair'
@@ -94,7 +97,7 @@ class TestSlicer(TestCase):
         }}
         pretty = False
 
-        validate_primers(ipcress_output, primer_data, pretty)
+        self.ipcress.validate_primers(ipcress_output, primer_data, pretty)
 
         mock_print.assert_called_once_with('Validating primers...')
 

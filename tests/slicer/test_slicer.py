@@ -6,7 +6,7 @@ import pybedtools.helpers
 from pybedtools import BedTool
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-from src.slicer.slicer import Slicer
+from slicer.slicer import Slicer
 
 
 class TestSlicer(TestCase):

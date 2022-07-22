@@ -3,9 +3,8 @@ import unittest
 from unittest.mock import patch
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-from src.utils.exceptions import FileFormatError
-from src.utils.validate_files import (validate_bed_content,
-    validate_bed_format, validate_fasta_format, validate_p3_csv)
+from utils.exceptions import FileFormatError
+from utils.validate_files import validate_bed_content, validate_bed_format, validate_fasta_format, validate_p3_csv
 
 
 class TestValidateFiles(TestCase):
