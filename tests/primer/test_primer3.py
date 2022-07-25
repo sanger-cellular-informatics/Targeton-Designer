@@ -2,12 +2,13 @@ from cgi import test
 import unittest
 import os
 import json
+import collections
 
 from unittest.mock import patch
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from tests.test_data.primer3_output_data import primer3_output_data
-from src.primer.primer3 import Primer
+from primer.primer3 import Primer
 
 
 class TestPrimer3(TestCase):
@@ -16,6 +17,14 @@ class TestPrimer3(TestCase):
     def setUp(self):
         self.primer = Primer()
         self.setUpPyfakefs()
+
+    def create_files(self):
+        self.fs.create_file('/fwd_primer3_output.json', contents=self.primer3_output_json_data)
+        self.fs.create_file('/rev_primer3_output.json', contents=self.primer3_output_json_data)
+        self.fs.create_file('/fasta.fa', contents='>region1_1::chr1:5-10(+)\nGTGATCGAGGAGTTCTACAACCAGACATGGGTCCACCGCTA'
+                                                  'TGGGGAGAGCATCCTGCCCACCACGCTCACCACGCTCTGGTCCCTCTCAGTGGCCATCTTTTCTGTT'
+                                                  'GGGGGCATGATTGGCTCCTTCTCTGTGGGCCTTTTCGTTAACCGCTTTGGCCGGTAAGTAGGAGAGG'
+                                                  'TCCTGGCACTGCCCTTGGAGGGCCCATGCCCTCCT')
 
         self.fs.create_file('/primer3_test_config.json', contents='{\
             "PRIMER_TASK": "pick_cloning_primers",\
@@ -28,15 +37,6 @@ class TestPrimer3(TestCase):
             "SEQUENCE_INCLUDED_REGION": [0,212],\
             "PRIMER_EXPLAIN_FLAG": 1\
         }')
-        os.environ["PRIMER3_CONFIG"] = '/primer3_test_config.json'
-
-    def create_files(self):
-        self.fs.create_file('/fwd_primer3_output.json', contents=self.primer3_output_json_data)
-        self.fs.create_file('/rev_primer3_output.json', contents=self.primer3_output_json_data)
-        self.fs.create_file('/fasta.fa', contents='>region1_1::chr1:5-10(+)\nGTGATCGAGGAGTTCTACAACCAGACATGGGTCCACCGCTA'
-                                                  'TGGGGAGAGCATCCTGCCCACCACGCTCACCACGCTCTGGTCCCTCTCAGTGGCCATCTTTTCTGTT'
-                                                  'GGGGGCATGATTGGCTCCTTCTCTGTGGGCCTTTTCGTTAACCGCTTTGGCCGGTAAGTAGGAGAGG'
-                                                  'TCCTGGCACTGCCCTTGGAGGGCCCATGCCCTCCT')
 
     def test_name_primers_left_fwd_success(self):
         # arrange
@@ -153,6 +153,11 @@ class TestPrimer3(TestCase):
 
     def test_primer3_design_valid_success(self):
         # arrange
+        self.create_files()
+
+        with open('/primer3_test_config.json', "r") as file:
+            config = json.load(file)
+
         input = [{
             'name'      : 'region1_1',
             'start'     : '5',
@@ -178,75 +183,118 @@ class TestPrimer3(TestCase):
                 'PRIMER_PAIR_NUM_RETURNED': 0
             }
         # act
-        actual = self.primer.primer3_design(input)[0]['design']
+        actual = self.primer.primer3_design(input, config)[0]['design']
 
         # assert
         self.assertEqual(actual, expected)
 
-    @patch('Primer.build_primers_dict')
-    def test_locate_primers_fwd_design_success(self, dict_mock):
+    @patch('primer.primer3.Primer.build_primers_dict')
+    def test_locate_primers_design_success(self, dict_mock):
+        # arrange
+        dict_mock.return_value = {'region1_1_libamp_name_2': 'build_primer_dict'}
 
+        input = [{'name': 'slice1', 'design': {'design_key': 'design_val'}},
+                 {'name': 'slice2', 'design': {'design_key': 'design_val'}}]
 
-# TODO: Finish test
-    @patch('Primer.capture_primer_details')
-    @patch('Primer.name_primers')
-    @patch('Primer.build_primer_dict')
-    def test_build_primers_dict_valid_success(self, details_mock, name_mock, dict_mock):
+        expected = [{'name': 'slice1', 'primers': {'region1_1_libamp_name_2': 'build_primer_dict'}},
+                    {'name': 'slice2', 'primers': {'region1_1_libamp_name_2': 'build_primer_dict'}}]
+
+        # act
+        actual = self.primer.locate_primers(input)
+
+        # assert
+        self.assertEqual(expected, actual)
+        self.assertEqual(dict_mock.call_count, 2)
+
+    @patch('primer.primer3.Primer.build_primer_loci')
+    @patch('primer.primer3.Primer.name_primers')
+    @patch('primer.primer3.Primer.capture_primer_details')
+    def test_build_primers_dict_valid_success(self, details_mock, name_mock, loci_mock):
         # arrange
         details_mock.return_value = {'pair': '2'}
         name_mock.return_value = 'libamp_name'
-        dict_mock.return_value = 'build_primer_dict'
+        loci_mock.return_value = 'build_primer_dict'
         expected = {'region1_1_libamp_name_2': 'build_primer_dict'}
-        input_design = {}
+        input_design = 'design'
+        input_primer_keys = {'key_1': 'value'}
+        input_slice_data = {'strand': '+', 'name': 'region1_1'}
 
         # act
-        actual = self.primer.locate_primers(input_design)
-        self.assertEqual()
+        actual = self.primer.build_primers_dict(input_design, input_primer_keys, input_slice_data)
 
+        # assert
+        self.assertEqual(expected, actual)
+        self.assertEqual(f"{details_mock.call_args}", f"call('key_1')")
+        self.assertEqual(f"{name_mock.call_args}", "call({'pair': '2'}, '+')")
+        self.assertEqual(f"{loci_mock.call_args}", "call('key_1', 'design', {'pair': '2'}, {'strand': '+', 'name': 'region1_1'})")
 
-###
-# TODO: Refactor to new inputs
-    # def test_locate_primers_fwd_success(self):
-    #     # arrange
-    #     test_input = '/fwd_primer3_output.json'
-    #     expected_f = 'slice1_LibAmpF_0'
-    #     expected_r = 'slice1_LibAmpR_0'
-    #     test_dict = {}
-    #
-    #     with open(test_input, "r") as p3:
-    #         test_dict = json.load(p3)
-    #
-    #     # act
-    #     actual = locate_primers(test_dict, 'slice1', '1', '1')
-    #
-    #     # assert
-    #     self.assertIn(expected_f, actual)
-    #     self.assertEqual(actual[expected_f]['sequence'], 'TCCACACAGGATGCCAGG', 'Primer seq left ok')
-    #     self.assertEqual(actual[expected_r]['sequence'], 'GGACACTCACCTCAGTTCCTG', 'Primer seq right ok')
-    #     self.assertEqual(actual[expected_f]['primer_start'], 1, 'Left start ok')
-    #     self.assertEqual(actual[expected_f]['primer_end'], 19, 'Left end ok')
-    #     self.assertEqual(actual[expected_r]['primer_start'], 191, 'Right start ok')
-    #     self.assertEqual(actual[expected_r]['primer_end'], 212, 'Right end ok')
-    #
-    # def test_locate_primers_rev_success(self):
-    #     # arrange
-    #     test_input = '/rev_primer3_output.json'
-    #     expected_f = 'slice2_LibAmpF_0'
-    #     expected_r = 'slice2_LibAmpR_0'
-    #
-    #     with open(test_input, "r") as p3:
-    #         test_dict = json.load(p3)
-    #
-    #     # act
-    #     actual = locate_primers(test_dict, 'slice2', '-1', '400')
-    #
-    #     # assert
-    #     self.assertIn(expected_f, actual, 'Rename ok')
-    #     self.assertEqual(actual[expected_f]['sequence'], 'GGACACTCACCTCAGTTCCTG', 'Primer seq left ok')
-    #     self.assertEqual(actual[expected_r]['sequence'], 'TCCACACAGGATGCCAGG', 'Primer seq right ok')
-    #     self.assertEqual(actual[expected_f]['primer_start'], 590, 'Left start ok')
-    #     self.assertEqual(actual[expected_f]['primer_end'], 611, 'Left end ok')
-    #     self.assertEqual(actual[expected_r]['primer_start'], 400, 'Right start ok')
+    @patch('primer.primer3.Primer.capture_primer_details')
+    def test_build_primers_dict_no_details_empty(self, details_mock):
+        # arrange
+        details_mock.return_value = {}
+        expected = {}
+        input_design = 'design'
+        input_primer_keys = {'key_1': 'value'}
+        input_slice_data = {'strand': '+', 'name': 'region1_1'}
+
+        # act
+        actual = self.primer.build_primers_dict(input_design, input_primer_keys, input_slice_data)
+
+        # assert
+        self.assertEqual(expected, actual)
+        self.assertEqual(f"{details_mock.call_args}", "call('key_1')")
+
+    @patch('primer.primer3.Primer.revcom_reverse_primer')
+    @patch('primer.primer3.Primer.determine_primer_strands')
+    @patch('primer.primer3.Primer.calculate_primer_coords')
+    def test_build_primer_loci_with_coords_success(self, coords_mock, strands_mock, revcom_mock):
+        # arrange
+        input_key = 'design_key'
+        input_design = {'design_key': 'design_value'}
+        input_primer_details = {'field': 'coords', 'side': 'primer_side'}
+        input_slice_data = {'start': 'slice_start', 'strand': '+'}
+
+        expected = collections.defaultdict(dict)
+        expected['coords'] = 'design_value'
+        expected['side'] = 'primer_side'
+        expected['primer_start'] = '100'
+        expected['primer_end'] = '250'
+        expected['strand'] = 'primer_side_+'
+        expected['sequence'] = 'primer_seq'
+
+        coords_mock.return_value = ['100', '250']
+        strands_mock.return_value = 'primer_side_+'
+        revcom_mock.return_value = 'primer_seq'
+
+        # act
+        actual = self.primer.build_primer_loci(input_key, input_design, input_primer_details, input_slice_data)
+
+        # assert
+        self.assertEqual(expected, actual)
+        self.assertEqual(f"{coords_mock.call_args}", "call('primer_side', 'design_value', 'slice_start')")
+        self.assertEqual(f"{strands_mock.call_args}", "call('primer_side', '+')")
+        self.assertEqual(f"{revcom_mock.call_args}", "call({}, 'primer_side_+')")
+
+    def test_build_primer_loci_no_coords_less_data(self):
+        # arrange
+        input_key = 'design_key'
+        input_design = {'design_key': 'design_value'}
+        input_primer_details = {'field': 'no_coords', 'side': 'primer_side'}
+        input_slice_data = {'start': 'slice_start', 'strand': '+'}
+
+        expected = collections.defaultdict(dict)
+        expected['no_coords'] = 'design_value'
+        expected['side'] = 'primer_side'
+
+        # act
+        actual = self.primer.build_primer_loci(input_key, input_design, input_primer_details, input_slice_data)
+
+        # assert
+        self.assertEqual(expected, actual)
+        self.assertTrue('primer_start' not in actual)
+        self.assertTrue('primer_end' not in actual)
+        self.assertTrue('strand' not in actual)
+        self.assertTrue('sequence' not in actual)
 
 
 if __name__ == '__main__':

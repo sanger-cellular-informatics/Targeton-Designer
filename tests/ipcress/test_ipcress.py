@@ -25,7 +25,7 @@ class TestIpcress(TestCase):
         
         actual = self.ipcress.prettify_output(prettify_param, cmd)
 
-        self.assertEqual(actual, expected)       
+        self.assertEqual(actual, expected)
 
     @patch('builtins.print')
     def test_validate_primers_pretty_prints_skipping_message(self, mock_print):
