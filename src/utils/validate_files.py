@@ -62,7 +62,19 @@ def validate_bed_content(bed):
             line_num = line_num + 1
 
 
-def validate_files(bed = '', fasta = '', txt = ''):
+def validate_p3_csv(p3_csv):
+    with open(p3_csv) as csv_file:
+        data = csv.DictReader(csv_file, delimiter=',')
+        expected_cols = [
+            'primer', 'sequence', 'chr', 'primer_start', 'primer_end',
+            'tm', 'gc_percent', 'penalty', 'self_any_th', 'self_end_th',
+            'hairpin_th', 'end_stability'
+        ]
+        if data.fieldnames != expected_cols:
+            raise FileFormatError('Unexpected columns in Primer3 CSV')
+
+
+def validate_files(bed = '', fasta = '', txt = '', p3_csv = ''):
     try:
         if bed:
             check_file_exists(bed)
@@ -75,6 +87,10 @@ def validate_files(bed = '', fasta = '', txt = ''):
 
         if txt:
             check_file_exists(txt)
+
+        if p3_csv:
+            check_file_exists(p3_csv)
+            validate_p3_csv(p3_csv)
 
     except ValueError as valErr:
         print('Error occurred while checking file content: {0}'.format(valErr))
