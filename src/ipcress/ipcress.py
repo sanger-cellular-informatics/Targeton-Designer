@@ -32,7 +32,7 @@ class Ipcress:
             primer_data = self.extract_primer_data(params['p3_csv'])
             input_path = self.get_ipcress_input(primer_data, params)
             result = self.run_ipcress(input_path, params)
-            validate_primers(result.stnd.decode(),
+            self.validate_primers(result.stnd.decode(),
                              primer_data, params['pretty'])
 
         print('Finished!')
@@ -55,8 +55,18 @@ class Ipcress:
         stnd, err = ipcress.communicate()
         return IpcressResult(stnd, err)
 
-    def extract_primer_data(self, p3_csv):
-        csv_obj = self.read_csv_to_dict(p3_csv)
+    def get_ipcress_input(self, primer_data, params):
+        formatted_primers = self.format_ipcress_primers(params['min'],
+                                                   params['max'], primer_data)
+
+        input_path = write_to_text_file(params['dir'],
+                                        formatted_primers, 'ipcress_primer_input')
+
+        return input_path
+
+    @staticmethod
+    def extract_primer_data(p3_csv):
+        csv_obj = read_csv_to_dict(p3_csv)
         primer_data = defaultdict(lambda: defaultdict(dict))
         for row in csv_obj:
             # Capture primer name and orientation
@@ -68,15 +78,6 @@ class Ipcress:
                 primer_data[key][match.group(2)]['start'] = row['primer_start']
 
         return primer_data
-
-    def get_ipcress_input(self, primer_data, params):
-        formatted_primers = self.format_ipcress_primers(params['min'],
-                                                   params['max'], primer_data)
-
-        input_path = self.write_to_text_file(params['dir'],
-                                        formatted_primers, 'ipcress_primer_input')
-
-        return input_path
 
     @staticmethod
     def validate_primers(ipcress_output, primer_data, pretty):

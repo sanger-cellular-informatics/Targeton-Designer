@@ -14,11 +14,11 @@ class Primer:
     def __init__(self):
         pass
 
-    USER_CONFIG = './config/primer3.config.json'
-    DEFAULT_CONFIG = './src/primer/primer3.config.json'
+        self.user_config = './config/primer3.config.json'
+        self.default_config = './src/primer/primer3.config.json'
 
     def get_primers(self, fasta):
-        config = self.get_config_data(DEFAULT_CONFIG, USER_CONFIG)
+        config = self.get_config_data(self.default_config, self.user_config)
 
         result = self.primer3_runner(fasta=fasta, config=config)
 
@@ -110,6 +110,17 @@ class Primer:
             primer['sequence'] = self.revcom_reverse_primer(primer['sequence'], primer['strand'])
 
         return primer
+
+    def get_config_data(self, default_config: str, user_config: str) -> dict:
+        config_file = self.get_config_file(default_config, user_config)
+
+        try:
+            config_data = parse_json(config_file)
+
+        except Exception as err:
+            raise InvalidConfigError(f'Primer3 config file is not a correct JSON')
+
+        return config_data
 
     @staticmethod
     def name_primers(primer_details, strand):
@@ -209,19 +220,6 @@ class Primer:
         config_file_path = user_config if os.path.exists(user_config) else default_config
 
         return config_file_path
-
-
-    @staticmethod
-    def get_config_data(default_config: str, user_config: str) -> dict:
-        config_file = get_config_file(default_config, user_config)
-
-        try:
-            config_data = parse_json(config_file)
-
-        except Exception as err:
-            raise InvalidConfigError(f'Primer3 config file is not a correct JSON')
-
-        return config_data
 
     @staticmethod
     def revcom_reverse_primer(seq, strand):
