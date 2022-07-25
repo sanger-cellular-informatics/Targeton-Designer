@@ -4,7 +4,8 @@ from unittest.mock import patch
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from src.utils.exceptions import FileFormatError
-from src.utils.validate_files import validate_bed_content, validate_bed_format, validate_fasta_format
+from src.utils.validate_files import (validate_bed_content,
+    validate_bed_format, validate_fasta_format, validate_p3_csv)
 
 
 class TestValidateFiles(TestCase):
@@ -277,6 +278,32 @@ class TestValidateFiles(TestCase):
 
         # assert
         self.assertEqual(str(exception_context.exception), expected)
+
+    def test_validate_p3_csv_wrong_headers_fail(self):
+        # arrange
+        test_arg = '/not_p3_output.csv'
+        self.fs.create_file('/not_p3_output.csv', contents='Incorrect,Headers')
+        expected = 'Unexpected columns in Primer3 CSV'
+
+        # act
+        with self.assertRaises(FileFormatError) as exception_context:
+            validate_p3_csv(test_arg)
+
+        # assert
+        self.assertEqual(str(exception_context.exception), expected)
+
+    def test_validate_p3_csv_correct_headers_success(self):
+        # arrange
+        test_arg = '/p3_output.csv'
+        headers = [
+            'primer', 'sequence', 'chr', 'primer_start', 'primer_end',
+            'tm', 'gc_percent', 'penalty', 'self_any_th', 'self_end_th',
+            'hairpin_th', 'end_stability'
+        ]
+        self.fs.create_file('/p3_output.csv', contents=','.join(headers))
+
+        # act
+        validate_p3_csv(test_arg)
 
 
 if __name__ == '__main__':
