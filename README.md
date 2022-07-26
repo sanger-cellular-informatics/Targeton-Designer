@@ -195,8 +195,8 @@ We've included a bash script to download the reference genome:
 
 Otherwise you can download it manually here:
 ```sh
-wget http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.alt.fa.gz
-gunzip Homo_sapiens.GRCh38.dna.alt.fa.gz 
+wget http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
+gunzip Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz 
 ```
 
 ### Slicer Input BED File
