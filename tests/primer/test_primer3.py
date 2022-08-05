@@ -209,7 +209,8 @@ class TestPrimer3(TestCase):
     @patch('primer.primer3.Primer.build_primer_loci')
     @patch('primer.primer3.Primer.name_primers')
     @patch('primer.primer3.Primer.capture_primer_details')
-    def test_build_primers_dict_valid_success(self, details_mock, name_mock, loci_mock):
+    def test_build_primers_dict_valid_success(
+            self, details_mock, name_mock, loci_mock):
         # arrange
         details_mock.return_value = {'pair': '2'}
         name_mock.return_value = 'libamp_name'
@@ -220,13 +221,16 @@ class TestPrimer3(TestCase):
         input_slice_data = {'strand': '+', 'name': 'region1_1'}
 
         # act
-        actual = self.primer.build_primers_dict(input_design, input_primer_keys, input_slice_data)
+        actual = self.primer.build_primers_dict(
+            input_design, input_primer_keys, input_slice_data)
 
         # assert
         self.assertEqual(expected, actual)
         self.assertEqual(f"{details_mock.call_args}", f"call('key_1')")
         self.assertEqual(f"{name_mock.call_args}", "call({'pair': '2'}, '+')")
-        self.assertEqual(f"{loci_mock.call_args}", "call('key_1', 'design', {'pair': '2'}, {'strand': '+', 'name': 'region1_1'})")
+        self.assertEqual(
+            f"{loci_mock.call_args}", ("call({}, 'key_1', 'design', "
+            "{'pair': '2'}, {'strand': '+', 'name': 'region1_1'})"))
 
     @patch('primer.primer3.Primer.capture_primer_details')
     def test_build_primers_dict_no_details_empty(self, details_mock):
@@ -247,54 +251,64 @@ class TestPrimer3(TestCase):
     @patch('primer.primer3.Primer.revcom_reverse_primer')
     @patch('primer.primer3.Primer.determine_primer_strands')
     @patch('primer.primer3.Primer.calculate_primer_coords')
-    def test_build_primer_loci_with_coords_success(self, coords_mock, strands_mock, revcom_mock):
+    def test_build_primer_loci_with_coords_success(
+            self, coords_mock, strands_mock, revcom_mock):
         # arrange
+        input_primer = {
+            'penalty': 1, 'side': 'primer_side', 'sequence': 'primer_seq'}
         input_key = 'design_key'
         input_design = {'design_key': 'design_value'}
         input_primer_details = {'field': 'coords', 'side': 'primer_side'}
         input_slice_data = {'start': 'slice_start', 'strand': '+'}
 
-        expected = collections.defaultdict(dict)
+        expected = {}
         expected['coords'] = 'design_value'
         expected['side'] = 'primer_side'
         expected['primer_start'] = '100'
         expected['primer_end'] = '250'
         expected['strand'] = 'primer_side_+'
         expected['sequence'] = 'primer_seq'
+        expected['penalty'] = 1
 
         coords_mock.return_value = ['100', '250']
         strands_mock.return_value = 'primer_side_+'
         revcom_mock.return_value = 'primer_seq'
 
         # act
-        actual = self.primer.build_primer_loci(input_key, input_design, input_primer_details, input_slice_data)
+        actual = self.primer.build_primer_loci(
+            input_primer, input_key, input_design,
+            input_primer_details, input_slice_data)
 
         # assert
         self.assertEqual(expected, actual)
-        self.assertEqual(f"{coords_mock.call_args}", "call('primer_side', 'design_value', 'slice_start')")
-        self.assertEqual(f"{strands_mock.call_args}", "call('primer_side', '+')")
-        self.assertEqual(f"{revcom_mock.call_args}", "call({}, 'primer_side_+')")
+        self.assertEqual(
+            f"{coords_mock.call_args}",
+            "call('primer_side', 'design_value', 'slice_start')")
+        self.assertEqual(
+                f"{strands_mock.call_args}", "call('primer_side', '+')")
+        self.assertEqual(
+            f"{revcom_mock.call_args}", "call('primer_seq', 'primer_side_+')")
 
-    def test_build_primer_loci_no_coords_less_data(self):
+    def test_build_primer_loci_no_coords_success(self):
         # arrange
+        input_primer = {'penalty': 1, 'side': 'primer_side'}
         input_key = 'design_key'
-        input_design = {'design_key': 'design_value'}
-        input_primer_details = {'field': 'no_coords', 'side': 'primer_side'}
+        input_design = {'design_key': 'primer_sequence'}
+        input_primer_details = {'field': 'sequence', 'side': 'primer_side'}
         input_slice_data = {'start': 'slice_start', 'strand': '+'}
 
-        expected = collections.defaultdict(dict)
-        expected['no_coords'] = 'design_value'
+        expected = {}
+        expected['sequence'] = 'primer_sequence'
         expected['side'] = 'primer_side'
+        expected['penalty'] = 1
 
         # act
-        actual = self.primer.build_primer_loci(input_key, input_design, input_primer_details, input_slice_data)
+        actual = self.primer.build_primer_loci(
+            input_primer, input_key, input_design,
+            input_primer_details, input_slice_data)
 
         # assert
         self.assertEqual(expected, actual)
-        self.assertTrue('primer_start' not in actual)
-        self.assertTrue('primer_end' not in actual)
-        self.assertTrue('strand' not in actual)
-        self.assertTrue('sequence' not in actual)
 
 
 if __name__ == '__main__':
