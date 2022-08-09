@@ -89,25 +89,29 @@ class Primer:
                 libamp_name = self.name_primers(primer_details, slice_data['strand'])
                 primer_name = slice_data['name'] + "_" + libamp_name + "_" + primer_details['pair']
 
-                primers[primer_name] = self.build_primer_loci(key, design, primer_details, slice_data)
+                primers[primer_name] = self.build_primer_loci(
+                    primers[primer_name], key, design,
+                    primer_details, slice_data)
 
         return primers
 
-    def build_primer_loci(self, key, design, primer_details, slice_data):
-        primer = collections.defaultdict(dict)
-
+    def build_primer_loci(
+            self, primer, key, design, primer_details, slice_data):
         primer_field = primer_details['field']
 
         primer[primer_field] = design[key]
         primer['side'] = primer_details['side']
 
         if primer_field == 'coords':
-            primer_coords = self.calculate_primer_coords(primer_details['side'], design[key], slice_data['start'])
+            primer_coords = self.calculate_primer_coords(
+                primer_details['side'], design[key], slice_data['start'])
 
             primer['primer_start'] = primer_coords[0]
             primer['primer_end'] = primer_coords[1]
-            primer['strand'] = self.determine_primer_strands(primer_details['side'], slice_data['strand'])
-            primer['sequence'] = self.revcom_reverse_primer(primer['sequence'], primer['strand'])
+            primer['strand'] = self.determine_primer_strands(
+                primer_details['side'], slice_data['strand'])
+            primer['sequence'] = self.revcom_reverse_primer(
+                primer['sequence'], primer['strand'])
 
         return primer
 
