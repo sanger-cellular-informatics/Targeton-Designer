@@ -5,6 +5,7 @@ import os
 import subprocess
 import argparse
 import csv
+from Bio.Seq import Seq 
 
 from os import path
 from dataclasses import dataclass
@@ -75,7 +76,11 @@ class Ipcress:
             if match:
                 key = match.group(1) + '_' + match.group(3)
                 primer_data[key][match.group(2)]['seq'] = row['sequence']
-                primer_data[key][match.group(2)]['start'] = row['primer_start']
+                if match.group(2) == 'F':
+                    primer_data[key][match.group(2)]['start'] = row['primer_start']
+                if match.group(2) == 'R':
+                    primer_data[key][match.group(2)]['seq'] = str(Seq(primer_data[key][match.group(2)]['seq']).reverse_complement())
+                    primer_data[key][match.group(2)]['start'] = str(int(row['primer_start']) + 1)
 
         return primer_data
 
@@ -93,7 +98,7 @@ class Ipcress:
 
             match = re.search((
                 fr'{primer_pair} \d+ A {fwd_coord} 0 '
-                fr'B {rev_coord} 0 forward$'), ipcress_output)
+                fr'B {rev_coord} 0 forward'), ipcress_output)
 
             if not match:
                 print(f'No valid primer pair found for {primer_pair}')
