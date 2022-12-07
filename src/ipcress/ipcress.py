@@ -5,7 +5,6 @@ import os
 import subprocess
 import argparse
 import csv
-from Bio.Seq import Seq 
 
 from os import path
 from dataclasses import dataclass
@@ -76,11 +75,7 @@ class Ipcress:
             if match:
                 key = match.group(1) + '_' + match.group(3)
                 primer_data[key][match.group(2)]['seq'] = row['sequence']
-                if match.group(2) == 'F':
-                    primer_data[key][match.group(2)]['start'] = row['primer_start']
-                if match.group(2) == 'R':
-                    primer_data[key][match.group(2)]['seq'] = str(Seq(primer_data[key][match.group(2)]['seq']).reverse_complement())
-                    primer_data[key][match.group(2)]['start'] = str(int(row['primer_start']) + 1)
+                primer_data[key][match.group(2)]['start'] = row['primer_start']
 
         return primer_data
 
