@@ -32,7 +32,7 @@ test:
     - docker build --pull -t "$CI_REGISTRY_IMAGE${tag}" --target test .
     - docker push "$CI_REGISTRY_IMAGE${tag}"
     # - docker run $CI_REGISTRY_IMAGE${tag}
-    - docker run $CI_REGISTRY_IMAGE${tag} sh -c "./designer.sh design --bed ~/test.bed --fasta ~/test.fa"
+    - docker run $CI_REGISTRY_IMAGE${tag} sh -c "./designer.sh design --bed ~/test/design/bed_example.bed --fasta ~/test/design/fasta_example.fa"
   # Run this job in a branch where a Dockerfile exists
   # rules:
   #   - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
