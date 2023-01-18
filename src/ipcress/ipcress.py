@@ -93,7 +93,7 @@ class Ipcress:
 
             match = re.search((
                 fr'{primer_pair} \d+ A {fwd_coord} 0 '
-                fr'B {rev_coord} 0 forward$'), ipcress_output)
+                fr'B {rev_coord} 0 forward'), ipcress_output)
 
             if not match:
                 print(f'No valid primer pair found for {primer_pair}')

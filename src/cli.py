@@ -40,23 +40,26 @@ def primer_command(fasta, prefix = '', existing_dir = ''):
 
 
 def ipcress_command(params, csv = '', existing_dir = ''):
-    ipcress_input = params.copy()
+    ipcress_params = params.copy()
 
     if csv:
-        ipcress_input['p3_csv'] = csv
+        ipcress_params['p3_csv'] = csv
     if existing_dir:
-        ipcress_input['dir'] = existing_dir
+        ipcress_params['dir'] = existing_dir
 
-    validate_files(fasta = ipcress_input['fasta'],
-                   txt = ipcress_input['primers'], p3_csv = ipcress_input['p3_csv'])
+    validate_files(
+        fasta = ipcress_params['fasta'],
+        txt = ipcress_params['primers'],
+        p3_csv = ipcress_params['p3_csv']
+    )
 
-    ipcress = Ipcress()
-    ipcress_result = ipcress.ipcress_runner(ipcress_input)
+    ipcress = Ipcress(ipcress_params)
+    ipcress_result = ipcress.run()
 
     write_ipcress_output(
         stnd = ipcress_result.stnd,
         err = ipcress_result.err,
-        existing_dir = ipcress_input['dir']
+        existing_dir = ipcress_params['dir']
     )
 
 
