@@ -3,6 +3,7 @@ import re
 import os
 
 from utils.file_system import write_to_text_file, read_csv_to_dict
+from utils.write_output_files import write_ipcress_input
 
 class Primer3ToIpcressAdapter:
     def __init__(self):
@@ -23,9 +24,7 @@ class Primer3ToIpcressAdapter:
                 min, max, primer_data
             )
 
-        input_path = write_to_text_file(
-                dir, formatted_primers, 'ipcress_primer_input'
-            )
+        input_path = write_ipcress_input(dir, formatted_primers)
 
         return input_path
 
