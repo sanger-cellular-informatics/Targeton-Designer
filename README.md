@@ -281,20 +281,20 @@ Raw file
 ### Primer3 Output CSV file (iPCRess Primer3 CSV Input file)
 Contains all of the extra information from Primer3 for the individual primers
 
-| primer | sequence | tm | gc_percent | penalty | self_any_th | self_end_th | hairpin_th | end_stability |
-| ------ | -------- | -- | ---------- | ------- | ----------- | ----------- | ---------- | ------------- | 
-| ENSE00003571441_HG6_6_LibAmpR_0 | ACCCAGGCTGCATCTCCC | 61.41508744063151 | 66.66666666666667 | 3.4150874406315097 | 9.564684449038168 | 0.0 | 0.0 | 4.3 |
-| ENSE00003571441_HG6_6_LibAmpF_0 | AGTGCCAGGACCTCTCCTAC | 60.32483047348552 | 60.0 | 0.32483047348551963 | 0.0 | 0.0 | 46.300612411542886 | 3.18 |
-| ENSE00003571441_HG6_6_LibAmpR_1 | ACCCAGGCTGCATCTCCC | 61.41508744063151 | 66.66666666666667 | 3.4150874406315097 | 9.564684449038168 | 0.0 | 0.0 | 4.3 | 
-ENSE00003571441_HG6_6_LibAmpF_1 | AGTGCCAGGACCTCTCCTA | 58.90293358584404 | 57.89473684210526 | 2.097066414155961 | 0.0 | 0.0 | 46.300612411542886 | 2.94 | 
+| primer | sequence | chr | primer_start | primer_end | tm | gc_percent | penalty | self_any_th | self_end_th | hairpin_th | end_stability |
+| ------ | -------- | --- | ------------ | ---------- | -- | ---------- | ------- | ----------- | ----------- | ---------- | ------------- |
+| ENSE00003571441_HG6_6_LibAmpR_0 | ACCCAGGCTGCATCTCCC | 1 | 42931021 | 42931039 | 61.41508744063151 | 66.66666666666667 | 3.4150874406315097 | 9.564684449038168 | 0.0 | 0.0 | 4.3 |
+| ENSE00003571441_HG6_6_LibAmpF_0 | AGTGCCAGGACCTCTCCTAC | 1 | 42931210 | 42931230 | 60.32483047348552 | 60.0 | 0.32483047348551963 | 0.0 | 0.0 | 46.300612411542886 | 3.18 |
+| ENSE00003571441_HG6_6_LibAmpR_1 | ACCCAGGCTGCATCTCCC | 1 | 42931021 | 42931039 | 61.41508744063151 | 66.66666666666667 | 3.4150874406315097 | 9.564684449038168 | 0.0 | 0.0 | 4.3 | 
+| ENSE00003571441_HG6_6_LibAmpF_1 | AGTGCCAGGACCTCTCCTA | 1 | 42931211 | 42931230 | 58.90293358584404 | 57.89473684210526 | 2.097066414155961 | 0.0 | 0.0 | 46.300612411542886 | 2.94 | 
 
 Raw File
 ```
-primer,sequence,tm,gc_percent,penalty,self_any_th,self_end_th,hairpin_th,end_stability
-ENSE00003571441_HG6_6_LibAmpR_0,ACCCAGGCTGCATCTCCC,61.41508744063151,66.66666666666667,3.4150874406315097,9.564684449038168,0.0,0.0,4.3
-ENSE00003571441_HG6_6_LibAmpF_0,AGTGCCAGGACCTCTCCTAC,60.32483047348552,60.0,0.32483047348551963,0.0,0.0,46.300612411542886,3.18
-ENSE00003571441_HG6_6_LibAmpR_1,ACCCAGGCTGCATCTCCC,61.41508744063151,66.66666666666667,3.4150874406315097,9.564684449038168,0.0,0.0,4.3
-ENSE00003571441_HG6_6_LibAmpF_1,AGTGCCAGGACCTCTCCTA,58.90293358584404,57.89473684210526,2.097066414155961,0.0,0.0,46.300612411542886,2.94
+primer,sequence,chr,primer_start,primer_end,tm,gc_percent,penalty,self_any_th,self_end_th,hairpin_th,end_stability
+ENSE00003571441_HG6_6_LibAmpR_0,ACCCAGGCTGCATCTCCC,1,42931021,42931039,61.41508744063151,66.66666666666667,3.4150874406315097,9.564684449038168,0.0,0.0,4.3
+ENSE00003571441_HG6_6_LibAmpF_0,AGTGCCAGGACCTCTCCTAC,1,42931210,42931230,60.32483047348552,60.0,0.32483047348551963,0.0,0.0,46.300612411542886,3.18
+ENSE00003571441_HG6_6_LibAmpR_1,ACCCAGGCTGCATCTCCC,1,42931021,42931039,61.41508744063151,66.66666666666667,3.4150874406315097,9.564684449038168,0.0,0.0,4.3
+ENSE00003571441_HG6_6_LibAmpF_1,AGTGCCAGGACCTCTCCTA,1,42931211,42931230,58.90293358584404,57.89473684210526,2.097066414155961,0.0,0.0,46.300612411542886,2.94
 ```
 
 ### iPCRess Standard Input File
@@ -309,4 +309,15 @@ Space separated text file containing name, left & right primer, minimum & maximu
 Raw file
 ```
 ENSE00003571441_HG6_6_LibAmp_0 AGTGCCAGGACCTCTCCTAC GGGAGATGCAGCCTGGGT 200 300
+```
+
+### iPCRess Output example
+Space separated text file. Sequence_id contains the chromosome and description can be 'forward', 'revcomp', 'single_A' or 'single_B'.
+| sequence_id | experiment_id | product_length | primer_5 | pos_5 | mismatch_5 | primer_3 | pos_3 | mismatch_3 | description |
+| ----------- | ------------- | -------------- | -------- | ----- | ---------- | -------- | ----- | ---------- | ----------- |
+| 19:filter(unmasked) | ID0001 | 259 | A | 44907726 | 0 | B | 44907967 | 0 | forward |
+
+Raw file
+```
+ipcress: 19:filter(unmasked) ID0001 259 A 44907726 0 B 44907967 0 forward
 ```
