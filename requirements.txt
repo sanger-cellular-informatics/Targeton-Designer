@@ -8,8 +8,5 @@ pybedtools==0.9.0
 docker==5.0.3
 biopython==1.79
 pyfakefs==4.6.2
-<<<<<<< HEAD
 pycodestyle==2.9.1
-=======
-pycodestyle==2.9.1
->>>>>>> 537cc4bafa357f62a2155fc1b752b4eada2706ab
+
