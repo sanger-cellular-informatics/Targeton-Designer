@@ -31,14 +31,12 @@ test:
       fi
     - docker build --pull -t "$CI_REGISTRY_IMAGE${tag}" --target test .
     - docker push "$CI_REGISTRY_IMAGE${tag}"
-    # - docker run $CI_REGISTRY_IMAGE${tag}
-    - docker run $CI_REGISTRY_IMAGE${tag} sh -c "./designer.sh design --bed ./tests/design/bed_example.bed --fasta ./tests/design/fasta_example.fa" > output.txt
-    - cat output.txt
+    - docker run $CI_REGISTRY_IMAGE${tag}
   # Run this job in a branch where a Dockerfile exists
-  # rules:
-  #   - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
-  #   exists:
-  #       - Dockerfile
+  rules:
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
+      exists:
+        - Dockerfile
 
 docker-build:
   # Use the official docker image.
@@ -70,7 +68,7 @@ docker-build:
     - docker build --pull -t "$CI_REGISTRY_IMAGE${tag}" --target dev .
     - docker push "$CI_REGISTRY_IMAGE${tag}"
   # Run this job in a branch where a Dockerfile exists
-  # rules:
-  #   - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
-  #     exists:
-  #       - Dockerfile
+  rules:
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
+      exists:
+        - Dockerfile
