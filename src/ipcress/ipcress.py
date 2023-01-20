@@ -3,6 +3,7 @@ import subprocess
 from dataclasses import dataclass
 
 from adapters.primer3_to_ipcress import Primer3ToIpcressAdapter
+from utils.write_output_files import write_ipcress_input
 
 @dataclass
 class IpcressParams:
@@ -34,7 +35,7 @@ class Ipcress:
             adapter.prepare_input(
                 params['p3_csv'], params['min'], params['max'], params['dir']
             )
-            input_path = adapter.path
+            input_path = write_ipcress_input(params['dir'], adapter.formatted_primers)
 
             result = self.run_ipcress(input_path, params)
 

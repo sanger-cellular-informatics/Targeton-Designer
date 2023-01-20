@@ -138,13 +138,17 @@ def write_primer_output(prefix = '', primers = [], existing_dir = '') -> PrimerO
 
     return result
 
-def write_ipcress_input(dir, formatted_primers):
+def write_ipcress_input(dir, formatted_primers) -> str:
     INPUT_FILE_NAME = 'ipcress_primer_input'
 
-    write_to_text_file(dir, formatted_primers, INPUT_FILE_NAME)
+    file_path = write_to_text_file(dir, formatted_primers, INPUT_FILE_NAME)
 
-def write_ipcress_output(stnd = '', err = '', existing_dir = ''):
+    return file_path
+
+def write_ipcress_output(stnd = '', err = '', existing_dir = '') -> str:
     IPCRESS_OUTPUT_TXT = 'ipcress_output'
 
-    write_to_text_file(existing_dir, stnd, IPCRESS_OUTPUT_TXT)
+    file_path = write_to_text_file(existing_dir, stnd, IPCRESS_OUTPUT_TXT)
+
+    return file_path
 

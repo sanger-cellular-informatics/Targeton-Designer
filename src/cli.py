@@ -4,7 +4,7 @@ import sys
 
 from utils.arguments_parser import ParsedInputArguments
 from utils.validate_files import validate_files
-from utils.write_output_files import write_slicer_output, write_primer_output, write_ipcress_output
+from utils.write_output_files import write_slicer_output, write_primer_output, write_ipcress_input, write_ipcress_output
 from slicer.slicer import Slicer
 from primer.primer3 import Primer
 from ipcress.ipcress import Ipcress
@@ -30,22 +30,27 @@ def primer_command(fasta = '', prefix = '', existing_dir = ''):
     validate_files(fasta = fasta)
     primer = Primer()
     primers = primer.get_primers(fasta)
+
     result = write_primer_output(
         primers = primers,
-        prefix=prefix,
+        prefix = prefix,
         existing_dir = existing_dir
     )
 
     return result
 
+
 def primer_for_ipcress(fasta = '', prefix = '', min = 0, max = 0):
-    primer_result = primer_command(fasta=fasta, prefix=prefix)
+    primer_result = primer_command(fasta = fasta, prefix = prefix)
 
     adapter = Primer3ToIpcressAdapter()
     adapter.prepare_input(primer_result.csv, min, max, primer_result.dir)
-    result_path = adapter.path
 
-    return result_path
+    input_path = write_ipcress_input(primer_result.dir, adapter.formatted_primers)
+
+    result = adapter.formatted_primers
+
+    return result
 
 
 def ipcress_command(params, csv = '', existing_dir = ''):

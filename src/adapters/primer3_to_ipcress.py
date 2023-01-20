@@ -2,31 +2,28 @@ from collections import defaultdict
 import re
 import os
 
-from utils.file_system import write_to_text_file, read_csv_to_dict
-from utils.write_output_files import write_ipcress_input
+from utils.file_system import read_csv_to_dict
 
 class Primer3ToIpcressAdapter:
     def __init__(self):
         self.primer_data = []
-        self.path = ''
+        self.formatted_primers = []
 
     def prepare_input(self, csv, min, max, dir):
         primer_data = self.extract_primer_data(csv)
         self.primer_data = primer_data
 
-        input_path = self.get_ipcress_input(primer_data, min, max, dir)
-        self.path = input_path
+        formatted_primers = self.get_ipcress_input(primer_data, min, max, dir)
+        self.formatted_primers = formatted_primers
 
-        return input_path
+        return formatted_primers
 
     def get_ipcress_input(self, primer_data, min, max, dir):
         formatted_primers = self.format_ipcress_primers(
                 min, max, primer_data
             )
 
-        input_path = write_ipcress_input(dir, formatted_primers)
-
-        return input_path
+        return formatted_primers
 
     @staticmethod
     def extract_primer_data(p3_csv):
