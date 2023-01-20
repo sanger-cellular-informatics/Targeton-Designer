@@ -35,21 +35,22 @@ class Primer:
         return slices
 
     def read_input_fasta(self, fasta):
-        rows = SeqIO.parse(open(fasta), 'fasta')
+        with open(fasta) as fasta_data:
+            rows = SeqIO.parse(fasta_data, 'fasta')
 
-        slices = []
-        for row in rows:
-            # Name::Chr:Start-End(Strand)
-            # ENSE00000769557_HG8_1::1:42929543-42929753
-            match = re.search(r'^(\w+)::((chr)?\d+):(\d+)\-(\d+)\(([+-\.]{1})\)$', row.id)
-            if match:
-                slice_data = self.construct_slice_coord_dict(match)
-                p3_input = {
-                    'SEQUENCE_ID': slice_data['name'],
-                    'SEQUENCE_TEMPLATE': str(row.seq),
-                }
-                slice_data['p3_input'] = p3_input
-                slices.append(slice_data)
+            slices = []
+            for row in rows:
+                # Name::Chr:Start-End(Strand)
+                # ENSE00000769557_HG8_1::1:42929543-42929753
+                match = re.search(r'^(\w+)::((chr)?\d+):(\d+)\-(\d+)\(([+-\.]{1})\)$', row.id)
+                if match:
+                    slice_data = self.construct_slice_coord_dict(match)
+                    p3_input = {
+                        'SEQUENCE_ID': slice_data['name'],
+                        'SEQUENCE_TEMPLATE': str(row.seq),
+                    }
+                    slice_data['p3_input'] = p3_input
+                    slices.append(slice_data)
 
         return slices
 
@@ -220,7 +221,7 @@ class Primer:
         return strands[slice_strand][side]
 
     @staticmethod
-    def get_config_file(default_config: str, user_config:str) -> str:
+    def get_config_file(default_config: str, user_config: str) -> str:
         config_file_path = user_config if os.path.exists(user_config) else default_config
 
         return config_file_path
