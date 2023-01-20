@@ -53,7 +53,7 @@ def write_to_text_file(dir_path, data, file_name):
     else:
         file_h = open(file_path, "wb")
         file_h.write(data)
-    file_h.close
+    file_h.close()
     
     print('Wrote to file: ' + file_path)
 
@@ -67,7 +67,7 @@ def read_csv_to_dict(csv_path):
     with open(csv_path) as csv_file:
         reader = csv.DictReader(csv_file, delimiter=',')
         for row in reader:
-            data.append(row)
+            data.append(row)   
      
     return data
 
