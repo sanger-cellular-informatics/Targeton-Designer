@@ -109,9 +109,8 @@ class Primer:
             primer['primer_start'] = primer_coords[0]
             primer['primer_end'] = primer_coords[1]
             primer['strand'] = self.determine_primer_strands(
-                primer_details['side'], slice_data['strand'])
-            primer['sequence'] = self.revcom_reverse_primer(
-                primer['sequence'], primer['strand'])
+                primer_details['side'], slice_data['strand']
+            )
 
         return primer
 
@@ -186,8 +185,8 @@ class Primer:
 
         slice_end = slice_start + int(coords[0])
         right_flank = {
-            'start': slice_end - int(coords[1]),
-            'end': slice_end,
+            'start': 1 + slice_end - int(coords[1]),
+            'end': 1 + slice_end,
         }
 
         slice_coords = {
