@@ -96,7 +96,9 @@ class Primer:
         return primers
 
     def build_primer_loci(
-            self, primer, key, design, primer_details, slice_data):
+        self, primer, key, design, primer_details, slice_data
+    ):
+        
         primer_field = primer_details['field']
 
         primer[primer_field] = design[key]

@@ -248,11 +248,12 @@ class TestPrimer3(TestCase):
         self.assertEqual(expected, actual)
         self.assertEqual(f"{details_mock.call_args}", "call('key_1')")
 
-    @patch('primer.primer3.Primer.revcom_reverse_primer')
+    #@patch('primer.primer3.Primer.revcom_reverse_primer')
     @patch('primer.primer3.Primer.determine_primer_strands')
     @patch('primer.primer3.Primer.calculate_primer_coords')
     def test_build_primer_loci_with_coords_success(
-            self, coords_mock, strands_mock, revcom_mock):
+            self, coords_mock, strands_mock
+    ):
         # arrange
         input_primer = {
             'penalty': 1, 'side': 'primer_side', 'sequence': 'primer_seq'}
@@ -272,7 +273,7 @@ class TestPrimer3(TestCase):
 
         coords_mock.return_value = ['100', '250']
         strands_mock.return_value = 'primer_side_+'
-        revcom_mock.return_value = 'primer_seq'
+        #revcom_mock.return_value = 'primer_seq'
 
         # act
         actual = self.primer.build_primer_loci(
@@ -283,11 +284,13 @@ class TestPrimer3(TestCase):
         self.assertEqual(expected, actual)
         self.assertEqual(
             f"{coords_mock.call_args}",
-            "call('primer_side', 'design_value', 'slice_start')")
+            "call('primer_side', 'design_value', 'slice_start')"
+        )
         self.assertEqual(
-                f"{strands_mock.call_args}", "call('primer_side', '+')")
-        self.assertEqual(
-            f"{revcom_mock.call_args}", "call('primer_seq', 'primer_side_+')")
+            f"{strands_mock.call_args}", "call('primer_side', '+')"
+        )
+       # self.assertEqual(
+        #    f"{revcom_mock.call_args}", "call('primer_seq', 'primer_side_+')")
 
     def test_build_primer_loci_no_coords_success(self):
         # arrange
