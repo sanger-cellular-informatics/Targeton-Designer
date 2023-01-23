@@ -1,0 +1,3 @@
+[submodule "sge-primer-scoring"]
+	path = sge-primer-scoring
+	url = https://gitlab.internal.sanger.ac.uk/sci/sge-primer-scoring.git
