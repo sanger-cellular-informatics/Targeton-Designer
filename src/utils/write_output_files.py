@@ -26,6 +26,11 @@ class IPcressOutputData(OutputFilesData):
     stnd: str = ''
     err: str = ''
 
+@dataclass
+class DesignOutputData(SlicerOutputData,PrimerOutputData,IPcressOutputData):
+    pass
+
+
 def timestamped_dir(prefix):
     try:
         FolderCreator.create_timestamped(prefix)

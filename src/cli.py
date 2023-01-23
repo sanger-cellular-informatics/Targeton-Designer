@@ -5,7 +5,7 @@ import os
 
 from utils.arguments_parser import ParsedInputArguments
 from utils.validate_files import validate_files
-from utils.write_output_files import write_slicer_output, write_primer_output, write_ipcress_output
+from utils.write_output_files import write_slicer_output, write_primer_output, write_ipcress_output, DesignOutputData
 from slicer.slicer import Slicer
 from primer.primer3 import Primer
 from ipcress.ipcress import Ipcress
@@ -69,6 +69,17 @@ def scoring_command(ipcress_output, mismatch, output_tsv, targeton_csv):
     scoring = Scoring(ipcress_output, mismatch, targeton_csv)
     scoring.add_scores_to_df()
     scoring.save_mismatches(output_tsv)
+    
+def design_command(args):
+    slicer_result = slicer_command(args)
+    primer_result = primer_command(slicer_result.fasta, existing_dir = slicer_result.dir)
+    ipcress_result = ipcress_command(args, csv = primer_result.csv,  existing_dir = slicer_result.dir)
+    design_result = DesignOutputData(slicer_result.dir)
+    for result in (slicer_result, primer_result, ipcress_result):
+        for k in result.__dataclass_fields__:
+            setattr(design_result,k,result.__getattribute__(k))
+        
+    return design_result
 
 
 def resolve_command(args):
@@ -95,9 +106,7 @@ def resolve_command(args):
             )
 
         if command == 'design':
-            slicer_result = slicer_command(args)
-            primer_result = primer_command(slicer_result.fasta, existing_dir = slicer_result.dir)
-            ipcress_command(args, csv = primer_result.csv,  existing_dir = slicer_result.dir)
+            design_command(args)
 
 
 def main():
