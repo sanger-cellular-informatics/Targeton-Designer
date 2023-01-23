@@ -6,7 +6,7 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from cli import slicer_command, primer_command
+from cli import slicer_command, primer_command, ipcress_command
 from utils.arguments_parser import ParsedInputArguments
 
 
@@ -34,7 +34,7 @@ class TestSlicerIntegration(TestCase):
 
 class TestPrimerIntegration(TestCase):
     def setUp(self):
-        self.fasta_file_path = r"./examples/test_slice_seqs.fa"
+        self.fasta_file_path = r"./tests/integration/fixtures/slicer_output.fasta"
 
     def test_PrimerOutput(self):
         with TemporaryDirectory() as tmpdir:
@@ -51,6 +51,27 @@ class TestPrimerIntegration(TestCase):
                 # # Check if the files are empty
                 self.assertGreater(path_bed.stat().st_size, 0)
                 self.assertGreater(path_csv.stat().st_size, 0)
+                
+class TestIPcressIntegration(TestCase):
+    def setUp(self):
+        self.fasta_file_path = r"./tests/integration/fixtures/p3_output.bed"
+        self.p3_output_csv_path = r"./tests/integration/fixtures/p3_output.csv"
+
+    def test_IPcressOutput(self):
+        with TemporaryDirectory() as tmpdir:
+            # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
+            with patch.object(sys, 'argv', ["./designer.sh", "ipcress", "--fasta", self.fasta_file_path, "--dir", tmpdir,"--p3_csv",self.p3_output_csv_path]):
+                parsed_input = ParsedInputArguments()
+                args = parsed_input.get_args()
+                result = ipcress_command(args)
+                path_stnd = Path(result.stnd)
+                path_err = Path(result.err)
+                # # Check if the files exist.
+                self.assertTrue(path_stnd.is_file())
+                self.assertTrue(path_err.is_file())
+                # # Check if the files are empty
+                self.assertGreater(path_stnd.stat().st_size, 0)
+                self.assertGreater(path_err.stat().st_size, 0)
 
 
 if __name__ == '__main__':

@@ -53,12 +53,12 @@ def ipcress_command(params, csv = '', existing_dir = ''):
     ipcress = Ipcress()
     ipcress_result = ipcress.ipcress_runner(ipcress_input)
 
-    write_ipcress_output(
+    result=write_ipcress_output(
         stnd = ipcress_result.stnd,
         err = ipcress_result.err,
         existing_dir = ipcress_input['dir']
     )
-
+    return result
 
 def resolve_command(args):
     command = args['command']

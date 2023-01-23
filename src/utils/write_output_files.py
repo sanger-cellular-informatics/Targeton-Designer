@@ -20,6 +20,11 @@ class SlicerOutputData(OutputFilesData):
 class PrimerOutputData(OutputFilesData):
     bed: str = ''
     csv: str = ''
+    
+@dataclass
+class IPcressOutputData(OutputFilesData):
+    stnd: str = ''
+    err: str = ''
 
 def timestamped_dir(prefix):
     try:
@@ -139,6 +144,14 @@ def write_primer_output(prefix = '', primers = [], existing_dir = '') -> PrimerO
 
 def write_ipcress_output(stnd = '', err = '', existing_dir = ''):
     IPCRESS_OUTPUT_TXT = 'ipcress_output'
-
-    write_to_text_file(existing_dir, stnd, IPCRESS_OUTPUT_TXT)
+    
+    result = IPcressOutputData(existing_dir)
+    
+    result.stnd = write_to_text_file(existing_dir, stnd, IPCRESS_OUTPUT_TXT)
+    result.err = write_to_text_file(existing_dir, err, IPCRESS_OUTPUT_TXT+"_err")
+    
+    return result
+    
+    
+ 
 
