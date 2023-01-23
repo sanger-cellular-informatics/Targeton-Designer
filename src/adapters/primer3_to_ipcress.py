@@ -20,8 +20,8 @@ class Primer3ToIpcressAdapter:
 
     def get_ipcress_input(self, primer_data, min, max, dir):
         formatted_primers = self.format_ipcress_primers(
-                min, max, primer_data
-            )
+            min, max, primer_data
+        )
 
         return formatted_primers
 
