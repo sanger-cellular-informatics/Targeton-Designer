@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
+import os
 
 from utils.arguments_parser import ParsedInputArguments
 from utils.validate_files import validate_files
@@ -9,6 +10,12 @@ from slicer.slicer import Slicer
 from primer.primer3 import Primer
 from ipcress.ipcress import Ipcress
 from adapters.primer3_to_ipcress import Primer3ToIpcressAdapter
+
+sys.path.insert(
+    0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../sge-primer-scoring/src'))
+)
+from scoring import Scoring
+
 
 def version_command():
     python_version = sys.version
@@ -77,6 +84,12 @@ def ipcress_command(params, csv = '', existing_dir = ''):
     )
 
 
+def scoring_command(ipcress_output, mismatch, output_tsv, targeton_csv):
+    scoring = Scoring(ipcress_output, mismatch, targeton_csv)
+    scoring.add_scores_to_df()
+    scoring.save_mismatches(output_tsv)
+
+
 def resolve_command(args):
     command = args['command']
 
@@ -94,6 +107,14 @@ def resolve_command(args):
 
         if command == 'ipcress':
             ipcress_command(args)
+
+        if command == 'scoring':
+            scoring_command(
+                args['ipcress_file'],
+                args['scoring_mismatch'],
+                args['output_tsv'],
+                args['targeton_csv'],
+            )
 
         if command == 'design':
             slicer_result = slicer_command(args)
