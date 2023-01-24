@@ -55,20 +55,23 @@ class TestPrimerIntegration(TestCase):
                 
 class TestIPcressIntegration(TestCase):
     def setUp(self):
-        # self.fasta_file_path = r"./tests/integration/fixtures/slicer_output.fasta"
-        self.fasta_file_path = r"GRCh38.fa"
+        self.use_homo_sapiens = False
+        if self.use_homo_sapiens:
+            self.fasta_file_path = r"GRCh38.fa"    
+        else:
+            # self.fasta_file_path = r"./tests/integration/fixtures/slicer_output.fasta"
+            self.fasta_file_path = r"./tests/integration/fixtures/fasta_example.fa"
+        
         self.p3_output_csv_path = r"./tests/integration/fixtures/p3_output.csv"
-        self.ipcress_input = r"../../examples/test_ipcress_input.txt"
        
 
     def test_IPcressOutput(self):
         with TemporaryDirectory() as tmpdir:
-            self.fasta_file_path = str((Path(tmpdir)/self.fasta_file_path).absolute())
-            # os.system("wget -cO - http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz | gunzip > " + self.fasta_file_path)
-            os.system("wget -cO - http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.1.fa.gz | gunzip > " + self.fasta_file_path)
+            if self.use_homo_sapiens:
+                self.fasta_file_path = str((Path(tmpdir)/self.fasta_file_path).absolute())
+                os.system("wget -cO - http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.1.fa.gz | gunzip > " + self.fasta_file_path)
             # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
-            # with patch.object(sys, 'argv', ["./designer.sh", "ipcress", "--fasta", self.fasta_file_path, "--dir", tmpdir,"--p3_csv",self.p3_output_csv_path]):
-            with patch.object(sys, 'argv', ["./designer.sh", "ipcress", "--fasta", self.fasta_file_path, "--dir", tmpdir, "--primers", self.ipcress_input]):
+            with patch.object(sys, 'argv', ["./designer.sh", "ipcress", "--fasta", self.fasta_file_path, "--dir", tmpdir,"--p3_csv",self.p3_output_csv_path]):
                 parsed_input = ParsedInputArguments()
                 args = parsed_input.get_args()
                 result = ipcress_command(args)
@@ -108,14 +111,18 @@ class TestIPcressIntegration(TestCase):
 class TestTargetonDesignerIntegration(TestCase):
     def setUp(self):
         self.bed_file_path = r"./tests/integration/fixtures/bed_example.bed"
-        # self.fasta_file_path = r"./tests/integration/fixtures/fasta_example.fa"
-        self.fasta_file_path = r"GRCh38.fa"
+        self.use_homo_sapiens = False
+        if self.use_homo_sapiens:
+            self.fasta_file_path = r"GRCh38.fa"    
+        else:
+            # self.fasta_file_path = r"./tests/integration/fixtures/slicer_output.fasta"
+            self.fasta_file_path = r"./tests/integration/fixtures/fasta_example.fa"
 
     def test_TDOutput(self):
         with TemporaryDirectory() as tmpdir:
-            self.fasta_file_path = str((Path(tmpdir)/self.fasta_file_path).absolute())
-            # os.system("wget -cO - http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz | gunzip > " + self.fasta_file_path)
-            os.system("wget -cO - http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.1.fa.gz | gunzip > " + self.fasta_file_path)
+            if self.use_homo_sapiens:
+                self.fasta_file_path = str((Path(tmpdir)/self.fasta_file_path).absolute())
+                os.system("wget -cO - http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.1.fa.gz | gunzip > " + self.fasta_file_path)
             # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
             with patch.object(sys, 'argv', ["./designer.sh", "design", "--bed", self.bed_file_path, "--fasta", self.fasta_file_path, "--dir", tmpdir]):
                 parsed_input = ParsedInputArguments()
