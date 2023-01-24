@@ -92,8 +92,6 @@ def scoring_command(ipcress_output, mismatch, output_tsv, targeton_csv):
 
 def resolve_command(args):
     command = args['command']
-    print('Command:::')
-    print(command)
 
     if command == 'version':
         version_command()
