@@ -16,6 +16,7 @@ sys.path.insert(
 )
 from scoring import Scoring
 
+
 def version_command():
     python_version = sys.version
     version = '0.0.1'
@@ -123,10 +124,4 @@ def resolve_command(args):
 
 def main():
     parsed_input = ParsedInputArguments()
-    args = parsed_input.get_args()
-
-    resolve_command(args)
-
-
-if __name__ == '__main__':
-    main()
+    args = parsed_input.get_arg
