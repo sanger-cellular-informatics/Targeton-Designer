@@ -11,9 +11,11 @@ RUN apt-get install -y libz-dev
 RUN apt-get install -y bedtools
 
 COPY requirements.txt requirements.txt
+COPY sge-primer-scoring/requirements.txt scoring_requirements.txt
 
 RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements.txt
+RUN pip3 install -r scoring_requirements.txt
 
 COPY . .
 
