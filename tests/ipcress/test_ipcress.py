@@ -7,7 +7,7 @@ from ipcress.ipcress import Ipcress
 
 class TestIpcress(TestCase):
     def setUp(self):
-        self.ipcress = Ipcress()
+        self.ipcress = Ipcress([])
 
     def test_prettify_output_defined(self):
         expected = 'test_cmd --pretty true'

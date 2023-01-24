@@ -132,13 +132,23 @@ def write_primer_output(prefix = '', primers = [], existing_dir = '') -> PrimerO
 
     result.bed = export_to_bed(bed_rows, dir)
     result.csv = export_to_csv(primers, dir)
+    result.dir = dir
 
     print('Primer files saved:', result.bed, result.csv)
 
     return result
 
-def write_ipcress_output(stnd = '', err = '', existing_dir = ''):
+def write_ipcress_input(dir, formatted_primers) -> str:
+    INPUT_FILE_NAME = 'ipcress_primer_input'
+
+    file_path = write_to_text_file(dir, formatted_primers, INPUT_FILE_NAME)
+
+    return file_path
+
+def write_ipcress_output(stnd = '', err = '', existing_dir = '') -> str:
     IPCRESS_OUTPUT_TXT = 'ipcress_output'
 
-    write_to_text_file(existing_dir, stnd, IPCRESS_OUTPUT_TXT)
+    file_path = write_to_text_file(existing_dir, stnd, IPCRESS_OUTPUT_TXT)
+
+    return file_path
 
