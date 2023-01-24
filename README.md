@@ -61,6 +61,7 @@ source venv/bin/activate
 
 pip3 install --upgrade pip
 pip3 install -r requirements.txt
+pip3 install -r sge-primer-scoring/requirements.txt
 
 deactivate
 ```
@@ -69,6 +70,8 @@ Run the tests:
 ```sh
 source venv/bin/activate
 
+python3 -m unittest
+cd sge-primer-scoring
 python3 -m unittest
 
 deactivate
@@ -177,6 +180,24 @@ Example command:
 or
 ./designer.sh ipcress --dir example_dir --fasta example_genomic_ref.fa --p3_csv example_p3_output.csv
 ```
+
+#### Primer scoring
+
+Running primer scoring:
+```sh
+./designer.sh scoring [--ipcress_file IPCRESS_FILE] [--scoring_mismatch SCORING_MISMATCH] [--output_tsv OUTPUT_TSV] [--targeton_csv TARGETON_CSV] 
+```
+
+Example command:
+```sh
+./designer.sh scoring --ipcress_file example_ipcress_file.txt --scoring_mismatch 4 --output_tsv example_output.tsv
+```
+Example command with targeton csv:
+```sh
+./designer.sh scoring --ipcress_file example_ipcress_file.txt --scoring_mismatch 4 --output_tsv example_targeton_output.tsv --targeton_csv example_targetons.csv
+```
+
+For more information and example files see the [Primer Scoring repo](https://gitlab.internal.sanger.ac.uk/sci/sge-primer-scoring).
 
 ### Docker
 
