@@ -70,7 +70,11 @@ class Ipcress:
             print('Output is pretty, skipping validation')
             return
 
+        print('Validating primers...')
+
         for primer_pair in primer_data.keys():
+            fwd_coord = primer_data[primer_pair]['F']['start']
+            rev_coord = primer_data[primer_pair]['R']['start']
 
             match = re.search(
                 (fr'{primer_pair} \d+ A \d+ 0 B \d+ 0 forward'),
