@@ -66,6 +66,7 @@ class TestIPcressIntegration(TestCase):
        
 
     def test_IPcressOutput(self):
+        # tmpdir="./tests/integration/"
         with TemporaryDirectory() as tmpdir:
             if self.use_homo_sapiens:
                 self.fasta_file_path = str((Path(tmpdir)/self.fasta_file_path).absolute())

@@ -8,37 +8,30 @@ Standalone targeton designer tool.
 
 Dependencies:
 
-BedTools
+Build-essential, BedTools and Python (3.8), Python-venv (3.8)
+Change ```python``` command to point to Python (3.8), ubuntu expects python3 to be a specific version for compatibility.
 ```sh
-sudo apt-get update
-sudo apt-get install bedtools
-sudo apt-get install build-essential
+sudo apt-get update \
+&& sudo apt-get -y install build-essential bedtools python3.8-dev python3.8-venv \
+&& sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.8 2  \
+&& sudo update-alternatives --config python
 ```
 
 ### Python3
 
-Check Python3 version
+Check Python3 (base) and Python (updated) version
 ```sh
 python3 --version
-```
-
-Update if less than python3.8
-```sh
-sudo apt-get install python3.8-dev
-
-sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 1
-sudo update-alternatives --config python3
-```
-Select 3.8 then check it's updated successfully
-```sh
-python3 --version
+python --version
 ```
 
 ### Clone the repo
-Pull down the Targeton Designer repo and cd into it
+Pull down the Targeton Designer repo and cd into it.
+Recursively pull any submodules.
 ```sh
 git clone https://gitlab.internal.sanger.ac.uk/sci/targeton-designer.git
 cd targeton-designer
+git submodule update --init --recursive
 ```
 
 ### Python Virtual Environment
@@ -47,21 +40,15 @@ Requirements:
  - Python3.8+
  - Python-venv
 
-Install venv if you haven't already got it. First install base then update to 3.8
-```sh
-sudo apt-get install python3-venv
-sudo apt-get install python3.8-venv
-```
-
 Setting up Virtual Env:
 ```sh
-python3 -m venv venv
+python -m venv venv
 
 source venv/bin/activate
 
-pip3 install --upgrade pip
-pip3 install -r requirements.txt
-pip3 install -r sge-primer-scoring/requirements.txt
+pip install --upgrade pip
+pip install -r requirements.txt
+pip install -r sge-primer-scoring/requirements.txt
 
 deactivate
 ```
@@ -70,9 +57,9 @@ Run the tests:
 ```sh
 source venv/bin/activate
 
-python3 -m unittest
+python -m unittest
 cd sge-primer-scoring
-python3 -m unittest
+python -m unittest
 
 deactivate
 ```
