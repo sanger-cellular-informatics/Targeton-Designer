@@ -66,24 +66,26 @@ class TestIPcressIntegration(TestCase):
        
 
     def test_IPcressOutput(self):
-        # tmpdir="./tests/integration/"
-        with TemporaryDirectory() as tmpdir:
-            if self.use_homo_sapiens:
-                self.fasta_file_path = str((Path(tmpdir)/self.fasta_file_path).absolute())
-                os.system("wget -cO - http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.1.fa.gz | gunzip > " + self.fasta_file_path)
-            # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
-            with patch.object(sys, 'argv', ["./designer.sh", "ipcress", "--fasta", self.fasta_file_path, "--dir", tmpdir,"--p3_csv",self.p3_output_csv_path]):
-                parsed_input = ParsedInputArguments()
-                args = parsed_input.get_args()
-                result = ipcress_command(args)
-                path_stnd = Path(result.stnd)
-                path_err = Path(result.err)
-                # # Check if the files exist.
-                self.assertTrue(path_stnd.is_file())
-                self.assertTrue(path_err.is_file())
-                # # Check if the files are empty
-                self.assertGreater(path_stnd.stat().st_size, 0)
-                self.assertGreater(path_err.stat().st_size, 0)
+        tmpdir="./tests/integration/fixtures"
+        # with TemporaryDirectory() as tmpdir:
+        if self.use_homo_sapiens:
+            self.fasta_file_path = str((Path(tmpdir)/self.fasta_file_path).absolute())
+            os.system("wget -cO - http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.1.fa.gz | gunzip > " + self.fasta_file_path)
+        # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
+        with patch.object(sys, 'argv', ["./designer.sh", "ipcress", "--fasta", self.fasta_file_path, "--dir", tmpdir,"--p3_csv",self.p3_output_csv_path]):
+            parsed_input = ParsedInputArguments()
+            args = parsed_input.get_args()
+            result = ipcress_command(args)
+            path_stnd = Path(result.stnd)
+            path_err = Path(result.err)
+            # # Check if the files exist.
+            self.assertTrue(path_stnd.is_file())
+            self.assertTrue(path_err.is_file())
+            # # Check if the files are empty
+            self.assertGreater(path_stnd.stat().st_size, 0)
+            self.assertGreater(path_err.stat().st_size, 0)
+        path_stnd.unlink(missing_ok=True)
+        path_err.unlink(missing_ok=True)
 
 # class TestScoringIntegration(TestCase):
 #     def setUp(self):
