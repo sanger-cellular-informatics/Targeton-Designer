@@ -73,7 +73,7 @@ class Ipcress:
         for primer_pair in primer_data.keys():
 
             match = re.search(
-                (fr'{primer_pair} \d+ A \d+ 0 B \d+ 0 forward$'),
+                (fr'{primer_pair} \d+ A \d+ 0 B \d+ 0 forward'),
                 ipcress_output
             )
 
