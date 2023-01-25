@@ -26,6 +26,7 @@ COPY . .
 
 RUN docker ps -s
 RUN df -h /tmp
+RUN docker info | grep Storage
 
 FROM base as dev
 ENTRYPOINT [ "python3", "./src/cli.py" ]
