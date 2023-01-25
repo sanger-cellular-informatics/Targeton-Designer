@@ -1,12 +1,11 @@
 # syntax=docker/dockerfile:1
-FROM python:3.8-slim-buster as base
+FROM python:3.8-slim-bullseye as base
 
 WORKDIR /
 
 ENV PYTHONUNBUFFERED: 1
 
 RUN uname -r
-RUN lsb_release -a
 
 RUN apt-get update 
 RUN apt-get install -y build-essential
