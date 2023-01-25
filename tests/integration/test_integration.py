@@ -66,8 +66,8 @@ class TestIPcressIntegration(TestCase):
        
 
     def test_iPCRessOutput(self):
-        # tmpdir="./tests/integration/fixtures"
         with TemporaryDirectory() as tmpdir:
+            # tmpdir="./tests/integration/fixtures"
             if self.use_homo_sapiens:
                 self.fasta_file_path = str((Path(tmpdir)/self.fasta_file_path).absolute())
                 os.system("wget -cO - http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.1.fa.gz | gunzip > " + self.fasta_file_path)

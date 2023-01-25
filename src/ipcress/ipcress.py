@@ -57,11 +57,15 @@ class Ipcress:
         print('Running Exonerate iPCRess with the following command:')
         print(cmd)
 
-        ipcress = subprocess.Popen(
-            cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        )
+        # ipcress = subprocess.Popen(
+        #     cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        # )
 
-        stnd, err = ipcress.communicate()
+        # stnd, err = ipcress.communicate()
+        result = subprocess.run(cmd, shell=True,  stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stnd = result.stdout
+        err = result.stderr
+        
         return IpcressResult(stnd, err)
 
     @staticmethod
