@@ -8,6 +8,9 @@ ENV PYTHONUNBUFFERED: 1
 RUN uname -r
 
 RUN apt-get update 
+# RUN apt-get dist-upgrade
+# RUN uname -r
+
 RUN apt-get install -y build-essential
 RUN apt-get install -y libz-dev
 RUN apt-get install -y bedtools
