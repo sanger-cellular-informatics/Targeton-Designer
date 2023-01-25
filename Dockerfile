@@ -24,6 +24,9 @@ RUN pip3 install -r scoring_requirements.txt
 
 COPY . .
 
+RUN docker ps -s
+RUN df -h /tmp
+
 FROM base as dev
 ENTRYPOINT [ "python3", "./src/cli.py" ]
 
