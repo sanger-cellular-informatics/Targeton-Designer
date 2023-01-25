@@ -46,7 +46,7 @@ python -m venv venv
 
 source venv/bin/activate
 
-pip install --upgrade pip
+pip install -U pip wheel setuptools 
 pip install -r requirements.txt
 pip install -r sge-primer-scoring/requirements.txt
 

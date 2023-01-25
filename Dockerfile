@@ -5,6 +5,9 @@ WORKDIR /
 
 ENV PYTHONUNBUFFERED: 1
 
+RUN uname-r
+RUN lsb_release -a
+
 RUN apt-get update 
 RUN apt-get install -y build-essential
 RUN apt-get install -y libz-dev
@@ -13,7 +16,7 @@ RUN apt-get install -y bedtools
 COPY requirements.txt requirements.txt
 COPY sge-primer-scoring/requirements.txt scoring_requirements.txt
 
-RUN pip3 install --upgrade pip
+RUN pip3 install -U pip wheel setuptools 
 RUN pip3 install -r requirements.txt
 RUN pip3 install -r scoring_requirements.txt
 
