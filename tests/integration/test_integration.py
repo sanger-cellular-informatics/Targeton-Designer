@@ -78,6 +78,8 @@ class TestIPcressIntegration(TestCase):
             result = ipcress_command(args)
             path_stnd = Path(result.stnd)
             path_err = Path(result.err)
+            print("{0} size: {1}".format(path_stnd,path_stnd.stat().st_size))
+            print("{0} size: {1}".format(path_err,path_err.stat().st_size))
             # # Check if the files exist.
             self.assertTrue(path_stnd.is_file())
             self.assertTrue(path_err.is_file())

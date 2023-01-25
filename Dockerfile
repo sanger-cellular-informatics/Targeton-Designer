@@ -5,7 +5,7 @@ WORKDIR /
 
 ENV PYTHONUNBUFFERED: 1
 
-RUN uname-r
+RUN uname -r
 RUN lsb_release -a
 
 RUN apt-get update 
