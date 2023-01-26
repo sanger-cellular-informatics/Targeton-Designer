@@ -37,7 +37,7 @@ python3 --version
 ### Clone the repo
 Pull down the Targeton Designer repo and cd into it
 ```sh
-git clone https://gitlab.internal.sanger.ac.uk/sci/targeton-designer.git
+git clone --recurse-submodule https://gitlab.internal.sanger.ac.uk/sci/targeton-designer.git
 cd targeton-designer
 ```
 
