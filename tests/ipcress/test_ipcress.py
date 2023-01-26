@@ -55,7 +55,8 @@ class TestIpcress(TestCase):
         self.ipcress.validate_primers(ipcress_output, primer_data, pretty, True)
 
         mock_print.assert_called_with(
-            'No valid primer pair found for test-primer-pair')
+            'No valid primer pair found for test-primer-pair'
+        )
 
     @patch('builtins.print')
     def test_validate_primers_mismatch_prints_warning(self, mock_print):
