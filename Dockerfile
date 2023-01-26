@@ -23,6 +23,7 @@ RUN pip3 install -r scoring_requirements.txt
 
 RUN apt-get install -y libglib2.0-dev 
 RUN apt-get install -y autoconf
+RUN apt-get install -y git
 
 
 RUN git clone https://github.com/nathanweeks/exonerate.git
