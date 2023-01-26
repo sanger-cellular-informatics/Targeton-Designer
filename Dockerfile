@@ -16,7 +16,7 @@ RUN uname -r
 # RUN apt-get install -y libz-dev
 # RUN apt-get install -y bedtools
 
-RUN apk up-date
+RUN apk update
 RUN apk upgrade
 RUN apk add build-essential
 RUN apk add libz-dev
