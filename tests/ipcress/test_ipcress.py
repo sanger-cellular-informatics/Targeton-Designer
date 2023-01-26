@@ -31,9 +31,11 @@ class TestIpcress(TestCase):
     def test_validate_primers_pretty_prints_skipping_message(self, mock_print):
         ipcress_output = ''
         primer_data = {}
-        pretty = True
+        params=dict()
+        params["pretty"] = True
+        params["verbose"] = True
 
-        self.ipcress.validate_primers(ipcress_output, primer_data, pretty)
+        self.ipcress.validate_primers(ipcress_output, primer_data, params)
 
         mock_print.assert_called_with(
             'Output is pretty, skipping validation'
@@ -47,9 +49,11 @@ class TestIpcress(TestCase):
             'F': {'start': 123, 'seq': 'ATCG'},
             'R': {'start': 456, 'seq': 'GCTA'}
         }}
-        pretty = False
+        params=dict()
+        params["pretty"] = False
+        params["verbose"] = True
 
-        self.ipcress.validate_primers(ipcress_output, primer_data, pretty)
+        self.ipcress.validate_primers(ipcress_output, primer_data, params)
 
         mock_print.assert_called_with(
             'No valid primer pair found for test-primer-pair'
@@ -63,9 +67,11 @@ class TestIpcress(TestCase):
             'F': {'start': 123, 'seq': 'ATCG'},
             'R': {'start': 456, 'seq': 'GCTA'}
         }}
-        pretty = False
+        params=dict()
+        params["pretty"] = False
+        params["verbose"] = True
 
-        self.ipcress.validate_primers(ipcress_output, primer_data, pretty)
+        self.ipcress.validate_primers(ipcress_output, primer_data, params)
 
         mock_print.assert_called_with(
             'No valid primer pair found for test-primer-pair'
@@ -79,9 +85,11 @@ class TestIpcress(TestCase):
             'F': {'start': 123, 'seq': 'ATCG'},
             'R': {'start': 456, 'seq': 'GCTA'}
         }}
-        pretty = False
+        params=dict()
+        params["pretty"] = False
+        params["verbose"] = True
 
-        self.ipcress.validate_primers(ipcress_output, primer_data, pretty)
+        self.ipcress.validate_primers(ipcress_output, primer_data, params)
 
         mock_print.assert_called_with(
             'No valid primer pair found for test-primer-pair'
@@ -95,9 +103,11 @@ class TestIpcress(TestCase):
             'F': {'start': 123, 'seq': 'ATCG'},
             'R': {'start': 456, 'seq': 'GCTA'}
         }}
-        pretty = False
+        params=dict()
+        params["pretty"] = False
+        params["verbose"] = True
 
-        self.ipcress.validate_primers(ipcress_output, primer_data, pretty)
+        self.ipcress.validate_primers(ipcress_output, primer_data, params)
 
         mock_print.assert_called_once_with('Validating primers...')
 

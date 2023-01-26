@@ -20,16 +20,21 @@ class Ipcress:
         self.params = params
 
     def run(self):
-        print('iPCRess params:')
-        print(self.params)
+        print("Running iPCRess...")
+        if self.params["verbose"]:
+            print(self.params["verbose"])
+            print('iPCRess params:')
+            print(self.params)
         params = self.params
 
         if params['primers']:                               # Comes from --primers argument, should be a path to a txt file
-            print('Loading custom iPCRess input file')
+            if params['verbose']:
+                print('Loading custom iPCRess input file')
             input_path = params['primers']
             result = self.run_ipcress(input_path, params)
         else:
-            print('Building iPCRess input file.')
+            if params['verbose']:
+                print('Building iPCRess input file.')
 
             adapter = Primer3ToIpcressAdapter()
             adapter.prepare_input(
@@ -38,12 +43,14 @@ class Ipcress:
             input_path = write_ipcress_input(params['dir'], adapter.formatted_primers)
 
             result = self.run_ipcress(input_path, params)
-
+            if params['verbose']:
+                print(result.stnd.decode())
             self.validate_primers(
-                result.stnd.decode(), adapter.primer_data, params['pretty']
+                result.stnd.decode(), adapter.primer_data, params
             )
 
-        print('Finished!')
+        if params['verbose']:
+            print('Finished!')
 
         return result
 
@@ -54,8 +61,8 @@ class Ipcress:
 
         cmd = self.prettify_output(params['pretty'], cmd)
 
-        print('Running Exonerate iPCRess with the following command:')
-        print(cmd)
+        if params['verbose']:
+            print('Running Exonerate iPCRess with the following command:\n{0}'.format(cmd))
 
         # ipcress = subprocess.Popen(
         #     cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
@@ -63,18 +70,21 @@ class Ipcress:
 
         # stnd, err = ipcress.communicate()
         result = subprocess.run(cmd, shell=True,  stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        
         stnd = result.stdout
         err = result.stderr
+        if not stnd:
+            raise Exception(err)
         
         return IpcressResult(stnd, err)
 
     @staticmethod
-    def validate_primers(ipcress_output, primer_data, pretty):
-        if pretty:
+    def validate_primers(ipcress_output, primer_data, params):
+        if params["pretty"]:
             print('Output is pretty, skipping validation')
             return
-
-        print('Validating primers...')
+        if params['verbose']:
+            print('Validating primers...')
 
         for primer_pair in primer_data.keys():
             fwd_coord = primer_data[primer_pair]['F']['start']
