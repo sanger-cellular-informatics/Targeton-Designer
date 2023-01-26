@@ -21,6 +21,19 @@ RUN pip3 install -U pip wheel setuptools
 RUN pip3 install -r requirements.txt
 RUN pip3 install -r scoring_requirements.txt
 
+RUN apt-get install -y libglib2.0-dev 
+RUN apt-get install -y autoconf
+
+
+RUN git clone https://github.com/nathanweeks/exonerate.git
+RUN cd exonerate
+RUN autoreconf -vfi
+RUN configure ../src/ipcress/ipcress_config.json
+RUN make
+RUN make check
+RUN make install
+RUN cs ..
+
 COPY . .
 
 FROM base as dev
