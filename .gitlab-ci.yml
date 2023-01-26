@@ -32,7 +32,6 @@ test:
       fi
     - docker build --pull -t "$CI_REGISTRY_IMAGE${tag}" --target test .
     - docker push "$CI_REGISTRY_IMAGE${tag}"
-    - docker run --mount type=tmpfs,destination=~/tmp,tmpfs-size=4096 "$CI_REGISTRY_IMAGE${tag}"
     - docker run $CI_REGISTRY_IMAGE${tag}
   # Run this job in a branch where a Dockerfile exists
   rules:
