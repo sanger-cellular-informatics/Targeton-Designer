@@ -16,10 +16,10 @@ class IpcressResult:
 
 
 class Ipcress:
-    def __init__(self, params):
+    def __init__(self, params) -> None:
         self.params = params
 
-    def run(self):
+    def run(self) -> IpcressResult:
         print('iPCRess params:')
         print(self.params)
         params = self.params
@@ -65,13 +65,12 @@ class Ipcress:
         return IpcressResult(stnd, err)
 
     @staticmethod
-    def validate_primers(ipcress_output, primer_data, is_pretty, validate_coords=False):
+    def validate_primers(ipcress_output, primer_data, is_pretty, validate_coords=False) -> None:
         if is_pretty:
             print('Output is pretty, skipping validation')
             return
 
         print('Validating primers...')
-
 
 
         for primer_pair in primer_data.keys():
