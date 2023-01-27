@@ -37,8 +37,6 @@ RUN autoreconf -vfi \
   && make install \
   && rm -rf /usr/src/app
 
-COPY --from=builder /usr/local/bin /usr/local/bin
-COPY --from=builder /usr/local/share/man /usr/local/share/man
 
 COPY . .
 
