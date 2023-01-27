@@ -53,7 +53,7 @@ class TestIpcress(TestCase):
         params["pretty"] = False
         params["verbose"] = True
 
-        self.ipcress.validate_primers(ipcress_output, primer_data, params)
+        self.ipcress.validate_primers(ipcress_output, primer_data, params, validate_coords=True)
 
         mock_print.assert_called_with(
             'No valid primer pair found for test-primer-pair'
