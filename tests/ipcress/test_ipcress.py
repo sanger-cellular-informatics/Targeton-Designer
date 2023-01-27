@@ -61,8 +61,9 @@ class TestIpcress(TestCase):
 
     @patch('builtins.print')
     def test_validate_primers_mismatch_prints_warning(self, mock_print):
-        ipcress_output = ('ipcress: 1:filter(unmasked) '
-            'test-primer-pair 200 A 123 0 B 456 1 forward\n')
+        ipcress_output = (
+            'ipcress: 1:filter(unmasked) test-primer-pair 200 A 123 0 B 456 1 forward\n'
+        )
         primer_data = {'test-primer-pair': {
             'F': {'start': 123, 'seq': 'ATCG'},
             'R': {'start': 456, 'seq': 'GCTA'}
@@ -79,8 +80,9 @@ class TestIpcress(TestCase):
 
     @patch('builtins.print')
     def test_validate_primers_not_forward_prints_warning(self, mock_print):
-        ipcress_output = ('ipcress: 1:filter(unmasked) '
-            'test-primer-pair 200 A 123 0 B 456 0 revcomp\n')
+        ipcress_output = (
+            'ipcress: 1:filter(unmasked) test-primer-pair 200 A 123 0 B 456 0 revcomp\n'
+        )
         primer_data = {'test-primer-pair': {
             'F': {'start': 123, 'seq': 'ATCG'},
             'R': {'start': 456, 'seq': 'GCTA'}
@@ -97,8 +99,9 @@ class TestIpcress(TestCase):
 
     @patch('builtins.print')
     def test_validate_primers_match_does_not_print_warning(self, mock_print):
-        ipcress_output = ('ipcress: 1:filter(unmasked) '
-            'test-primer-pair 200 A 123 0 B 456 0 forward\n')
+        ipcress_output = (
+            'ipcress: 1:filter(unmasked) test-primer-pair 200 A 123 0 B 456 0 forward\n'
+        )
         primer_data = {'test-primer-pair': {
             'F': {'start': 123, 'seq': 'ATCG'},
             'R': {'start': 456, 'seq': 'GCTA'}
