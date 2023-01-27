@@ -25,15 +25,22 @@ RUN apt-get install -y libglib2.0-dev
 RUN apt-get install -y autoconf
 RUN apt-get install -y git
 
+WORKDIR /usr/src/app
 
 RUN git clone https://github.com/nathanweeks/exonerate.git
-RUN cd exonerate
-RUN autoreconf -vfi
-RUN configure 
-RUN make
-RUN make check
-RUN make install
-RUN cs ..
+WORKDIR /usr/src/app/exonerate
+COPY . .
+RUN --mount=type=cache,target=/ccache \
+  export CCACHE_DIR=/ccache \
+  && autoreconf -i \
+  && ./configure \
+  && make -j \
+  && make check \
+  && make install \
+  && rm -rf /usr/src/app
+
+COPY --from=builder /usr/local/bin /usr/local/bin
+COPY --from=builder /usr/local/share/man /usr/local/share/man
 
 COPY . .
 
