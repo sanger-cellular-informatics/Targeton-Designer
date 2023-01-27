@@ -30,9 +30,7 @@ WORKDIR /usr/src/app
 RUN git clone https://github.com/nathanweeks/exonerate.git
 WORKDIR /usr/src/app/exonerate
 COPY . .
-RUN --mount=type=cache,target=/ccache \
-  export CCACHE_DIR=/ccache \
-  && autoreconf -i \
+RUN autoreconf -vfi \
   && ./configure \
   && make -j \
   && make check \
