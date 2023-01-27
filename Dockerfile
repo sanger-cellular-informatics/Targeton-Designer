@@ -28,7 +28,8 @@ RUN apt-get install -y git
 
 RUN git clone https://github.com/nathanweeks/exonerate.git
 RUN cd exonerate
-RUN autoreconf -vfi
+# RUN autoreconf -vfi
+# RUN configure ../src/ipcress/ipcress_config.json
 RUN make
 RUN make check
 RUN make install
