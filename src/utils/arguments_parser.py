@@ -112,6 +112,14 @@ def add_input_args(parser):
         ),
     )
     parser.add_argument(
+        '--prefix',
+        help=(
+            'Optional: Supply a prefix for timestamped output directory.\n'
+            'If left blank, the default value of \'primer3_\' will be used.. '
+        ),
+        default='primer3_'
+    )
+    parser.add_argument(
         '--p3_csv',
         help=(
             'Optional: Point at specific Primer3 output CSV file. '

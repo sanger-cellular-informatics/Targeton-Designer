@@ -11,25 +11,29 @@ from utils.file_system import parse_json
 
 
 class Primer:
-    def __init__(self):
-        pass
-
+    def __init__(self,params):
         self.user_config = './config/primer3.config.json'
         self.default_config = './src/primer/primer3.config.json'
+        self.params = params
 
     def get_primers(self, fasta):
         config = self.get_config_data(self.default_config, self.user_config)
-
+        print(fasta)
+        print(config)
         result = self.primer3_runner(fasta=fasta, config=config)
 
         return result
 
     def primer3_runner(self, fasta: str, config: dict):
-        print('Reading FA file')
+        print("Running Primer3...")
+        if self.params["verbose"]:
+            print('Reading FA file')
         design_inputs = self.read_input_fasta(fasta)
-        print('Designing primers for the region')
+        if self.params["verbose"]:
+            print('Designing primers for the region')
         designs = self.primer3_design(design_inputs, config)
-        print('Naming primers')
+        if self.params["verbose"]:
+            print('Naming primers')
         slices = self.locate_primers(designs)
 
         return slices

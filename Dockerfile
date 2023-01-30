@@ -37,7 +37,7 @@ RUN autoreconf -vfi \
   && make install \
   && rm -rf /usr/src/app
 
-
+WORKDIR /
 COPY . .
 
 FROM base as dev

@@ -7,7 +7,7 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from cli import slicer_command, primer_command, ipcress_command, scoring_command, design_command
+from cli import slicer_command, primer_command, ipcress_command, scoring_command, design_command, resolve_command
 from utils.arguments_parser import ParsedInputArguments
 
 
@@ -22,7 +22,7 @@ class TestSlicerIntegration(TestCase):
             with patch.object(sys, 'argv', ["./designer.sh", "slicer", "--bed", self.bed_file_path, "--fasta", self.fasta_file_path, "--dir", tmpdir]):
                 parsed_input = ParsedInputArguments()
                 args = parsed_input.get_args()
-                slicer_result = slicer_command(args)
+                slicer_result = resolve_command(args)
                 path_bed = Path(slicer_result.bed)
                 path_fasta = Path(slicer_result.fasta)
                 # # Check if the files exist.
@@ -43,7 +43,7 @@ class TestPrimerIntegration(TestCase):
             with patch.object(sys, 'argv', ["./designer.sh", "primer", "--fasta", self.fasta_file_path, "--dir", tmpdir]):
                 parsed_input = ParsedInputArguments()
                 args = parsed_input.get_args()
-                primer_result = primer_command(args["fasta"], prefix=args["dir"])
+                primer_result = resolve_command(args)
                 path_bed = Path(primer_result.bed)
                 path_csv = Path(primer_result.csv)
                 # # Check if the files exist.
@@ -75,11 +75,9 @@ class TestIPcressIntegration(TestCase):
             with patch.object(sys, 'argv', ["./designer.sh", "ipcress", "--fasta", self.fasta_file_path, "--dir", tmpdir,"--p3_csv",self.p3_output_csv_path]):
                 parsed_input = ParsedInputArguments()
                 args = parsed_input.get_args()
-                result = ipcress_command(args)
+                result = resolve_command(args)
                 path_stnd = Path(result.stnd)
                 path_err = Path(result.err)
-                print("{0} size: {1}".format(path_stnd,path_stnd.stat().st_size))
-                print("{0} size: {1}".format(path_err,path_err.stat().st_size))
                 # # Check if the files exist.
                 self.assertTrue(path_stnd.is_file())
                 self.assertTrue(path_err.is_file())
@@ -132,7 +130,7 @@ class TestTargetonDesignerIntegration(TestCase):
             with patch.object(sys, 'argv', ["./designer.sh", "design", "--bed", self.bed_file_path, "--fasta", self.fasta_file_path, "--dir", tmpdir]):
                 parsed_input = ParsedInputArguments()
                 args = parsed_input.get_args()
-                result = design_command(args)
+                result = resolve_command(args)
                 path_bed = Path(result.bed)
                 path_fasta = Path(result.fasta)
                 path_csv = Path(result.csv)
@@ -148,6 +146,54 @@ class TestTargetonDesignerIntegration(TestCase):
                 
                 # # Check if the files are empty
                 self.assertGreater(path_bed.stat().st_size, 0)
+                self.assertGreater(path_fasta.stat().st_size, 0)
+                self.assertGreater(path_csv.stat().st_size, 0)
+                self.assertGreater(path_stnd.stat().st_size, 0)
+                self.assertGreater(path_err.stat().st_size, 0)
+
+
+class TestUnwrappedTargetonDesignerIntegration(TestCase):
+    def setUp(self):
+        self.bed_file_path = r"./tests/integration/fixtures/bed_example.bed"
+        self.use_homo_sapiens = False
+        if self.use_homo_sapiens:
+            self.fasta_file_path = r"GRCh38.fa"    
+        else:
+            # self.fasta_file_path = r"./tests/integration/fixtures/slicer_output.fasta"
+            self.fasta_file_path = r"./tests/integration/fixtures/fasta_example.fa"
+
+    def test_Unwrapped_TDOutput(self):
+        with TemporaryDirectory() as tmpdir:
+            if self.use_homo_sapiens:
+                self.fasta_file_path = str((Path(tmpdir)/self.fasta_file_path).absolute())
+                os.system("wget -cO - http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.1.fa.gz | gunzip > " + self.fasta_file_path)
+            # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
+            with patch.object(sys, 'argv', ["./designer.sh", "design", "--bed", self.bed_file_path, "--fasta", self.fasta_file_path, "--dir", tmpdir]):
+                parsed_input = ParsedInputArguments()
+                args = parsed_input.get_args()
+                slicer_result = slicer_command(args)
+                print(args)
+                # primer_result = primer_command(args)
+                primer_command(fasta = args['fasta'], prefix = args['dir'])
+                ipcress_result = ipcress_command(args, csv = primer_result.csv,  existing_dir = slicer_result.dir)
+                path_bed = Path(primer_result.bed)
+                path_bed2 = Path(slicer_result.bed)
+                path_fasta = Path(slicer_result.fasta)
+                path_csv = Path(primer_result.csv)
+                path_stnd = Path(ipcress_result.stnd)
+                path_err = Path(ipcress_result.err)
+                
+                # # Check if the files exist.
+                self.assertTrue(path_bed.is_file())
+                self.assertTrue(path_bed2.is_file())
+                self.assertTrue(path_fasta.is_file())
+                self.assertTrue(path_csv.is_file())
+                self.assertTrue(path_stnd.is_file())
+                self.assertTrue(path_err.is_file())
+                
+                # # Check if the files are empty
+                self.assertGreater(path_bed.stat().st_size, 0)
+                self.assertGreater(path_bed2.stat().st_size, 0)
                 self.assertGreater(path_fasta.stat().st_size, 0)
                 self.assertGreater(path_csv.stat().st_size, 0)
                 self.assertGreater(path_stnd.stat().st_size, 0)

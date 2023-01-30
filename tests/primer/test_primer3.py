@@ -3,19 +3,24 @@ import unittest
 import os
 import json
 import collections
+import sys
 
 from unittest.mock import patch
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from tests.test_data.primer3_output_data import primer3_output_data
 from primer.primer3 import Primer
+from utils.arguments_parser import ParsedInputArguments
 
 
 class TestPrimer3(TestCase):
     primer3_output_json_data = primer3_output_data
 
     def setUp(self):
-        self.primer = Primer()
+        with patch.object(sys, 'argv', ["test","test"]):
+            parsed_input = ParsedInputArguments()
+            args = parsed_input.get_args()
+        self.primer = Primer(args)
         self.setUpPyfakefs()
 
     def create_files(self):

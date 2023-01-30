@@ -79,7 +79,7 @@ class Ipcress:
         return IpcressResult(stnd, err)
 
     @staticmethod
-    def validate_primers(ipcress_output, primer_data, params):
+    def validate_primers(ipcress_output, primer_data, params, validate_coords=False):
         if params["pretty"]:
             print('Output is pretty, skipping validation')
             return
