@@ -22,13 +22,13 @@ class PrimerOutputData(OutputFilesData):
     csv: str = ''
     
 @dataclass
-class IPcressOutputData(OutputFilesData):
+class IpcressOutputData(OutputFilesData):
     stnd: str = ''
     err: str = ''
 
 @dataclass
-class DesignOutputData(SlicerOutputData,PrimerOutputData,IPcressOutputData):
-    pass
+class DesignOutputData(SlicerOutputData, PrimerOutputData, IpcressOutputData):
+    bed2: str=''
 
 
 def timestamped_dir(prefix):
@@ -158,7 +158,7 @@ def write_ipcress_input(dir, formatted_primers) -> str:
 def write_ipcress_output(stnd = '', err = '', existing_dir = '') -> str:
     IPCRESS_OUTPUT_TXT = 'ipcress_output'
     
-    result = IPcressOutputData(existing_dir)
+    result = IpcressOutputData(existing_dir)
     
     result.stnd = write_to_text_file(existing_dir, stnd, IPCRESS_OUTPUT_TXT)
     result.err = write_to_text_file(existing_dir, err, IPCRESS_OUTPUT_TXT+"_err")

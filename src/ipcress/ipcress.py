@@ -1,6 +1,7 @@
 import re
 import subprocess
 from dataclasses import dataclass
+from utils.exceptions import IpcressError
 
 from adapters.primer3_to_ipcress import Primer3ToIpcressAdapter
 from utils.write_output_files import write_ipcress_input
@@ -22,7 +23,6 @@ class Ipcress:
     def run(self):
         print("Running iPCRess...")
         if self.params["verbose"]:
-            print(self.params["verbose"])
             print('iPCRess params:')
             print(self.params)
         params = self.params
@@ -43,8 +43,6 @@ class Ipcress:
             input_path = write_ipcress_input(params['dir'], adapter.formatted_primers)
 
             result = self.run_ipcress(input_path, params)
-            if params['verbose']:
-                print(result.stnd.decode())
             self.validate_primers(
                 result.stnd.decode(), adapter.primer_data, params
             )
@@ -62,24 +60,18 @@ class Ipcress:
         cmd = self.prettify_output(params['pretty'], cmd)
 
         if params['verbose']:
-            print('Running Exonerate iPCRess with the following command:\n{0}'.format(cmd))
+            print(f'Running Exonerate iPCRess with the following command:\n{cmd}')
 
-        # ipcress = subprocess.Popen(
-        #     cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        # )
-
-        # stnd, err = ipcress.communicate()
         result = subprocess.run(cmd, shell=True,  stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        
         stnd = result.stdout
         err = result.stderr
         if not stnd:
-            raise Exception(err)
+            raise IpcressError(err)
         
         return IpcressResult(stnd, err)
 
     @staticmethod
-    def validate_primers(ipcress_output, primer_data, params):
+    def validate_primers(ipcress_output, primer_data, params) -> None:
         if params["pretty"]:
             print('Output is pretty, skipping validation')
             return
