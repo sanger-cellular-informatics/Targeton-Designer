@@ -29,9 +29,8 @@ python --version
 Pull down the Targeton Designer repo and cd into it.
 Recursively pull any submodules.
 ```sh
-git clone https://gitlab.internal.sanger.ac.uk/sci/targeton-designer.git
+git clone --recurse-submodule https://gitlab.internal.sanger.ac.uk/sci/targeton-designer.git
 cd targeton-designer
-git submodule update --init --recursive
 ```
 
 ### Python Virtual Environment
