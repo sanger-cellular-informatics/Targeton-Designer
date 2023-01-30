@@ -92,7 +92,7 @@ def scoring_command(ipcress_output, mismatch, output_tsv, targeton_csv):
 def design_command(args):
     slicer_result = slicer_command(args)
     primer_result = primer_command(slicer_result.fasta, existing_dir = slicer_result.dir)
-    ipcress_result = ipcress_command(args, csv = primer_result.csv,  existing_dir = slicer_result.dir)
+    ipcress_result = ipcress_command(args, csv = primer_result.csv, existing_dir = slicer_result.dir)
     design_result = DesignOutputData(slicer_result.dir)
     for result in (slicer_result, primer_result, ipcress_result):
         for k in result.__dataclass_fields__:
