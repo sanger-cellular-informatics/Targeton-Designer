@@ -17,7 +17,7 @@ class IpcressResult:
 
 
 class Ipcress:
-    def __init__(self, params):
+    def __init__(self, params) -> None:
         self.params = params
 
     def run(self):
@@ -71,20 +71,25 @@ class Ipcress:
         return IpcressResult(stnd, err)
 
     @staticmethod
-    def validate_primers(ipcress_output, primer_data, params) -> None:
+    def validate_primers(ipcress_output, primer_data, params, validate_coords=False) -> None:
         if params["pretty"]:
             print('Output is pretty, skipping validation')
             return
         if params['verbose']:
             print('Validating primers...')
 
-        for primer_pair in primer_data.keys():
-            fwd_coord = primer_data[primer_pair]['F']['start']
-            rev_coord = primer_data[primer_pair]['R']['start']
 
-            match = re.search((
-                fr'{primer_pair} \d+ A {fwd_coord} 0 '
-                fr'B {rev_coord} 0 forward$'), ipcress_output)
+        for primer_pair in primer_data.keys():
+
+            if validate_coords:
+                fwd_coord = primer_data[primer_pair]['F']['start']
+                rev_coord = primer_data[primer_pair]['R']['start']
+
+                reg_exp = fr'{primer_pair} \d+ A {fwd_coord} 0 B {rev_coord} 0 forward'
+            else:
+                reg_exp = fr'{primer_pair} \d+ A \d+ 0 B \d+ 0 forward'
+
+            match = re.search(reg_exp, ipcress_output)
 
             if not match:
                 print(f'No valid primer pair found for {primer_pair}')
