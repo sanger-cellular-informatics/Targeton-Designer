@@ -20,3 +20,6 @@ class InvalidConfigError(Exception):
     """Config file is not a valid JSON"""
     pass
 
+class IpcressError(Exception):
+    pass
+

@@ -31,9 +31,7 @@ class TestIpcress(TestCase):
     def test_validate_primers_pretty_prints_skipping_message(self, mock_print):
         ipcress_output = ''
         primer_data = {}
-        params=dict()
-        params["pretty"] = True
-        params["verbose"] = True
+        params = {"pretty": True, "verbose": True}
 
         self.ipcress.validate_primers(ipcress_output, primer_data, params)
 
@@ -43,15 +41,16 @@ class TestIpcress(TestCase):
 
     @patch('builtins.print')
     def test_validate_primers_wrong_coord_prints_warning(self, mock_print):
-        ipcress_output = ('ipcress: 1:filter(unmasked) '
-            'test-primer-pair 200 A 122 0 B 456 0 forward\n')
-        primer_data = {'test-primer-pair': {
+        ipcress_output = (
+            'ipcress: 1:filter(unmasked) test-primer-pair 200 A 122 0 B 456 0 forward\n'
+        )
+        primer_data = {
+            'test-primer-pair': {
             'F': {'start': 123, 'seq': 'ATCG'},
             'R': {'start': 456, 'seq': 'GCTA'}
-        }}
-        params=dict()
-        params["pretty"] = False
-        params["verbose"] = True
+            }
+        }
+        params = {"pretty": False, "verbose": True}
 
         self.ipcress.validate_primers(ipcress_output, primer_data, params)
 
@@ -67,9 +66,7 @@ class TestIpcress(TestCase):
             'F': {'start': 123, 'seq': 'ATCG'},
             'R': {'start': 456, 'seq': 'GCTA'}
         }}
-        params=dict()
-        params["pretty"] = False
-        params["verbose"] = True
+        params = {"pretty": False, "verbose": True}
 
         self.ipcress.validate_primers(ipcress_output, primer_data, params)
 
@@ -85,9 +82,7 @@ class TestIpcress(TestCase):
             'F': {'start': 123, 'seq': 'ATCG'},
             'R': {'start': 456, 'seq': 'GCTA'}
         }}
-        params=dict()
-        params["pretty"] = False
-        params["verbose"] = True
+        params = {"pretty": False, "verbose": True}
 
         self.ipcress.validate_primers(ipcress_output, primer_data, params)
 
@@ -103,9 +98,7 @@ class TestIpcress(TestCase):
             'F': {'start': 123, 'seq': 'ATCG'},
             'R': {'start': 456, 'seq': 'GCTA'}
         }}
-        params=dict()
-        params["pretty"] = False
-        params["verbose"] = True
+        params = {"pretty": False, "verbose": True}
 
         self.ipcress.validate_primers(ipcress_output, primer_data, params)
 

@@ -320,12 +320,25 @@ ENSE00003571441_HG6_6_LibAmp_0 AGTGCCAGGACCTCTCCTAC GGGAGATGCAGCCTGGGT 200 300
 ```
 
 ### iPCRess Output example
-Space separated text file. Sequence_id contains the chromosome and description can be 'forward', 'revcomp', 'single_A' or 'single_B'.
+Two files, stnd and err.
+stnd: Space separated text file. Sequence_id contains the chromosome and description can be 'forward', 'revcomp', 'single_A' or 'single_B'.
 | sequence_id | experiment_id | product_length | primer_5 | pos_5 | mismatch_5 | primer_3 | pos_3 | mismatch_3 | description |
 | ----------- | ------------- | -------------- | -------- | ----- | ---------- | -------- | ----- | ---------- | ----------- |
 | 19:filter(unmasked) | ID0001 | 259 | A | 44907726 | 0 | B | 44907967 | 0 | forward |
 
 Raw file
 ```
-ipcress: 19:filter(unmasked) ID0001 259 A 44907726 0 B 44907967 0 forward
+ipcress: chr1:filter(unmasked) exon1_2_LibAmp_0 210 A 55 0 B 242 0 forward
+ipcress: chr1:filter(unmasked) exon1_2_LibAmp_1 210 A 55 0 B 243 0 forward
+ipcress: chr1:filter(unmasked) exon1_2_LibAmp_2 210 A 55 0 B 242 0 forward
+ipcress: chr1:filter(unmasked) exon1_2_LibAmp_3 210 A 55 0 B 243 0 forward
+-- completed ipcress analysis
+```
+
+err: is a .txt error output from ipcress or if it fails early system.run().
+```
+** Message: 14:55:57.646: Loaded [1] experiments
+** Message: 14:55:58.141: Loaded [1] experiments
+** Message: 14:55:58.649: Loaded [1] experiments
+** Message: 14:55:59.167: Loaded [1] experiments
 ```

@@ -83,7 +83,7 @@ def ipcress_command(params, csv = '', existing_dir = ''):
     ipcress = Ipcress(ipcress_params)
     ipcress_result = ipcress.run()
 
-    result=write_ipcress_output(
+    result = write_ipcress_output(
         stnd = ipcress_result.stnd,
         err = ipcress_result.err,
         existing_dir = ipcress_params['dir']
@@ -97,12 +97,16 @@ def scoring_command(ipcress_output, mismatch, output_tsv, targeton_csv):
     
 def design_command(args):
     slicer_result = slicer_command(args)
-    primer_result = primer_command(args)
-    ipcress_result = ipcress_command(args, csv = primer_result.csv,  existing_dir = slicer_result.dir)
+    primer_result = primer_command(slicer_result.fasta, existing_dir=slicer_result.dir)
+    ipcress_result = ipcress_command(args, csv=primer_result.csv, existing_dir=slicer_result.dir)
     design_result = DesignOutputData(slicer_result.dir)
     for result in (slicer_result, primer_result, ipcress_result):
-        for k in result.__dataclass_fields__:
-            setattr(design_result,k,result.__getattribute__(k))
+        for k in result.__dataclass_fields__.keys():
+            if k!='dir':
+                if design_result.__getattribute__(k):
+                    setattr(design_result, k+'2', result.__getattribute__(k))
+                else:
+                    setattr(design_result, k, result.__getattribute__(k))
         
     return design_result
 
