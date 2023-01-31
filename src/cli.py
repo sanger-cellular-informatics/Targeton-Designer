@@ -5,7 +5,7 @@ import os
 
 from utils.arguments_parser import ParsedInputArguments
 from utils.validate_files import validate_files
-from utils.write_output_files import write_slicer_output, write_primer_output, write_ipcress_input, write_ipcress_output, DesignOutputData
+from utils.write_output_files import write_slicer_output, write_primer_output, write_ipcress_input, write_ipcress_output, DesignOutputData, IpcressOutputData, PrimerOutputData, SlicerOutputData
 from utils.exceptions import BadDesignOutputField
 from slicer.slicer import Slicer
 from primer.primer3 import Primer
@@ -27,7 +27,7 @@ def version_command():
     print('Python version: ', python_version)
 
 
-def slicer_command(args):
+def slicer_command(args) -> SlicerOutputData:
     validate_files(bed = args['bed'], fasta = args['fasta'])
     slicer = Slicer()
     slices = slicer.get_slices(args)
@@ -35,7 +35,7 @@ def slicer_command(args):
     return write_slicer_output(args['dir'], slices)
 
 
-def primer_command(fasta = '', prefix = '', existing_dir = ''):
+def primer_command(fasta = '', prefix = '', existing_dir = '') -> PrimerOutputData:
     validate_files(fasta = fasta)
     primer = Primer()
     primers = primer.get_primers(fasta)
@@ -62,7 +62,7 @@ def primer_for_ipcress(fasta = '', prefix = '', min = 0, max = 0):
     return result
 
 
-def ipcress_command(params, csv = '', existing_dir = ''):
+def ipcress_command(params, csv = '', existing_dir = '') -> IpcressOutputData:
     ipcress_params = params.copy()
 
     if csv:
@@ -84,6 +84,7 @@ def ipcress_command(params, csv = '', existing_dir = ''):
         err = ipcress_result.err,
         existing_dir = ipcress_params['dir']
     )
+    
     return result
 
 def scoring_command(ipcress_output, mismatch, output_tsv, targeton_csv):
@@ -91,21 +92,25 @@ def scoring_command(ipcress_output, mismatch, output_tsv, targeton_csv):
     scoring.add_scores_to_df()
     scoring.save_mismatches(output_tsv)
     
-def design_command(args):
+def design_command(args) -> DesignOutputData:
     slicer_result = slicer_command(args)
     primer_result = primer_command(slicer_result.fasta, existing_dir=slicer_result.dir)
     ipcress_result = ipcress_command(args, csv=primer_result.csv, existing_dir=slicer_result.dir)
     design_result = DesignOutputData(slicer_result.dir)
-    for result in (slicer_result, primer_result, ipcress_result):
-        for k in result.__dataclass_fields__.keys():
-            if k!='dir':
-                if design_result.__getattribute__(k):
-                    if k=='bed':
-                        setattr(design_result, "p3_bed", result.__getattribute__(k))
-                    else:
-                        raise(BadDesignOutputField(k))
-                else:
-                    setattr(design_result, k, result.__getattribute__(k))
+    # Slicer
+    design_result.bed = slicer_result.bed
+    design_result.fasta = slicer_result.fasta
+    # Primer
+    design_result.p3_bed = primer_result.bed
+    design_result.csv = primer_result.csv
+    # iPCRess
+    design_result.stnd = ipcress_result.stnd
+    design_result.err = ipcress_result.err
+    
+    field_list = slicer_result.fields() + primer_result.fields() + ipcress_result.fields()
+    missing_fields = [field for field in field_list if field not in design_result.fields()]
+    if missing_fields:
+        raise(BadDesignOutputField(f"Fields missing in design_result: {missing_fields}"))
         
     return design_result
 
