@@ -1,6 +1,5 @@
 import unittest
 import sys 
-import os
 
 from unittest.mock import patch
 from unittest import TestCase
@@ -51,20 +50,11 @@ class TestPrimerIntegration(TestCase):
                 
 class TestIPcressIntegration(TestCase):
     def setUp(self):
-        self.use_homo_sapiens = False
-        if self.use_homo_sapiens:
-            self.fasta_file_path = r"GRCh38.fa"    
-        else:
-            self.fasta_file_path = r"./tests/integration/fixtures/fasta_example.fa"
-        
+        self.fasta_file_path = r"./tests/integration/fixtures/fasta_example.fa"
         self.p3_output_csv_path = r"./tests/integration/fixtures/p3_output.csv"
-       
-
+        
     def test_iPCRessOutput(self):
         with TemporaryDirectory() as tmpdir:
-            if self.use_homo_sapiens:
-                self.fasta_file_path = str((Path(tmpdir)/self.fasta_file_path).absolute())
-                os.system("wget -cO - http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.1.fa.gz | gunzip > " + self.fasta_file_path)
             # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
             with patch.object(sys, 'argv', ["./designer.sh", "ipcress", "--fasta", self.fasta_file_path, "--dir", tmpdir, "--p3_csv", self.p3_output_csv_path]):
                 parsed_input = ParsedInputArguments()
@@ -72,8 +62,6 @@ class TestIPcressIntegration(TestCase):
                 result = ipcress_command(args)
                 path_stnd = Path(result.stnd)
                 path_err = Path(result.err)
-                print("{0} size: {1}".format(path_stnd,path_stnd.stat().st_size))
-                print("{0} size: {1}".format(path_err,path_err.stat().st_size))
                 self.assertTrue(path_stnd.is_file())
                 self.assertTrue(path_err.is_file())
                 self.assertGreater(path_stnd.stat().st_size, 0)
@@ -105,30 +93,22 @@ class TestIPcressIntegration(TestCase):
 
 class TestTargetonDesignerIntegration(TestCase):
     def setUp(self):
+        self.fasta_file_path = r"./tests/integration/fixtures/fasta_example.fa"
         self.bed_file_path = r"./tests/integration/fixtures/bed_example.bed"
-        self.use_homo_sapiens = False
-        if self.use_homo_sapiens:
-            self.fasta_file_path = r"GRCh38.fa"    
-        else:
-            self.fasta_file_path = r"./tests/integration/fixtures/fasta_example.fa"
 
     def test_TDOutput(self):
         with TemporaryDirectory() as tmpdir:
-            if self.use_homo_sapiens:
-                self.fasta_file_path = str((Path(tmpdir)/self.fasta_file_path).absolute())
-                os.system("wget -cO - http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.1.fa.gz | gunzip > " + self.fasta_file_path)
+            # tmpdir = r'./tests/integration/fixtures'
             # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
             with patch.object(sys, 'argv', ["./designer.sh", "design", "--bed", self.bed_file_path, "--fasta", self.fasta_file_path, "--dir", tmpdir]):
                 parsed_input = ParsedInputArguments()
                 args = parsed_input.get_args()
                 result = design_command(args)
-                print(result.__dataclass_fields__.keys())
                 for field in result.__dataclass_fields__:
                     if any(sub in field for sub in ('bed','csv','stnd','fasta','err')):
-                        print(f"Checking path for {field}")
                         field_value=getattr(result,field)
                         path=Path(field_value)
-                        print(path)
+                        print(f"Checking file {field} -> {path.name}")
                         self.assertTrue(path.is_file())
                         self.assertGreater(path.stat().st_size, 0)
 

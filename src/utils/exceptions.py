@@ -23,3 +23,5 @@ class InvalidConfigError(Exception):
 class IpcressError(Exception):
     pass
 
+class BadDesignOutputField(Exception):
+    pass

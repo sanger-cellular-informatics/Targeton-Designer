@@ -20,20 +20,20 @@ class Ipcress:
     def __init__(self, params) -> None:
         self.params = params
 
-    def run(self):
+    def run(self) -> IpcressResult:
         print("Running iPCRess...")
-        if self.params["verbose"]:
+        if not self.params["quiet"]:
             print('iPCRess params:')
             print(self.params)
         params = self.params
 
         if params['primers']:                               # Comes from --primers argument, should be a path to a txt file
-            if params['verbose']:
+            if not params['quiet']:
                 print('Loading custom iPCRess input file')
             input_path = params['primers']
             result = self.run_ipcress(input_path, params)
         else:
-            if params['verbose']:
+            if not params['quiet']:
                 print('Building iPCRess input file.')
 
             adapter = Primer3ToIpcressAdapter()
@@ -47,7 +47,7 @@ class Ipcress:
                 result.stnd.decode(), adapter.primer_data, params
             )
 
-        if params['verbose']:
+        if not params['quiet']:
             print('Finished!')
 
         return result
@@ -59,7 +59,7 @@ class Ipcress:
 
         cmd = self.prettify_output(params['pretty'], cmd)
 
-        if params['verbose']:
+        if not params['quiet']:
             print(f'Running Exonerate iPCRess with the following command:\n{cmd}')
 
         result = subprocess.run(cmd, shell=True,  stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -75,7 +75,7 @@ class Ipcress:
         if params["pretty"]:
             print('Output is pretty, skipping validation')
             return
-        if params['verbose']:
+        if not params['quiet']:
             print('Validating primers...')
 
 

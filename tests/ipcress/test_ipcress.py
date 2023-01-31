@@ -31,7 +31,7 @@ class TestIpcress(TestCase):
     def test_validate_primers_pretty_prints_skipping_message(self, mock_print):
         ipcress_output = ''
         primer_data = {}
-        params = {"pretty": True, "verbose": True}
+        params = {"pretty": True, "quiet": False}
 
         self.ipcress.validate_primers(ipcress_output, primer_data, params)
 
@@ -50,7 +50,7 @@ class TestIpcress(TestCase):
             'R': {'start': 456, 'seq': 'GCTA'}
             }
         }
-        params = {"pretty": False, "verbose": True}
+        params = {"pretty": False, "quiet": False}
 
         self.ipcress.validate_primers(ipcress_output, primer_data, params, validate_coords=True)
 
@@ -67,7 +67,7 @@ class TestIpcress(TestCase):
             'F': {'start': 123, 'seq': 'ATCG'},
             'R': {'start': 456, 'seq': 'GCTA'}
         }}
-        params = {"pretty": False, "verbose": True}
+        params = {"pretty": False, "quiet": False}
 
         self.ipcress.validate_primers(ipcress_output, primer_data, params)
 
@@ -84,7 +84,7 @@ class TestIpcress(TestCase):
             'F': {'start': 123, 'seq': 'ATCG'},
             'R': {'start': 456, 'seq': 'GCTA'}
         }}
-        params = {"pretty": False, "verbose": True}
+        params = {"pretty": False, "quiet": False}
 
         self.ipcress.validate_primers(ipcress_output, primer_data, params)
 
@@ -101,7 +101,7 @@ class TestIpcress(TestCase):
             'F': {'start': 123, 'seq': 'ATCG'},
             'R': {'start': 456, 'seq': 'GCTA'}
         }}
-        params = {"pretty": False, "verbose": True}
+        params = {"pretty": False, "quiet": False}
 
         self.ipcress.validate_primers(ipcress_output, primer_data, params)
 

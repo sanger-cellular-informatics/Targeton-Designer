@@ -6,10 +6,12 @@ import os
 from utils.arguments_parser import ParsedInputArguments
 from utils.validate_files import validate_files
 from utils.write_output_files import write_slicer_output, write_primer_output, write_ipcress_input, write_ipcress_output, DesignOutputData
+from utils.exceptions import BadDesignOutputField
 from slicer.slicer import Slicer
 from primer.primer3 import Primer
 from ipcress.ipcress import Ipcress
 from adapters.primer3_to_ipcress import Primer3ToIpcressAdapter
+
 
 sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../sge-primer-scoring/src'))
@@ -98,7 +100,10 @@ def design_command(args):
         for k in result.__dataclass_fields__.keys():
             if k!='dir':
                 if design_result.__getattribute__(k):
-                    setattr(design_result, k+'2', result.__getattribute__(k))
+                    if k=='bed':
+                        setattr(design_result, "p3_bed", result.__getattribute__(k))
+                    else:
+                        raise(BadDesignOutputField(k))
                 else:
                     setattr(design_result, k, result.__getattribute__(k))
         

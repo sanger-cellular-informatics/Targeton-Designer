@@ -28,7 +28,7 @@ class IpcressOutputData(OutputFilesData):
 
 @dataclass
 class DesignOutputData(SlicerOutputData, PrimerOutputData, IpcressOutputData):
-    bed2: str=''
+    p3_bed: str=''
 
 
 def timestamped_dir(prefix):

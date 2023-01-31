@@ -124,9 +124,9 @@ def add_input_args(parser):
         action='store_true',
     )
     parser.add_argument(
-        '-v',
-        '--verbose',
-        help='Specify to output additional info to the CLI. Default: false',
+        '-q',
+        '--quiet',
+        help='Specify to reduce additional info output to the CLI. Default: false',
         action='store_true',
     )
     parser.add_argument(
