@@ -4,6 +4,7 @@ from os import path, makedirs
 from datetime import datetime
 
 from utils.exceptions import FolderCreatorError, FileFormatError
+from utils.logger import Logger
 
 
 class FolderCreator:
@@ -42,9 +43,11 @@ def check_file_exists(file):
     if not path.exists(file):
         raise FileNotFoundError(f'Unable to find file: {file}')
 
-def write_to_text_file(dir_path, data, file_name):
+def write_to_text_file(dir_path, data, file_name, params={"quiet" : False}):
+    logger = Logger(quiet=params["quiet"])
+    
     file_path = dir_path + '/' + file_name + '.txt'
-   
+    
     file_h = {}
     if isinstance(data, list):
         file_h = open(file_path, "w")
@@ -55,7 +58,7 @@ def write_to_text_file(dir_path, data, file_name):
         file_h.write(data)
     file_h.close()
     
-    print('Wrote to file: ' + file_path)
+    logger.log('Wrote to file: ' + file_path)
 
     return file_path
 

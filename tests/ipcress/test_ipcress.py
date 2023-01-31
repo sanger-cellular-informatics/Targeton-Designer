@@ -1,13 +1,18 @@
 import unittest
+import sys
 
-from pyfakefs.fake_filesystem_unittest import TestCase
+from unittest import TestCase
 from unittest.mock import patch
+from utils.arguments_parser import ParsedInputArguments
 
 from ipcress.ipcress import Ipcress
 
 class TestIpcress(TestCase):
     def setUp(self):
-        self.ipcress = Ipcress([])
+        with patch.object(sys, 'argv', ["./designer.sh", "ipcress"]):
+            parsed_input = ParsedInputArguments()
+            args = parsed_input.get_args()
+            self.ipcress = Ipcress(args)
 
     def test_prettify_output_defined(self):
         expected = 'test_cmd --pretty true'
@@ -27,7 +32,7 @@ class TestIpcress(TestCase):
 
         self.assertEqual(actual, expected)
 
-    @patch('builtins.print')
+    @patch('utils.logger.Logger.log')
     def test_validate_primers_pretty_prints_skipping_message(self, mock_print):
         ipcress_output = ''
         primer_data = {}
@@ -39,7 +44,7 @@ class TestIpcress(TestCase):
             'Output is pretty, skipping validation'
         )
 
-    @patch('builtins.print')
+    @patch('utils.logger.Logger.log')
     def test_validate_primers_wrong_coord_prints_warning(self, mock_print):
         ipcress_output = (
             'ipcress: 1:filter(unmasked) test-primer-pair 200 A 122 0 B 456 0 forward\n'
@@ -58,7 +63,7 @@ class TestIpcress(TestCase):
             'No valid primer pair found for test-primer-pair'
         )
 
-    @patch('builtins.print')
+    @patch('utils.logger.Logger.log')
     def test_validate_primers_mismatch_prints_warning(self, mock_print):
         ipcress_output = (
             'ipcress: 1:filter(unmasked) test-primer-pair 200 A 123 0 B 456 1 forward\n'
@@ -75,7 +80,7 @@ class TestIpcress(TestCase):
             'No valid primer pair found for test-primer-pair'
         )
 
-    @patch('builtins.print')
+    @patch('utils.logger.Logger.log')
     def test_validate_primers_not_forward_prints_warning(self, mock_print):
         ipcress_output = (
             'ipcress: 1:filter(unmasked) test-primer-pair 200 A 123 0 B 456 0 revcomp\n'
@@ -92,7 +97,7 @@ class TestIpcress(TestCase):
             'No valid primer pair found for test-primer-pair'
         )
 
-    @patch('builtins.print')
+    @patch('utils.logger.Logger.log')
     def test_validate_primers_match_does_not_print_warning(self, mock_print):
         ipcress_output = (
             'ipcress: 1:filter(unmasked) test-primer-pair 200 A 123 0 B 456 0 forward\n'

@@ -8,14 +8,14 @@ from Bio.Seq import Seq
 
 from utils.exceptions import Primer3Error, InvalidConfigError
 from utils.file_system import parse_json
+from utils.logger import Logger
 
 
 class Primer:
-    def __init__(self):
-        pass
-
+    def __init__(self,params={"quiet" : False}):
         self.user_config = './config/primer3.config.json'
         self.default_config = './src/primer/primer3.config.json'
+        self.logger = Logger(quiet=params["quiet"])
 
     def get_primers(self, fasta):
         config = self.get_config_data(self.default_config, self.user_config)
@@ -25,11 +25,11 @@ class Primer:
         return result
 
     def primer3_runner(self, fasta: str, config: dict):
-        print('Reading FA file')
+        self.logger.log('Reading FA file')
         design_inputs = self.read_input_fasta(fasta)
-        print('Designing primers for the region')
+        self.logger.log('Designing primers for the region')
         designs = self.primer3_design(design_inputs, config)
-        print('Naming primers')
+        self.logger.log('Naming primers')
         slices = self.locate_primers(designs)
 
         return slices

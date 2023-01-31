@@ -6,6 +6,7 @@ from pybedtools import BedTool
 
 from utils.file_system import write_to_text_file, FolderCreator
 from utils.exceptions import OutputError, FolderCreatorError
+from utils.logger import Logger
 
 @dataclass
 class OutputFilesData:
@@ -40,14 +41,16 @@ def timestamped_dir(prefix):
         raise OutputError(f'Error creating folder: {err}')
     return FolderCreator.get_dir()
 
-def write_slicer_output(dir_prefix, slices) -> SlicerOutputData:
+def write_slicer_output(dir_prefix, slices, params={"quiet" : False}) -> SlicerOutputData:
+    logger = Logger(quiet=params["quiet"])
+    
     dir = timestamped_dir(dir_prefix)
     result = SlicerOutputData(dir = dir)
 
     result.bed = write_slicer_bed_output(dir, slices)
     result.fasta = write_slicer_fasta_output(dir, slices)
 
-    print('Slice files saved: ', result.bed, result.fasta)
+    logger.log(f"Slice files saved: {result.bed}, {result.fasta}")
 
     return result
 
@@ -132,7 +135,9 @@ def export_to_bed(bed_rows, dir):
 
     return bed_path
 
-def write_primer_output(prefix = '', primers = [], existing_dir = '') -> PrimerOutputData:
+def write_primer_output(prefix = '', primers = [], existing_dir = '', params={"quiet" : False}) -> PrimerOutputData:
+    logger = Logger(quiet=params["quiet"])
+    
     if existing_dir:
         dir = existing_dir
     else:
@@ -146,24 +151,24 @@ def write_primer_output(prefix = '', primers = [], existing_dir = '') -> PrimerO
     result.csv = export_to_csv(primers, dir)
     result.dir = dir
 
-    print('Primer files saved:', result.bed, result.csv)
+    logger.log(f"Primer files saved: {result.bed}, {result.csv}")
 
     return result
 
-def write_ipcress_input(dir, formatted_primers) -> str:
+def write_ipcress_input(dir, formatted_primers, params={"quiet" : False}) -> str:
     INPUT_FILE_NAME = 'ipcress_primer_input'
 
-    file_path = write_to_text_file(dir, formatted_primers, INPUT_FILE_NAME)
+    file_path = write_to_text_file(dir, formatted_primers, INPUT_FILE_NAME, params=params)
 
     return file_path
 
-def write_ipcress_output(stnd = '', err = '', existing_dir = '') -> IpcressOutputData:
+def write_ipcress_output(stnd = '', err = '', existing_dir = '', params={"quiet" : False}) -> IpcressOutputData:
     IPCRESS_OUTPUT_TXT = 'ipcress_output'
     
     result = IpcressOutputData(existing_dir)
     
-    result.stnd = write_to_text_file(existing_dir, stnd, IPCRESS_OUTPUT_TXT)
-    result.err = write_to_text_file(existing_dir, err, IPCRESS_OUTPUT_TXT+"_err")
+    result.stnd = write_to_text_file(existing_dir, stnd, IPCRESS_OUTPUT_TXT, params=params)
+    result.err = write_to_text_file(existing_dir, err, IPCRESS_OUTPUT_TXT+"_err", params=params)
     
     return result
     

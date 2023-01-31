@@ -6,19 +6,23 @@ from pybedtools import BedTool
 from pybedtools.helpers import BEDToolsError
 
 from utils.exceptions import SlicerError
+from utils.logger import Logger
 
 
 class Slicer:
-    def __init__(self):
-        pass
+    def __init__(self,params={"quiet" : False}):
+        self.logger = Logger(quiet=params["quiet"])
 
     def get_slices(self, params):
+        self.logger.log("Starting Slicer")
         try:
+            self.logger.log("Reading bed file...")
             input_bed = params['bed']
             if params['1b']:
                 input_bed = self.handle_one_based_input(params['bed'])
             bed = BedTool(input_bed)
-
+            
+            self.logger.log("Getting slice from bed...")
             slice_bed = BedTool(self.get_slice_data(bed, params))
             # return named, coords slice sequences on specified strand
 

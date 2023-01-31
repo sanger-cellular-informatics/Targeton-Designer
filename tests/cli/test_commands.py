@@ -3,7 +3,6 @@ import sys
 
 from unittest import TestCase
 from unittest.mock import patch
-# from src.utils.exceptions import BadDesignOutputField
 
 from cli import primer_for_ipcress
 
@@ -26,16 +25,3 @@ class TestCliCommands(TestCase):
         result = primer_for_ipcress(fasta = PRIMER_INPUT_FASTA_PATH, prefix = '!!test_', min = PARAMS_MIN, max = PARAMS_MAX)
 
         self.assertEqual(result, expected_result_primers)
-        
-
-# class TestDesignCommand(TestCase):
-#     def test_get_error_on_ipcress_command_fail(self):
-        
-#         with self.assertRaises(BadDesignOutputField) as exception_context:
-#             with patch.object(sys, 'argv', ["./designer.sh", "design", "--bed", self.bed_file_path, "--fasta", self.fasta_file_path, "--dir", tmpdir]):
-#                 design_command()
-
-#         # assert
-#         self.assertEqual(str(exception_context.exception), expected)
-#         self.assertEqual(f"{sequence_mock.call_args}", f"call({expected_seq_options})")
-#         self.assertEqual(sequence_mock.call_count, 2)

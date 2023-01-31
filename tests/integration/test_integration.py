@@ -98,19 +98,19 @@ class TestTargetonDesignerIntegration(TestCase):
 
     def test_TDOutput(self):
         with TemporaryDirectory() as tmpdir:
-            # tmpdir = r'./tests/integration/fixtures'
             # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
             with patch.object(sys, 'argv', ["./designer.sh", "design", "--bed", self.bed_file_path, "--fasta", self.fasta_file_path, "--dir", tmpdir]):
                 parsed_input = ParsedInputArguments()
                 args = parsed_input.get_args()
                 result = design_command(args)
-                for field in result.__dataclass_fields__:
-                    if any(sub in field for sub in ('bed','csv','stnd','fasta','err')):
-                        field_value=getattr(result,field)
-                        path=Path(field_value)
-                        print(f"Checking file {field} -> {path.name}")
-                        self.assertTrue(path.is_file())
-                        self.assertGreater(path.stat().st_size, 0)
+                fields=result.fields()
+                fields.remove('dir')
+                for field in fields:
+                    field_value=getattr(result,field)
+                    path=Path(field_value)
+                    print(f"Checking file {field} -> {path.name}")
+                    self.assertTrue(path.is_file())
+                    self.assertGreater(path.stat().st_size, 0)
 
 
 if __name__ == '__main__':

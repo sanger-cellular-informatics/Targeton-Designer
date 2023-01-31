@@ -29,15 +29,15 @@ def version_command():
 
 def slicer_command(args) -> SlicerOutputData:
     validate_files(bed = args['bed'], fasta = args['fasta'])
-    slicer = Slicer()
+    slicer = Slicer(args)
     slices = slicer.get_slices(args)
 
     return write_slicer_output(args['dir'], slices)
 
 
-def primer_command(fasta = '', prefix = '', existing_dir = '') -> PrimerOutputData:
+def primer_command(fasta = '', prefix = '', existing_dir = '', args = {"quiet" : False}) -> PrimerOutputData:
     validate_files(fasta = fasta)
-    primer = Primer()
+    primer = Primer(args)
     primers = primer.get_primers(fasta)
 
     result = write_primer_output(
@@ -94,8 +94,8 @@ def scoring_command(ipcress_output, mismatch, output_tsv, targeton_csv):
     
 def design_command(args) -> DesignOutputData:
     slicer_result = slicer_command(args)
-    primer_result = primer_command(slicer_result.fasta, existing_dir=slicer_result.dir)
-    ipcress_result = ipcress_command(args, csv=primer_result.csv, existing_dir=slicer_result.dir)
+    primer_result = primer_command(slicer_result.fasta, existing_dir = slicer_result.dir, args = args)
+    ipcress_result = ipcress_command(args, csv = primer_result.csv, existing_dir = slicer_result.dir)
     design_result = DesignOutputData(slicer_result.dir)
     # Slicer
     design_result.bed = slicer_result.bed
@@ -125,7 +125,7 @@ def resolve_command(args):
             slicer_command(args)
 
         if command == 'primer':
-            primer_command(fasta = args['fasta'], prefix = args['dir'])
+            primer_command(fasta = args['fasta'], prefix = args['dir'], args = args)
 
         if command == 'primer_for_ipcress':
             primer_for_ipcress(fasta = args['fasta'], prefix = args['dir'], min = args['min'], max = args['max'])
