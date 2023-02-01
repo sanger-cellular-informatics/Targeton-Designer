@@ -9,8 +9,7 @@ from Bio.Seq import Seq
 from utils.exceptions import Primer3Error, InvalidConfigError
 from utils.file_system import parse_json
 
-
-class Primer:
+class Primer3:
     def __init__(self):
         pass
 

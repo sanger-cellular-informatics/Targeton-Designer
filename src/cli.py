@@ -7,9 +7,10 @@ from utils.arguments_parser import ParsedInputArguments
 from utils.validate_files import validate_files
 from utils.write_output_files import write_slicer_output, write_primer_output, write_ipcress_input, write_ipcress_output
 from slicer.slicer import Slicer
-from primer.primer3 import Primer
+from primer.primer3 import Primer3
 from ipcress.ipcress import Ipcress
 from adapters.primer3_to_ipcress import Primer3ToIpcressAdapter
+from primer_designer import PrimerPair, transform_primer_pairs, PrimerDesigner
 
 sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../sge-primer-scoring/src'))
@@ -33,17 +34,19 @@ def slicer_command(args):
     return write_slicer_output(args['dir'], slices)
 
 
-def primer_command(fasta = '', prefix = '', existing_dir = ''):
+def primer_command(primer_designer, fasta = '', prefix = '', existing_dir = ''):
     validate_files(fasta = fasta)
-    primer = Primer()
+    primer = Primer3()
     primers = primer.get_primers(fasta)
 
+    transform_primer_pairs(primer_designer, primers)
+    
     result = write_primer_output(
         primers = primers,
         prefix = prefix,
         existing_dir = existing_dir
     )
-
+ 
     return result
 
 
@@ -117,9 +120,13 @@ def resolve_command(args):
             )
 
         if command == 'design':
+            primer_designer = PrimerDesigner()
             slicer_result = slicer_command(args)
-            primer_result = primer_command(fasta = slicer_result.fasta, existing_dir = slicer_result.dir)
-            ipcress_command(args, csv = primer_result.csv,  existing_dir = slicer_result.dir)
+            primer_result = primer_command(primer_designer, fasta = slicer_result.fasta, existing_dir = slicer_result.dir)
+            #ipcress_command(args, csv = primer_result.csv,  existing_dir = slicer_result.dir)
+
+        if command == 'compile':
+            primer_designer = PrimerPair()
 
 
 def main():
