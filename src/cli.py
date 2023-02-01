@@ -125,10 +125,6 @@ def resolve_command(args):
             primer_result = primer_command(primer_designer, fasta = slicer_result.fasta, existing_dir = slicer_result.dir)
             #ipcress_command(args, csv = primer_result.csv,  existing_dir = slicer_result.dir)
 
-        if command == 'compile':
-            primer_designer = PrimerPair()
-
-
 def main():
     parsed_input = ParsedInputArguments()
     args = parsed_input.get_args()
