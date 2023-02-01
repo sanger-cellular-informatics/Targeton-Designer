@@ -10,6 +10,8 @@ from utils.exceptions import OutputError, FolderCreatorError
 @dataclass
 class OutputFilesData:
     dir: str
+    def fields(self):
+        return list(self.__dataclass_fields__.keys())
 
 @dataclass
 class SlicerOutputData(OutputFilesData):
@@ -20,6 +22,16 @@ class SlicerOutputData(OutputFilesData):
 class PrimerOutputData(OutputFilesData):
     bed: str = ''
     csv: str = ''
+    
+@dataclass
+class IpcressOutputData(OutputFilesData):
+    stnd: str = ''
+    err: str = ''
+
+@dataclass
+class DesignOutputData(SlicerOutputData, PrimerOutputData, IpcressOutputData):
+    p3_bed: str=''
+
 
 def timestamped_dir(prefix):
     try:
@@ -145,10 +157,16 @@ def write_ipcress_input(dir, formatted_primers) -> str:
 
     return file_path
 
-def write_ipcress_output(stnd = '', err = '', existing_dir = '') -> str:
+def write_ipcress_output(stnd = '', err = '', existing_dir = '') -> IpcressOutputData:
     IPCRESS_OUTPUT_TXT = 'ipcress_output'
-
-    file_path = write_to_text_file(existing_dir, stnd, IPCRESS_OUTPUT_TXT)
-
-    return file_path
+    
+    result = IpcressOutputData(existing_dir)
+    
+    result.stnd = write_to_text_file(existing_dir, stnd, IPCRESS_OUTPUT_TXT)
+    result.err = write_to_text_file(existing_dir, err, IPCRESS_OUTPUT_TXT+"_err")
+    
+    return result
+    
+    
+ 
 

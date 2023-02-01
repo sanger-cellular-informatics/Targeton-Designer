@@ -137,11 +137,11 @@ class TestPrimer3(TestCase):
             'strand'    : '+',
             'chrom'     : 'chr1',
             'p3_input'  : {
-                            'SEQUENCE_ID'       : 'region1_1',
-                            'SEQUENCE_TEMPLATE' : 'GTGATCGAGGAGTTCTACAACCAGACATGGGTCCACCGCTATGGGGAGAGCATCCTGCCCACCACGCT'
-                                                  'CACCACGCTCTGGTCCCTCTCAGTGGCCATCTTTTCTGTTGGGGGCATGATTGGCTCCTTCTCTGTGG'
-                                                  'GCCTTTTCGTTAACCGCTTTGGCCGGTAAGTAGGAGAGGTCCTGGCACTGCCCTTGGAGGGCCCATGC'
-                                                  'CCTCCT'
+                'SEQUENCE_ID'       : 'region1_1',
+                'SEQUENCE_TEMPLATE' : 'GTGATCGAGGAGTTCTACAACCAGACATGGGTCCACCGCTATGGGGAGAGCATCCTGCCCACCACGCT'
+                'CACCACGCTCTGGTCCCTCTCAGTGGCCATCTTTTCTGTTGGGGGCATGATTGGCTCCTTCTCTGTGG'
+                'GCCTTTTCGTTAACCGCTTTGGCCGGTAAGTAGGAGAGGTCCTGGCACTGCCCTTGGAGGGCCCATGC'
+                'CCTCCT'
             }
         }]
 
@@ -165,23 +165,23 @@ class TestPrimer3(TestCase):
             'strand'    : '+',
             'chrom'     : 'chr1',
             'p3_input'  : {
-                            'SEQUENCE_ID'       : 'region1_1',
-                            'SEQUENCE_TEMPLATE' : 'GTGATCGAGGAGTTCTACAACCAGACATGGGTCCACCGCTATGGGGAGAGCATCCTGCCCACCACGCT'
-                                                  'CACCACGCTCTGGTCCCTCTCAGTGGCCATCTTTTCTGTTGGGGGCATGATTGGCTCCTTCTCTGTGG'
-                                                  'GCCTTTTCGTTAACCGCTTTGGCCGGTAAGTAGGAGAGGTCCTGGCACTGCCCTTGGAGGGCCCATGC'
-                                                  'CCTCCT'
+                'SEQUENCE_ID'       : 'region1_1',
+                'SEQUENCE_TEMPLATE' : 'GTGATCGAGGAGTTCTACAACCAGACATGGGTCCACCGCTATGGGGAGAGCATCCTGCCCACCACGCT'
+                'CACCACGCTCTGGTCCCTCTCAGTGGCCATCTTTTCTGTTGGGGGCATGATTGGCTCCTTCTCTGTGG'
+                'GCCTTTTCGTTAACCGCTTTGGCCGGTAAGTAGGAGAGGTCCTGGCACTGCCCTTGGAGGGCCCATGC'
+                'CCTCCT'
             }
         }]
 
         expected = {
-                'PRIMER_LEFT_EXPLAIN': 'considered 6, low tm 4, ok 2',
-                'PRIMER_RIGHT_EXPLAIN': 'considered 6, high tm 6, ok 0',
-                'PRIMER_PAIR_EXPLAIN': 'considered 0, ok 0',
-                'PRIMER_LEFT_NUM_RETURNED': 0,
-                'PRIMER_RIGHT_NUM_RETURNED': 0,
-                'PRIMER_INTERNAL_NUM_RETURNED': 0,
-                'PRIMER_PAIR_NUM_RETURNED': 0
-            }
+            'PRIMER_LEFT_EXPLAIN': 'considered 6, low tm 4, ok 2',
+            'PRIMER_RIGHT_EXPLAIN': 'considered 6, high tm 6, ok 0',
+            'PRIMER_PAIR_EXPLAIN': 'considered 0, ok 0',
+            'PRIMER_LEFT_NUM_RETURNED': 0,
+            'PRIMER_RIGHT_NUM_RETURNED': 0,
+            'PRIMER_INTERNAL_NUM_RETURNED': 0,
+            'PRIMER_PAIR_NUM_RETURNED': 0
+        }
         # act
         actual = self.primer.primer3_design(input, config)[0]['design']
 
@@ -230,7 +230,7 @@ class TestPrimer3(TestCase):
         self.assertEqual(f"{name_mock.call_args}", "call({'pair': '2'}, '+')")
         self.assertEqual(
             f"{loci_mock.call_args}", ("call({}, 'key_1', 'design', "
-            "{'pair': '2'}, {'strand': '+', 'name': 'region1_1'})"))
+                                       "{'pair': '2'}, {'strand': '+', 'name': 'region1_1'})"))
 
     @patch('primer.primer3.Primer.capture_primer_details')
     def test_build_primers_dict_no_details_empty(self, details_mock):
@@ -248,7 +248,7 @@ class TestPrimer3(TestCase):
         self.assertEqual(expected, actual)
         self.assertEqual(f"{details_mock.call_args}", "call('key_1')")
 
-    #@patch('primer.primer3.Primer.revcom_reverse_primer')
+    # @patch('primer.primer3.Primer.revcom_reverse_primer')
     @patch('primer.primer3.Primer.determine_primer_strands')
     @patch('primer.primer3.Primer.calculate_primer_coords')
     def test_build_primer_loci_with_coords_success(
@@ -273,7 +273,7 @@ class TestPrimer3(TestCase):
 
         coords_mock.return_value = ['100', '250']
         strands_mock.return_value = 'primer_side_+'
-        #revcom_mock.return_value = 'primer_seq'
+        # revcom_mock.return_value = 'primer_seq'
 
         # act
         actual = self.primer.build_primer_loci(
