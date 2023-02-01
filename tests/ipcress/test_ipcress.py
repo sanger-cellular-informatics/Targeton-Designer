@@ -7,6 +7,7 @@ from utils.arguments_parser import ParsedInputArguments
 
 from ipcress.ipcress import Ipcress
 
+
 class TestIpcress(TestCase):
     def setUp(self):
         with patch.object(sys, 'argv', ["./designer.sh", "ipcress"]):
@@ -18,16 +19,16 @@ class TestIpcress(TestCase):
         expected = 'test_cmd --pretty true'
         prettify_param = True
         cmd = 'test_cmd'
-        
+
         actual = self.ipcress.prettify_output(prettify_param, cmd)
 
-        self.assertEqual(actual, expected)       
- 
+        self.assertEqual(actual, expected)
+
     def test_prettify_output_undef(self):
         expected = 'test_cmd --pretty false'
         prettify_param = ''
         cmd = 'test_cmd'
-        
+
         actual = self.ipcress.prettify_output(prettify_param, cmd)
 
         self.assertEqual(actual, expected)
@@ -51,8 +52,8 @@ class TestIpcress(TestCase):
         )
         primer_data = {
             'test-primer-pair': {
-            'F': {'start': 123, 'seq': 'ATCG'},
-            'R': {'start': 456, 'seq': 'GCTA'}
+                'F': {'start': 123, 'seq': 'ATCG'},
+                'R': {'start': 456, 'seq': 'GCTA'}
             }
         }
         params = {"pretty": False, "quiet": False}
