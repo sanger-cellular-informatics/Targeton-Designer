@@ -20,3 +20,13 @@ class InvalidConfigError(Exception):
     """Config file is not a valid JSON"""
     pass
 
+class IpcressError(Exception):
+    pass
+
+class BadDesignOutputField(Exception):
+    pass
+
+### Warnings
+class BadDesignOutputFieldWarning(UserWarning):
+    pass
+ 
