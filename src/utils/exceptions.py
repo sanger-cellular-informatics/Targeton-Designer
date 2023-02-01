@@ -25,3 +25,8 @@ class IpcressError(Exception):
 
 class BadDesignOutputField(Exception):
     pass
+
+### Warnings
+class BadDesignOutputFieldWarning(UserWarning):
+    pass
+ 

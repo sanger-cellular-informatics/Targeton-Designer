@@ -3,10 +3,11 @@
 import sys
 import os
 
+from warnings import warn
 from utils.arguments_parser import ParsedInputArguments
 from utils.validate_files import validate_files
 from utils.write_output_files import write_slicer_output, write_primer_output, write_ipcress_input, write_ipcress_output, DesignOutputData, IpcressOutputData, PrimerOutputData, SlicerOutputData
-from utils.exceptions import BadDesignOutputField
+from utils.exceptions import BadDesignOutputFieldWarning
 from slicer.slicer import Slicer
 from primer.primer3 import Primer
 from ipcress.ipcress import Ipcress
@@ -110,7 +111,7 @@ def design_command(args) -> DesignOutputData:
     field_list = slicer_result.fields() + primer_result.fields() + ipcress_result.fields()
     missing_fields = [field for field in field_list if field not in design_result.fields()]
     if missing_fields:
-        raise(BadDesignOutputField(f"Fields missing in design_result: {missing_fields}"))
+        warn(f"Fields missing in design_result: {missing_fields}", BadDesignOutputFieldWarning)
         
     return design_result
 
