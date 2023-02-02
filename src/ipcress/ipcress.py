@@ -1,13 +1,17 @@
 import re
 import subprocess
 from dataclasses import dataclass
+from utils.exceptions import IpcressError
 
 from adapters.primer3_to_ipcress import Primer3ToIpcressAdapter
 from utils.write_output_files import write_ipcress_input
+from utils.logger import Logger
+
 
 @dataclass
 class IpcressParams:
     pass
+
 
 @dataclass
 class IpcressResult:
@@ -18,18 +22,21 @@ class IpcressResult:
 class Ipcress:
     def __init__(self, params) -> None:
         self.params = params
+        self.logger = Logger(quiet=params["quiet"])
 
     def run(self) -> IpcressResult:
-        print('iPCRess params:')
-        print(self.params)
+        self.logger.log("Running iPCRess...")
+
+        self.logger.log('iPCRess params:')
+        self.logger.log(self.params)
         params = self.params
 
         if params['primers']:                               # Comes from --primers argument, should be a path to a txt file
-            print('Loading custom iPCRess input file')
+            self.logger.log('Loading custom iPCRess input file')
             input_path = params['primers']
             result = self.run_ipcress(input_path, params)
         else:
-            print('Building iPCRess input file.')
+            self.logger.log('Building iPCRess input file.')
 
             adapter = Primer3ToIpcressAdapter()
             adapter.prepare_input(
@@ -38,40 +45,38 @@ class Ipcress:
             input_path = write_ipcress_input(params['dir'], adapter.formatted_primers)
 
             result = self.run_ipcress(input_path, params)
-
             self.validate_primers(
-                result.stnd.decode(), adapter.primer_data, params['pretty']
+                result.stnd.decode(), adapter.primer_data, params
             )
 
-        print('Finished!')
+        self.logger.log('Finished!')
 
         return result
 
     def run_ipcress(self, input_path, params) -> IpcressResult:
         cmd = ' '.join([
-            'ipcress', input_path, params['fasta'],'--mismatch', params['mismatch']
+            'ipcress', input_path, params['fasta'], '--mismatch', params['mismatch']
         ])
 
         cmd = self.prettify_output(params['pretty'], cmd)
 
-        print('Running Exonerate iPCRess with the following command:')
-        print(cmd)
+        self.logger.log(f'Running Exonerate iPCRess with the following command:\n{cmd}')
 
-        ipcress = subprocess.Popen(
-            cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        )
+        result = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stnd = result.stdout
+        err = result.stderr
+        if not stnd:
+            raise IpcressError(err)
 
-        stnd, err = ipcress.communicate()
         return IpcressResult(stnd, err)
 
     @staticmethod
-    def validate_primers(ipcress_output, primer_data, is_pretty, validate_coords=False) -> None:
-        if is_pretty:
-            print('Output is pretty, skipping validation')
+    def validate_primers(ipcress_output, primer_data, params, validate_coords=False) -> None:
+        vp_logger = Logger(quiet=params["quiet"])
+        if params["pretty"]:
+            vp_logger.log('Output is pretty, skipping validation')
             return
-
-        print('Validating primers...')
-
+        vp_logger.log('Validating primers...')
 
         for primer_pair in primer_data.keys():
 
@@ -86,8 +91,7 @@ class Ipcress:
             match = re.search(reg_exp, ipcress_output)
 
             if not match:
-                print(f'No valid primer pair found for {primer_pair}')
-
+                vp_logger.log(f'No valid primer pair found for {primer_pair}')
 
     @staticmethod
     def prettify_output(prettify, cmd):

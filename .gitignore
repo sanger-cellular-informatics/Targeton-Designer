@@ -126,3 +126,6 @@ dmypy.json
 
 # default output folder
 td_output/
+
+#Swap files
+*.swp

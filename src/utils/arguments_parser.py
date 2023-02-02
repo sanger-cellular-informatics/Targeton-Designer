@@ -124,6 +124,12 @@ def add_input_args(parser):
         action='store_true',
     )
     parser.add_argument(
+        '-q',
+        '--quiet',
+        help='Specify to reduce additional info output to the CLI. Default: false',
+        action='store_true',
+    )
+    parser.add_argument(
         '--ipcress_file',
         help='File containing output from Exonerate iPCRess',
     )

@@ -8,36 +8,28 @@ Standalone targeton designer tool.
 
 Dependencies:
 
-BedTools
+Build-essential, BedTools and Python (3.8), Python-venv (3.8)
+Change ```python``` command to point to Python (3.8), ubuntu expects python3 to be a specific version for compatibility.
 ```sh
-sudo apt-get update
-sudo apt-get install bedtools
-sudo apt-get install build-essential
+sudo apt-get update \
+&& sudo apt-get -y install build-essential bedtools python3.8-dev python3.8-venv \
+&& sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.8 2  \
+&& sudo update-alternatives --config python
 ```
 
 ### Python3
 
-Check Python3 version
+Check Python3 (base) and Python (updated) version
 ```sh
 python3 --version
-```
-
-Update if less than python3.8
-```sh
-sudo apt-get install python3.8-dev
-
-sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 1
-sudo update-alternatives --config python3
-```
-Select 3.8 then check it's updated successfully
-```sh
-python3 --version
+python --version
 ```
 
 ### Clone the repo
-Pull down the Targeton Designer repo and cd into it
+Pull down the Targeton Designer repo and cd into it.
+Recursively pull any submodules.
 ```sh
-git clone https://gitlab.internal.sanger.ac.uk/sci/targeton-designer.git
+git clone --recurse-submodule https://gitlab.internal.sanger.ac.uk/sci/targeton-designer.git
 cd targeton-designer
 ```
 
@@ -47,21 +39,15 @@ Requirements:
  - Python3.8+
  - Python-venv
 
-Install venv if you haven't already got it. First install base then update to 3.8
-```sh
-sudo apt-get install python3-venv
-sudo apt-get install python3.8-venv
-```
-
 Setting up Virtual Env:
 ```sh
-python3 -m venv venv
+python -m venv venv
 
 source venv/bin/activate
 
-pip3 install --upgrade pip
-pip3 install -r requirements.txt
-pip3 install -r sge-primer-scoring/requirements.txt
+pip install -U pip wheel setuptools 
+pip install -r requirements.txt
+pip install -r sge-primer-scoring/requirements.txt
 
 deactivate
 ```
@@ -70,9 +56,9 @@ Run the tests:
 ```sh
 source venv/bin/activate
 
-python3 -m unittest
+python -m unittest
 cd sge-primer-scoring
-python3 -m unittest
+python -m unittest
 
 deactivate
 ```
@@ -333,12 +319,25 @@ ENSE00003571441_HG6_6_LibAmp_0 AGTGCCAGGACCTCTCCTAC GGGAGATGCAGCCTGGGT 200 300
 ```
 
 ### iPCRess Output example
-Space separated text file. Sequence_id contains the chromosome and description can be 'forward', 'revcomp', 'single_A' or 'single_B'.
+Two files, stnd and err.
+stnd: Space separated text file. Sequence_id contains the chromosome and description can be 'forward', 'revcomp', 'single_A' or 'single_B'.
 | sequence_id | experiment_id | product_length | primer_5 | pos_5 | mismatch_5 | primer_3 | pos_3 | mismatch_3 | description |
 | ----------- | ------------- | -------------- | -------- | ----- | ---------- | -------- | ----- | ---------- | ----------- |
 | 19:filter(unmasked) | ID0001 | 259 | A | 44907726 | 0 | B | 44907967 | 0 | forward |
 
 Raw file
 ```
-ipcress: 19:filter(unmasked) ID0001 259 A 44907726 0 B 44907967 0 forward
+ipcress: chr1:filter(unmasked) exon1_2_LibAmp_0 210 A 55 0 B 242 0 forward
+ipcress: chr1:filter(unmasked) exon1_2_LibAmp_1 210 A 55 0 B 243 0 forward
+ipcress: chr1:filter(unmasked) exon1_2_LibAmp_2 210 A 55 0 B 242 0 forward
+ipcress: chr1:filter(unmasked) exon1_2_LibAmp_3 210 A 55 0 B 243 0 forward
+-- completed ipcress analysis
+```
+
+err: is a .txt error output from ipcress or if it fails early system.run().
+```
+** Message: 14:55:57.646: Loaded [1] experiments
+** Message: 14:55:58.141: Loaded [1] experiments
+** Message: 14:55:58.649: Loaded [1] experiments
+** Message: 14:55:59.167: Loaded [1] experiments
 ```
