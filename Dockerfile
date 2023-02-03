@@ -35,7 +35,7 @@ RUN autoreconf -vfi \
   && make -j \
   && make check \
   && make install \
-  && rm -rf /usr/src/app
+  && rm -rf /usr/src/app/exonerate
 
 
 COPY . .

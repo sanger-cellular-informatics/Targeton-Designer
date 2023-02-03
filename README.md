@@ -6,6 +6,14 @@ Standalone targeton designer tool.
 
 ## Installation
 
+WIP: Makefile
+Run
+```sh
+make
+make install
+make setup-venv
+```
+
 Dependencies:
 
 Build-essential, BedTools and Python (3.8), Python-venv (3.8)
@@ -77,12 +85,12 @@ sudo apt install autoconf
 Installing exonerate on your VM.
 ```sh
 git clone https://github.com/nathanweeks/exonerate.git
-cd exonerate
-autoreconf -vfi
-./configure [YOUR_CONFIGURE_OPTIONS]
-make
-make check
-sudo make install
+cd exonerate /
+    && autoreconf -vfi /
+    && ./configure /
+    && make -j /
+    && make check /
+    && sudo make install
 ```
 
 If you happen to get the error: no module found 'apt_pkg', create a symbolic link to your apt_pkg.so
