@@ -28,9 +28,10 @@ RUN apt-get install -y git
 WORKDIR /usr/src/app
 
 RUN git clone https://github.com/nathanweeks/exonerate.git
-WORKDIR /usr/src/app/exonerate
-COPY . .
-RUN autoreconf -fi \
+# WORKDIR /usr/src/app/exonerate
+# COPY . .
+RUN cd /usr/src/app/exonerate \
+  && autoreconf -fi \
   && ./configure \
   && make -j \
   && make check \

@@ -61,7 +61,7 @@ install-libglib2.0-dev:
 
 install-autoconf: 
 	@echo "Installing autoconf..."
-	sudo apt install autoconf
+	sudo apt-get -y install autoconf libtool
 
 install-ipcress: 
 	@echo "Installing ipcress..."
