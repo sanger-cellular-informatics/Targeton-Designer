@@ -11,6 +11,7 @@ APP = $(PREFIX)/src/app
 
 init: 
 	git config core.hooksPath .githooks
+	chmod +x .githooks/*
 
 install: 
 	@echo "Installing..."
