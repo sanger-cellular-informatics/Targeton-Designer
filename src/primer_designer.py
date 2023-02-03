@@ -38,8 +38,8 @@ class Primer():
     def __getitem__(self, item):
         return getattr(self, item)
 
+
 def transform_primer_pairs(primer_designer, data) -> PrimerDesigner():
-    primer_designer = PrimerDesigner()
     pairs = iterate_design(data)
     build_pair_classes(primer_designer, pairs)
 

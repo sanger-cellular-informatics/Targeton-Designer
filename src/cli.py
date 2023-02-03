@@ -12,7 +12,7 @@ from slicer.slicer import Slicer
 from primer.primer3 import Primer3
 from ipcress.ipcress import Ipcress
 from adapters.primer3_to_ipcress import Primer3ToIpcressAdapter
-from primer_designer import PrimerPair, transform_primer_pairs, PrimerDesigner
+from primer_designer import transform_primer_pairs, PrimerDesigner
 
 
 sys.path.insert(
@@ -49,7 +49,7 @@ def primer_command(
     primers = primer.get_primers(fasta)
 
     transform_primer_pairs(primer_designer, primers)
-    
+
     result = write_primer_output(
         primers = primers,
         prefix = prefix,
