@@ -13,6 +13,9 @@ make
 make install
 make setup-venv
 ```
+```make``` sets up the git hooks that run unittests and pycodestyle on /src and /tests on ```git push```.
+```make install``` installs dependancies below.
+```make setup-venv``` creates a venv at ./venv and installs requirements.txt(s)
 
 Dependencies:
 
@@ -69,6 +72,16 @@ cd sge-primer-scoring
 python -m unittest
 
 deactivate
+```
+### Git Hooks
+
+Located in  .githooks/
+Follows standard Git hook methodology: https://git-scm.com/docs/githooks
+Currently just "pre-push" that is run on ```git push```
+To run either invoke ```make``` or:
+```sh
+git config core.hooksPath .githooks
+chmod +x .githooks/*
 ```
 
 ### Exonerate iPCRess
