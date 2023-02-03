@@ -30,12 +30,13 @@ WORKDIR /usr/src/app
 RUN git clone https://github.com/nathanweeks/exonerate.git
 WORKDIR /usr/src/app/exonerate
 COPY . .
-RUN autoreconf -vfi \
+RUN autoreconf -fi \
   && ./configure \
   && make -j \
   && make check \
-  && make install \
-  && rm -rf /usr/src/app/exonerate
+  && make install 
+
+RUN rm -rf /usr/src/app/exonerate
 
 
 COPY . .
