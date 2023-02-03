@@ -22,7 +22,7 @@ RUN pip3 install -r requirements.txt
 RUN pip3 install -r scoring_requirements.txt
 
 RUN apt-get install -y libglib2.0-dev 
-RUN apt-get install -y autoconf
+RUN apt-get install -y autoconf libtool
 RUN apt-get install -y git
 
 WORKDIR /usr/src/app
