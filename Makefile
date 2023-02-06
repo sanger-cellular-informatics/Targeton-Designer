@@ -82,7 +82,8 @@ setup-venv:
 	./venv/bin/pip install -r sge-primer-scoring/requirements.txt
 
 test:
-	python -m unittest
+	. venv/bin/activate \
+	&& python -m unittest
 
 clean: 
 	rm -rf __pycache__
