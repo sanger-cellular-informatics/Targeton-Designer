@@ -6,7 +6,7 @@ import os
 from warnings import warn
 from utils.arguments_parser import ParsedInputArguments
 from utils.validate_files import validate_files
-from utils.write_output_files import write_slicer_output, write_primer_output, write_ipcress_input, write_ipcress_output, DesignOutputData, IpcressOutputData, PrimerOutputData, SlicerOutputData
+from utils.write_output_files import write_slicer_output, write_primer_output, write_primer_designer_output, write_ipcress_input, write_ipcress_output, DesignOutputData, IpcressOutputData, PrimerOutputData, SlicerOutputData
 from utils.exceptions import BadDesignOutputFieldWarning
 from slicer.slicer import Slicer
 from primer.primer3 import Primer3
@@ -45,15 +45,22 @@ def primer_command(
     ) -> PrimerOutputData:
 
     validate_files(fasta = fasta)
-    primer3 = Primer3()
-    primers = primer3.get_primers(fasta)
+    p3_class = Primer3()
+    primers = p3_class.get_primers(fasta)
 
-    prepare_primer_designer(primer_designer, primers)
+    primer_designer = prepare_primer_designer(primer_designer, primers)
+    
 
     result = write_primer_output(
         primers = primers,
         prefix = prefix,
-        existing_dir = existing_dir
+        existing_dir = existing_dir,
+    )
+    
+    result = write_primer_designer_output(
+        primer_designer = primer_designer,
+        prefix = prefix,
+        existing_dir = existing_dir,
     )
  
     return result
@@ -105,7 +112,7 @@ def scoring_command(ipcress_output, mismatch, output_tsv, targeton_csv):
 def design_command(args) -> DesignOutputData:
     primer_designer = PrimerDesigner()
     slicer_result = slicer_command(args)
-    primer_result = primer_command(primer_designer, slicer_result.fasta, existing_dir = slicer_result.dir)
+    primer_result = primer_command(primer_designer = primer_designer, fasta = slicer_result.fasta, existing_dir = slicer_result.dir)
     ipcress_result = ipcress_command(args, csv = primer_result.csv, existing_dir = slicer_result.dir)
     design_result = DesignOutputData(slicer_result.dir)
     # Slicer

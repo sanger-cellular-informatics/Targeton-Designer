@@ -48,7 +48,7 @@ class TestPrimerIntegration(TestCase):
                 args = parsed_input.get_args()
 
                 # Act
-                primer_result = primer_command(args["fasta"], prefix=args["dir"])
+                primer_result = primer_command(fasta = args["fasta"], prefix = args["dir"])
                 path_bed = Path(primer_result.bed)
                 path_csv = Path(primer_result.csv)
 

@@ -1,7 +1,8 @@
 import primer3
 import re
 import os
-import collections
+from collections import defaultdict
+from _collections_abc import dict_keys
 
 from Bio import SeqIO
 from Bio.Seq import Seq
@@ -16,14 +17,14 @@ class Primer3:
         self.user_config = './config/primer3.config.json'
         self.default_config = './src/primer/primer3.config.json'
 
-    def get_primers(self, fasta):
+    def get_primers(self, fasta: str) -> list:
         config = self.get_config_data(self.default_config, self.user_config)
 
         result = self.primer3_runner(fasta=fasta, config=config)
 
         return result
 
-    def primer3_runner(self, fasta: str, config: dict):
+    def primer3_runner(self, fasta: str, config: dict) -> list:
         print('Reading FA file')
         design_inputs = self.read_input_fasta(fasta)
         print('Designing primers for the region')
@@ -33,7 +34,7 @@ class Primer3:
 
         return slices
 
-    def read_input_fasta(self, fasta):
+    def read_input_fasta(self, fasta: str):
         with open(fasta) as fasta_data:
             rows = SeqIO.parse(fasta_data, 'fasta')
 
@@ -53,7 +54,7 @@ class Primer3:
 
         return slices
 
-    def primer3_design(self, primer3_inputs, primer3_config):
+    def primer3_design(self, primer3_inputs: list, primer3_config: dict) -> list:
         designs = []
         for slice_data in primer3_inputs:
             primer3_input = slice_data['p3_input']
@@ -64,7 +65,7 @@ class Primer3:
 
         return designs
 
-    def locate_primers(self, designs):
+    def locate_primers(self, designs: list) -> list:
         slice_designs = []
 
         for slice_data in designs:
@@ -79,8 +80,8 @@ class Primer3:
 
         return slice_designs
 
-    def build_primers_dict(self, design, primer_keys, slice_data):
-        primers = collections.defaultdict(dict)
+    def build_primers_dict(self, design, primer_keys: dict_keys, slice_data: dict) -> defaultdict:
+        primers = defaultdict(dict)
 
         for key in primer_keys:
             primer_details = self.capture_primer_details(key)
@@ -96,8 +97,8 @@ class Primer3:
         return primers
 
     def build_primer_loci(
-        self, primer, key, design, primer_details, slice_data
-    ):
+        self, primer, key, design, primer_details, slice_data: dict
+    ) -> dict:
         
         primer_field = primer_details['field']
 

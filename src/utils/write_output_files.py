@@ -7,6 +7,8 @@ from pybedtools import BedTool
 from utils.file_system import write_to_text_file, FolderCreator
 from utils.exceptions import OutputError, FolderCreatorError
 
+from primer_designer import PrimerDesigner
+
 @dataclass
 class OutputFilesData:
     dir: str
@@ -22,6 +24,12 @@ class SlicerOutputData(OutputFilesData):
 class PrimerOutputData(OutputFilesData):
     bed: str = ''
     csv: str = ''
+    
+@dataclass
+class PrimerDesignerOutputData(OutputFilesData):
+    fn: str = ''
+    csv: str = ''
+    
     
 @dataclass
 class IpcressOutputData(OutputFilesData):
@@ -69,7 +77,7 @@ def write_slicer_fasta_output(dir, slices):
     return fasta_path
 
 
-def export_to_csv(slices, dir):
+def export_slices_to_csv(slices, dir):
     PRIMER3_OUTPUT_CSV = 'p3_output.csv'
 
     headers = ['primer', 'sequence', 'chr', 'primer_start', 'primer_end', 'tm', 'gc_percent', 
@@ -83,6 +91,15 @@ def export_to_csv(slices, dir):
         p3_out.writeheader()
         p3_out.writerows(rows)
 
+        return csv_path
+    
+def export_primer_designer_to_csv(primer_designer, output_data: PrimerDesignerOutputData):
+    csv_path = path.join(output_data.dir, output_data.fn)
+    fields = primer_designer.get_fields()
+    with open(csv_path, "w") as f:
+        f_out = csv.DictWriter(f,fieldnames=fields)
+        f_out.writeheader()
+        f_out.writerows(primer_designer.primer_pairs)
         return csv_path
 
 def construct_csv_format(slices, headers):
@@ -132,7 +149,12 @@ def export_to_bed(bed_rows, dir):
 
     return bed_path
 
-def write_primer_output(prefix = '', primers = [], existing_dir = '') -> PrimerOutputData:
+def write_primer_output(
+    prefix = '',
+    primers = [],
+    existing_dir = '',
+    ) -> PrimerOutputData:
+    
     if existing_dir:
         dir = existing_dir
     else:
@@ -143,10 +165,29 @@ def write_primer_output(prefix = '', primers = [], existing_dir = '') -> PrimerO
     bed_rows = construct_bed_format(primers)
 
     result.bed = export_to_bed(bed_rows, dir)
-    result.csv = export_to_csv(primers, dir)
+    result.csv = export_slices_to_csv(primers, dir)
     result.dir = dir
 
     print('Primer files saved:', result.bed, result.csv)
+
+    return result
+
+def write_primer_designer_output(
+    prefix = '',
+    primer_designer = PrimerDesigner,
+    existing_dir = '',
+    ) -> PrimerOutputData:
+    
+    if existing_dir:
+        dir = existing_dir
+    else:
+        dir = timestamped_dir(prefix)
+
+    result = PrimerDesignerOutputData(dir,r'primer_designer.csv')
+
+    result.csv = export_primer_designer_to_csv(primer_designer,result)
+
+    print(f'Primer Designer files saved:{result.csv}')
 
     return result
 
