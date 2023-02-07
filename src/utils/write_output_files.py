@@ -1,5 +1,6 @@
 from os import path
 import csv
+import re
 
 from dataclasses import dataclass
 from pybedtools import BedTool
@@ -7,30 +8,54 @@ from pybedtools import BedTool
 from utils.file_system import write_to_text_file, FolderCreator
 from utils.exceptions import OutputError, FolderCreatorError
 
+
 @dataclass
 class OutputFilesData:
     dir: str
     def fields(self):
         return list(self.__dataclass_fields__.keys())
 
+
 @dataclass
 class SlicerOutputData(OutputFilesData):
     bed: str = ''
     fasta: str = ''
 
+
 @dataclass
 class PrimerOutputData(OutputFilesData):
     bed: str = ''
     csv: str = ''
-    
+
+
 @dataclass
 class IpcressOutputData(OutputFilesData):
+    input_file: str = ''
     stnd: str = ''
     err: str = ''
 
+
 @dataclass
-class DesignOutputData(SlicerOutputData, PrimerOutputData, IpcressOutputData):
-    p3_bed: str=''
+class TargetonCSVData(OutputFilesData):
+    csv: str = ''
+
+
+@dataclass
+class ScoringOutputData(OutputFilesData):
+    tsv: str = ''
+
+
+@dataclass
+class DesignOutputData(OutputFilesData):
+    slice_bed: str = ''
+    slice_fasta: str = ''
+    p3_bed: str = ''
+    p3_csv: str = ''
+    ipcress_input: str = ''
+    ipcress_output: str = ''
+    ipcress_err: str = ''
+    targeton_csv: str = ''
+    scoring_tsv: str = ''
 
 
 def timestamped_dir(prefix):
@@ -166,7 +191,41 @@ def write_ipcress_output(stnd = '', err = '', existing_dir = '') -> IpcressOutpu
     result.err = write_to_text_file(existing_dir, err, IPCRESS_OUTPUT_TXT+"_err")
     
     return result
-    
-    
- 
 
+
+def write_targeton_csv(ipcress_input, bed, dirname, dir_timestamped=False) -> TargetonCSVData:
+    TARGETON_CSV = 'targetons.csv'
+
+    bed = BedTool(bed)
+    csv_rows = []
+    with open(ipcress_input) as fh:
+        ipcress_input_data = fh.read()
+    for region in bed:
+        # corresponding primer pair names will be prefixed by region name
+        for primer_pair in re.finditer(rf'^{region.name}\S*', ipcress_input_data, re.MULTILINE):
+            csv_rows.append([primer_pair.group(), region.name])
+
+    if not dir_timestamped:
+        dirname = timestamped_dir(dirname)
+    csv_path = path.join(dirname, TARGETON_CSV)
+    with open(csv_path, 'w', newline='') as fh:
+        writer = csv.writer(fh)
+        writer.writerows(csv_rows)
+
+    print(f'Targeton csv generated: {csv_path}')
+
+    result = TargetonCSVData(dirname)
+    result.csv = csv_path
+
+    return result
+
+
+def write_scoring_output(scoring, output_tsv) -> ScoringOutputData:
+    scoring.save_mismatches(output_tsv)
+
+    result = ScoringOutputData('')
+    result.tsv = output_tsv
+
+    print(f'Scoring file saved: {output_tsv}')
+
+    return result

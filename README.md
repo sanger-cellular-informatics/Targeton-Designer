@@ -182,8 +182,19 @@ Example command with targeton csv:
 ```sh
 ./designer.sh scoring --ipcress_file example_ipcress_file.txt --scoring_mismatch 4 --output_tsv example_targeton_output.tsv --targeton_csv example_targetons.csv
 ```
-
 For more information and example files see the [Primer Scoring repo](https://gitlab.internal.sanger.ac.uk/sci/sge-primer-scoring).
+
+#### Targeton CSV generation
+
+To generate the targeton CSV used in primer scoring:
+```sh
+./designer.sh generate_targeton_csv [--primers PRIMERS] [--bed BED] [--dir DIR]
+```
+Example command:
+```sh
+./designer.sh generate_targeton_csv --primers example_ipcress_input.txt --bed example.bed --dir example_dir
+```
+Please note primer pair names in the iPCRess input file must be prefixed by the corresponding region name in the BED file.
 
 ### Docker
 
@@ -340,4 +351,19 @@ err: is a .txt error output from ipcress or if it fails early system.run().
 ** Message: 14:55:58.141: Loaded [1] experiments
 ** Message: 14:55:58.649: Loaded [1] experiments
 ** Message: 14:55:59.167: Loaded [1] experiments
+```
+
+#### Targeton CSV example
+A row for each primer pair and the region it originated from.
+
+| Primer pair | Region |
+ ------------ | ------ |
+| exon1_2_LibAmp_0 | exon1 |
+
+Raw file
+```
+exon1_2_LibAmp_0,exon1
+exon1_2_LibAmp_1,exon1
+exon1_2_LibAmp_2,exon1
+exon1_2_LibAmp_3,exon1
 ```
