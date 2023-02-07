@@ -6,7 +6,10 @@ from unittest import TestCase
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from cli import slicer_command, primer_command, ipcress_command, scoring_command, design_command
+from cli import (
+    slicer_command, primer_command, ipcress_command,
+    generate_targeton_csv, scoring_command, design_command
+)
 from utils.arguments_parser import ParsedInputArguments
 
 
@@ -15,7 +18,7 @@ class TestSlicerIntegration(TestCase):
         self.bed_file_path = r"./tests/integration/fixtures/bed_example.bed"
         self.fasta_file_path = r"./tests/integration/fixtures/fasta_example.fa"
 
-    def test_SlicerOutput(self):
+    def test_slicer_output(self):
         with TemporaryDirectory() as tmpdir:
             # Arrange
             # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
@@ -39,7 +42,7 @@ class TestPrimerIntegration(TestCase):
     def setUp(self):
         self.fasta_file_path = r"./tests/integration/fixtures/slicer_output.fasta"
 
-    def test_PrimerOutput(self):
+    def test_primer_output(self):
         with TemporaryDirectory() as tmpdir:
             # Arrange
             # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
@@ -64,7 +67,7 @@ class TestIPcressIntegration(TestCase):
         self.fasta_file_path = r"./tests/integration/fixtures/fasta_example.fa"
         self.p3_output_csv_path = r"./tests/integration/fixtures/p3_output.csv"
 
-    def test_iPCRessOutput(self):
+    def test_ipcress_output(self):
         with TemporaryDirectory() as tmpdir:
             # Arrange
             # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
@@ -74,38 +77,75 @@ class TestIPcressIntegration(TestCase):
 
                 # Act
                 result = ipcress_command(args)
+                path_input = Path(result.input_file)
                 path_stnd = Path(result.stnd)
                 path_err = Path(result.err)
 
                 # Assert
+                self.assertTrue(path_input.is_file())
                 self.assertTrue(path_stnd.is_file())
                 self.assertTrue(path_err.is_file())
+                self.assertGreater(path_input.stat().st_size, 0)
                 self.assertGreater(path_stnd.stat().st_size, 0)
                 self.assertGreater(path_err.stat().st_size, 0)
 
-# class TestScoringIntegration(TestCase):
-#     def setUp(self):
-#         self.fasta_file_path = r"./tests/integration/fixtures/slicer_output.fasta"
-#         self.p3_output_csv_path = r"./tests/integration/fixtures/p3_output.csv"
-#         self.ipcress_stnd_path = r"./tests/integration/fixtures/p3_output.csv"
 
-#     def test_ScoringOutput(self):
-        # with TemporaryDirectory() as tmpdir:
-        #     # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
-        #     with patch.object(sys, 'argv', ["./designer.sh", "primer", "--fasta", self.fasta_file_path, "--dir", tmpdir]):
-        #         parsed_input = ParsedInputArguments()
-        #         args = parsed_input.get_args()
-        #         path_tsv = scoring_command(
-        #             args['ipcress_file'],
-        #             args['scoring_mismatch'],
-        #             args['output_tsv'],
-        #             args['targeton_csv'],
-        #         )
-        #         path_tsv = Path(path_tsv)
-        #         # # Check if the file exist.
-        #         self.assertTrue(path_tsv.is_file())
-        #         # # Check if the file are empty
-        #         self.assertGreater(path_tsv.stat().st_size, 0)
+class TestTargetonCSVIntegration(TestCase):
+    def setUp(self):
+        self.ipcress_input_path = r"./tests/integration/fixtures/ipcress_primer_input.txt"
+        self.bed_file_path = r"./tests/integration/fixtures/bed_example.bed"
+
+    def test_generate_targeton_csv_output(self):
+        with TemporaryDirectory() as tmpdir:
+            # Arrange
+            cli_input = [
+                "./designer.sh", "generate_targeton_csv",
+                "--primers", self.ipcress_input_path,
+                "--bed", self.bed_file_path,
+                "--dir", tmpdir,
+            ]
+            # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
+            with patch.object(sys, 'argv', cli_input):
+                parsed_input = ParsedInputArguments()
+                args = parsed_input.get_args()
+
+                # Act
+                result = generate_targeton_csv(args['primers'], args['bed'], args['dir'])
+                path_csv = Path(result.csv)
+
+                # Assert
+                self.assertTrue(path_csv.is_file())
+                self.assertGreater(path_csv.stat().st_size, 0)
+
+
+class TestScoringIntegration(TestCase):
+    def setUp(self):
+        self.ipcress_output_path = r"./tests/integration/fixtures/ipcress_output.txt"
+
+    def test_scoring_output(self):
+        with TemporaryDirectory() as tmpdir:
+            # Arrange
+            scoring_output_path = str(Path(tmpdir) / 'scoring_output.tsv')
+            cli_input = [
+                "./designer.sh", "scoring",
+                "--ipcress_file", self.ipcress_output_path,
+                "--scoring_mismatch", "5",
+                "--output_tsv", scoring_output_path,
+            ]
+            # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
+            with patch.object(sys, 'argv', cli_input):
+                parsed_input = ParsedInputArguments()
+                args = parsed_input.get_args()
+
+                # Act
+                result = scoring_command(
+                    args['ipcress_file'], args['scoring_mismatch'], args['output_tsv']
+                )
+                path_tsv = Path(result.tsv)
+
+                # Assert
+                self.assertTrue(path_tsv.is_file())
+                self.assertGreater(path_tsv.stat().st_size, 0)
 
 
 class TestTargetonDesignerIntegration(TestCase):

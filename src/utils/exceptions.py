@@ -22,11 +22,3 @@ class InvalidConfigError(Exception):
 
 class IpcressError(Exception):
     pass
-
-class BadDesignOutputField(Exception):
-    pass
-
-### Warnings
-class BadDesignOutputFieldWarning(UserWarning):
-    pass
- 

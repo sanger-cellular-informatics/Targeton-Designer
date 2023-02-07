@@ -15,7 +15,8 @@ class ParsedInputArguments:
             'command',
             help=(
                 'Command to run in Designer CLI, available commands: '
-                'version, slicer, primer, ipcress, scoring, design'
+                'version, slicer, primer, ipcress, scoring, design, '
+                'primer_for_ipcress, generate_targeton_csv'
             ),
             type=str, default='design'
         )
@@ -101,7 +102,8 @@ def add_input_args(parser):
     parser.add_argument(
         '--mismatch',
         help='Number of mismatches to check against',
-        default='5',
+        type=positive_int,
+        default=5,
     )
     parser.add_argument(
         '--primers',

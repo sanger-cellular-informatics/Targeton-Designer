@@ -15,6 +15,7 @@ class IpcressParams:
 
 @dataclass
 class IpcressResult:
+    input_file: str
     stnd: bytes
     err: bytes
 
@@ -55,7 +56,7 @@ class Ipcress:
 
     def run_ipcress(self, input_path, params) -> IpcressResult:
         cmd = ' '.join([
-            'ipcress', input_path, params['fasta'], '--mismatch', params['mismatch']
+            'ipcress', input_path, params['fasta'], '--mismatch', str(params['mismatch'])
         ])
 
         cmd = self.prettify_output(params['pretty'], cmd)
@@ -68,7 +69,7 @@ class Ipcress:
         if not stnd:
             raise IpcressError(err)
 
-        return IpcressResult(stnd, err)
+        return IpcressResult(input_path, stnd, err)
 
     @staticmethod
     def validate_primers(ipcress_output, primer_data, params, validate_coords=False) -> None:
