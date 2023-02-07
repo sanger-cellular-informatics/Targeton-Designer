@@ -1,12 +1,6 @@
 from os import path
 from collections import defaultdict
-import csv
-import pprint
-import pdb
 import re
-
-from utils.file_system import write_to_text_file, FolderCreator
-from utils.exceptions import OutputError, FolderCreatorError
 
 class PrimerDesigner():
     def __init__(self):
@@ -27,6 +21,9 @@ class PrimerPair():
         self.left = Primer(data['left'])
         self.right = Primer(data['right'])
 
+    def get_paired_dict(self):
+        return vars(self)
+
 class Primer():
     def __init__(self, primer_data):
         self.chromosome = primer_data['chromosome']
@@ -39,13 +36,13 @@ class Primer():
         return getattr(self, item)
 
 
-def transform_primer_pairs(primer_designer, data) -> PrimerDesigner():
+def prepare_primer_designer(primer_designer, data) -> PrimerDesigner():
     pairs = iterate_design(data)
     build_pair_classes(primer_designer, pairs)
 
     return primer_designer
 
-def build_pair_classes(targeton_designer, pairs):
+def build_pair_classes(primer_designer, pairs):
     for pair in pairs:
         left = extract_primer_data(pairs[pair]['F'])
         right = extract_primer_data(pairs[pair]['R'])
@@ -57,7 +54,7 @@ def build_pair_classes(targeton_designer, pairs):
             'right' : Primer(right),
         })
 
-        targeton_designer.append_pair(pair_class)
+        primer_designer.append_pair(pair_class)
     
     return
 
