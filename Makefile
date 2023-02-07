@@ -15,7 +15,7 @@ init:
 
 install: 
 	@echo "Installing..."
-	sudo apt-get update
+	@sudo apt-get update
 	@if [ "$(shell which build-essential)" = "" ]; then \
         $(MAKE) install-build-essential; \
     fi
@@ -51,40 +51,53 @@ install-python3.8-venv:
 	@sudo apt-get -y install python3.8-venv
 
 install-python3.8-dev: 
-	@echo "Installing python3.8-dev..."
-	@sudo apt-get -y install python3.8-dev
-	@sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.8 2
-	@sudo update-alternatives --config python
+	@if ! hash python3; then
+		# Python3 not installed.
+		@echo "Installing python3.8-dev..."
+		@sudo apt-get -y install python3.8-dev
+	else
+		PYTHONPATH = which python
+		ver=$(python3 -V 2>&1 | sed 's/.* \([0-9]\).\([0-9]\).*/\1\2/')
+		@if [ "${ver}" -ge "38" ]; then
+			PYTHONPATH38 = which python3
+		else
+			@echo "Installing python3.8-dev..."
+			@sudo apt-get -y install python3.8-dev
+			PYTHONPATH38 = which python3.8
+		fi
+		@sudo update-alternatives --install ${PYTHONPATH} python ${PYTHONPATH38} 2 
+		@sudo update-alternatives --config python 
 
 install-libglib2.0-dev: 
 	@echo "Installing libglib2.0-dev..."
-	sudo apt-get -y install libglib2.0-dev 
+	@sudo apt-get -y install libglib2.0-dev 
 
 install-autoconf: 
 	@echo "Installing autoconf..."
-	sudo apt-get -y install autoconf libtool
+	@sudo apt-get -y install autoconf libtool
 
 install-ipcress: 
 	@echo "Installing ipcress..."
-	git clone https://github.com/nathanweeks/exonerate.git $(APP)/
-	cd $(APP)/exonerate \
+	@git clone https://github.com/nathanweeks/exonerate.git $(APP)/
+	@cd $(APP)/exonerate \
 		&& autoreconf -fi \
 		&& ./configure \
 		&& make -j 4 \
 		&& make install
-	rm -rf $(APP)/exonerate
+	@rm -rf $(APP)/exonerate
 
-setup-venv:
-	echo "running venv"
-	python -m venv venv
-	./venv/bin/pip install -U pip wheel setuptools 
-	./venv/bin/pip install -r requirements.txt
-	./venv/bin/pip install -r sge-primer-scoring/requirements.txt
+venv/bin/activate:
+	@python -m venv venv
 
-test:
-	. venv/bin/activate \
+setup-venv: venv/bin/activate
+	@./venv/bin/pip install -U pip wheel setuptools 
+	@./venv/bin/pip install -r requirements.txt
+	@./venv/bin/pip install -r sge-primer-scoring/requirements.txt
+
+test: setup-venv
+	@. venv/bin/activate \
 	&& python -m unittest
 
 clean: 
-	rm -rf __pycache__
-	rm -rf venv
+	@rm -rf __pycache__
+	@rm -rf venv

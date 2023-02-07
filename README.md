@@ -6,7 +6,6 @@ Standalone targeton designer tool.
 
 ## Installation
 
-WIP: Makefile
 Run
 ```sh
 make

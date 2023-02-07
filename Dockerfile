@@ -25,7 +25,7 @@ RUN apt-get install -y libglib2.0-dev
 RUN apt-get install -y autoconf libtool
 RUN apt-get install -y git
 
-WORKDIR /usr/src/app
+# WORKDIR /usr/src/app
 
 RUN git clone https://github.com/nathanweeks/exonerate.git
 # WORKDIR /usr/src/app/exonerate
