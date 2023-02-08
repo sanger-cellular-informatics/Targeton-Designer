@@ -1,12 +1,28 @@
 #!/usr/bin/env python3
 
 import sys
-import os
-
+import re
+from os import path
 from warnings import warn
+from pybedtools import BedTool
+
 from utils.arguments_parser import ParsedInputArguments
 from utils.validate_files import validate_files
-from utils.write_output_files import write_slicer_output, write_primer_output, write_primer_designer_output, write_ipcress_input, write_ipcress_output, DesignOutputData, IpcressOutputData, PrimerOutputData, SlicerOutputData
+from utils.write_output_files import (
+    write_slicer_output,
+    write_primer_output,
+    write_primer_designer_output,
+    write_ipcress_input,
+    write_ipcress_output,
+    write_targeton_csv,
+    write_scoring_output,
+    DesignOutputData,
+    IpcressOutputData,
+    PrimerOutputData,
+    SlicerOutputData,
+    TargetonCSVData,
+    ScoringOutputData,
+)
 from utils.exceptions import BadDesignOutputFieldWarning
 from slicer.slicer import Slicer
 from primer.primer3 import Primer3
@@ -14,9 +30,8 @@ from ipcress.ipcress import Ipcress
 from adapters.primer3_to_ipcress import Primer3ToIpcressAdapter
 from primer_designer import prepare_primer_designer, PrimerDesigner
 
-
 sys.path.insert(
-    0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../sge-primer-scoring/src'))
+    0, path.abspath(path.join(path.dirname(__file__), '../sge-primer-scoring/src'))
 )
 from scoring import Scoring
 
@@ -79,7 +94,7 @@ def primer_for_ipcress(fasta = '', prefix = '', min = 0, max = 0):
     return result
 
 
-def ipcress_command(params, csv = '', existing_dir = '') -> IpcressOutputData:
+def ipcress_command(params, csv='', existing_dir='') -> IpcressOutputData:
     ipcress_params = params.copy()
 
     if csv:
@@ -101,32 +116,62 @@ def ipcress_command(params, csv = '', existing_dir = '') -> IpcressOutputData:
         err = ipcress_result.err,
         existing_dir = ipcress_params['dir']
     )
-    
+    result.input_file = ipcress_result.input_file
+
     return result
 
-def scoring_command(ipcress_output, mismatch, output_tsv, targeton_csv):
+
+def generate_targeton_csv(ipcress_input, bed, dirname, dir_timestamped=False) -> TargetonCSVData:
+    bed = BedTool(bed)
+    csv_rows = []
+    with open(ipcress_input) as fh:
+        ipcress_input_data = fh.read()
+    for region in bed:
+        # corresponding primer pair names will be prefixed by region name
+        for primer_pair in re.finditer(rf'^{region.name}\S*', ipcress_input_data, re.MULTILINE):
+            csv_rows.append([primer_pair.group(), region.name])
+    return write_targeton_csv(csv_rows, dirname, dir_timestamped)
+
+
+def scoring_command(ipcress_output, mismatch, output_tsv, targeton_csv=None) -> ScoringOutputData:
     scoring = Scoring(ipcress_output, mismatch, targeton_csv)
     scoring.add_scores_to_df()
-    scoring.save_mismatches(output_tsv)
-    
+
+    result = write_scoring_output(scoring, output_tsv)
+
+    return result
+
+
 def design_command(args) -> DesignOutputData:
     primer_designer = PrimerDesigner()
     slicer_result = slicer_command(args)
     primer_result, primer_designer_result = primer_command(primer_designer = primer_designer, fasta = slicer_result.fasta, existing_dir = slicer_result.dir)
     ipcress_result = ipcress_command(args, csv = primer_result.csv, existing_dir = slicer_result.dir)
+    targeton_csv = generate_targeton_csv(
+        ipcress_result.input_file, args['bed'], slicer_result.dir, dir_timestamped=True
+    )
+    scoring_output_path = path.join(slicer_result.dir, 'scoring_output.tsv')
+    scoring_result = scoring_command(
+        ipcress_result.stnd, args['mismatch'], scoring_output_path, targeton_csv.csv
+    )
     design_result = DesignOutputData(slicer_result.dir)
     # Slicer
-    design_result.bed = slicer_result.bed
-    design_result.fasta = slicer_result.fasta
+    design_result.slice_bed = slicer_result.bed
+    design_result.slice_fasta = slicer_result.fasta
     # Primer
     design_result.p3_bed = primer_result.bed
-    design_result.csv = primer_result.csv
+    design_result.p3_csv = primer_result.csv
     # Primer Designer
-    design_result.json = primer_designer_result.json
+    design_result.pd_json = primer_designer_result.json
     design_result.pd_csv = primer_designer_result.csv
     # iPCRess
-    design_result.stnd = ipcress_result.stnd
-    design_result.err = ipcress_result.err
+    design_result.ipcress_input = ipcress_result.input_file
+    design_result.ipcress_output = ipcress_result.stnd
+    design_result.ipcress_err = ipcress_result.err
+    # Targeton CSV
+    design_result.targeton_csv = targeton_csv.csv
+    # Scoring
+    design_result.scoring_tsv = scoring_result.tsv
     
     field_list = slicer_result.fields() + primer_result.fields() + primer_designer_result.fields() + ipcress_result.fields()
     missing_fields = [field for field in field_list if field not in design_result.fields()]
@@ -154,6 +199,9 @@ def resolve_command(args):
         if command == 'ipcress':
             ipcress_command(args)
 
+        if command == 'generate_targeton_csv':
+            generate_targeton_csv(args['primers'], args['bed'], args['dir'])
+
         if command == 'scoring':
             scoring_command(
                 args['ipcress_file'],
@@ -171,6 +219,7 @@ def main():
     args = parsed_input.get_args()
 
     resolve_command(args)
+
 
 if __name__ == '__main__':
     main()

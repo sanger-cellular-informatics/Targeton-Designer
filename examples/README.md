@@ -33,3 +33,9 @@ Run only **ipcress** with test txt input:
 `
 ./designer.sh ipcress --dir ./td_output --fasta ../Homo_sapiens.GRCh38.dna.chromosome.1.fa --txt ./examples/test_ipcress_input.txt
 `
+
+Generate **targeton csv** for primer scoring with test input data:
+
+`
+./designer.sh generate_targeton_csv --primers ./examples/test_ipcress_input.txt --bed ./examples/test_targeton_data.bed
+`
