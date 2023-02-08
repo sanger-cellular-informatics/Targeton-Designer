@@ -51,19 +51,19 @@ def primer_command(
     primer_designer = prepare_primer_designer(primer_designer, primers)
     
 
-    result = write_primer_output(
+    primer_result = write_primer_output(
         primers = primers,
         prefix = prefix,
         existing_dir = existing_dir,
     )
     
-    result = write_primer_designer_output(
+    primer_designer_result = write_primer_designer_output(
         primer_designer = primer_designer,
         prefix = prefix,
         existing_dir = existing_dir,
     )
  
-    return result
+    return primer_result, primer_designer_result
 
 
 def primer_for_ipcress(fasta = '', prefix = '', min = 0, max = 0):
@@ -112,7 +112,7 @@ def scoring_command(ipcress_output, mismatch, output_tsv, targeton_csv):
 def design_command(args) -> DesignOutputData:
     primer_designer = PrimerDesigner()
     slicer_result = slicer_command(args)
-    primer_result = primer_command(primer_designer = primer_designer, fasta = slicer_result.fasta, existing_dir = slicer_result.dir)
+    primer_result, primer_designer_result = primer_command(primer_designer = primer_designer, fasta = slicer_result.fasta, existing_dir = slicer_result.dir)
     ipcress_result = ipcress_command(args, csv = primer_result.csv, existing_dir = slicer_result.dir)
     design_result = DesignOutputData(slicer_result.dir)
     # Slicer
@@ -121,11 +121,14 @@ def design_command(args) -> DesignOutputData:
     # Primer
     design_result.p3_bed = primer_result.bed
     design_result.csv = primer_result.csv
+    # Primer Designer
+    design_result.json = primer_designer_result.json
+    design_result.pd_csv = primer_designer_result.csv
     # iPCRess
     design_result.stnd = ipcress_result.stnd
     design_result.err = ipcress_result.err
     
-    field_list = slicer_result.fields() + primer_result.fields() + ipcress_result.fields()
+    field_list = slicer_result.fields() + primer_result.fields() + primer_designer_result.fields() + ipcress_result.fields()
     missing_fields = [field for field in field_list if field not in design_result.fields()]
     if missing_fields:
         warn(f"Fields missing in design_result: {missing_fields}", BadDesignOutputFieldWarning)

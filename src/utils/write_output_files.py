@@ -3,11 +3,11 @@ import csv
 
 from dataclasses import dataclass
 from pybedtools import BedTool
-
 from utils.file_system import write_to_text_file, FolderCreator
 from utils.exceptions import OutputError, FolderCreatorError
-
+from pathlib import Path
 from primer_designer import PrimerDesigner
+import pandas as pd
 
 @dataclass
 class OutputFilesData:
@@ -27,9 +27,8 @@ class PrimerOutputData(OutputFilesData):
     
 @dataclass
 class PrimerDesignerOutputData(OutputFilesData):
-    fn: str = ''
     csv: str = ''
-    
+    json: str = ''
     
 @dataclass
 class IpcressOutputData(OutputFilesData):
@@ -37,8 +36,9 @@ class IpcressOutputData(OutputFilesData):
     err: str = ''
 
 @dataclass
-class DesignOutputData(SlicerOutputData, PrimerOutputData, IpcressOutputData):
-    p3_bed: str=''
+class DesignOutputData(SlicerOutputData, PrimerOutputData, PrimerDesignerOutputData, IpcressOutputData):
+    p3_bed: str = ''
+    pd_csv: str = ''
 
 
 def timestamped_dir(prefix):
@@ -93,14 +93,25 @@ def export_slices_to_csv(slices, dir):
 
         return csv_path
     
-def export_primer_designer_to_csv(primer_designer, output_data: PrimerDesignerOutputData):
-    csv_path = path.join(output_data.dir, output_data.fn)
-    fields = primer_designer.get_fields()
-    with open(csv_path, "w") as f:
-        f_out = csv.DictWriter(f,fieldnames=fields)
-        f_out.writeheader()
-        f_out.writerows(primer_designer.primer_pairs)
-        return csv_path
+def export_primer_designer_to_csv(primer_designer, fn : str, dir : str):
+    fn = Path(fn)
+    if not fn.suffix:
+        fn = fn.with_suffix(r'.csv')
+    csv_path = dir/fn
+    flat_dict_list = primer_designer.flatten()
+    primer_designer_df = pd.DataFrame(flat_dict_list)
+    primer_designer_df.to_csv(csv_path, mode = 'w', header = True, index = False)
+    return csv_path
+    
+def export_primer_designer_to_json(primer_designer, fn : str, dir : str):
+    fn = Path(fn)
+    if not fn.suffix:
+        fn = fn.with_suffix(r'.json')
+    json_path = dir/fn
+    with open(json_path, 'w') as f:
+        primer_designer.dump_json(f, sort_keys=True, indent=4)
+
+    return json_path
 
 def construct_csv_format(slices, headers):
     rows = []
@@ -183,11 +194,14 @@ def write_primer_designer_output(
     else:
         dir = timestamped_dir(prefix)
 
-    result = PrimerDesignerOutputData(dir,r'primer_designer.csv')
+    result = PrimerDesignerOutputData(dir)
+    fn=r'primer_designer'
 
-    result.csv = export_primer_designer_to_csv(primer_designer,result)
+    result.csv = export_primer_designer_to_csv(primer_designer, fn, dir)
+    result.json = export_primer_designer_to_json(primer_designer, fn, dir)
+    result.dir = dir
 
-    print(f'Primer Designer files saved:{result.csv}')
+    print(f'Primer Designer files saved:{result.csv}, {result.json}')
 
     return result
 

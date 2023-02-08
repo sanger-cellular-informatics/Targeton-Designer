@@ -1,6 +1,7 @@
 from os import path
 from collections import defaultdict
 import re
+import json
 
 class PrimerDesigner():
     def __init__(self):
@@ -13,17 +14,41 @@ class PrimerDesigner():
         self.primer_pairs.append(pair)
         
     def get_fields(self):
-        fields = []
-        for pair in self.primer_pairs:
-            fields.extend(list(pair.get_paired_dict().keys()))
-        fields = list(set(fields))
-        return fields
+        return list(self._asdict().keys())
+    
+    def dump_json(self, *args, **kwargs):
+        json.dump(self._asdict(), *args, **kwargs)
+        
+    def _asdict(self):
+        pair_dict_list = []
+        for pair in self.get_primer_pairs():
+            return_dict = pair._asdict()
+            for k,v in return_dict.items():
+                if isinstance(v, Primer):
+                    return_dict[k]=v._asdict()
+            pair_dict_list.append(return_dict)
+        return pair_dict_list
+    
+    def flatten(self):
+        flat_dict_list = []
+        for pair in self.get_primer_pairs():
+            return_dict = pair._asdict()
+            side_list = []
+            for side in ('left','right'):
+                side_return_dict = return_dict.copy()
+                side_return_dict['side']=side
+                side_return_dict.update(side_return_dict[side])
+                side_return_dict.pop('left')
+                side_return_dict.pop('right')
+                side_list.append(side_return_dict)
+            flat_dict_list.extend(side_list)
+        return flat_dict_list
 
-class PrimerPair():
+class PrimerPair(object):
     def __init__(self, data):
         self.pair = data['pair']
         self.score = data['score']
-        self.product_size = int
+        self.product_size = int(0)
         self.left = Primer(data['left'])
         self.right = Primer(data['right'])
 
@@ -31,9 +56,17 @@ class PrimerPair():
         return vars(self)
     
     def get_fields(self):
-        return list(self.attrs().keys())
+        return list(self._asdict().keys())
+    
+    def _asdict(self):
+        return_dict = vars(self)
+        for k,v in return_dict.items():
+            if isinstance(v, Primer):
+                return_dict[k]=v._asdict()
+        return return_dict
+                
 
-class Primer():
+class Primer(object):
     def __init__(self, primer_data):
         self.chromosome = primer_data['chromosome']
         self.chr_start = primer_data['chr_start']
@@ -45,7 +78,10 @@ class Primer():
         return getattr(self, item)
     
     def get_fields(self):
-        return list(self.attrs().keys())
+        return list(self._asdict().keys())
+    
+    def _asdict(self):
+        return vars(self)
 
 
 def prepare_primer_designer(primer_designer: PrimerDesigner, primers: list) -> PrimerDesigner:
