@@ -22,4 +22,3 @@ class InvalidConfigError(Exception):
 
 class IpcressError(Exception):
     pass
- 

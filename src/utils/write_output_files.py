@@ -1,5 +1,6 @@
 from os import path
 import csv
+import re
 
 from dataclasses import dataclass
 from pybedtools import BedTool
@@ -8,6 +9,7 @@ from utils.exceptions import OutputError, FolderCreatorError
 from pathlib import Path
 from primer_designer import PrimerDesigner
 import pandas as pd
+
 
 
 @dataclass
@@ -40,6 +42,7 @@ class IpcressOutputData(OutputFilesData):
     stnd: str = ''
     err: str = ''
 
+
 @dataclass
 class TargetonCSVData(OutputFilesData):
     csv: str = ''
@@ -61,7 +64,6 @@ class DesignOutputData(OutputFilesData):
     ipcress_err: str = ''
     targeton_csv: str = ''
     scoring_tsv: str = ''
-    
 
 
 def timestamped_dir(prefix):
