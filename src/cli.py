@@ -54,32 +54,38 @@ def slicer_command(args) -> SlicerOutputData:
 
 
 def primer_command(
-        primer_designer = PrimerDesigner(),
         fasta = '',
         prefix = '',
         existing_dir = ''
-    ) -> Tuple[PrimerOutputData, PrimerDesignerOutputData]:
+    ) -> PrimerOutputData:
 
     validate_files(fasta = fasta)
     p3_class = Primer3()
     primers = p3_class.get_primers(fasta)
-
-    primer_designer = prepare_primer_designer(primer_designer, primers)
-    
 
     primer_result = write_primer_output(
         primers = primers,
         prefix = prefix,
         existing_dir = existing_dir,
     )
+ 
+    return primer_result
+
+def primer_designer_command(
+        primers_file : str,
+        scoring_file : str,
+        primer_designer = PrimerDesigner(),
+        prefix = '',
+        existing_dir = ''
+    ) -> PrimerDesignerOutputData:
     
+    primer_designer = prepare_primer_designer(primer_designer, primers_file, scoring_file)
     primer_designer_result = write_primer_designer_output(
         primer_designer = primer_designer,
         prefix = prefix,
         existing_dir = existing_dir,
     )
- 
-    return primer_result, primer_designer_result
+    return primer_designer_result
 
 
 def primer_for_ipcress(fasta = '', prefix = '', min = 0, max = 0):
@@ -144,9 +150,8 @@ def scoring_command(ipcress_output, mismatch, output_tsv, targeton_csv=None) -> 
 
 
 def design_command(args) -> DesignOutputData:
-    primer_designer = PrimerDesigner()
     slicer_result = slicer_command(args)
-    primer_result, primer_designer_result = primer_command(primer_designer = primer_designer, fasta = slicer_result.fasta, existing_dir = slicer_result.dir)
+    primer_result = primer_command(fasta = slicer_result.fasta, existing_dir = slicer_result.dir)
     ipcress_result = ipcress_command(args, csv = primer_result.csv, existing_dir = slicer_result.dir)
     targeton_result = generate_targeton_csv(
         ipcress_result.input_file, args['bed'], slicer_result.dir, dir_timestamped=True
@@ -155,6 +160,7 @@ def design_command(args) -> DesignOutputData:
     scoring_result = scoring_command(
         ipcress_result.stnd, args['mismatch'], scoring_output_path, targeton_result.csv
     )
+    primer_designer_result = primer_designer_command(primer_result.csv, scoring_result.tsv, existing_dir = slicer_result.dir)
     design_result = DesignOutputData(slicer_result.dir)
     # Slicer
     design_result.slice_bed = slicer_result.bed

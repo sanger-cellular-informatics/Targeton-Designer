@@ -71,6 +71,17 @@ def read_csv_to_dict(csv_path):
      
     return data
 
+def read_tsv_to_dict(tsv_path):
+    check_file_exists(tsv_path)
+    
+    data = []
+    with open(tsv_path) as tsv_file:
+        reader = csv.DictReader(tsv_file, delimiter='\t')
+        for row in reader:
+            data.append(row)
+     
+    return data
+
 
 def parse_json(file_path: str) -> dict:
     with open(file_path, "r") as file:

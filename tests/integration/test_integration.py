@@ -51,21 +51,15 @@ class TestPrimerIntegration(TestCase):
                 args = parsed_input.get_args()
 
                 # Act
-                primer_result, designer_result = primer_command(fasta = args["fasta"], prefix = args["dir"])
+                primer_result = primer_command(fasta = args["fasta"], prefix = args["dir"])
                 path_primer_bed = Path(primer_result.bed)
                 path_primer_csv = Path(primer_result.csv)
-                path_designer_json= Path(designer_result.json)
-                path_designer_csv = Path(designer_result.csv)
 
                 # Assert
                 self.assertTrue(path_primer_bed.is_file())
                 self.assertTrue(path_primer_csv.is_file())
-                self.assertTrue(path_designer_json.is_file())
-                self.assertTrue(path_designer_csv.is_file())
                 self.assertGreater(path_primer_bed.stat().st_size, 0)
                 self.assertGreater(path_primer_csv.stat().st_size, 0)
-                self.assertGreater(path_designer_json.stat().st_size, 0)
-                self.assertGreater(path_designer_csv.stat().st_size, 0)
 
 
 class TestIPcressIntegration(TestCase):

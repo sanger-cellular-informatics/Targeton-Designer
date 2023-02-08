@@ -2,6 +2,8 @@ from os import path
 from collections import defaultdict
 import re
 import json
+import numpy as np
+from utils.file_system import read_csv_to_dict, read_tsv_to_dict
 
 class PrimerDesigner():
     def __init__(self):
@@ -45,12 +47,12 @@ class PrimerDesigner():
         return flat_dict_list
 
 class PrimerPair(object):
-    def __init__(self, data):
+    def __init__(self, data : dict):
         self.pair = data['pair']
         self.score = data['score']
-        self.product_size = int(0)
         self.left = Primer(data['left'])
         self.right = Primer(data['right'])
+        self.product_size = self.get_product_size()
 
     def get_paired_dict(self):
         return vars(self)
@@ -64,6 +66,12 @@ class PrimerPair(object):
             if isinstance(v, Primer):
                 return_dict[k]=v._asdict()
         return return_dict
+    
+    def get_product_size(self):
+        starts = [int(self.left.chr_start), int(self.right.chr_start)]
+        ends = [int(self.left.chr_end), int(self.right.chr_end)]
+        product_size = int(np.max(ends) - np.min(starts))
+        return product_size
                 
 
 class Primer(object):
@@ -84,8 +92,12 @@ class Primer(object):
         return vars(self)
 
 
-def prepare_primer_designer(primer_designer: PrimerDesigner, primers: list) -> PrimerDesigner:
-    pairs = iterate_design(primers)
+def prepare_primer_designer(primer_designer: PrimerDesigner, primer_file : str, scoring_file : str) -> PrimerDesigner:
+    primers = read_csv_to_dict(primer_file)
+    scoring = read_tsv_to_dict(scoring_file)
+    scoring = [score for score in scoring if score['A/B/Total'] == 'Total']
+    
+    pairs = iterate_design(primers, scoring)
     primer_designer = build_pair_classes(primer_designer, pairs)
 
     return primer_designer
@@ -97,7 +109,7 @@ def build_pair_classes(primer_designer:PrimerDesigner, pairs: defaultdict) -> Pr
 
         pair_class = PrimerPair({
             'pair' : pair,
-            'score' : 0,
+            'score' : pairs[pair]['score'],
             'left' : Primer(left),
             'right' : Primer(right),
         })
@@ -108,7 +120,7 @@ def build_pair_classes(primer_designer:PrimerDesigner, pairs: defaultdict) -> Pr
 
 def extract_primer_data(data: dict) -> dict:
     record = {
-        'chromosome' : data['chrom'],
+        'chromosome' : data['chr'],
         'chr_start' : data['primer_start'],
         'chr_end' : data['primer_end'],
         'seq' : data['sequence'],
@@ -116,27 +128,29 @@ def extract_primer_data(data: dict) -> dict:
     }
     
     # For ipcress compatibility.
-    del data['chrom']
+    del data['chr']
 
     return record
         
-def iterate_design(primers: list) -> defaultdict:
-    pairs = defaultdict(dict)
-
-    for pair in primers:
-        if (pair['primers']):
-            pairs.update(map_primer_data(pairs, pair['primers'], pair['chrom']))
+def iterate_design(primers: list, scoring: list) -> defaultdict:
+    pairs = map_primer_data(scoring, primers)
     
     return pairs
 
-def map_primer_data(pairs: defaultdict, primers: defaultdict, chrom: str):
+def map_primer_data(scoring: list, primers: list):
+    pairs = defaultdict(dict)
     for primer in primers:
-        #ENSE00000769557_HG8_16_LibAmpR_0
-        #(ENSE00000769557_HG8_16_LibAmp)(R)_(0)
-        match = re.search("^(\w+LibAmp)([F|R])\_(\d+)$", primer)
-        pair_key = match.group(1) + '_' + match.group(3)
-        side = match.group(2)
-        pairs[pair_key][side] = primers[primer]
-        pairs[pair_key][side]['chrom'] = chrom
+        pair = primer['primer']
+        if (pair):
+            chrom = primer['chr']
+            #ENSE00000769557_HG8_16_LibAmpR_0
+            #(ENSE00000769557_HG8_16_LibAmp)(R)_(0)
+            match = re.search("^(\w+LibAmp)([F|R])\_(\d+)$", pair)
+            pair_key = match.group(1) + '_' + match.group(3)
+            side = match.group(2)
+            pairs[pair_key][side] = primer
+            pairs[pair_key][side]['chr'] = chrom
+            pairs[pair_key]['score'] = [score['Score'] for score in scoring if score['Primer pair'] == pair_key][0]
 
     return pairs
+
