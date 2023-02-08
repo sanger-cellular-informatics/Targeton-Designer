@@ -315,6 +315,108 @@ ENSE00003571441_HG6_6_LibAmpR_1,ACCCAGGCTGCATCTCCC,1,42931021,42931039,61.415087
 ENSE00003571441_HG6_6_LibAmpF_1,AGTGCCAGGACCTCTCCTA,1,42931211,42931230,58.90293358584404,57.89473684210526,2.097066414155961,0.0,0.0,46.300612411542886,2.94
 ```
 
+### Primer Designer Output example
+Creates a data structure of LIST_PAIRS->PRIMER_PAIR->PRIMER
+
+Currently output as both a JSON and CSV.
+
+As a nested structure JSON.
+'''[
+    {
+        "left": {
+            "chr_end": 77,
+            "chr_start": 55,
+            "chromosome": "chr1",
+            "melting_temp": 58.004800503683725,
+            "seq": "CTGTTCTGACAGTAGAAAGGCA"
+        },
+        "pair": "exon1_2_LibAmp_0",
+        "product_size": 0,
+        "right": {
+            "chr_end": 265,
+            "chr_start": 242,
+            "chromosome": "chr1",
+            "melting_temp": 59.347613464584356,
+            "seq": "AAGAATTTTCCCCAATGGTTGCT"
+        },
+        "score": 0
+    },
+    {
+        "left": {
+            "chr_end": 77,
+            "chr_start": 55,
+            "chromosome": "chr1",
+            "melting_temp": 58.004800503683725,
+            "seq": "CTGTTCTGACAGTAGAAAGGCA"
+        },
+        "pair": "exon1_2_LibAmp_1",
+        "product_size": 0,
+        "right": {
+            "chr_end": 265,
+            "chr_start": 243,
+            "chromosome": "chr1",
+            "melting_temp": 57.98020807087107,
+            "seq": "AAGAATTTTCCCCAATGGTTGC"
+        },
+        "score": 0
+    },
+    {
+        "left": {
+            "chr_end": 78,
+            "chr_start": 55,
+            "chromosome": "chr1",
+            "melting_temp": 58.426100173219595,
+            "seq": "CTGTTCTGACAGTAGAAAGGCAT"
+        },
+        "pair": "exon1_2_LibAmp_2",
+        "product_size": 0,
+        "right": {
+            "chr_end": 265,
+            "chr_start": 242,
+            "chromosome": "chr1",
+            "melting_temp": 59.347613464584356,
+            "seq": "AAGAATTTTCCCCAATGGTTGCT"
+        },
+        "score": 0
+    },
+    {
+        "left": {
+            "chr_end": 78,
+            "chr_start": 55,
+            "chromosome": "chr1",
+            "melting_temp": 58.426100173219595,
+            "seq": "CTGTTCTGACAGTAGAAAGGCAT"
+        },
+        "pair": "exon1_2_LibAmp_3",
+        "product_size": 0,
+        "right": {
+            "chr_end": 265,
+            "chr_start": 243,
+            "chromosome": "chr1",
+            "melting_temp": 57.98020807087107,
+            "seq": "AAGAATTTTCCCCAATGGTTGC"
+        },
+        "score": 0
+    }
+]
+'''
+
+Flattened to a CSV table.
+'''
+pair,score,product_size,side,chromosome,chr_start,chr_end,seq,melting_temp
+exon1_2_LibAmp_0,0,0,left,chr1,55,77,CTGTTCTGACAGTAGAAAGGCA,58.004800503683725
+exon1_2_LibAmp_0,0,0,right,chr1,242,265,AAGAATTTTCCCCAATGGTTGCT,59.347613464584356
+exon1_2_LibAmp_1,0,0,left,chr1,55,77,CTGTTCTGACAGTAGAAAGGCA,58.004800503683725
+exon1_2_LibAmp_1,0,0,right,chr1,243,265,AAGAATTTTCCCCAATGGTTGC,57.98020807087107
+exon1_2_LibAmp_2,0,0,left,chr1,55,78,CTGTTCTGACAGTAGAAAGGCAT,58.426100173219595
+exon1_2_LibAmp_2,0,0,right,chr1,242,265,AAGAATTTTCCCCAATGGTTGCT,59.347613464584356
+exon1_2_LibAmp_3,0,0,left,chr1,55,78,CTGTTCTGACAGTAGAAAGGCAT,58.426100173219595
+exon1_2_LibAmp_3,0,0,right,chr1,243,265,AAGAATTTTCCCCAATGGTTGC,57.98020807087107
+'''
+
+
+
+
 ### iPCRess Standard Input File
 Standard file format input for iPCRess. If you wish to use iPCRess as a standalone, use this file format.
 Otherwise point iPCRess at the Primer3 output CSV.
@@ -367,3 +469,16 @@ exon1_2_LibAmp_1,exon1
 exon1_2_LibAmp_2,exon1
 exon1_2_LibAmp_3,exon1
 ```
+
+### Debugging with python debugger
+To debug with a local debugger, create a new python file to debug the functions of your choice.
+Below the imports write:
+'''
+os.chdir(r'/home/ubuntu/lims2-webapp-filesystem/user/targeton-designer')
+sys.path.insert(0, '')
+sys.path.insert(0, 'src/')
+'''
+This allows src and submodules inside src to be found.
+
+To debug with vscode, make sure the cwd in the debugger settings are pointed at targeton-designer.
+Additionally make sure the interpreter is pointed at the correct virtual environment (venv/bin/python).

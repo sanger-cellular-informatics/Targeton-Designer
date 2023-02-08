@@ -5,6 +5,7 @@ import re
 from os import path
 from warnings import warn
 from pybedtools import BedTool
+from typing import Tuple
 
 from utils.arguments_parser import ParsedInputArguments
 from utils.validate_files import validate_files
@@ -19,11 +20,11 @@ from utils.write_output_files import (
     DesignOutputData,
     IpcressOutputData,
     PrimerOutputData,
+    PrimerDesignerOutputData,
     SlicerOutputData,
     TargetonCSVData,
     ScoringOutputData,
 )
-from utils.exceptions import BadDesignOutputFieldWarning
 from slicer.slicer import Slicer
 from primer.primer3 import Primer3
 from ipcress.ipcress import Ipcress
@@ -57,7 +58,7 @@ def primer_command(
         fasta = '',
         prefix = '',
         existing_dir = ''
-    ) -> PrimerOutputData:
+    ) -> Tuple[PrimerOutputData, PrimerDesignerOutputData]:
 
     validate_files(fasta = fasta)
     p3_class = Primer3()
@@ -147,12 +148,12 @@ def design_command(args) -> DesignOutputData:
     slicer_result = slicer_command(args)
     primer_result, primer_designer_result = primer_command(primer_designer = primer_designer, fasta = slicer_result.fasta, existing_dir = slicer_result.dir)
     ipcress_result = ipcress_command(args, csv = primer_result.csv, existing_dir = slicer_result.dir)
-    targeton_csv = generate_targeton_csv(
+    targeton_result = generate_targeton_csv(
         ipcress_result.input_file, args['bed'], slicer_result.dir, dir_timestamped=True
     )
     scoring_output_path = path.join(slicer_result.dir, 'scoring_output.tsv')
     scoring_result = scoring_command(
-        ipcress_result.stnd, args['mismatch'], scoring_output_path, targeton_csv.csv
+        ipcress_result.stnd, args['mismatch'], scoring_output_path, targeton_result.csv
     )
     design_result = DesignOutputData(slicer_result.dir)
     # Slicer
@@ -169,14 +170,9 @@ def design_command(args) -> DesignOutputData:
     design_result.ipcress_output = ipcress_result.stnd
     design_result.ipcress_err = ipcress_result.err
     # Targeton CSV
-    design_result.targeton_csv = targeton_csv.csv
+    design_result.targeton_csv = targeton_result.csv
     # Scoring
     design_result.scoring_tsv = scoring_result.tsv
-    
-    field_list = slicer_result.fields() + primer_result.fields() + primer_designer_result.fields() + ipcress_result.fields()
-    missing_fields = [field for field in field_list if field not in design_result.fields()]
-    if missing_fields:
-        warn(f"Fields missing in design_result: {missing_fields}", BadDesignOutputFieldWarning)
         
     return design_result
 
