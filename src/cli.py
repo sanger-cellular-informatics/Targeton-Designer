@@ -72,12 +72,14 @@ def primer_command(
     return primer_result
 
 def primer_designer_command(
-        primers_file : str,
-        scoring_file : str,
-        primer_designer = PrimerDesigner(),
-        prefix = '',
-        existing_dir = ''
+    primers_file : str,
+    scoring_file : str,
+    primer_designer = PrimerDesigner(),
+    prefix = '',
+    existing_dir = ''
     ) -> PrimerDesignerOutputData:
+
+    validate_files(p3_csv = primers_file, score_tsv = scoring_file)
     
     primer_designer = prepare_primer_designer(primer_designer, primers_file, scoring_file)
     primer_designer_result = write_primer_designer_output(
@@ -197,6 +199,9 @@ def resolve_command(args):
 
         if command == 'primer_for_ipcress':
             primer_for_ipcress(fasta = args['fasta'], prefix = args['dir'], min = args['min'], max = args['max'])
+            
+        if command == 'primer_designer':
+            primer_designer_command(args['p3_csv'], args['score_tsv'], prefix = args['dir'])
 
         if command == 'ipcress':
             ipcress_command(args)

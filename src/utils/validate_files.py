@@ -70,11 +70,23 @@ def validate_p3_csv(p3_csv):
             'tm', 'gc_percent', 'penalty', 'self_any_th', 'self_end_th',
             'hairpin_th', 'end_stability'
         ]
-        if data.fieldnames != expected_cols:
-            raise FileFormatError('Unexpected columns in Primer3 CSV')
+        missing_fields = [field for field in expected_cols if field not in data.fieldnames]
+        if any(missing_fields):
+            raise FileFormatError(f'Unexpected columns in Primer3 CSV {missing_fields}')
+        
+def validate_score_tsv(tsv):
+    with open(tsv) as tsv_file:
+        data = csv.DictReader(tsv_file, delimiter='\t')
+        expected_cols = [
+            'Targeton', 'Primer pair', 'A/B/Total', '0', '1', '2',
+            '3',	'4', '5', '6', '7',	'8', '9', '10', 'WGE format', 'Score'
+        ]
+        missing_fields = [field for field in expected_cols if field not in data.fieldnames]
+        if any(missing_fields):
+            raise FileFormatError(f'Unexpected columns in Scoring TSV {missing_fields}')
 
 
-def validate_files(bed = '', fasta = '', txt = '', p3_csv = ''):
+def validate_files(bed = '', fasta = '', txt = '', p3_csv = '', score_tsv = ''):
     try:
         if bed:
             check_file_exists(bed)
@@ -91,6 +103,10 @@ def validate_files(bed = '', fasta = '', txt = '', p3_csv = ''):
         if p3_csv:
             check_file_exists(p3_csv)
             validate_p3_csv(p3_csv)
+        
+        if score_tsv:
+            check_file_exists(score_tsv)
+            validate_score_tsv(score_tsv)
 
     except ValueError as valErr:
         print('Error occurred while checking file content: {0}'.format(valErr))
