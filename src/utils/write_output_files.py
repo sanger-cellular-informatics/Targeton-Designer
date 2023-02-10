@@ -58,7 +58,6 @@ class DesignOutputData(OutputFilesData):
     ipcress_err: str = ''
     targeton_csv: str = ''
     scoring_tsv: str = ''
-    
 
 
 def timestamped_dir(prefix):

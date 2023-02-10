@@ -25,4 +25,3 @@ class IpcressError(Exception):
 
 class InputTypeError(Exception):
     pass
- 
