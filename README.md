@@ -471,9 +471,9 @@ exon1_2_LibAmp_3,exon1
 ```
 
 ### Debugging with python debugger
-To debug with a local debugger, create a new python file to debug the functions of your choice.
-Below the imports write:
+To debug with a local debugger, insert at the top of the file:
 '''
+import sys, os
 os.chdir(r'/home/ubuntu/lims2-webapp-filesystem/user/targeton-designer')
 sys.path.insert(0, '')
 sys.path.insert(0, 'src/')

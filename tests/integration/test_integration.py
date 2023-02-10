@@ -12,6 +12,7 @@ from cli import (
     primer_designer_command
 )
 from utils.arguments_parser import ParsedInputArguments
+from utils.write_output_files import DesignOutputData
 
 
 class TestSlicerIntegration(TestCase):
@@ -106,7 +107,10 @@ class TestPrimerDesignerIntegration(TestCase):
                 args = parsed_input.get_args()
 
                 # Act
-                result = primer_designer_command(args['p3_csv'], args['score_tsv'], prefix = args['dir'])
+                design_output_data = DesignOutputData(tmpdir)
+                design_output_data.p3_csv =  args['p3_csv'] 
+                design_output_data.scoring_tsv = args['score_tsv']
+                result = primer_designer_command(design_output_data, prefix = args['dir'])
                 path_json = Path(result.json)
                 path_csv = Path(result.csv)
 

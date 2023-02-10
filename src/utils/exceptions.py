@@ -22,4 +22,7 @@ class InvalidConfigError(Exception):
 
 class IpcressError(Exception):
     pass
+
+class InputTypeError(Exception):
+    pass
  
