@@ -1,8 +1,3 @@
-import sys, os
-os.chdir(r'/home/ubuntu/lims2-webapp-filesystem/user/targeton-designer')
-sys.path.insert(0, '')
-sys.path.insert(0, 'src/')
-
 import unittest
 
 from unittest.mock import patch
