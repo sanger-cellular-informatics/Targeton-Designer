@@ -1,3 +1,6 @@
+.ONESHELL:
+SHELL := /bin/bash
+
 VENV = venv
 PYTHON = $(VENV)/bin/python
 PIP = $(VENV)/bin/pip
@@ -51,7 +54,7 @@ install-python3.8-venv:
 	@sudo apt-get -y install python3.8-venv
 
 install-python3.8-dev: 
-	@if ! hash python3; then
+	@if [ "$(shell which python3)" = "" ]; then \
 		# Python3 not installed.
 		@echo "Installing python3.8-dev..."
 		@sudo apt-get -y install python3.8-dev
@@ -59,6 +62,7 @@ install-python3.8-dev:
 		PYTHONPATH = which python
 		ver=$(python3 -V 2>&1 | sed 's/.* \([0-9]\).\([0-9]\).*/\1\2/')
 		@if [ "${ver}" -ge "38" ]; then
+			@echo "Using existing python3.8..."
 			PYTHONPATH38 = which python3
 		else
 			@echo "Installing python3.8-dev..."
@@ -67,6 +71,7 @@ install-python3.8-dev:
 		fi
 		@sudo update-alternatives --install ${PYTHONPATH} python ${PYTHONPATH38} 2 
 		@sudo update-alternatives --config python 
+	fi
 
 install-libglib2.0-dev: 
 	@echo "Installing libglib2.0-dev..."
