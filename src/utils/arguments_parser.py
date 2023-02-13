@@ -80,6 +80,17 @@ def add_input_args(parser):
             'input for Primer Designer: point at a scoring TSV file. '
         ),
     )
+    parser.add_argument(
+        '--ipcress_file',
+        help='File containing output from Exonerate iPCRess',
+    )
+    parser.add_argument(
+        '--targeton_csv',
+        help=(
+            'CSV of primer pairs and corresponding targetons'
+            ' - adds targeton column to output'
+        ),
+    )
 
     # CONFIG
     parser.add_argument(
@@ -152,19 +163,9 @@ def add_input_args(parser):
         default='td_output',
     )
     parser.add_argument(
-        '--ipcress_file',
-        help='File containing output from Exonerate iPCRess',
-    )
-    parser.add_argument(
         '--output_tsv',
         help='Path for output TSV file',
     )
-    parser.add_argument(
-        '--targeton_csv',
-        help=(
-            'CSV of primer pairs and corresponding targetons'
-            ' - adds targeton column to output'
-        ),
-    )
+
 
     return parser

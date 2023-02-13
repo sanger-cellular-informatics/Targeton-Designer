@@ -79,8 +79,8 @@ class PrimerDesigner():
 
     def build_pair_classes(self, pairs: defaultdict(dict)) -> None:
         for pair_key, pair in pairs.items():
-            left = extract_primer_data(pair['F'])
-            right = extract_primer_data(pair['R'])
+            left = format_primer_data(pair['F'])
+            right = format_primer_data(pair['R'])
 
             pair_class = PrimerPair({
                 'pair' : pair_key,
@@ -150,7 +150,7 @@ class Primer():
         return vars(self)
 
 
-def extract_primer_data(primer_dict: dict) -> dict:
+def format_primer_data(primer_dict: dict) -> dict:
     record = {
         'chromosome' : primer_dict['chr'],
         'chr_start' : primer_dict['primer_start'],
