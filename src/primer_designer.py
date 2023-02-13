@@ -7,7 +7,7 @@ import json
 import csv
 import numpy as np
 from pathlib import Path
-from utils.file_system import read_csv_to_dict, read_tsv_to_dict
+from utils.file_system import read_csv_to_dict
 from utils.exceptions import InputTypeError
 from utils.write_output_files import DesignOutputData, PrimerDesignerOutputData, timestamped_dir
 
@@ -17,13 +17,13 @@ class PrimerDesigner():
         if self.validate_input(data):
             self.prepare_primer_designer(data)
 
-    def get_primer_pairs(self):
+    def get_primer_pairs(self) -> list:
         return self.primer_pairs
 
     def append_pair(self, pair):
         self.primer_pairs.append(pair)
         
-    def get_fields(self):
+    def get_fields(self) -> list:
         keys = []
         for sub_dict in self.to_list_dicts():
             keys.extend(list(sub_dict.keys()))
@@ -32,7 +32,7 @@ class PrimerDesigner():
     def dump_json(self, *args, **kwargs):
         json.dump(self.to_list_dicts(), *args, **kwargs)
     
-    def to_list_dicts(self):
+    def to_list_dicts(self) -> list:
         pair_dict_list = []
         for pair in self.get_primer_pairs():
             return_dict = pair._asdict()
@@ -48,7 +48,7 @@ class PrimerDesigner():
         else:
             raise InputTypeError("PrimerDesigner.from_dict expects a list of dicts or dict input.")
     
-    def flatten(self):
+    def flatten(self) -> list:
         flat_dict_list = []
         for pair in self.get_primer_pairs():
             return_dict = pair._asdict()
@@ -68,17 +68,17 @@ class PrimerDesigner():
         new_primer_designer.primer_pairs = [pair.copy() for pair in self.get_primer_pairs()]
         return new_primer_designer
     
-    def prepare_primer_designer(self, design_output_data: DesignOutputData) -> PrimerDesigner:
+    def prepare_primer_designer(self, design_output_data: DesignOutputData):
         if not self.validate_input(design_output_data):
             raise FileNotFoundError("Primer designer design output data not found in input.")
         
         primers = read_csv_to_dict(design_output_data.p3_csv)
-        scoring = read_tsv_to_dict(design_output_data.scoring_tsv)
+        scoring = read_csv_to_dict(design_output_data.scoring_tsv, delimiter='\t')
         scoring = [score for score in scoring if score['A/B/Total'] == 'Total']
         pairs = iterate_design(primers, scoring)
         self.build_pair_classes(pairs)
 
-    def build_pair_classes(self, pairs: defaultdict) -> PrimerDesigner:
+    def build_pair_classes(self, pairs: defaultdict(dict)):
         for pair_key, pair in pairs.items():
             left = extract_primer_data(pair['F'])
             right = extract_primer_data(pair['R'])
@@ -92,7 +92,7 @@ class PrimerDesigner():
 
             self.append_pair(pair_class)
             
-    def export_to_csv(self, fn : str, dir : str):
+    def export_to_csv(self, fn : str, dir : str) -> str:
         fn = Path(fn)
         if not fn.suffix:
             fn = fn.with_suffix(r'.csv')
@@ -103,9 +103,9 @@ class PrimerDesigner():
             writer.writeheader()
             writer.writerows(flat_dict_list)
             
-        return csv_path
+        return str(csv_path)
     
-    def export_to_json(self, fn : str, dir : str):
+    def export_to_json(self, fn : str, dir : str) -> str:
         fn = Path(fn)
         if not fn.suffix:
             fn = fn.with_suffix(r'.json')
@@ -113,7 +113,7 @@ class PrimerDesigner():
         with open(json_path, 'w') as f:
             self.dump_json(f, sort_keys=True, indent=4)
 
-        return json_path
+        return str(json_path)
     
     def write_output(
         self,
@@ -151,20 +151,20 @@ class PrimerPair():
         self.right = Primer(data['right'])
         self.product_size = self.get_product_size()
 
-    def get_paired_dict(self):
+    def get_paired_dict(self) -> dict:
         return vars(self)
     
     def get_fields(self):
         return list(self._asdict().keys())
     
-    def _asdict(self):
+    def _asdict(self) -> dict:
         return_dict = vars(self)
         for k,v in return_dict.items():
             if isinstance(v, Primer):
                 return_dict[k]=v._asdict()
         return return_dict
     
-    def get_product_size(self):
+    def get_product_size(self) -> int:
         starts = [int(self.left.chr_start), int(self.right.chr_start)]
         ends = [int(self.left.chr_end), int(self.right.chr_end)]
         product_size = int(np.max(ends) - np.min(starts))
@@ -186,10 +186,10 @@ class Primer():
     def __getitem__(self, item):
         return getattr(self, item)
     
-    def get_fields(self):
+    def get_fields(self) -> list:
         return list(self._asdict().keys())
     
-    def _asdict(self):
+    def _asdict(self) -> dict:
         return vars(self)
 
 

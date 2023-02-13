@@ -70,9 +70,8 @@ def validate_p3_csv(p3_csv):
             'tm', 'gc_percent', 'penalty', 'self_any_th', 'self_end_th',
             'hairpin_th', 'end_stability'
         ]
-        missing_fields = [field for field in expected_cols if field not in data.fieldnames]
-        if any(missing_fields):
-            raise FileFormatError(f'Unexpected columns in Primer3 CSV {missing_fields}')
+        if check_if_missing_fields(data, expected_cols):
+             raise FileFormatError(f'Unexpected columns in Primer3 CSV')
         
 def validate_score_tsv(tsv):
     with open(tsv) as tsv_file:
@@ -81,9 +80,8 @@ def validate_score_tsv(tsv):
             'Targeton', 'Primer pair', 'A/B/Total', '0', '1', '2',
             '3',	'4', '5', '6', '7',	'8', '9', '10', 'WGE format', 'Score'
         ]
-        missing_fields = [field for field in expected_cols if field not in data.fieldnames]
-        if any(missing_fields):
-            raise FileFormatError(f'Unexpected columns in Scoring TSV {missing_fields}')
+        if check_if_missing_fields(data, expected_cols):
+             raise FileFormatError(f'Unexpected columns in Scoring TSV')
 
 
 def validate_files(bed = '', fasta = '', txt = '', p3_csv = '', score_tsv = ''):
@@ -118,3 +116,12 @@ def validate_files(bed = '', fasta = '', txt = '', p3_csv = '', score_tsv = ''):
         print('Unexpected error occurred: {0}'.format(err))
 
     return
+
+def check_if_missing_fields(data: dict, fields: list) -> bool:
+    missing_fields = []
+    for field in fields:
+        if field not in data.fieldnames:
+            missing_fields.append(field)
+    if any(missing_fields):
+        return True
+    return False

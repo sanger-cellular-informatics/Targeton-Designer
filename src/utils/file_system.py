@@ -60,23 +60,12 @@ def write_to_text_file(dir_path, data, file_name):
     return file_path
 
 
-def read_csv_to_dict(csv_path):
+def read_csv_to_dict(csv_path, delimiter = ','):
     check_file_exists(csv_path)
     
     data = []
     with open(csv_path) as csv_file:
-        reader = csv.DictReader(csv_file, delimiter=',')
-        for row in reader:
-            data.append(row)
-     
-    return data
-
-def read_tsv_to_dict(tsv_path):
-    check_file_exists(tsv_path)
-    
-    data = []
-    with open(tsv_path) as tsv_file:
-        reader = csv.DictReader(tsv_file, delimiter='\t')
+        reader = csv.DictReader(csv_file, delimiter = delimiter)
         for row in reader:
             data.append(row)
      
