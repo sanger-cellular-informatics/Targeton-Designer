@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 import sys
 import re
 from os import path
@@ -46,7 +45,7 @@ def version_command():
 
 
 def slicer_command(args) -> SlicerOutputData:
-    validate_files(bed = args['bed'], fasta = args['fasta'])
+    validate_files(bed=args['bed'], fasta=args['fasta'])
     slicer = Slicer()
     slices = slicer.get_slices(args)
 
@@ -54,43 +53,44 @@ def slicer_command(args) -> SlicerOutputData:
 
 
 def primer_command(
-        fasta = '',
-        prefix = '',
-        existing_dir = ''
-    ) -> PrimerOutputData:
+    fasta='',
+    prefix='',
+    existing_dir=''
+) -> PrimerOutputData:
 
-    validate_files(fasta = fasta)
+    validate_files(fasta=fasta)
     p3_class = Primer3()
     primers = p3_class.get_primers(fasta)
 
     primer_result = write_primer_output(
-        primers = primers,
-        prefix = prefix,
-        existing_dir = existing_dir,
+        primers=primers,
+        prefix=prefix,
+        existing_dir=existing_dir,
     )
- 
+
     return primer_result
+
 
 def primer_designer_command(
     design_output_data : DesignOutputData,
-    primer_designer = PrimerDesigner(),
-    prefix = '',
-    existing_dir = ''
-    ) -> PrimerDesignerOutputData:
+    primer_designer=PrimerDesigner(),
+    prefix='',
+    existing_dir=''
+) -> PrimerDesignerOutputData:
 
-    validate_files(p3_csv = design_output_data.p3_csv, score_tsv = design_output_data.scoring_tsv)
-    
+    validate_files(p3_csv=design_output_data.p3_csv, score_tsv=design_output_data.scoring_tsv)
+
     primer_designer.prepare_primer_designer(design_output_data)
     primer_designer_result = write_primer_design_output(
         primer_designer,
-        prefix = prefix,
-        existing_dir = existing_dir,
+        prefix=prefix,
+        existing_dir=existing_dir,
     )
     return primer_designer_result
 
 
-def primer_for_ipcress(fasta = '', prefix = '', min = 0, max = 0):
-    primer_result = primer_command(fasta = fasta, prefix = prefix)
+def primer_for_ipcress(fasta='', prefix='', min=0, max=0):
+    primer_result = primer_command(fasta=fasta, prefix=prefix)
 
     adapter = Primer3ToIpcressAdapter()
     adapter.prepare_input(primer_result.csv, min, max, primer_result.dir)
@@ -111,18 +111,18 @@ def ipcress_command(params, csv='', existing_dir='') -> IpcressOutputData:
         ipcress_params['dir'] = existing_dir
 
     validate_files(
-        fasta = ipcress_params['fasta'],
-        txt = ipcress_params['primers'],
-        p3_csv = ipcress_params['p3_csv']
+        fasta=ipcress_params['fasta'],
+        txt=ipcress_params['primers'],
+        p3_csv=ipcress_params['p3_csv']
     )
 
     ipcress = Ipcress(ipcress_params)
     ipcress_result = ipcress.run()
 
     result = write_ipcress_output(
-        stnd = ipcress_result.stnd,
-        err = ipcress_result.err,
-        existing_dir = ipcress_params['dir']
+        stnd=ipcress_result.stnd,
+        err=ipcress_result.err,
+        existing_dir=ipcress_params['dir']
     )
     result.input_file = ipcress_result.input_file
 
@@ -153,8 +153,8 @@ def scoring_command(ipcress_output, mismatch, output_tsv, targeton_csv=None) -> 
 
 def design_command(args) -> DesignOutputData:
     slicer_result = slicer_command(args)
-    primer_result = primer_command(fasta = slicer_result.fasta, existing_dir = slicer_result.dir)
-    ipcress_result = ipcress_command(args, csv = primer_result.csv, existing_dir = slicer_result.dir)
+    primer_result = primer_command(fasta=slicer_result.fasta, existing_dir=slicer_result.dir)
+    ipcress_result = ipcress_command(args, csv=primer_result.csv, existing_dir=slicer_result.dir)
     targeton_result = generate_targeton_csv(
         ipcress_result.input_file, args['bed'], slicer_result.dir, dir_timestamped=True
     )
@@ -178,10 +178,10 @@ def design_command(args) -> DesignOutputData:
     # Scoring
     design_result.scoring_tsv = scoring_result.tsv
     # Primer Designer
-    primer_designer_result = primer_designer_command(design_result, existing_dir = slicer_result.dir)   
+    primer_designer_result = primer_designer_command(design_result, existing_dir=slicer_result.dir)
     design_result.pd_json = primer_designer_result.json
     design_result.pd_csv = primer_designer_result.csv
-    
+
     return design_result
 
 
@@ -195,16 +195,21 @@ def resolve_command(args):
             slicer_command(args)
 
         if command == 'primer':
-            primer_command(fasta = args['fasta'], prefix = args['dir'], args = args)
+            primer_command(fasta=args['fasta'], prefix=args['dir'], args=args)
 
         if command == 'primer_for_ipcress':
-            primer_for_ipcress(fasta = args['fasta'], prefix = args['dir'], min = args['min'], max = args['max'])
-            
+            primer_for_ipcress(
+                fasta=args['fasta'],
+                prefix=args['dir'],
+                min=args['min'], 
+                max=args['max']
+            )
+
         if command == 'primer_designer':
             design_output_data = DesignOutputData()
-            design_output_data.p3_csv =  args['p3_csv'] 
+            design_output_data.p3_csv = args['p3_csv']
             design_output_data.scoring_tsv = args['score_tsv']
-            primer_designer_command(design_output_data, prefix = args['dir'])
+            primer_designer_command(design_output_data, prefix=args['dir'])
 
         if command == 'ipcress':
             ipcress_command(args)

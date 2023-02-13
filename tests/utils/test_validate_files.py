@@ -289,7 +289,7 @@ class TestValidateFiles(TestCase):
             validate_p3_csv(test_arg)
 
         # assert
-        self.assertIn(expected,str(exception_context.exception))
+        self.assertIn(expected, str(exception_context.exception))
 
     def test_validate_p3_csv_correct_headers_success(self):
         # arrange
@@ -315,18 +315,20 @@ class TestValidateFiles(TestCase):
             validate_score_tsv(test_arg)
 
         # assert
-        self.assertIn(expected,str(exception_context.exception))
+        self.assertIn(expected, str(exception_context.exception))
 
     def test_validate_score_tsv_correct_headers_success(self):
         # arrange
         test_arg = '/scoring_output.tsv'
         headers = [
             'Targeton', 'Primer pair', 'A/B/Total', '0', '1', '2',
-            '3',	'4', '5', '6', '7',	'8', '9', '10', 'WGE format', 'Score'
+            '3', '4', '5', '6', '7', '8', '9', '10', 'WGE format', 'Score'
         ]
         self.fs.create_file('/scoring_output.tsv', contents='\t'.join(headers))
 
         # act
         validate_score_tsv(test_arg)
+
+
 if __name__ == '__main__':
     unittest.main()

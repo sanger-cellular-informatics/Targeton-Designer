@@ -1,5 +1,6 @@
 import argparse
 
+
 class ParsedInputArguments:
     def __init__(self) -> None:
         self.arguments = []
@@ -35,18 +36,21 @@ class ParsedInputArguments:
     def get_args(self) -> str:
         return self.arguments
 
+
 def positive_int(arg: str) -> int:
     if int(arg) <= 0:
         raise argparse.ArgumentTypeError('Parameter must be above 0')
     return int(arg)
+
 
 def len_positive_int(arg: str) -> int:
     if 10000 < int(arg) or int(arg) <= 0:
         raise argparse.ArgumentTypeError('Parameter must be above 0 and below 10000')
     return int(arg)
 
+
 def add_input_args(parser):
-    ### INPUTS
+    # INPUTS
     parser.add_argument(
         '--bed',
         help='BED file containing coords, strand and IDs',
@@ -76,8 +80,8 @@ def add_input_args(parser):
             'input for Primer Designer: point at a scoring TSV file. '
         ),
     )
-    
-    ### CONFIG
+
+    # CONFIG
     parser.add_argument(
         '-f5', '--flank_5',
         help='how far to extend region at 5\' end (default 50nt)',
@@ -140,7 +144,7 @@ def add_input_args(parser):
         type=positive_int,
     )
 
-    ### OUTPUTS
+    # OUTPUTS
     parser.add_argument(
         '-d', '--dir',
         help='output directory name to be timestamped (default \'td_output\')',

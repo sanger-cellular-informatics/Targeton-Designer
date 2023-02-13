@@ -11,6 +11,7 @@ from Bio.Seq import Seq
 from utils.exceptions import Primer3Error, InvalidConfigError
 from utils.file_system import parse_json
 
+
 class Primer3:
     def __init__(self) -> None:
         pass
@@ -100,7 +101,7 @@ class Primer3:
     def build_primer_loci(
         self, primer, key, design, primer_details, slice_data: dict
     ) -> dict:
-        
+
         primer_field = primer_details['field']
 
         primer[primer_field] = design[key]
@@ -223,7 +224,7 @@ class Primer3:
         return strands[slice_strand][side]
 
     @staticmethod
-    def get_config_file(default_config: str, user_config:str) -> str:
+    def get_config_file(default_config: str, user_config: str) -> str:
         config_file_path = user_config if os.path.exists(user_config) else default_config
 
         return config_file_path

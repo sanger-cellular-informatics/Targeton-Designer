@@ -53,7 +53,7 @@ class TestPrimerIntegration(TestCase):
                 args = parsed_input.get_args()
 
                 # Act
-                primer_result = primer_command(fasta = args["fasta"], prefix = args["dir"])
+                primer_result = primer_command(fasta=args["fasta"], prefix=args["dir"])
                 path_primer_bed = Path(primer_result.bed)
                 path_primer_csv = Path(primer_result.csv)
 
@@ -90,7 +90,6 @@ class TestIPcressIntegration(TestCase):
                 self.assertGreater(path_input.stat().st_size, 0)
                 self.assertGreater(path_stnd.stat().st_size, 0)
                 self.assertGreater(path_err.stat().st_size, 0)
-                
 
 
 class TestPrimerDesignerIntegration(TestCase):
@@ -108,9 +107,9 @@ class TestPrimerDesignerIntegration(TestCase):
 
                 # Act
                 design_output_data = DesignOutputData(tmpdir)
-                design_output_data.p3_csv =  args['p3_csv'] 
+                design_output_data.p3_csv = args['p3_csv']
                 design_output_data.scoring_tsv = args['score_tsv']
-                result = primer_designer_command(design_output_data, prefix = args['dir'])
+                result = primer_designer_command(design_output_data, prefix=args['dir'])
                 path_json = Path(result.json)
                 path_csv = Path(result.csv)
 

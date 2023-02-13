@@ -4,6 +4,7 @@ import os
 
 from utils.file_system import read_csv_to_dict
 
+
 class Primer3ToIpcressAdapter:
     def __init__(self):
         self.primer_data = []
