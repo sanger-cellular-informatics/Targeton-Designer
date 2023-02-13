@@ -136,8 +136,8 @@ def generate_targeton_csv(ipcress_input, bed, dirname, dir_timestamped=False) ->
         ipcress_input_data = fh.read()
     for region in bed:
         # corresponding primer pair names will be prefixed by region name
-        primer_region = re.finditer(rf'^{region.name}\S*', ipcress_input_data, re.MULTILINE)
-        for primer_pair in primer_region:
+        primer_pair_iterator = re.finditer(rf'^{region.name}\S*', ipcress_input_data, re.MULTILINE)
+        for primer_pair in primer_pair_iterator:
             csv_rows.append([primer_pair.group(), region.name])
     return write_targeton_csv(csv_rows, dirname, dir_timestamped)
 
