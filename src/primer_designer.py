@@ -79,13 +79,13 @@ class PrimerDesigner():
         self.build_pair_classes(pairs)
 
     def build_pair_classes(self, pairs: defaultdict) -> PrimerDesigner:
-        for pair in pairs:
-            left = extract_primer_data(pairs[pair]['F'])
-            right = extract_primer_data(pairs[pair]['R'])
+        for pair_key, pair in pairs.items():
+            left = extract_primer_data(pair['F'])
+            right = extract_primer_data(pair['R'])
 
             pair_class = PrimerPair({
-                'pair' : pair,
-                'score' : pairs[pair]['score'],
+                'pair' : pair_key,
+                'score' : pair['score'],
                 'left' : Primer(left),
                 'right' : Primer(right),
             })
@@ -193,17 +193,16 @@ class Primer():
         return vars(self)
 
 
-def extract_primer_data(data: dict) -> dict:
+def extract_primer_data(primer_dict: dict) -> dict:
     record = {
-        'chromosome' : data['chr'],
-        'chr_start' : data['primer_start'],
-        'chr_end' : data['primer_end'],
-        'seq' : data['sequence'],
-        'melting_temp' : data['tm'],
+        'chromosome' : primer_dict['chr'],
+        'chr_start' : primer_dict['primer_start'],
+        'chr_end' : primer_dict['primer_end'],
+        'seq' : primer_dict['sequence'],
+        'melting_temp' : primer_dict['tm'],
     }
-
     # For ipcress compatibility.
-    del data['chr']
+    del primer_dict['chr']
 
     return record
         
