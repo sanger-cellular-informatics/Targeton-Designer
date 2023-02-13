@@ -16,6 +16,7 @@ from utils.write_output_files import (
     write_ipcress_output,
     write_targeton_csv,
     write_scoring_output,
+    write_primer_design_output,
     DesignOutputData,
     IpcressOutputData,
     PrimerOutputData,
@@ -80,7 +81,8 @@ def primer_designer_command(
     validate_files(p3_csv = design_output_data.p3_csv, score_tsv = design_output_data.scoring_tsv)
     
     primer_designer.prepare_primer_designer(design_output_data)
-    primer_designer_result = primer_designer.write_output(
+    primer_designer_result = write_primer_design_output(
+        primer_designer,
         prefix = prefix,
         existing_dir = existing_dir,
     )

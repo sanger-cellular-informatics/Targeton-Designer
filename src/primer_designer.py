@@ -1,16 +1,13 @@
 from __future__ import annotations
 
 from typing import Any, List
-from os import path
 from collections import defaultdict
 import re
 import json
-import csv
 import numpy as np
-from pathlib import Path
 from utils.file_system import read_csv_to_dict
 from utils.exceptions import InputTypeError
-from utils.write_output_files import DesignOutputData, PrimerDesignerOutputData, timestamped_dir
+from utils.write_output_files import DesignOutputData
 
 class PrimerDesigner():
     def __init__(self, data = DesignOutputData('')) -> None:
@@ -92,49 +89,6 @@ class PrimerDesigner():
             })
 
             self.append_pair(pair_class)
-            
-    def export_to_csv(self, fn : str, dir : str) -> str:
-        fn = Path(fn)
-        if not fn.suffix:
-            fn = fn.with_suffix(r'.csv')
-        csv_path = dir/fn
-        flat_dict_list = self.flatten()
-        with open(csv_path, 'w') as f:
-            writer = csv.DictWriter(f, fieldnames=list(flat_dict_list[0].keys()))
-            writer.writeheader()
-            writer.writerows(flat_dict_list)
-            
-        return str(csv_path)
-    
-    def export_to_json(self, fn : str, dir : str) -> str:
-        fn = Path(fn)
-        if not fn.suffix:
-            fn = fn.with_suffix(r'.json')
-        json_path = dir/fn
-        with open(json_path, 'w') as f:
-            self.dump_json(f, sort_keys=True, indent=4)
-
-        return str(json_path)
-    
-    def write_output(
-        self,
-        prefix = '',
-        existing_dir = '',
-        ) -> PrimerDesignerOutputData:
-        
-        if existing_dir:
-            dir = existing_dir
-        else:
-            dir = timestamped_dir(prefix)
-
-        result = PrimerDesignerOutputData(dir)
-        fn=r'primer_designer'
-        result.csv = self.export_to_csv(fn, dir)
-        result.json = self.export_to_json(fn, dir)
-        result.dir = dir
-        print(f'Primer Designer files saved:{result.csv}, {result.json}')
-
-        return result
             
     @staticmethod
     def validate_input(data : DesignOutputData, needed_fields = ["p3_csv", "scoring_tsv"]) -> bool:

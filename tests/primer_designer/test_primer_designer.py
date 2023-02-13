@@ -7,7 +7,7 @@ from unittest import TestCase
 from unittest.mock import patch
 from tempfile import TemporaryDirectory
 from src.primer_designer import PrimerDesigner, Primer, PrimerPair, iterate_design, extract_primer_data, map_primer_data
-from src.utils.write_output_files import DesignOutputData
+from src.utils.write_output_files import DesignOutputData, export_primer_design_to_csv, export_primer_design_to_json, write_primer_design_output
 from collections import defaultdict
 
 
@@ -263,7 +263,7 @@ class TestPrimerDesignerClass(TestCase):
         fn = 'test.csv'
         with TemporaryDirectory() as tmpdir:
             # Act
-            path = Path(self.example_filled_primer_designer.export_to_csv(fn, tmpdir))
+            path = Path(export_primer_design_to_csv(self.example_filled_primer_designer, fn, tmpdir))
             # Assert
             self.assertTrue(path.is_file())
             self.assertGreater(path.stat().st_size, 0)
@@ -273,17 +273,16 @@ class TestPrimerDesignerClass(TestCase):
         fn = 'test.json'
         with TemporaryDirectory() as tmpdir:
             # Act
-            path = Path(self.example_filled_primer_designer.export_to_json(fn, tmpdir))
+            path = Path(export_primer_design_to_json(self.example_filled_primer_designer, fn, tmpdir))
             # Assert
             self.assertTrue(path.is_file())
             self.assertGreater(path.stat().st_size, 0)
     
     def test_write_output(self):
         # Arrange
-        fn = 'test.json'
         with TemporaryDirectory() as tmpdir:
             # Act
-            primer_designer_output = self.example_filled_primer_designer.write_output(existing_dir = tmpdir)
+            primer_designer_output = write_primer_design_output(self.example_filled_primer_designer, existing_dir = tmpdir)
             path_csv = Path(primer_designer_output.json)
             path_json = Path(primer_designer_output.csv)
             # Assert

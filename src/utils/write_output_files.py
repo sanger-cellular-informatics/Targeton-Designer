@@ -1,10 +1,16 @@
-from os import path
+from __future__ import annotations
+
 import csv
 
+from typing import TYPE_CHECKING
+from os import path
+from pathlib import Path
 from dataclasses import dataclass
 from pybedtools import BedTool
 from utils.file_system import write_to_text_file, FolderCreator
 from utils.exceptions import OutputError, FolderCreatorError
+if TYPE_CHECKING:
+    from src.primer_designer import PrimerDesigner
 
 
 @dataclass
@@ -224,5 +230,49 @@ def write_scoring_output(scoring, output_tsv) -> ScoringOutputData:
     result.tsv = output_tsv
 
     print(f'Scoring file saved: {output_tsv}')
+
+    return result
+
+            
+def export_primer_design_to_csv(primer_designer : PrimerDesigner, fn : str, dir : str) -> str:
+    fn = Path(fn)
+    if not fn.suffix:
+        fn = fn.with_suffix(r'.csv')
+    csv_path = dir/fn
+    flat_dict_list = primer_designer.flatten()
+    with open(csv_path, 'w') as f:
+        writer = csv.DictWriter(f, fieldnames=list(flat_dict_list[0].keys()))
+        writer.writeheader()
+        writer.writerows(flat_dict_list)
+        
+    return str(csv_path)
+
+def export_primer_design_to_json(primer_designer : PrimerDesigner, fn : str, dir : str) -> str:
+    fn = Path(fn)
+    if not fn.suffix:
+        fn = fn.with_suffix(r'.json')
+    json_path = dir/fn
+    with open(json_path, 'w') as f:
+        primer_designer.dump_json(f, sort_keys=True, indent=4)
+
+    return str(json_path)
+
+def write_primer_design_output(
+    primer_designer : PrimerDesigner,
+    prefix = '',
+    existing_dir = '',
+    ) -> PrimerDesignerOutputData:
+    
+    if existing_dir:
+        dir = existing_dir
+    else:
+        dir = timestamped_dir(prefix)
+
+    result = PrimerDesignerOutputData(dir)
+    fn=r'primer_designer'
+    result.csv = export_primer_design_to_csv(primer_designer, fn, dir)
+    result.json = export_primer_design_to_json(primer_designer, fn, dir)
+    result.dir = dir
+    print(f'Primer Designer files saved:{result.csv}, {result.json}')
 
     return result
