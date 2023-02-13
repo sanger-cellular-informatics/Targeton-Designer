@@ -7,7 +7,7 @@ from utils.file_system import check_file_exists
 
 
 def validate_bed_format(bed):
-    with open(bed) as file:
+    with open(bed, newline='') as file:
         tsv_file = csv.reader(file, delimiter='\t')
 
         line_num = 1
@@ -25,7 +25,7 @@ def validate_fasta_format(fasta):
 
 
 def validate_bed_content(bed):
-    with open(bed) as file:
+    with open(bed, newline='') as file:
         tsv_file = csv.reader(file, delimiter='\t')
         line_num = 1
         for line in tsv_file:
@@ -63,7 +63,7 @@ def validate_bed_content(bed):
 
 
 def validate_p3_csv(p3_csv):
-    with open(p3_csv) as csv_file:
+    with open(p3_csv, newline='') as csv_file:
         data = csv.DictReader(csv_file, delimiter=',')
         expected_cols = [
             'primer', 'sequence', 'chr', 'primer_start', 'primer_end',
@@ -71,18 +71,18 @@ def validate_p3_csv(p3_csv):
             'hairpin_th', 'end_stability'
         ]
         if check_if_missing_fields(data, expected_cols):
-            raise FileFormatError(f'Unexpected columns in Primer3 CSV')
+            raise FileFormatError(f'Missing columns in Primer3 CSV')
 
 
 def validate_score_tsv(tsv):
-    with open(tsv) as tsv_file:
+    with open(tsv, newline='') as tsv_file:
         data = csv.DictReader(tsv_file, delimiter='\t')
         expected_cols = [
             'Targeton', 'Primer pair', 'A/B/Total', '0', '1', '2',
             '3', '4', '5', '6', '7', '8', '9', '10', 'WGE format', 'Score'
         ]
         if check_if_missing_fields(data, expected_cols):
-            raise FileFormatError(f'Unexpected columns in Scoring TSV')
+            raise FileFormatError(f'Missing columns in Scoring TSV')
 
 
 def validate_files(bed='', fasta='', txt='', p3_csv='', score_tsv=''):

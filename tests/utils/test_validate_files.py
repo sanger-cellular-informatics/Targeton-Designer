@@ -282,7 +282,7 @@ class TestValidateFiles(TestCase):
         # arrange
         test_arg = '/not_p3_output.csv'
         self.fs.create_file('/not_p3_output.csv', contents='Incorrect,Headers')
-        expected = 'Unexpected columns in Primer3 CSV'
+        expected = 'Missing columns in Primer3 CSV'
 
         # act
         with self.assertRaises(FileFormatError) as exception_context:
@@ -308,7 +308,7 @@ class TestValidateFiles(TestCase):
         # arrange
         test_arg = '/not_score_output.tsv'
         self.fs.create_file('/not_score_output.tsv', contents='Incorrect\tHeaders')
-        expected = 'Unexpected columns in Scoring TSV'
+        expected = 'Missing columns in Scoring TSV'
 
         # act
         with self.assertRaises(FileFormatError) as exception_context:

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import re
 
 from typing import TYPE_CHECKING
 from os import path
@@ -109,7 +110,7 @@ def write_slicer_fasta_output(dir, slices):
     return fasta_path
 
 
-def export_slices_to_csv(slices, dir):
+def export_primers_to_csv(slices, dir):
     PRIMER3_OUTPUT_CSV = 'p3_output.csv'
 
     headers = ['primer', 'sequence', 'chr', 'primer_start', 'primer_end', 'tm', 'gc_percent',
@@ -118,7 +119,7 @@ def export_slices_to_csv(slices, dir):
 
     csv_path = path.join(dir, PRIMER3_OUTPUT_CSV)
 
-    with open(csv_path, "w") as p3_fh:
+    with open(csv_path, "w", newline='') as p3_fh:
         p3_out = csv.DictWriter(p3_fh, fieldnames=headers)
         p3_out.writeheader()
         p3_out.writerows(rows)
@@ -190,7 +191,7 @@ def write_primer_output(
     bed_rows = construct_bed_format(primers)
 
     result.bed = export_to_bed(bed_rows, dir)
-    result.csv = export_slices_to_csv(primers, dir)
+    result.csv = export_primers_to_csv(primers, dir)
     result.dir = dir
 
     print('Primer files saved:', result.bed, result.csv)
@@ -217,7 +218,17 @@ def write_ipcress_output(stnd='', err='', existing_dir='') -> IpcressOutputData:
     return result
 
 
-def write_targeton_csv(csv_rows, dirname, dir_timestamped=False) -> TargetonCSVData:
+def write_targeton_csv(ipcress_input, bed, dirname, dir_timestamped=False) -> TargetonCSVData:
+    bed = BedTool(bed)
+    csv_rows = []
+    with open(ipcress_input) as fh:
+        ipcress_input_data = fh.read()
+    for region in bed:
+        # corresponding primer pair names will be prefixed by region name
+        primer_pair_iterator = re.finditer(rf'^{region.name}\S*', ipcress_input_data, re.MULTILINE)
+        for primer_pair in primer_pair_iterator:
+            csv_rows.append([primer_pair.group(), region.name])
+            
     TARGETON_CSV = 'targetons.csv'
 
     if not dir_timestamped:
@@ -245,13 +256,13 @@ def write_scoring_output(scoring, output_tsv) -> ScoringOutputData:
     return result
 
 
-def export_primer_design_to_csv(primer_designer : PrimerDesigner, fn : str, dir : str) -> str:
-    fn = Path(fn)
-    if not fn.suffix:
-        fn = fn.with_suffix(r'.csv')
-    csv_path = dir / fn
+def export_primer_design_to_csv(primer_designer : PrimerDesigner, filename : str, dir : str) -> str:
+    filename = Path(filename)
+    if not filename.suffix:
+        filename = filename.with_suffix(r'.csv')
+    csv_path = dir / filename
     flat_dict_list = primer_designer.flatten()
-    with open(csv_path, 'w') as f:
+    with open(csv_path, 'w', newline='') as f:
         writer = csv.DictWriter(f, fieldnames=list(flat_dict_list[0].keys()))
         writer.writeheader()
         writer.writerows(flat_dict_list)
@@ -259,11 +270,11 @@ def export_primer_design_to_csv(primer_designer : PrimerDesigner, fn : str, dir 
     return str(csv_path)
 
 
-def export_primer_design_to_json(primer_designer : PrimerDesigner, fn : str, dir : str) -> str:
-    fn = Path(fn)
-    if not fn.suffix:
-        fn = fn.with_suffix(r'.json')
-    json_path = dir / fn
+def export_primer_design_to_json(primer_designer : PrimerDesigner, filename : str, dir : str) -> str:
+    filename = Path(filename)
+    if not filename.suffix:
+        filename = filename.with_suffix(r'.json')
+    json_path = dir / filename
     with open(json_path, 'w') as f:
         primer_designer.dump_json(f, sort_keys=True, indent=4)
 
@@ -282,9 +293,9 @@ def write_primer_design_output(
         dir = timestamped_dir(prefix)
 
     result = PrimerDesignerOutputData(dir)
-    fn = r'primer_designer'
-    result.csv = export_primer_design_to_csv(primer_designer, fn, dir)
-    result.json = export_primer_design_to_json(primer_designer, fn, dir)
+    filename = r'primer_designer'
+    result.csv = export_primer_design_to_csv(primer_designer, filename, dir)
+    result.json = export_primer_design_to_json(primer_designer, filename, dir)
     result.dir = dir
     print(f'Primer Designer files saved:{result.csv}, {result.json}')
 

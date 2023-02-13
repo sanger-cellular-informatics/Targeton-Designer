@@ -2,9 +2,7 @@
 import sys
 import re
 from os import path
-from warnings import warn
 from pybedtools import BedTool
-from typing import Tuple
 
 from utils.arguments_parser import ParsedInputArguments
 from utils.validate_files import validate_files
@@ -16,13 +14,13 @@ from utils.write_output_files import (
     write_targeton_csv,
     write_scoring_output,
     write_primer_design_output,
-    DesignOutputData,
-    IpcressOutputData,
-    PrimerOutputData,
-    PrimerDesignerOutputData,
     SlicerOutputData,
+    PrimerOutputData,
+    IpcressOutputData,
     TargetonCSVData,
     ScoringOutputData,
+    PrimerDesignerOutputData,
+    DesignOutputData,
 )
 from slicer.slicer import Slicer
 from primer.primer3 import Primer3
@@ -129,19 +127,6 @@ def ipcress_command(params, csv='', existing_dir='') -> IpcressOutputData:
     return result
 
 
-def generate_targeton_csv(ipcress_input, bed, dirname, dir_timestamped=False) -> TargetonCSVData:
-    bed = BedTool(bed)
-    csv_rows = []
-    with open(ipcress_input) as fh:
-        ipcress_input_data = fh.read()
-    for region in bed:
-        # corresponding primer pair names will be prefixed by region name
-        primer_pair_iterator = re.finditer(rf'^{region.name}\S*', ipcress_input_data, re.MULTILINE)
-        for primer_pair in primer_pair_iterator:
-            csv_rows.append([primer_pair.group(), region.name])
-    return write_targeton_csv(csv_rows, dirname, dir_timestamped)
-
-
 def scoring_command(ipcress_output, mismatch, output_tsv, targeton_csv=None) -> ScoringOutputData:
     scoring = Scoring(ipcress_output, mismatch, targeton_csv)
     scoring.add_scores_to_df()
@@ -155,7 +140,7 @@ def design_command(args) -> DesignOutputData:
     slicer_result = slicer_command(args)
     primer_result = primer_command(fasta=slicer_result.fasta, existing_dir=slicer_result.dir)
     ipcress_result = ipcress_command(args, csv=primer_result.csv, existing_dir=slicer_result.dir)
-    targeton_result = generate_targeton_csv(
+    targeton_result = write_targeton_csv(
         ipcress_result.input_file, args['bed'], slicer_result.dir, dir_timestamped=True
     )
     scoring_output_path = path.join(slicer_result.dir, 'scoring_output.tsv')

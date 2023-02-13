@@ -2,6 +2,7 @@ import csv
 import json
 from os import path, makedirs
 from datetime import datetime
+from typing import List
 
 from utils.exceptions import FolderCreatorError, FileFormatError
 
@@ -62,11 +63,11 @@ def write_to_text_file(dir_path, data, file_name):
     return file_path
 
 
-def read_csv_to_dict(csv_path, delimiter=','):
+def read_csv_to_list_dict(csv_path, delimiter=',') -> List[dict]:
     check_file_exists(csv_path)
 
     data = []
-    with open(csv_path) as csv_file:
+    with open(csv_path, newline='') as csv_file:
         reader = csv.DictReader(csv_file, delimiter=delimiter)
         for row in reader:
             data.append(row)

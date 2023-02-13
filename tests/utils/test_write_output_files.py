@@ -6,8 +6,7 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 from unittest.mock import patch, Mock
 from freezegun import freeze_time
 
-from src.cli import generate_targeton_csv
-from src.utils.write_output_files import write_scoring_output
+from src.utils.write_output_files import write_scoring_output, write_targeton_csv
 
 
 class TestWriteOutputFiles(TestCase):
@@ -34,7 +33,7 @@ class TestWriteOutputFiles(TestCase):
         expected_file = 'test_dir/td_310123/targetons.csv'
 
         # act
-        result = generate_targeton_csv(
+        result = write_targeton_csv(
             '/test_ipcress_input.txt', '/test.bed', 'test_dir/td_310123', dir_timestamped=True
         )
 
@@ -52,7 +51,7 @@ class TestWriteOutputFiles(TestCase):
         expected_file = 'test_dir/td_20230131000000000000/targetons.csv'
 
         # act
-        result = generate_targeton_csv('/test_ipcress_input.txt', '/test.bed', 'test_dir')
+        result = write_targeton_csv('/test_ipcress_input.txt', '/test.bed', 'test_dir')
 
         # assert
         self.assertTrue(path.exists(expected_file))
@@ -72,7 +71,7 @@ class TestWriteOutputFiles(TestCase):
         )
 
         # act
-        generate_targeton_csv('test_ipcress_input.txt', 'test.bed', 'test_dir', True)
+        write_targeton_csv('test_ipcress_input.txt', 'test.bed', 'test_dir', True)
         with open('/test_dir/targetons.csv') as f:
             actual = f.read()
 

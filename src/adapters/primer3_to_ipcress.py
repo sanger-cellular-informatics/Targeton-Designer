@@ -2,7 +2,7 @@ from collections import defaultdict
 import re
 import os
 
-from utils.file_system import read_csv_to_dict
+from utils.file_system import read_csv_to_list_dict
 
 
 class Primer3ToIpcressAdapter:
@@ -28,7 +28,7 @@ class Primer3ToIpcressAdapter:
 
     @staticmethod
     def extract_primer_data(p3_csv):
-        csv_obj = read_csv_to_dict(p3_csv)
+        csv_obj = read_csv_to_list_dict(p3_csv)
         primer_data = defaultdict(lambda: defaultdict(dict))
 
         for row in csv_obj:

@@ -5,7 +5,7 @@ from collections import defaultdict
 import re
 import json
 import numpy as np
-from utils.file_system import read_csv_to_dict
+from utils.file_system import read_csv_to_list_dict
 from utils.exceptions import InputTypeError
 from utils.write_output_files import DesignOutputData
 
@@ -71,8 +71,8 @@ class PrimerDesigner():
         if not self.validate_input(design_output_data):
             raise FileNotFoundError("Primer designer design output data not found in input.")
 
-        primers = read_csv_to_dict(design_output_data.p3_csv)
-        scoring = read_csv_to_dict(design_output_data.scoring_tsv, delimiter='\t')
+        primers = read_csv_to_list_dict(design_output_data.p3_csv)
+        scoring = read_csv_to_list_dict(design_output_data.scoring_tsv, delimiter='\t')
         scoring = [score for score in scoring if score['A/B/Total'] == 'Total']
         pairs = iterate_design(primers, scoring)
         self.build_pair_classes(pairs)
