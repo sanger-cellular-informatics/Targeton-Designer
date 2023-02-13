@@ -3,6 +3,7 @@ import re
 import os
 from collections import defaultdict
 from _collections_abc import dict_keys
+from typing import Tuple, List
 
 from Bio import SeqIO
 from Bio.Seq import Seq
@@ -11,20 +12,20 @@ from utils.exceptions import Primer3Error, InvalidConfigError
 from utils.file_system import parse_json
 
 class Primer3:
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
         self.user_config = './config/primer3.config.json'
         self.default_config = './src/primer/primer3.config.json'
 
-    def get_primers(self, fasta: str) -> list:
+    def get_primers(self, fasta: str) -> List[dict]:
         config = self.get_config_data(self.default_config, self.user_config)
 
         result = self.primer3_runner(fasta=fasta, config=config)
 
         return result
 
-    def primer3_runner(self, fasta: str, config: dict) -> list:
+    def primer3_runner(self, fasta: str, config: dict) -> List[dict]:
         print('Reading FA file')
         design_inputs = self.read_input_fasta(fasta)
         print('Designing primers for the region')
@@ -34,7 +35,7 @@ class Primer3:
 
         return slices
 
-    def read_input_fasta(self, fasta: str):
+    def read_input_fasta(self, fasta: str) -> List[dict]:
         with open(fasta) as fasta_data:
             rows = SeqIO.parse(fasta_data, 'fasta')
 
@@ -54,7 +55,7 @@ class Primer3:
 
         return slices
 
-    def primer3_design(self, primer3_inputs: list, primer3_config: dict) -> list:
+    def primer3_design(self, primer3_inputs: list, primer3_config: dict) -> List[dict]:
         designs = []
         for slice_data in primer3_inputs:
             primer3_input = slice_data['p3_input']
@@ -65,7 +66,7 @@ class Primer3:
 
         return designs
 
-    def locate_primers(self, designs: list) -> list:
+    def locate_primers(self, designs: list) -> List[dict]:
         slice_designs = []
 
         for slice_data in designs:
@@ -80,7 +81,7 @@ class Primer3:
 
         return slice_designs
 
-    def build_primers_dict(self, design, primer_keys: dict_keys, slice_data: dict) -> defaultdict:
+    def build_primers_dict(self, design, primer_keys: dict_keys, slice_data: dict) -> defaultdict(dict):
         primers = defaultdict(dict)
 
         for key in primer_keys:
@@ -129,7 +130,7 @@ class Primer3:
         return config_data
 
     @staticmethod
-    def name_primers(primer_details, strand):
+    def name_primers(primer_details, strand) -> str:
         fwd_primers = {
             'left': 'LibAmpF',
             'right': 'LibAmpR',
@@ -148,7 +149,7 @@ class Primer3:
         return primer_name
 
     @staticmethod
-    def capture_primer_details(primer_name):
+    def capture_primer_details(primer_name) -> dict:
         match = re.search(r'^(primer_(left|right)_(\d+))(\_(\S+))?$', primer_name.lower())
         result = {}
         if match:
@@ -168,7 +169,7 @@ class Primer3:
         return result
 
     @staticmethod
-    def construct_slice_coord_dict(match):
+    def construct_slice_coord_dict(match) -> dict:
         coord_data = {
             'name'  : match.group(1),
             'start' : match.group(4),
@@ -179,7 +180,7 @@ class Primer3:
         return coord_data
 
     @staticmethod
-    def calculate_primer_coords(side, coords, slice_start):
+    def calculate_primer_coords(side, coords, slice_start) -> Tuple[int, int]:
         slice_start = int(slice_start)
         left_flank = {
             'start': slice_start,
@@ -203,7 +204,7 @@ class Primer3:
         return start, end
 
     @staticmethod
-    def determine_primer_strands(side, slice_strand):
+    def determine_primer_strands(side, slice_strand) -> str:
         positive = {
             'left': '+',
             'right': '-',
@@ -228,7 +229,7 @@ class Primer3:
         return config_file_path
 
     @staticmethod
-    def revcom_reverse_primer(seq, strand):
+    def revcom_reverse_primer(seq, strand) -> Seq:
         seq_obj = Seq(seq)
 
         if strand == '-':

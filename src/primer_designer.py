@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import Any, List
 from os import path
 from collections import defaultdict
 import re
@@ -12,34 +13,34 @@ from utils.exceptions import InputTypeError
 from utils.write_output_files import DesignOutputData, PrimerDesignerOutputData, timestamped_dir
 
 class PrimerDesigner():
-    def __init__(self, data = DesignOutputData('')):
+    def __init__(self, data = DesignOutputData('')) -> None:
         self.primer_pairs = []
         if self.validate_input(data):
             self.prepare_primer_designer(data)
 
-    def get_primer_pairs(self) -> list:
+    def get_primer_pairs(self) -> List[PrimerPair]:
         return self.primer_pairs
 
-    def append_pair(self, pair):
+    def append_pair(self, pair) -> None:
         self.primer_pairs.append(pair)
         
-    def get_fields(self) -> list:
+    def get_fields(self) -> List[str]:
         keys = []
         for sub_dict in self.to_list_dicts():
             keys.extend(list(sub_dict.keys()))
         return list(set(keys))
     
-    def dump_json(self, *args, **kwargs):
+    def dump_json(self, *args, **kwargs) -> None:
         json.dump(self.to_list_dicts(), *args, **kwargs)
     
-    def to_list_dicts(self) -> list:
+    def to_list_dicts(self) -> List[defaultdict(dict)]:
         pair_dict_list = []
         for pair in self.get_primer_pairs():
             return_dict = pair._asdict()
             pair_dict_list.append(return_dict)
         return pair_dict_list
     
-    def from_dict(self, data_dict):
+    def from_dict(self, data_dict) -> None:
         if isinstance(data_dict, list):
             for element in data_dict:
                 self.append_pair(PrimerPair(element))
@@ -48,7 +49,7 @@ class PrimerDesigner():
         else:
             raise InputTypeError("PrimerDesigner.from_dict expects a list of dicts or dict input.")
     
-    def flatten(self) -> list:
+    def flatten(self) -> List[dict]:
         flat_dict_list = []
         for pair in self.get_primer_pairs():
             return_dict = pair._asdict()
@@ -68,7 +69,7 @@ class PrimerDesigner():
         new_primer_designer.primer_pairs = [pair.copy() for pair in self.get_primer_pairs()]
         return new_primer_designer
     
-    def prepare_primer_designer(self, design_output_data: DesignOutputData):
+    def prepare_primer_designer(self, design_output_data: DesignOutputData) -> None:
         if not self.validate_input(design_output_data):
             raise FileNotFoundError("Primer designer design output data not found in input.")
         
@@ -78,7 +79,7 @@ class PrimerDesigner():
         pairs = iterate_design(primers, scoring)
         self.build_pair_classes(pairs)
 
-    def build_pair_classes(self, pairs: defaultdict(dict)):
+    def build_pair_classes(self, pairs: defaultdict(dict)) -> None:
         for pair_key, pair in pairs.items():
             left = extract_primer_data(pair['F'])
             right = extract_primer_data(pair['R'])
@@ -144,7 +145,7 @@ class PrimerDesigner():
         return data_check
 
 class PrimerPair():
-    def __init__(self, data : dict):
+    def __init__(self, data : dict) -> None:
         self.pair = data['pair']
         self.score = data['score']
         self.left = Primer(data['left'])
@@ -154,7 +155,7 @@ class PrimerPair():
     def get_paired_dict(self) -> dict:
         return vars(self)
     
-    def get_fields(self):
+    def get_fields(self) -> List[str]:
         return list(self._asdict().keys())
     
     def _asdict(self) -> dict:
@@ -176,17 +177,17 @@ class PrimerPair():
                 
 
 class Primer():
-    def __init__(self, primer_data: dict):
+    def __init__(self, primer_data: dict) -> None:
         self.chromosome = primer_data['chromosome']
         self.chr_start = primer_data['chr_start']
         self.chr_end = primer_data['chr_end']
         self.seq = primer_data['seq']
         self.melting_temp = primer_data['melting_temp']
     
-    def __getitem__(self, item):
+    def __getitem__(self, item) -> Any:
         return getattr(self, item)
     
-    def get_fields(self) -> list:
+    def get_fields(self) -> List[str]:
         return list(self._asdict().keys())
     
     def _asdict(self) -> dict:
