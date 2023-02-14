@@ -321,7 +321,7 @@ Creates a data structure of LIST_PAIRS->PRIMER_PAIR->PRIMER
 Currently output as both a JSON and CSV.
 
 As a nested structure JSON.
-'''[
+```[
     {
         "left": {
             "chr_end": 77,
@@ -399,10 +399,10 @@ As a nested structure JSON.
         "score": 0
     }
 ]
-'''
+```
 
 Flattened to a CSV table.
-'''
+```
 pair,score,product_size,side,chromosome,chr_start,chr_end,seq,melting_temp
 exon1_2_LibAmp_0,0,0,left,chr1,55,77,CTGTTCTGACAGTAGAAAGGCA,58.004800503683725
 exon1_2_LibAmp_0,0,0,right,chr1,242,265,AAGAATTTTCCCCAATGGTTGCT,59.347613464584356
@@ -412,7 +412,7 @@ exon1_2_LibAmp_2,0,0,left,chr1,55,78,CTGTTCTGACAGTAGAAAGGCAT,58.426100173219595
 exon1_2_LibAmp_2,0,0,right,chr1,242,265,AAGAATTTTCCCCAATGGTTGCT,59.347613464584356
 exon1_2_LibAmp_3,0,0,left,chr1,55,78,CTGTTCTGACAGTAGAAAGGCAT,58.426100173219595
 exon1_2_LibAmp_3,0,0,right,chr1,243,265,AAGAATTTTCCCCAATGGTTGC,57.98020807087107
-'''
+```
 
 
 
@@ -472,12 +472,12 @@ exon1_2_LibAmp_3,exon1
 
 ### Debugging with python debugger
 To debug with a local debugger, insert at the top of the file:
-'''
+```
 import sys, os
 os.chdir(r'/home/ubuntu/lims2-webapp-filesystem/user/targeton-designer')
 sys.path.insert(0, '')
 sys.path.insert(0, 'src/')
-'''
+```
 This allows src and submodules inside src to be found.
 
 To debug with vscode, make sure the cwd in the debugger settings are pointed at targeton-designer.
