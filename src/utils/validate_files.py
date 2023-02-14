@@ -77,10 +77,7 @@ def validate_p3_csv(p3_csv):
 def validate_score_tsv(tsv):
     with open(tsv, newline='') as tsv_file:
         data = csv.DictReader(tsv_file, delimiter='\t')
-        expected_cols = [
-            'Targeton', 'Primer pair', 'A/B/Total', '0', '1', '2',
-            '3', '4', '5', '6', '7', '8', '9', '10', 'WGE format', 'Score'
-        ]
+        expected_cols = ['Targeton', 'Primer pair', 'A/B/Total', 'WGE format', 'Score']
         if check_if_missing_fields(data, expected_cols):
             raise FileFormatError(f'Missing columns in Scoring TSV')
 
