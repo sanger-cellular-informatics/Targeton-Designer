@@ -6,7 +6,7 @@ from pathlib import Path
 from unittest import TestCase
 from unittest.mock import patch
 from tempfile import TemporaryDirectory
-from src.primer_designer import PrimerDesigner, Primer, PrimerPair, iterate_design, extract_primer_data, map_primer_data
+from src.primer_designer import PrimerDesigner, Primer, PrimerPair, iterate_design, format_primer_data, map_primer_data
 from src.utils.write_output_files import DesignOutputData, export_primer_design_to_csv, export_primer_design_to_json, write_primer_design_output
 from collections import defaultdict
 
@@ -334,12 +334,12 @@ class TestPrimerDesignerClass(TestCase):
         # Assert
         self.assertDictEqual(test_pairs, example_pairs)
 
-    def test_extract_primer_data(self):
+    def test_format_primer_data(self):
         # Arrange
         example_primer_data = self.example_dict_primer_left
         # Act
         # L == F
-        test_primer_data = extract_primer_data(
+        test_primer_data = format_primer_data(
             self.example_iter_pairs_dict[self.example_pair_key]['F'])
         # Assert
         self.assertDictEqual(test_primer_data, example_primer_data)
