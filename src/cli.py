@@ -200,7 +200,7 @@ def resolve_command(args):
             ipcress_command(args)
 
         if command == 'generate_targeton_csv':
-            generate_targeton_csv(args['primers'], args['bed'], args['dir'])
+            write_targeton_csv(args['primers'], args['bed'], args['dir'])
 
         if command == 'scoring':
             scoring_command(
