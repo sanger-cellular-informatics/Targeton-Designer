@@ -1,3 +1,8 @@
+import sys, os
+os.chdir(r'/home/ubuntu/lims2-webapp-filesystem/user/targeton-designer')
+sys.path.insert(0, '')
+sys.path.insert(0, 'src/')
+
 import unittest
 import json
 
@@ -6,10 +11,11 @@ from pathlib import Path
 from unittest import TestCase
 from unittest.mock import patch
 from tempfile import TemporaryDirectory
-from src.primer_designer import PrimerDesigner, Primer, PrimerPair, iterate_design, format_primer_data, map_primer_data
+from src.primer_designer import PrimerDesigner, Primer, PrimerPair, translate_dict, iterate_design, map_primer_data
 from src.utils.write_output_files import DesignOutputData, export_primer_design_to_csv, export_primer_design_to_json, write_primer_design_output
 from collections import defaultdict
 
+VERSION = '01'
 
 # Test classes
 # PrimerDesigner
@@ -33,47 +39,57 @@ class TestPrimerDesignerClass(TestCase):
             'chr_start' : '55',
             'chr_end' : '77',
             'seq' : 'CTGTTCTGACAGTAGAAAGGCA',
-            'melting_temp' : '58.004800503683725'
+            'melting_temp' : '58.004800503683725',
+            'gc_content': '45.45454545454545', 
         }
         self.example_dict_primer_right = {
             'chromosome' : 'chr1',
             'chr_start' : '242',
             'chr_end' : '265',
             'seq' : 'AAGAATTTTCCCCAATGGTTGCT',
-            'melting_temp' : '59.347613464584356'
+            'melting_temp' : '59.347613464584356',
+            'gc_content': '39.130434782608695', 
         }
         self.example_primer_pair_dict = {
             'pair'  : 'exon1_2_LibAmp_0',
             'score' : '0.0',
             'left' : self.example_dict_primer_left,
             'right' : self.example_dict_primer_right,
-            'product_size' : 210
+            'product_size' : 210,
+            'targeton' : 'exon1',
+            'version': VERSION,
         }
         self.example_primer_pair = PrimerPair(self.example_primer_pair_dict)
-        self.example_filled_primer_designer = PrimerDesigner()
-        self.example_filled_primer_designer.from_dict(self.example_primer_pair_dict)
-        self.example_flat_dict = [{
-            'pair': 'exon1_2_LibAmp_0',
-            'score': '0.0',
-            'product_size': 210,
-            'side': 'left',
-            'chromosome': 'chr1',
-            'chr_start': '55',
-            'chr_end': '77',
-            'seq': 'CTGTTCTGACAGTAGAAAGGCA',
-            'melting_temp': '58.004800503683725'
-        },
+        self.example_filled_primer_designer = PrimerDesigner(self.example_primer_pair_dict)
+        self.example_flat_dict = [
             {
-            'pair': 'exon1_2_LibAmp_0',
-            'score': '0.0',
-            'product_size': 210,
-            'side': 'right',
-            'chromosome': 'chr1',
-            'chr_start': '242',
-            'chr_end': '265',
-            'seq': 'AAGAATTTTCCCCAATGGTTGCT',
-            'melting_temp': '59.347613464584356'
-        }
+                'pair': 'exon1_2_LibAmp_0',
+                'score': '0.0', 
+                'product_size': 210, 
+                'targeton': 'exon1',
+                'version': '01', 
+                'side': 'left', 
+                'chromosome': 'chr1', 
+                'chr_start': '55',
+                'chr_end': '77',
+                'seq': 'CTGTTCTGACAGTAGAAAGGCA', 
+                'melting_temp': '58.004800503683725',
+                'gc_content': '45.45454545454545'
+            }, 
+            {
+                'pair': 'exon1_2_LibAmp_0',
+                'score': '0.0', 
+                'product_size': 210,
+                'targeton': 'exon1',
+                'version': '01',
+                'side': 'right', 
+                'chromosome': 'chr1',
+                'chr_start': '242',
+                'chr_end': '265', 
+                'seq': 'AAGAATTTTCCCCAATGGTTGCT',
+                'melting_temp': '59.347613464584356', 
+                'gc_content': '39.130434782608695'
+            }
         ]
         self.example_primers = [
             {'primer': 'exon1_2_LibAmpF_0', 'sequence': 'CTGTTCTGACAGTAGAAAGGCA', 'chr': 'chr1',
@@ -117,23 +133,55 @@ class TestPrimerDesignerClass(TestCase):
             '7': '0', '8': '0', '9': '0', '10': '0',
             'WGE format': "{'0': 1, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '10': 0}",
             'Score': '0.0'}
-        self.example_iter_pairs_dict = defaultdict(dict, {
-            'exon1_2_LibAmp_0': {
-                'F': {
-                    'primer': 'exon1_2_LibAmpF_0', 'sequence': 'CTGTTCTGACAGTAGAAAGGCA', 'chr': 'chr1', 'primer_start': '55',
-                    'primer_end': '77', 'tm': '58.004800503683725', 'gc_percent': '45.45454545454545', 'penalty': '3.9951994963162747',
-                    'self_any_th': '1.588400990154355', 'self_end_th': '0.0', 'hairpin_th': '46.57005916211301', 'end_stability': '4.75'
-                },
-                'score': '0.0',
-                'R': {
-                    'primer': 'exon1_2_LibAmpR_0', 'sequence': 'AAGAATTTTCCCCAATGGTTGCT', 'chr': 'chr1', 'primer_start': '242',
-                    'primer_end': '265', 'tm': '59.347613464584356', 'gc_percent': '39.130434782608695', 'penalty': '3.652386535415644',
-                    'self_any_th': '0.0', 'self_end_th': '0.0', 'hairpin_th': '34.76817642661916', 'end_stability': '3.91'
+        self.example_iter_pairs_dict = defaultdict(
+            dict, 
+            {
+                'exon1_2_LibAmp_0': {
+                        'F': {
+                            'primer': 'exon1_2_LibAmpF_0',
+                            'sequence': 'CTGTTCTGACAGTAGAAAGGCA',
+                            'chr': 'chr1',
+                            'primer_start': '55', 
+                            'primer_end': '77', 
+                            'tm': '58.004800503683725', 
+                            'gc_percent': '45.45454545454545', 
+                            'penalty': '3.9951994963162747', 
+                            'self_any_th': '1.588400990154355', 
+                            'self_end_th': '0.0',
+                            'hairpin_th': '46.57005916211301', 
+                            'end_stability': '4.75'
+                        },
+                        'version': '01',
+                        'pair': 'exon1_2_LibAmp_0', 
+                        'score': '0.0', 
+                        'targeton': 'exon1',
+                        'R': {
+                            'primer': 'exon1_2_LibAmpR_0',
+                            'sequence': 'AAGAATTTTCCCCAATGGTTGCT',
+                            'chr': 'chr1',
+                            'primer_start': '242',
+                            'primer_end': '265', 
+                            'tm': '59.347613464584356',
+                            'gc_percent': '39.130434782608695', 
+                            'penalty': '3.652386535415644',
+                            'self_any_th': '0.0',
+                            'self_end_th': '0.0',
+                            'hairpin_th': '34.76817642661916',
+                            'end_stability': '3.91'
+                        }
                 }
             }
-        }
         )
         self.example_pair_key = 'exon1_2_LibAmp_0'
+        self.example_fields = [
+            'pair',
+            'score',
+            'left',
+            'right',
+            'product_size',
+            'targeton',
+            'version',
+        ]
 
     def create_files(self, dir):
         scoring_path = dir / Path(self.scoring_output_tsv_path)
@@ -169,13 +217,7 @@ class TestPrimerDesignerClass(TestCase):
 
     def test_get_fields(self):
         # Arrange
-        example_fields = [
-            'pair',
-            'score',
-            'left',
-            'right',
-            'product_size'
-        ]
+        example_fields = self.example_fields
         example_fields.sort()
         # Act
         test_fields = self.example_filled_primer_designer.get_fields()
@@ -227,7 +269,7 @@ class TestPrimerDesignerClass(TestCase):
         self.assertListEqual(copied_primer_designer.to_list_dicts(),
                              example_primer_designer.to_list_dicts())
 
-    def test_prepare_primer_designer(self):
+    def test_from_design_output(self):
         # Arrange
         with TemporaryDirectory() as tmpdir:
             p3_path, scoring_path = self.create_files(tmpdir)
@@ -236,24 +278,47 @@ class TestPrimerDesignerClass(TestCase):
             example_design_output_data.scoring_tsv = scoring_path
             # Act
             test_primer_designer = PrimerDesigner()
-            test_primer_designer.prepare_primer_designer(example_design_output_data)
+            test_primer_designer.from_design_output(example_design_output_data)
         # Assert
-        self.assertListEqual(test_primer_designer.to_list_dicts(),
-                             self.example_filled_primer_designer.to_list_dicts())
+        self.assertListEqual(
+            test_primer_designer.to_list_dicts(),
+            self.example_filled_primer_designer.to_list_dicts()
+        )
+        
+    def test_from_dict(self):
+        # Arrange
+        example_primer_designer = self.example_filled_primer_designer
+        # Act
+        test_primer_designer = PrimerDesigner()
+        test_primer_designer.from_dict(self.example_primer_pair_dict)
+        # Assert
+        self.assertListEqual(
+            test_primer_designer.to_list_dicts(),
+            example_primer_designer.to_list_dicts()
+        )
 
     def test__init__(self):
         # Arrange
+        example_primer_designer = self.example_filled_primer_designer
         with TemporaryDirectory() as tmpdir:
             p3_path, scoring_path = self.create_files(tmpdir)
             example_design_output_data = DesignOutputData(tmpdir)
-            example_design_output_data.p3_csv = p3_path
-            example_design_output_data.scoring_tsv = scoring_path
+            example_design_output_data.p3_csv = str(p3_path)
+            example_design_output_data.scoring_tsv = str(scoring_path)
             # Act
-            test_primer_designer = PrimerDesigner(data=example_design_output_data)
+            test_output_primer_designer = PrimerDesigner(data=example_design_output_data)
+        test_dict_primer_designer = PrimerDesigner()
+        test_dict_primer_designer.from_dict(self.example_primer_pair_dict)
         # Assert
         self.assertListEqual(PrimerDesigner().get_primer_pairs(), [])  # Empty call
-        self.assertListEqual(test_primer_designer.to_list_dicts(),
-                             self.example_filled_primer_designer.to_list_dicts())  # Data supplied call
+        self.assertListEqual(
+            test_output_primer_designer.to_list_dicts(),
+            example_primer_designer.to_list_dicts()
+        )  # OutputData supplied call
+        self.assertListEqual(
+            test_dict_primer_designer.to_list_dicts(),
+            example_primer_designer.to_list_dicts()
+        )  # Dict supplied call
 
     def test_build_pair_classes(self):
         # Arrange
@@ -313,17 +378,17 @@ class TestPrimerDesignerClass(TestCase):
     def test_validate_input(self):
         # Assert
         # Missing all fields
-        self.assertFalse(PrimerDesigner().validate_input(DesignOutputData('')))
+        self.assertFalse(PrimerDesigner().validate_file_input(DesignOutputData('')))
         with TemporaryDirectory() as tmpdir:
             # Missing data fields
             example_design_output_data = DesignOutputData(tmpdir)
-            self.assertFalse(PrimerDesigner().validate_input(example_design_output_data))
+            self.assertFalse(PrimerDesigner().validate_file_input(example_design_output_data))
             # Missing scoring
             example_design_output_data.p3_csv = self.p3_output_csv_path
-            self.assertFalse(PrimerDesigner().validate_input(example_design_output_data))
+            self.assertFalse(PrimerDesigner().validate_file_input(example_design_output_data))
             # All present should pass
             example_design_output_data.scoring_tsv = self.scoring_output_tsv_path
-            self.assertTrue(PrimerDesigner().validate_input(example_design_output_data))
+            self.assertTrue(PrimerDesigner().validate_file_input(example_design_output_data))
 
 # Functions
     def test_iterate_design(self):
@@ -333,16 +398,6 @@ class TestPrimerDesignerClass(TestCase):
         test_pairs = iterate_design(self.example_primers, [self.example_scoring_total_dict])
         # Assert
         self.assertDictEqual(test_pairs, example_pairs)
-
-    def test_format_primer_data(self):
-        # Arrange
-        example_primer_data = self.example_dict_primer_left
-        # Act
-        # L == F
-        test_primer_data = format_primer_data(
-            self.example_iter_pairs_dict[self.example_pair_key]['F'])
-        # Assert
-        self.assertDictEqual(test_primer_data, example_primer_data)
 
     def test_map_primer_data(self):
         # Arrange
@@ -364,24 +419,36 @@ class TestPrimerPairClass(TestCase):
             'chr_start' : '55',
             'chr_end' : '77',
             'seq' : 'CTGTTCTGACAGTAGAAAGGCA',
-            'melting_temp' : '58.004800503683725'
+            'melting_temp' : '58.004800503683725',
+            'gc_content': '45.45454545454545', 
         }
         self.example_dict_primer_right = {
             'chromosome' : 'chr1',
             'chr_start' : '242',
             'chr_end' : '265',
             'seq' : 'AAGAATTTTCCCCAATGGTTGCT',
-            'melting_temp' : '59.347613464584356'
+            'melting_temp' : '59.347613464584356',
+            'gc_content': '39.130434782608695', 
         }
         self.example_primer_pair_dict = {
             'pair'  : 'exon1_2_LibAmp_0',
             'score' : '0.0',
             'left' : self.example_dict_primer_left,
             'right' : self.example_dict_primer_right,
-            'product_size' : 210
+            'product_size' : 210,
+            'targeton' : 'exon1',
+            'version': VERSION,
         }
         self.example_primer_pair = PrimerPair(self.example_primer_pair_dict)
-        self.example_fields = ['pair', 'score', 'left', 'right', 'product_size']
+        self.example_fields = [
+            'pair',
+            'score',
+            'left',
+            'right',
+            'product_size',
+            'targeton',
+            'version',
+        ]
         self.example_product_size = 210
 
     def test__init__(self):
@@ -403,8 +470,10 @@ class TestPrimerPairClass(TestCase):
     def test_get_fields(self):
         # Arrange
         example_fields = self.example_fields
+        example_fields.sort()
         # Act
         test_fields = self.example_primer_pair.get_fields()
+        test_fields.sort()
         # Assert
         self.assertListEqual(test_fields, example_fields)
 
@@ -435,39 +504,86 @@ class TestPrimerPairClass(TestCase):
 # Primer class
 
 
-class TestPrimerPairClass(TestCase):
+class TestPrimerClass(TestCase):
     def setUp(self):
+        self.example_dict_primer_left_raw = {
+            'primer': 'exon1_2_LibAmpF_0', 
+            'sequence': 'CTGTTCTGACAGTAGAAAGGCA', 
+            'chr': 'chr1',
+            'primer_start': '55', 
+            'primer_end': '77', 
+            'tm': '58.004800503683725',
+            'gc_percent': '45.45454545454545', 
+            'penalty': '3.9951994963162747',
+            'self_any_th': '1.588400990154355',
+            'self_end_th': '0.0',
+            'hairpin_th': '46.57005916211301', 
+            'end_stability': '4.75'
+        }
+        self.example_primer_left = Primer(self.example_dict_primer_left_raw)
         self.example_dict_primer_left = {
             'chromosome' : 'chr1',
             'chr_start' : '55',
             'chr_end' : '77',
             'seq' : 'CTGTTCTGACAGTAGAAAGGCA',
-            'melting_temp' : '58.004800503683725'
+            'melting_temp' : '58.004800503683725',
+            'gc_content': '45.45454545454545', 
         }
-        self.example_dict_primer_right = {
-            'chromosome' : 'chr1',
-            'chr_start' : '242',
-            'chr_end' : '265',
-            'seq' : 'AAGAATTTTCCCCAATGGTTGCT',
-            'melting_temp' : '59.347613464584356'
-        }
-        self.example_primer = Primer(self.example_dict_primer_left)
-        self.example_fields = ['chromosome', 'chr_start', 'chr_end', 'seq', 'melting_temp']
+        self.example_fields = ['chromosome', 'chr_start', 'chr_end', 'seq', 'melting_temp', 'gc_content']
         self.example_item_chromosome = 'chr1'
-
+        self.example_scoring_total_dict = {
+            'Targeton': 'exon1', 'Primer pair': 'exon1_2_LibAmp_0', 'A/B/Total': 'Total',
+            '0': '1', '1': '0', '2': '0', '3': '0', '4': '0', '5': '0', '6': '0',
+            '7': '0', '8': '0', '9': '0', '10': '0',
+            'WGE format': "{'0': 1, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '10': 0}",
+            'Score': '0.0'}
+        
     def test__init__(self):
         # Arrange
-        example_primer = self.example_primer
+        example_primer = self.example_primer_left
         # Act
+        test_raw_primer = Primer(self.example_dict_primer_left_raw)
         test_primer = Primer(self.example_dict_primer_left)
         # Assert
         self.assertDictEqual(test_primer._asdict(), example_primer._asdict())
+        self.assertDictEqual(test_raw_primer._asdict(), example_primer._asdict())
+    
+    def test_assign_data(self):
+        # Arrange
+        example_primer = self.example_primer_left
+        # Act
+        test_raw_primer = Primer(dict())
+        test_raw_primer_fail = Primer(dict())
+        test_primer = Primer(dict())
+        test_raw_primer.assign_data(self.example_dict_primer_left_raw, fields=self.example_fields)
+        test_raw_primer_fail.assign_data(self.example_dict_primer_left_raw)
+        test_primer.assign_data(self.example_dict_primer_left)
+        # Assert
+        self.assertDictEqual(test_primer._asdict(), example_primer._asdict())
+        self.assertDictEqual(test_raw_primer._asdict(), example_primer._asdict())
+        self.assertFalse(test_raw_primer_fail._asdict() == example_primer._asdict())
 
+    def test_translate_dict(self):
+        # Arrange
+        example_primer_data = self.example_dict_primer_left
+        translation_dict = {
+            'chromosome' : 'chr',
+            'chr_start' : 'primer_start',
+            'chr_end' : 'primer_end',
+            'seq' : 'sequence',
+            'melting_temp' : 'tm',
+            'gc_content' : 'gc_percent',
+        }
+        # Act
+        test_primer_data = translate_dict(self.example_dict_primer_left_raw, translation_dict=translation_dict, fields=self.example_fields)
+        # Assert
+        self.assertDictEqual(test_primer_data, example_primer_data)
+        
     def test__getitem__(self):
         # Arrange
         example_item = self.example_item_chromosome
         # Act
-        test_item = self.example_primer.__getitem__('chromosome')
+        test_item = self.example_primer_left.__getitem__('chromosome')
         # Assert
         self.assertEqual(test_item, example_item)
 
@@ -475,7 +591,7 @@ class TestPrimerPairClass(TestCase):
         # Arrange
         example_fields = self.example_fields
         # Act
-        test_fields = self.example_primer.get_fields()
+        test_fields = self.example_primer_left.get_fields()
         # Assert
         self.assertListEqual(test_fields, example_fields)
 
@@ -483,7 +599,7 @@ class TestPrimerPairClass(TestCase):
         # Arrange
         example_dict = self.example_dict_primer_left
         # Act
-        test_dict = self.example_primer._asdict()
+        test_dict = self.example_primer_left._asdict()
         # Assert
         self.assertDictEqual(test_dict, example_dict)
 

@@ -1,3 +1,8 @@
+import sys, os
+os.chdir(r'/home/ubuntu/lims2-webapp-filesystem/user/targeton-designer')
+sys.path.insert(0, '')
+sys.path.insert(0, 'src/')
+
 import unittest
 import sys
 
@@ -99,6 +104,7 @@ class TestPrimerDesignerIntegration(TestCase):
 
     def test_primer_designer_output(self):
         with TemporaryDirectory() as tmpdir:
+            tmpdir = r'./tests/integration/fixtures'
             # Arrange
             # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
             with patch.object(sys, 'argv', ["./designer.sh", "primer_designer", "--score_tsv", self.scoring_output_tsv_path, "--dir", tmpdir, "--p3_csv", self.p3_output_csv_path]):

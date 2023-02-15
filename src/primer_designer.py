@@ -1,20 +1,21 @@
 from __future__ import annotations
 
-from typing import Any, List
+from typing import Any, List, Tuple
 from collections import defaultdict
 import re
 import json
 import numpy as np
-from utils.file_system import read_csv_to_list_dict
-from utils.exceptions import InputTypeError
-from utils.write_output_files import DesignOutputData
+from src.utils.file_system import read_csv_to_list_dict
+from src.utils.exceptions import InputTypeError
+from src.utils.write_output_files import DesignOutputData
 
+VERSION = '01'
 
 class PrimerDesigner():
-    def __init__(self, data=DesignOutputData('')) -> None:
+    def __init__(self, data: Tuple[DesignOutputData, dict, List[dict]] = dict()) -> None:
         self.primer_pairs = []
-        if self.validate_input(data):
-            self.prepare_primer_designer(data)
+        if data:
+            self.process_input(data)
 
     def get_primer_pairs(self) -> List[PrimerPair]:
         return self.primer_pairs
@@ -67,10 +68,7 @@ class PrimerDesigner():
         new_primer_designer.primer_pairs = [pair.copy() for pair in self.get_primer_pairs()]
         return new_primer_designer
 
-    def prepare_primer_designer(self, design_output_data: DesignOutputData) -> None:
-        if not self.validate_input(design_output_data):
-            raise FileNotFoundError("Primer designer design output data not found in input.")
-
+    def from_design_output(self, design_output_data: DesignOutputData) -> None:
         primers = read_csv_to_list_dict(design_output_data.p3_csv)
         scoring = read_csv_to_list_dict(design_output_data.scoring_tsv, delimiter='\t')
         scoring = [score for score in scoring if score['A/B/Total'] == 'Total']
@@ -78,38 +76,106 @@ class PrimerDesigner():
         self.build_pair_classes(pairs)
 
     def build_pair_classes(self, pairs: defaultdict(dict)) -> None:
-        for pair_key, pair in pairs.items():
-            left = format_primer_data(pair['F'])
-            right = format_primer_data(pair['R'])
-
-            pair_class = PrimerPair({
-                'pair' : pair_key,
-                'score' : pair['score'],
-                'left' : Primer(left),
-                'right' : Primer(right),
-            })
-
+        for _, pair in pairs.items():
+            pair_class = PrimerPair(pair)
             self.append_pair(pair_class)
-
+    
+    def process_input(self, data: Tuple[DesignOutputData, dict, List[dict]]) -> bool:
+        if isinstance(data, (dict, list)):
+            data_check = self.validate_dict_input(data)
+            if data_check:
+                self.from_dict(data)
+            else:
+                raise InputTypeError("PrimerDesigner class input dict (or list of dicts) doesn't contain needed fields.")
+        elif isinstance(data, DesignOutputData):
+            data_check = self.validate_file_input(data)
+            if data_check:
+                self.from_design_output(data)
+            else:
+                raise InputTypeError("PrimerDesigner class input DesignOutputData doesn't contain needed fields.")
+        else:
+            raise InputTypeError("PrimerDesigner class expects data input to be DesignOutputData or dict (or list of dicts).")
+                   
+    
     @staticmethod
-    def validate_input(data : DesignOutputData, needed_fields=["p3_csv", "scoring_tsv"]) -> bool:
+    def validate_file_input(data: DesignOutputData, needed_fields=["p3_csv", "scoring_tsv"]) -> bool:
         data_check = True
         for field in needed_fields:
             if not getattr(data, field):
                 data_check = False
+                
         return data_check
+    
+    def validate_dict_input(
+        self, 
+        data: Tuple[dict,
+        List[dict]], 
+        expected_structure = {
+            'pair'  : str,
+            'score' : str,
+            'left' : dict,
+            'right' : dict,
+            'product_size' : int,
+            'targeton' : str,
+            'version': str,
+        }) -> bool:
+        data_check = True
+        if isinstance(data, list):
+            for element in data:
+                self.validate_dict_input(element)
+        elif isinstance(data, dict):
+            for key, type in expected_structure.items():
+                if key in data:
+                    if isinstance(data[key], type):
+                        if key == 'left' or key == 'right':
+                            expected_primer_structure = {
+                                'chromosome' : str,
+                                'chr_start' : str,
+                                'chr_end' : str,
+                                'seq' : str,
+                                'melting_temp' : str,
+                                'gc_content': str, 
+                            }
+                            data_check = self.validate_dict_input(data[key], expected_structure=expected_primer_structure)
+                    else:
+                        return False
+                else:
+                    return False
+        else:
+            return False
+                
+        return data_check
+
 
 
 class PrimerPair():
     def __init__(self, data : dict) -> None:
-        self.pair = data['pair']
-        self.score = data['score']
-        self.left = Primer(data['left'])
-        self.right = Primer(data['right'])
+        fields = [
+            'left',
+            'right',
+            'score',
+            'targeton',
+            'version',
+            'pair',
+        ]
+        if data:
+            self.assign_data(data, fields=fields)
+        
+    def assign_data(self, data: dict, fields = []) -> None:
+        translation_dict = {
+            'left' : 'F',
+            'right' : 'R',
+        }
+        data = translate_dict(data, translation_dict=translation_dict, fields=fields)
+        for k, v in data.items():
+            if k in ['left', 'right']:
+                self.__setattr__(k, Primer(v))    
+            else:
+                self.__setattr__(k, v)
         self.product_size = self.get_product_size()
 
     def get_paired_dict(self) -> dict:
-        return vars(self)
+        return self._asdict()
 
     def get_fields(self) -> List[str]:
         return list(self._asdict().keys())
@@ -134,11 +200,16 @@ class PrimerPair():
 
 class Primer():
     def __init__(self, primer_data: dict) -> None:
-        self.chromosome = primer_data['chromosome']
-        self.chr_start = primer_data['chr_start']
-        self.chr_end = primer_data['chr_end']
-        self.seq = primer_data['seq']
-        self.melting_temp = primer_data['melting_temp']
+        fields = [
+            'chromosome',
+            'chr_start',
+            'chr_end',
+            'seq',
+            'melting_temp',
+            'gc_content',
+        ]
+        if primer_data:
+            self.assign_data(primer_data, fields=fields)
 
     def __getitem__(self, item) -> Any:
         return getattr(self, item)
@@ -148,22 +219,36 @@ class Primer():
 
     def _asdict(self) -> dict:
         return vars(self)
-
-
-def format_primer_data(primer_dict: dict) -> dict:
-    record = {
-        'chromosome' : primer_dict['chr'],
-        'chr_start' : primer_dict['primer_start'],
-        'chr_end' : primer_dict['primer_end'],
-        'seq' : primer_dict['sequence'],
-        'melting_temp' : primer_dict['tm'],
-    }
-    # For ipcress compatibility.
-    del primer_dict['chr']
-
-    return record
-
-
+    
+    def assign_data(self, primer_dict: dict, fields=[]):
+        translation_dict = {
+            'chromosome' : 'chr',
+            'chr_start' : 'primer_start',
+            'chr_end' : 'primer_end',
+            'seq' : 'sequence',
+            'melting_temp' : 'tm',
+            'gc_content' : 'gc_percent',
+        }
+        primer_dict = translate_dict(primer_dict, translation_dict=translation_dict, fields=fields)
+        for k, v in primer_dict.items():
+            self.__setattr__(k, v)
+            
+def translate_dict(data_dict: dict, translation_dict = {}, fields=[]):
+        translated_dict = {}
+        keys = list(data_dict.keys())
+        for new_key, old_key in translation_dict.items():
+            if old_key in data_dict:
+                translated_dict[new_key] = data_dict[old_key]
+                keys.remove(old_key)
+            elif new_key in data_dict:
+                translated_dict[new_key] = data_dict[new_key]
+                keys.remove(new_key)
+        if not fields:
+            fields = keys
+        leftover_keys_dict = {k:data_dict[k] for k in keys if k in fields}
+        translated_dict.update(leftover_keys_dict)
+        return translated_dict
+                        
 def iterate_design(primers: list, scoring: list) -> defaultdict:
     pairs = defaultdict(dict)
     for primer in primers:
@@ -178,11 +263,17 @@ def map_primer_data(primer: dict, scoring: list, pairs: defaultdict) -> defaultd
         chrom = primer['chr']
         # ENSE00000769557_HG8_16_LibAmpR_0
         # (ENSE00000769557_HG8_16_LibAmp)(R)_(0)
-        match = re.search("^(\w+LibAmp)([F|R])\_(\d+)$", pair)
+        match = re.search(r"^(\w+LibAmp)([F|R])\_(\d+)$", pair)
         pair_key = match.group(1) + '_' + match.group(3)
         side = match.group(2)
         pairs[pair_key][side] = primer
         pairs[pair_key][side]['chr'] = chrom
-        pairs[pair_key]['score'] = [score['Score'] for score in scoring if score['Primer pair'] == pair_key][0]
+        pairs[pair_key]['version'] = VERSION
+        pairs[pair_key]['pair'] = pair_key
+        for score in scoring: 
+            if score['Primer pair'] == pair_key:
+                pairs[pair_key]['score'] = score['Score']
+                pairs[pair_key]['targeton'] = score['Targeton']
+         
 
     return pairs

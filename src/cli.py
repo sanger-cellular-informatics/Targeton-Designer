@@ -78,7 +78,7 @@ def primer_designer_command(
 
     validate_files(p3_csv=design_output_data.p3_csv, score_tsv=design_output_data.scoring_tsv)
 
-    primer_designer.prepare_primer_designer(design_output_data)
+    primer_designer.from_design_output(design_output_data)
     primer_designer_result = write_primer_design_output(
         primer_designer,
         prefix=prefix,

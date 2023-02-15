@@ -4,6 +4,7 @@
             "chr_end": "77",
             "chr_start": "55",
             "chromosome": "chr1",
+            "gc_content": "45.45454545454545",
             "melting_temp": "58.004800503683725",
             "seq": "CTGTTCTGACAGTAGAAAGGCA"
         },
@@ -13,16 +14,20 @@
             "chr_end": "265",
             "chr_start": "242",
             "chromosome": "chr1",
+            "gc_content": "39.130434782608695",
             "melting_temp": "59.347613464584356",
             "seq": "AAGAATTTTCCCCAATGGTTGCT"
         },
-        "score": "0.0"
+        "score": "0.0",
+        "targeton": "exon1",
+        "version": "01"
     },
     {
         "left": {
             "chr_end": "77",
             "chr_start": "55",
             "chromosome": "chr1",
+            "gc_content": "45.45454545454545",
             "melting_temp": "58.004800503683725",
             "seq": "CTGTTCTGACAGTAGAAAGGCA"
         },
@@ -32,16 +37,20 @@
             "chr_end": "265",
             "chr_start": "243",
             "chromosome": "chr1",
+            "gc_content": "40.90909090909091",
             "melting_temp": "57.98020807087107",
             "seq": "AAGAATTTTCCCCAATGGTTGC"
         },
-        "score": "0.0"
+        "score": "0.0",
+        "targeton": "exon1",
+        "version": "01"
     },
     {
         "left": {
             "chr_end": "78",
             "chr_start": "55",
             "chromosome": "chr1",
+            "gc_content": "43.47826086956522",
             "melting_temp": "58.426100173219595",
             "seq": "CTGTTCTGACAGTAGAAAGGCAT"
         },
@@ -51,16 +60,20 @@
             "chr_end": "265",
             "chr_start": "242",
             "chromosome": "chr1",
+            "gc_content": "39.130434782608695",
             "melting_temp": "59.347613464584356",
             "seq": "AAGAATTTTCCCCAATGGTTGCT"
         },
-        "score": "0.0"
+        "score": "0.0",
+        "targeton": "exon1",
+        "version": "01"
     },
     {
         "left": {
             "chr_end": "78",
             "chr_start": "55",
             "chromosome": "chr1",
+            "gc_content": "43.47826086956522",
             "melting_temp": "58.426100173219595",
             "seq": "CTGTTCTGACAGTAGAAAGGCAT"
         },
@@ -70,9 +83,12 @@
             "chr_end": "265",
             "chr_start": "243",
             "chromosome": "chr1",
+            "gc_content": "40.90909090909091",
             "melting_temp": "57.98020807087107",
             "seq": "AAGAATTTTCCCCAATGGTTGC"
         },
-        "score": "0.0"
+        "score": "0.0",
+        "targeton": "exon1",
+        "version": "01"
     }
 ]
