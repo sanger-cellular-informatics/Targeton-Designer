@@ -1,0 +1,16 @@
+version: "3.5"
+services:
+  primer3:
+    volumes:
+      - data:/data/
+    build: 
+      context: .
+      target: primer3
+  slicer:
+    volumes:
+      - data:/data/
+    build: 
+      context: .
+      target: slicer
+volumes:
+  data: {}
