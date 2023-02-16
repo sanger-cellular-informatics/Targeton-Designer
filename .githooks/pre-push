@@ -1,0 +1,17 @@
+#!/bin/sh
+make
+sudo make install
+make setup-venv
+. venv/bin/activate 
+echo "Running pycodestyle for src/"
+pycodestyle --statistics -qq src
+echo "Running pycodestyle for tests/"
+pycodestyle --statistics -qq tests
+python -m unittest 
+if [ $? -ne 0 ]
+then
+	echo "Unit tests failed"
+	exit 1
+fi
+
+exit 0

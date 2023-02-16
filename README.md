@@ -6,6 +6,16 @@ Standalone targeton designer tool.
 
 ## Installation
 
+Run
+```sh
+make
+make install
+make setup-venv
+```
+```make``` sets up the git hooks that run unittests and pycodestyle on /src and /tests on ```git push```.
+```make install``` installs dependancies below.
+```make setup-venv``` creates a venv at ./venv and installs requirements.txt(s)
+
 Dependencies:
 
 Build-essential, BedTools and Python (3.8), Python-venv (3.8)
@@ -62,6 +72,16 @@ python -m unittest
 
 deactivate
 ```
+### Git Hooks
+
+Located in  .githooks/
+Follows standard Git hook methodology: https://git-scm.com/docs/githooks
+Currently just "pre-push" that is run on ```git push```
+To run either invoke ```make``` or:
+```sh
+git config core.hooksPath .githooks
+chmod +x .githooks/*
+```
 
 ### Exonerate iPCRess
 
@@ -77,12 +97,12 @@ sudo apt install autoconf
 Installing exonerate on your VM.
 ```sh
 git clone https://github.com/nathanweeks/exonerate.git
-cd exonerate
-autoreconf -vfi
-./configure [YOUR_CONFIGURE_OPTIONS]
-make
-make check
-sudo make install
+cd exonerate /
+    && autoreconf -vfi /
+    && ./configure /
+    && make -j /
+    && make check /
+    && sudo make install
 ```
 
 If you happen to get the error: no module found 'apt_pkg', create a symbolic link to your apt_pkg.so
