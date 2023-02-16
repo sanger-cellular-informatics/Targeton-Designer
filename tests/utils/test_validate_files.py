@@ -4,7 +4,7 @@ from unittest.mock import patch
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from utils.exceptions import FileFormatError
-from utils.validate_files import validate_bed_content, validate_bed_format, validate_fasta_format, validate_p3_csv
+from utils.validate_files import validate_bed_content, validate_bed_format, validate_fasta_format, validate_p3_csv, validate_score_tsv
 
 
 class TestValidateFiles(TestCase):
@@ -282,14 +282,14 @@ class TestValidateFiles(TestCase):
         # arrange
         test_arg = '/not_p3_output.csv'
         self.fs.create_file('/not_p3_output.csv', contents='Incorrect,Headers')
-        expected = 'Unexpected columns in Primer3 CSV'
+        expected = 'Missing columns in Primer3 CSV'
 
         # act
         with self.assertRaises(FileFormatError) as exception_context:
             validate_p3_csv(test_arg)
 
         # assert
-        self.assertEqual(str(exception_context.exception), expected)
+        self.assertIn(expected, str(exception_context.exception))
 
     def test_validate_p3_csv_correct_headers_success(self):
         # arrange
@@ -303,6 +303,31 @@ class TestValidateFiles(TestCase):
 
         # act
         validate_p3_csv(test_arg)
+
+    def test_validate_score_tsv_wrong_headers_fail(self):
+        # arrange
+        test_arg = '/not_score_output.tsv'
+        self.fs.create_file('/not_score_output.tsv', contents='Incorrect\tHeaders')
+        expected = 'Missing columns in Scoring TSV'
+
+        # act
+        with self.assertRaises(FileFormatError) as exception_context:
+            validate_score_tsv(test_arg)
+
+        # assert
+        self.assertIn(expected, str(exception_context.exception))
+
+    def test_validate_score_tsv_correct_headers_success(self):
+        # arrange
+        test_arg = '/scoring_output.tsv'
+        headers = [
+            'Targeton', 'Primer pair', 'A/B/Total', '0', '1', '2',
+            '3', '4', '5', '6', '7', '8', '9', '10', 'WGE format', 'Score'
+        ]
+        self.fs.create_file('/scoring_output.tsv', contents='\t'.join(headers))
+
+        # act
+        validate_score_tsv(test_arg)
 
 
 if __name__ == '__main__':

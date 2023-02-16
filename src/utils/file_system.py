@@ -2,6 +2,7 @@ import csv
 import json
 from os import path, makedirs
 from datetime import datetime
+from typing import List
 
 from utils.exceptions import FolderCreatorError, FileFormatError
 
@@ -14,7 +15,7 @@ class FolderCreator:
 
     @classmethod
     def get_dir(self) -> str:
-        return(self.dir)
+        return (self.dir)
 
     @classmethod
     def create(self, dir: str) -> None:
@@ -38,13 +39,15 @@ class FolderCreator:
 
         self.create(dir_full_path)
 
+
 def check_file_exists(file):
     if not path.exists(file):
         raise FileNotFoundError(f'Unable to find file: {file}')
 
+
 def write_to_text_file(dir_path, data, file_name):
     file_path = dir_path + '/' + file_name + '.txt'
-   
+
     file_h = {}
     if isinstance(data, list):
         file_h = open(file_path, "w")
@@ -54,21 +57,21 @@ def write_to_text_file(dir_path, data, file_name):
         file_h = open(file_path, "wb")
         file_h.write(data)
     file_h.close()
-    
+
     print('Wrote to file: ' + file_path)
 
     return file_path
 
 
-def read_csv_to_dict(csv_path):
+def read_csv_to_list_dict(csv_path, delimiter=',') -> List[dict]:
     check_file_exists(csv_path)
-    
+
     data = []
-    with open(csv_path) as csv_file:
-        reader = csv.DictReader(csv_file, delimiter=',')
+    with open(csv_path, newline='') as csv_file:
+        reader = csv.DictReader(csv_file, delimiter=delimiter)
         for row in reader:
             data.append(row)
-     
+
     return data
 
 

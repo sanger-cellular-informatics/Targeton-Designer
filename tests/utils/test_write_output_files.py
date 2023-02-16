@@ -6,7 +6,7 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 from unittest.mock import patch, Mock
 from freezegun import freeze_time
 
-from src.utils.write_output_files import write_targeton_csv, write_scoring_output
+from src.utils.write_output_files import write_scoring_output, write_targeton_csv
 
 
 class TestWriteOutputFiles(TestCase):
