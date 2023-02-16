@@ -1,8 +1,3 @@
-import sys, os
-os.chdir(r'/home/ubuntu/lims2-webapp-filesystem/user/targeton-designer')
-sys.path.insert(0, '')
-sys.path.insert(0, 'src/')
-
 import unittest
 import sys
 
@@ -14,7 +9,7 @@ from tempfile import TemporaryDirectory
 from cli import (
     slicer_command, primer_command, ipcress_command,
     scoring_command, design_command,
-    primer_designer_command
+    collate_primer_designer_data_command
 )
 from utils.arguments_parser import ParsedInputArguments
 from utils.write_output_files import DesignOutputData, write_targeton_csv
@@ -104,7 +99,6 @@ class TestPrimerDesignerIntegration(TestCase):
 
     def test_primer_designer_output(self):
         with TemporaryDirectory() as tmpdir:
-            tmpdir = r'./tests/integration/fixtures'
             # Arrange
             # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
             with patch.object(sys, 'argv', ["./designer.sh", "primer_designer", "--score_tsv", self.scoring_output_tsv_path, "--dir", tmpdir, "--p3_csv", self.p3_output_csv_path]):
@@ -115,7 +109,7 @@ class TestPrimerDesignerIntegration(TestCase):
                 design_output_data = DesignOutputData(tmpdir)
                 design_output_data.p3_csv = args['p3_csv']
                 design_output_data.scoring_tsv = args['score_tsv']
-                result = primer_designer_command(design_output_data, prefix=args['dir'])
+                result = collate_primer_designer_data_command(design_output_data, prefix=args['dir'])
                 path_json = Path(result.json)
                 path_csv = Path(result.csv)
 

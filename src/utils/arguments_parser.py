@@ -16,7 +16,7 @@ class ParsedInputArguments:
             'command',
             help=(
                 'Command to run in Designer CLI, available commands: '
-                'version, slicer, primer, primer_designer, ipcress, scoring, design, '
+                'version, slicer, primer, collate_primer_data, ipcress, scoring, design, '
                 'primer_for_ipcress, generate_targeton_csv'
             ),
             type=str, default='design'

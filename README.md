@@ -196,6 +196,17 @@ Example command:
 ```
 Please note primer pair names in the iPCRess input file must be prefixed by the corresponding region name in the BED file.
 
+#### Primer data collation and output to csv & Json (for benchling)
+
+To collate the primer and scoring data and output to CSV & JSON file:
+```sh
+./designer.sh collate_primer_data [--p3_csv Primer3_output.csv] [--score_tsv scoring_output.tsv] [--dir DIR]
+```
+
+Examples of the output can be found below.
+
+Is also run as part of the design command.
+
 ### Docker
 
 Upcoming feature in later releases
@@ -321,97 +332,114 @@ Creates a data structure of LIST_PAIRS->PRIMER_PAIR->PRIMER
 Currently output as both a JSON and CSV.
 
 As a nested structure JSON.
-```[
+```
+[
     {
         "left": {
-            "chr_end": 77,
-            "chr_start": 55,
+            "chr_end": "77",
+            "chr_start": "55",
             "chromosome": "chr1",
-            "melting_temp": 58.004800503683725,
+            "gc_content": "45.45454545454545",
+            "melting_temp": "58.004800503683725",
             "seq": "CTGTTCTGACAGTAGAAAGGCA"
         },
         "pair": "exon1_2_LibAmp_0",
-        "product_size": 0,
+        "product_size": 210,
         "right": {
-            "chr_end": 265,
-            "chr_start": 242,
+            "chr_end": "265",
+            "chr_start": "242",
             "chromosome": "chr1",
-            "melting_temp": 59.347613464584356,
+            "gc_content": "39.130434782608695",
+            "melting_temp": "59.347613464584356",
             "seq": "AAGAATTTTCCCCAATGGTTGCT"
         },
-        "score": 0
+        "score": "0.0",
+        "targeton": "exon1",
+        "version": "01"
     },
     {
         "left": {
-            "chr_end": 77,
-            "chr_start": 55,
+            "chr_end": "77",
+            "chr_start": "55",
             "chromosome": "chr1",
-            "melting_temp": 58.004800503683725,
+            "gc_content": "45.45454545454545",
+            "melting_temp": "58.004800503683725",
             "seq": "CTGTTCTGACAGTAGAAAGGCA"
         },
         "pair": "exon1_2_LibAmp_1",
-        "product_size": 0,
+        "product_size": 210,
         "right": {
-            "chr_end": 265,
-            "chr_start": 243,
+            "chr_end": "265",
+            "chr_start": "243",
             "chromosome": "chr1",
-            "melting_temp": 57.98020807087107,
+            "gc_content": "40.90909090909091",
+            "melting_temp": "57.98020807087107",
             "seq": "AAGAATTTTCCCCAATGGTTGC"
         },
-        "score": 0
+        "score": "0.0",
+        "targeton": "exon1",
+        "version": "01"
     },
     {
         "left": {
-            "chr_end": 78,
-            "chr_start": 55,
+            "chr_end": "78",
+            "chr_start": "55",
             "chromosome": "chr1",
-            "melting_temp": 58.426100173219595,
+            "gc_content": "43.47826086956522",
+            "melting_temp": "58.426100173219595",
             "seq": "CTGTTCTGACAGTAGAAAGGCAT"
         },
         "pair": "exon1_2_LibAmp_2",
-        "product_size": 0,
+        "product_size": 210,
         "right": {
-            "chr_end": 265,
-            "chr_start": 242,
+            "chr_end": "265",
+            "chr_start": "242",
             "chromosome": "chr1",
-            "melting_temp": 59.347613464584356,
+            "gc_content": "39.130434782608695",
+            "melting_temp": "59.347613464584356",
             "seq": "AAGAATTTTCCCCAATGGTTGCT"
         },
-        "score": 0
+        "score": "0.0",
+        "targeton": "exon1",
+        "version": "01"
     },
     {
         "left": {
-            "chr_end": 78,
-            "chr_start": 55,
+            "chr_end": "78",
+            "chr_start": "55",
             "chromosome": "chr1",
-            "melting_temp": 58.426100173219595,
+            "gc_content": "43.47826086956522",
+            "melting_temp": "58.426100173219595",
             "seq": "CTGTTCTGACAGTAGAAAGGCAT"
         },
         "pair": "exon1_2_LibAmp_3",
-        "product_size": 0,
+        "product_size": 210,
         "right": {
-            "chr_end": 265,
-            "chr_start": 243,
+            "chr_end": "265",
+            "chr_start": "243",
             "chromosome": "chr1",
-            "melting_temp": 57.98020807087107,
+            "gc_content": "40.90909090909091",
+            "melting_temp": "57.98020807087107",
             "seq": "AAGAATTTTCCCCAATGGTTGC"
         },
-        "score": 0
+        "score": "0.0",
+        "targeton": "exon1",
+        "version": "01"
     }
 ]
 ```
 
 Flattened to a CSV table.
 ```
-pair,score,product_size,side,chromosome,chr_start,chr_end,seq,melting_temp
-exon1_2_LibAmp_0,0,0,left,chr1,55,77,CTGTTCTGACAGTAGAAAGGCA,58.004800503683725
-exon1_2_LibAmp_0,0,0,right,chr1,242,265,AAGAATTTTCCCCAATGGTTGCT,59.347613464584356
-exon1_2_LibAmp_1,0,0,left,chr1,55,77,CTGTTCTGACAGTAGAAAGGCA,58.004800503683725
-exon1_2_LibAmp_1,0,0,right,chr1,243,265,AAGAATTTTCCCCAATGGTTGC,57.98020807087107
-exon1_2_LibAmp_2,0,0,left,chr1,55,78,CTGTTCTGACAGTAGAAAGGCAT,58.426100173219595
-exon1_2_LibAmp_2,0,0,right,chr1,242,265,AAGAATTTTCCCCAATGGTTGCT,59.347613464584356
-exon1_2_LibAmp_3,0,0,left,chr1,55,78,CTGTTCTGACAGTAGAAAGGCAT,58.426100173219595
-exon1_2_LibAmp_3,0,0,right,chr1,243,265,AAGAATTTTCCCCAATGGTTGC,57.98020807087107
+version,pair,score,targeton,product_size,side,chromosome,chr_start,chr_end,seq,melting_temp,gc_content
+01,exon1_2_LibAmp_0,0.0,exon1,210,left,chr1,55,77,CTGTTCTGACAGTAGAAAGGCA,58.004800503683725,45.45454545454545
+01,exon1_2_LibAmp_0,0.0,exon1,210,right,chr1,242,265,AAGAATTTTCCCCAATGGTTGCT,59.347613464584356,39.130434782608695
+01,exon1_2_LibAmp_1,0.0,exon1,210,left,chr1,55,77,CTGTTCTGACAGTAGAAAGGCA,58.004800503683725,45.45454545454545
+01,exon1_2_LibAmp_1,0.0,exon1,210,right,chr1,243,265,AAGAATTTTCCCCAATGGTTGC,57.98020807087107,40.90909090909091
+01,exon1_2_LibAmp_2,0.0,exon1,210,left,chr1,55,78,CTGTTCTGACAGTAGAAAGGCAT,58.426100173219595,43.47826086956522
+01,exon1_2_LibAmp_2,0.0,exon1,210,right,chr1,242,265,AAGAATTTTCCCCAATGGTTGCT,59.347613464584356,39.130434782608695
+01,exon1_2_LibAmp_3,0.0,exon1,210,left,chr1,55,78,CTGTTCTGACAGTAGAAAGGCAT,58.426100173219595,43.47826086956522
+01,exon1_2_LibAmp_3,0.0,exon1,210,right,chr1,243,265,AAGAATTTTCCCCAATGGTTGC,57.98020807087107,40.90909090909091
 ```
 
 

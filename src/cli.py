@@ -69,7 +69,7 @@ def primer_command(
     return primer_result
 
 
-def primer_designer_command(
+def collate_primer_designer_data_command(
     design_output_data : DesignOutputData,
     primer_designer=PrimerDesigner(),
     prefix='',
@@ -163,7 +163,7 @@ def design_command(args) -> DesignOutputData:
     # Scoring
     design_result.scoring_tsv = scoring_result.tsv
     # Primer Designer
-    primer_designer_result = primer_designer_command(design_result, existing_dir=slicer_result.dir)
+    primer_designer_result = collate_primer_designer_data_command(design_result, existing_dir=slicer_result.dir)
     design_result.pd_json = primer_designer_result.json
     design_result.pd_csv = primer_designer_result.csv
 
@@ -190,11 +190,11 @@ def resolve_command(args):
                 max=args['max']
             )
 
-        if command == 'primer_designer':
+        if command == 'collate_primer_data':
             design_output_data = DesignOutputData()
             design_output_data.p3_csv = args['p3_csv']
             design_output_data.scoring_tsv = args['score_tsv']
-            primer_designer_command(design_output_data, prefix=args['dir'])
+            collate_primer_designer_data_command(design_output_data, prefix=args['dir'])
 
         if command == 'ipcress':
             ipcress_command(args)
