@@ -28,7 +28,7 @@ RUN apt-get install -y git
 RUN git clone https://github.com/nathanweeks/exonerate.git
 RUN cd /exonerate \
   && autoreconf -fi \
-  && ./configure --enable-silent-rules \
+  && ./configure -q \
   && make -j \
   && make check \
   && make install 
