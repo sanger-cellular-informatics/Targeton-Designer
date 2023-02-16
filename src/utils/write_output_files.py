@@ -81,43 +81,43 @@ def timestamped_dir(prefix):
 
 
 def write_slicer_output(dir_prefix, slices) -> SlicerOutputData:
-    dir = timestamped_dir(dir_prefix)
-    result = SlicerOutputData(dir=dir)
+    export_dir = timestamped_dir(dir_prefix)
+    result = SlicerOutputData(export_dir)
 
-    result.bed = write_slicer_bed_output(dir, slices)
-    result.fasta = write_slicer_fasta_output(dir, slices)
+    result.bed = write_slicer_bed_output(export_dir, slices)
+    result.fasta = write_slicer_fasta_output(export_dir, slices)
 
     print('Slice files saved: ', result.bed, result.fasta)
 
     return result
 
 
-def write_slicer_bed_output(dir, slices):
+def write_slicer_bed_output(export_dir, slices):
     BED_OUTPUT = 'slicer_output.bed'
 
-    bed_path = path.join(dir, BED_OUTPUT)
+    bed_path = path.join(export_dir, BED_OUTPUT)
     slices.saveas(bed_path)
 
     return bed_path
 
 
-def write_slicer_fasta_output(dir, slices):
+def write_slicer_fasta_output(export_dir, slices):
     FASTA_OUTPUT = 'slicer_output.fasta'
 
-    fasta_path = path.join(dir, FASTA_OUTPUT)
+    fasta_path = path.join(export_dir, FASTA_OUTPUT)
     slices.save_seqs(fasta_path)
 
     return fasta_path
 
 
-def export_primers_to_csv(slices, dir):
+def export_primers_to_csv(slices, export_dir):
     PRIMER3_OUTPUT_CSV = 'p3_output.csv'
 
     headers = ['primer', 'sequence', 'chr', 'primer_start', 'primer_end', 'tm', 'gc_percent',
                'penalty', 'self_any_th', 'self_end_th', 'hairpin_th', 'end_stability']
     rows = construct_csv_format(slices, headers)
 
-    csv_path = path.join(dir, PRIMER3_OUTPUT_CSV)
+    csv_path = path.join(export_dir, PRIMER3_OUTPUT_CSV)
 
     with open(csv_path, "w", newline='') as p3_fh:
         p3_out = csv.DictWriter(p3_fh, fieldnames=headers)
@@ -165,11 +165,11 @@ def construct_bed_format(slices):
     return rows
 
 
-def export_to_bed(bed_rows, dir):
+def export_to_bed(bed_rows, export_dir):
     PRIMER_OUTPUT_BED = 'p3_output.bed'
 
     p3_bed = BedTool(bed_rows)
-    bed_path = path.join(dir, PRIMER_OUTPUT_BED)
+    bed_path = path.join(export_dir, PRIMER_OUTPUT_BED)
     p3_bed.saveas(bed_path)
 
     return bed_path
@@ -182,27 +182,27 @@ def write_primer_output(
 ) -> PrimerOutputData:
 
     if existing_dir:
-        dir = existing_dir
+        export_dir = existing_dir
     else:
-        dir = timestamped_dir(prefix)
+        export_dir = timestamped_dir(prefix)
 
-    result = PrimerOutputData(dir)
+    result = PrimerOutputData(export_dir)
 
     bed_rows = construct_bed_format(primers)
 
-    result.bed = export_to_bed(bed_rows, dir)
-    result.csv = export_primers_to_csv(primers, dir)
-    result.dir = dir
+    result.bed = export_to_bed(bed_rows, export_dir)
+    result.csv = export_primers_to_csv(primers, export_dir)
+    result.dir = export_dir
 
     print('Primer files saved:', result.bed, result.csv)
 
     return result
 
 
-def write_ipcress_input(dir, formatted_primers) -> str:
+def write_ipcress_input(export_dir, formatted_primers) -> str:
     INPUT_FILE_NAME = 'ipcress_primer_input'
 
-    file_path = write_to_text_file(dir, formatted_primers, INPUT_FILE_NAME)
+    file_path = write_to_text_file(export_dir, formatted_primers, INPUT_FILE_NAME)
 
     return file_path
 
@@ -256,11 +256,11 @@ def write_scoring_output(scoring, output_tsv) -> ScoringOutputData:
     return result
 
 
-def export_primer_design_to_csv(primer_designer : PrimerDesigner, filename : str, dir : str) -> str:
+def export_primer_design_to_csv(primer_designer : PrimerDesigner, filename : str, export_dir : str) -> str:
     filename = Path(filename)
     if not filename.suffix:
         filename = filename.with_suffix(r'.csv')
-    csv_path = dir / filename
+    csv_path = export_dir / filename
     flat_dict_list = primer_designer.flatten()
     with open(csv_path, 'w', newline='') as f:
         writer = csv.DictWriter(f, fieldnames=list(flat_dict_list[0].keys()))
@@ -270,11 +270,11 @@ def export_primer_design_to_csv(primer_designer : PrimerDesigner, filename : str
     return str(csv_path)
 
 
-def export_primer_design_to_json(primer_designer : PrimerDesigner, filename : str, dir : str) -> str:
+def export_primer_design_to_json(primer_designer : PrimerDesigner, filename : str, export_dir : str) -> str:
     filename = Path(filename)
     if not filename.suffix:
         filename = filename.with_suffix(r'.json')
-    json_path = dir / filename
+    json_path = export_dir / filename
     with open(json_path, 'w') as f:
         primer_designer.dump_json(f, sort_keys=True, indent=4)
 
@@ -288,15 +288,15 @@ def write_primer_design_output(
 ) -> PrimerDesignerOutputData:
 
     if existing_dir:
-        dir = existing_dir
+        export_dir = existing_dir
     else:
-        dir = timestamped_dir(prefix)
+        export_dir = timestamped_dir(prefix)
 
-    result = PrimerDesignerOutputData(dir)
+    result = PrimerDesignerOutputData(export_dir)
     filename = r'primer_designer'
-    result.csv = export_primer_design_to_csv(primer_designer, filename, dir)
-    result.json = export_primer_design_to_json(primer_designer, filename, dir)
-    result.dir = dir
+    result.csv = export_primer_design_to_csv(primer_designer, filename, export_dir)
+    result.json = export_primer_design_to_json(primer_designer, filename, export_dir)
+    result.dir = export_dir
     print(f'Primer Designer files saved:{result.csv}, {result.json}')
 
     return result
