@@ -1,6 +1,8 @@
 class FileFormatError(Exception):
     pass
 
+class FileTypeError(Exception):
+    pass
 
 class FileValidationError(Exception):
     pass

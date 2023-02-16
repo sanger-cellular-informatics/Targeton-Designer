@@ -9,7 +9,7 @@ from pathlib import Path
 from dataclasses import dataclass
 from pybedtools import BedTool
 from utils.file_system import write_to_text_file, FolderCreator
-from utils.exceptions import OutputError, FolderCreatorError
+from utils.exceptions import OutputError, FolderCreatorError, FileTypeError
 if TYPE_CHECKING:
     from src.primer_designer import PrimerDesigner
 
@@ -219,6 +219,7 @@ def write_ipcress_output(stnd='', err='', existing_dir='') -> IpcressOutputData:
 
 
 def write_targeton_csv(ipcress_input, bed, dirname, dir_timestamped=False) -> TargetonCSVData:
+    TARGETON_CSV = 'targetons.csv'
     bed = BedTool(bed)
     csv_rows = []
     with open(ipcress_input) as fh:
@@ -228,8 +229,6 @@ def write_targeton_csv(ipcress_input, bed, dirname, dir_timestamped=False) -> Ta
         primer_pair_iterator = re.finditer(rf'^{region.name}\S*', ipcress_input_data, re.MULTILINE)
         for primer_pair in primer_pair_iterator:
             csv_rows.append([primer_pair.group(), region.name])
-            
-    TARGETON_CSV = 'targetons.csv'
 
     if not dir_timestamped:
         dirname = timestamped_dir(dirname)
@@ -256,29 +255,25 @@ def write_scoring_output(scoring, output_tsv) -> ScoringOutputData:
     return result
 
 
-def export_primer_design_to_csv(primer_designer : PrimerDesigner, filename : str, export_dir : str) -> str:
+def export_primer_design_to_file(primer_designer:PrimerDesigner, filename:str, export_dir:str, file_type:str) -> str:
+    accepted_file_types = [r'.json', r'.csv']
+    if file_type not in accepted_file_types:
+        raise FileTypeError(f"Unknown filetype passed {file_type}.")
+    
     filename = Path(filename)
     if not filename.suffix:
-        filename = filename.with_suffix(r'.csv')
-    csv_path = export_dir / filename
-    flat_dict_list = primer_designer.flatten()
-    with open(csv_path, 'w', newline='') as f:
-        writer = csv.DictWriter(f, fieldnames=list(flat_dict_list[0].keys()))
-        writer.writeheader()
-        writer.writerows(flat_dict_list)
-
-    return str(csv_path)
-
-
-def export_primer_design_to_json(primer_designer : PrimerDesigner, filename : str, export_dir : str) -> str:
-    filename = Path(filename)
-    if not filename.suffix:
-        filename = filename.with_suffix(r'.json')
-    json_path = export_dir / filename
-    with open(json_path, 'w') as f:
-        primer_designer.dump_json(f, sort_keys=True, indent=4)
-
-    return str(json_path)
+        filename = filename.with_suffix(file_type)
+    path = export_dir / filename
+    with open(path, 'w') as f:
+        if file_type == r'.json':
+            primer_designer.dump_json(f, sort_keys=True, indent=4)
+        elif file_type == r'.csv':
+            flat_dict_list = primer_designer.flatten()
+            writer = csv.DictWriter(f, fieldnames=list(flat_dict_list[0].keys()))
+            writer.writeheader()
+            writer.writerows(flat_dict_list)
+        
+    return str(path)
 
 
 def write_primer_design_output(
@@ -294,8 +289,8 @@ def write_primer_design_output(
 
     result = PrimerDesignerOutputData(export_dir)
     filename = r'primer_designer'
-    result.csv = export_primer_design_to_csv(primer_designer, filename, export_dir)
-    result.json = export_primer_design_to_json(primer_designer, filename, export_dir)
+    result.csv = export_primer_design_to_file(primer_designer, filename, export_dir, '.csv')
+    result.json = export_primer_design_to_file(primer_designer, filename, export_dir, '.json')
     result.dir = export_dir
     print(f'Primer Designer files saved:{result.csv}, {result.json}')
 

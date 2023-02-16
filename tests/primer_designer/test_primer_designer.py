@@ -7,7 +7,7 @@ from unittest import TestCase
 from unittest.mock import patch
 from tempfile import TemporaryDirectory
 from src.primer_designer import PrimerDesigner, Primer, PrimerPair, translate_dict, iterate_design, map_primer_data
-from src.utils.write_output_files import DesignOutputData, export_primer_design_to_csv, export_primer_design_to_json, write_primer_design_output
+from src.utils.write_output_files import DesignOutputData, export_primer_design_to_file, write_primer_design_output
 from collections import defaultdict
 
 VERSION = '01'
@@ -329,10 +329,11 @@ class TestPrimerDesignerClass(TestCase):
         fn = 'test.csv'
         with TemporaryDirectory() as tmpdir:
             # Act
-            path = Path(export_primer_design_to_csv(
+            path = Path(export_primer_design_to_file(
                 self.example_filled_primer_designer,
                 fn,
-                tmpdir
+                tmpdir,
+                '.csv'
             )
             )
             # Assert
@@ -344,10 +345,11 @@ class TestPrimerDesignerClass(TestCase):
         fn = 'test.json'
         with TemporaryDirectory() as tmpdir:
             # Act
-            path = Path(export_primer_design_to_json(
+            path = Path(export_primer_design_to_file(
                 self.example_filled_primer_designer,
                 fn,
-                tmpdir
+                tmpdir,
+                '.json'
             )
             )
             # Assert
