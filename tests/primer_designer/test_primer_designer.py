@@ -14,6 +14,8 @@ VERSION = '01'
 
 # Test classes
 # PrimerDesigner
+
+
 class TestPrimerDesignerClass(TestCase):
     def setUp(self):
         self.scoring_output_tsv_path = r"scoring_output.tsv"
@@ -35,7 +37,7 @@ class TestPrimerDesignerClass(TestCase):
             'chr_end' : '77',
             'seq' : 'CTGTTCTGACAGTAGAAAGGCA',
             'melting_temp' : '58.004800503683725',
-            'gc_content': '45.45454545454545', 
+            'gc_content': '45.45454545454545',
         }
         self.example_dict_primer_right = {
             'chromosome' : 'chr1',
@@ -43,7 +45,7 @@ class TestPrimerDesignerClass(TestCase):
             'chr_end' : '265',
             'seq' : 'AAGAATTTTCCCCAATGGTTGCT',
             'melting_temp' : '59.347613464584356',
-            'gc_content': '39.130434782608695', 
+            'gc_content': '39.130434782608695',
         }
         self.example_primer_pair_dict = {
             'pair'  : 'exon1_2_LibAmp_0',
@@ -59,30 +61,30 @@ class TestPrimerDesignerClass(TestCase):
         self.example_flat_dict = [
             {
                 'pair': 'exon1_2_LibAmp_0',
-                'score': '0.0', 
-                'product_size': 210, 
-                'targeton': 'exon1',
-                'version': '01', 
-                'side': 'left', 
-                'chromosome': 'chr1', 
-                'chr_start': '55',
-                'chr_end': '77',
-                'seq': 'CTGTTCTGACAGTAGAAAGGCA', 
-                'melting_temp': '58.004800503683725',
-                'gc_content': '45.45454545454545'
-            }, 
-            {
-                'pair': 'exon1_2_LibAmp_0',
-                'score': '0.0', 
+                'score': '0.0',
                 'product_size': 210,
                 'targeton': 'exon1',
                 'version': '01',
-                'side': 'right', 
+                'side': 'left',
+                'chromosome': 'chr1',
+                'chr_start': '55',
+                'chr_end': '77',
+                'seq': 'CTGTTCTGACAGTAGAAAGGCA',
+                'melting_temp': '58.004800503683725',
+                'gc_content': '45.45454545454545'
+            },
+            {
+                'pair': 'exon1_2_LibAmp_0',
+                'score': '0.0',
+                'product_size': 210,
+                'targeton': 'exon1',
+                'version': '01',
+                'side': 'right',
                 'chromosome': 'chr1',
                 'chr_start': '242',
-                'chr_end': '265', 
+                'chr_end': '265',
                 'seq': 'AAGAATTTTCCCCAATGGTTGCT',
-                'melting_temp': '59.347613464584356', 
+                'melting_temp': '59.347613464584356',
                 'gc_content': '39.130434782608695'
             }
         ]
@@ -129,41 +131,41 @@ class TestPrimerDesignerClass(TestCase):
             'WGE format': "{'0': 1, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '10': 0}",
             'Score': '0.0'}
         self.example_iter_pairs_dict = defaultdict(
-            dict, 
+            dict,
             {
                 'exon1_2_LibAmp_0': {
-                        'F': {
-                            'primer': 'exon1_2_LibAmpF_0',
-                            'sequence': 'CTGTTCTGACAGTAGAAAGGCA',
-                            'chr': 'chr1',
-                            'primer_start': '55', 
-                            'primer_end': '77', 
-                            'tm': '58.004800503683725', 
-                            'gc_percent': '45.45454545454545', 
-                            'penalty': '3.9951994963162747', 
-                            'self_any_th': '1.588400990154355', 
-                            'self_end_th': '0.0',
-                            'hairpin_th': '46.57005916211301', 
-                            'end_stability': '4.75'
-                        },
-                        'version': '01',
-                        'pair': 'exon1_2_LibAmp_0', 
-                        'score': '0.0', 
-                        'targeton': 'exon1',
-                        'R': {
+                    'F': {
+                        'primer': 'exon1_2_LibAmpF_0',
+                        'sequence': 'CTGTTCTGACAGTAGAAAGGCA',
+                        'chr': 'chr1',
+                        'primer_start': '55',
+                        'primer_end': '77',
+                        'tm': '58.004800503683725',
+                        'gc_percent': '45.45454545454545',
+                        'penalty': '3.9951994963162747',
+                        'self_any_th': '1.588400990154355',
+                        'self_end_th': '0.0',
+                        'hairpin_th': '46.57005916211301',
+                        'end_stability': '4.75'
+                    },
+                    'version': '01',
+                    'pair': 'exon1_2_LibAmp_0',
+                    'score': '0.0',
+                    'targeton': 'exon1',
+                    'R': {
                             'primer': 'exon1_2_LibAmpR_0',
                             'sequence': 'AAGAATTTTCCCCAATGGTTGCT',
                             'chr': 'chr1',
                             'primer_start': '242',
-                            'primer_end': '265', 
+                            'primer_end': '265',
                             'tm': '59.347613464584356',
-                            'gc_percent': '39.130434782608695', 
+                            'gc_percent': '39.130434782608695',
                             'penalty': '3.652386535415644',
                             'self_any_th': '0.0',
                             'self_end_th': '0.0',
                             'hairpin_th': '34.76817642661916',
                             'end_stability': '3.91'
-                        }
+                    }
                 }
             }
         )
@@ -279,7 +281,7 @@ class TestPrimerDesignerClass(TestCase):
             test_primer_designer.to_list_dicts(),
             self.example_filled_primer_designer.to_list_dicts()
         )
-        
+
     def test_from_dict(self):
         # Arrange
         example_primer_designer = self.example_filled_primer_designer
@@ -417,7 +419,7 @@ class TestPrimerPairClass(TestCase):
             'chr_end' : '77',
             'seq' : 'CTGTTCTGACAGTAGAAAGGCA',
             'melting_temp' : '58.004800503683725',
-            'gc_content': '45.45454545454545', 
+            'gc_content': '45.45454545454545',
         }
         self.example_dict_primer_right = {
             'chromosome' : 'chr1',
@@ -425,7 +427,7 @@ class TestPrimerPairClass(TestCase):
             'chr_end' : '265',
             'seq' : 'AAGAATTTTCCCCAATGGTTGCT',
             'melting_temp' : '59.347613464584356',
-            'gc_content': '39.130434782608695', 
+            'gc_content': '39.130434782608695',
         }
         self.example_primer_pair_dict = {
             'pair'  : 'exon1_2_LibAmp_0',
@@ -504,17 +506,17 @@ class TestPrimerPairClass(TestCase):
 class TestPrimerClass(TestCase):
     def setUp(self):
         self.example_dict_primer_left_raw = {
-            'primer': 'exon1_2_LibAmpF_0', 
-            'sequence': 'CTGTTCTGACAGTAGAAAGGCA', 
+            'primer': 'exon1_2_LibAmpF_0',
+            'sequence': 'CTGTTCTGACAGTAGAAAGGCA',
             'chr': 'chr1',
-            'primer_start': '55', 
-            'primer_end': '77', 
+            'primer_start': '55',
+            'primer_end': '77',
             'tm': '58.004800503683725',
-            'gc_percent': '45.45454545454545', 
+            'gc_percent': '45.45454545454545',
             'penalty': '3.9951994963162747',
             'self_any_th': '1.588400990154355',
             'self_end_th': '0.0',
-            'hairpin_th': '46.57005916211301', 
+            'hairpin_th': '46.57005916211301',
             'end_stability': '4.75'
         }
         self.example_primer_left = Primer(self.example_dict_primer_left_raw)
@@ -524,9 +526,10 @@ class TestPrimerClass(TestCase):
             'chr_end' : '77',
             'seq' : 'CTGTTCTGACAGTAGAAAGGCA',
             'melting_temp' : '58.004800503683725',
-            'gc_content': '45.45454545454545', 
+            'gc_content': '45.45454545454545',
         }
-        self.example_fields = ['chromosome', 'chr_start', 'chr_end', 'seq', 'melting_temp', 'gc_content']
+        self.example_fields = ['chromosome', 'chr_start',
+                               'chr_end', 'seq', 'melting_temp', 'gc_content']
         self.example_item_chromosome = 'chr1'
         self.example_scoring_total_dict = {
             'Targeton': 'exon1', 'Primer pair': 'exon1_2_LibAmp_0', 'A/B/Total': 'Total',
@@ -534,7 +537,7 @@ class TestPrimerClass(TestCase):
             '7': '0', '8': '0', '9': '0', '10': '0',
             'WGE format': "{'0': 1, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '10': 0}",
             'Score': '0.0'}
-        
+
     def test__init__(self):
         # Arrange
         example_primer = self.example_primer_left
@@ -544,7 +547,7 @@ class TestPrimerClass(TestCase):
         # Assert
         self.assertDictEqual(test_primer._asdict(), example_primer._asdict())
         self.assertDictEqual(test_raw_primer._asdict(), example_primer._asdict())
-    
+
     def test_assign_data(self):
         # Arrange
         example_primer = self.example_primer_left
@@ -572,10 +575,14 @@ class TestPrimerClass(TestCase):
             'gc_content' : 'gc_percent',
         }
         # Act
-        test_primer_data = translate_dict(self.example_dict_primer_left_raw, translation_dict=translation_dict, fields=self.example_fields)
+        test_primer_data = translate_dict(
+            self.example_dict_primer_left_raw,
+            translation_dict=translation_dict,
+            fields=self.example_fields
+            )
         # Assert
         self.assertDictEqual(test_primer_data, example_primer_data)
-        
+
     def test__getitem__(self):
         # Arrange
         example_item = self.example_item_chromosome

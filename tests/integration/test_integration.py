@@ -109,7 +109,10 @@ class TestPrimerDesignerIntegration(TestCase):
                 design_output_data = DesignOutputData(tmpdir)
                 design_output_data.p3_csv = args['p3_csv']
                 design_output_data.scoring_tsv = args['score_tsv']
-                result = collate_primer_designer_data_command(design_output_data, prefix=args['dir'])
+                result = collate_primer_designer_data_command(
+                    design_output_data,
+                    prefix=args['dir']
+                    )
                 path_json = Path(result.json)
                 path_csv = Path(result.csv)
 

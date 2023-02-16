@@ -6,7 +6,7 @@ from utils.exceptions import FileFormatError, FileValidationError
 from utils.file_system import check_file_exists
 
 
-def validate_bed_format(bed:str):
+def validate_bed_format(bed: str):
     with open(bed, newline='') as file:
         tsv_file = csv.reader(file, delimiter='\t')
 
@@ -18,13 +18,13 @@ def validate_bed_format(bed:str):
             line_num = line_num + 1
 
 
-def validate_fasta_format(fasta:str):
+def validate_fasta_format(fasta: str):
     with open(fasta) as handle:
         if not any(SeqIO.parse(handle, "fasta")):
             raise FileFormatError('Unable to read in FastA file correctly. Check file format.')
 
 
-def validate_bed_content(bed:str):
+def validate_bed_content(bed: str):
     with open(bed, newline='') as file:
         tsv_file = csv.reader(file, delimiter='\t')
         line_num = 1
@@ -62,7 +62,7 @@ def validate_bed_content(bed:str):
             line_num = line_num + 1
 
 
-def validate_p3_csv(p3_csv:str):
+def validate_p3_csv(p3_csv: str):
     with open(p3_csv, newline='') as csv_file:
         data = csv.DictReader(csv_file, delimiter=',')
         expected_cols = [
@@ -74,7 +74,7 @@ def validate_p3_csv(p3_csv:str):
             raise FileFormatError(f'Missing columns in Primer3 CSV')
 
 
-def validate_score_tsv(tsv:str):
+def validate_score_tsv(tsv: str):
     with open(tsv, newline='') as tsv_file:
         data = csv.DictReader(tsv_file, delimiter='\t')
         expected_cols = ['Targeton', 'Primer pair', 'A/B/Total', 'WGE format', 'Score']

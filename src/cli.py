@@ -145,7 +145,10 @@ def design_command(args) -> DesignOutputData:
     )
     scoring_output_path = path.join(slicer_result.dir, 'scoring_output.tsv')
     scoring_result = scoring_command(
-        ipcress_result.stnd, args['mismatch'], scoring_output_path, targeton_result.csv
+        ipcress_result.stnd,
+        args['mismatch'],
+        scoring_output_path,
+        targeton_result.csv
     )
     design_result = DesignOutputData(slicer_result.dir)
     # Slicer
@@ -163,7 +166,10 @@ def design_command(args) -> DesignOutputData:
     # Scoring
     design_result.scoring_tsv = scoring_result.tsv
     # Primer Designer
-    primer_designer_result = collate_primer_designer_data_command(design_result, existing_dir=slicer_result.dir)
+    primer_designer_result = collate_primer_designer_data_command(
+        design_result,
+        existing_dir=slicer_result.dir
+        )
     design_result.pd_json = primer_designer_result.json
     design_result.pd_csv = primer_designer_result.csv
 
@@ -186,7 +192,7 @@ def resolve_command(args):
             primer_for_ipcress(
                 fasta=args['fasta'],
                 prefix=args['dir'],
-                min=args['min'], 
+                min=args['min'],
                 max=args['max']
             )
 

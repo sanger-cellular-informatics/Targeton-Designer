@@ -167,5 +167,4 @@ def add_input_args(parser):
         help='Path for output TSV file',
     )
 
-
     return parser

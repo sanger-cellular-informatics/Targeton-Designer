@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from pybedtools import BedTool
 from utils.file_system import write_to_text_file, FolderCreator
 from utils.exceptions import OutputError, FolderCreatorError, FileTypeError
-if TYPE_CHECKING:
+if TYPE_CHECKING: # For avoiding circular import dependencies, only import for type checking.
     from src.primer_designer import PrimerDesigner
 
 
@@ -255,11 +255,11 @@ def write_scoring_output(scoring, output_tsv) -> ScoringOutputData:
     return result
 
 
-def export_primer_design_to_file(primer_designer:PrimerDesigner, filename:str, export_dir:str, file_type:str) -> str:
+def export_primer_design_to_file(primer_designer: PrimerDesigner, filename: str, export_dir: str, file_type: str) -> str:
     accepted_file_types = [r'.json', r'.csv']
     if file_type not in accepted_file_types:
         raise FileTypeError(f"Unknown filetype passed {file_type}.")
-    
+
     filename = Path(filename)
     if not filename.suffix:
         filename = filename.with_suffix(file_type)
@@ -272,7 +272,7 @@ def export_primer_design_to_file(primer_designer:PrimerDesigner, filename:str, e
             writer = csv.DictWriter(f, fieldnames=list(flat_dict_list[0].keys()))
             writer.writeheader()
             writer.writerows(flat_dict_list)
-        
+
     return str(path)
 
 
