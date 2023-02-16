@@ -38,11 +38,7 @@ RUN rm -rf /exonerate
 
 COPY . .
 
-FROM base as dev
-ENTRYPOINT [ "python3", "./src/cli.py" ]
-
-FROM base as test
-CMD ["python3", "-m", "unittest"]
+CMD [ "python3", "./src/cli.py" ]
 
 
 # TODO: Flesh out loading data into Docker Container ticket
