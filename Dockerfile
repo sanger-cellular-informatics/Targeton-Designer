@@ -38,7 +38,5 @@ RUN rm -rf /exonerate
 
 COPY . .
 
-ENTRYPOINT [ "python3", "./src/cli.py" ]
-
 
 # TODO: Flesh out loading data into Docker Container ticket
