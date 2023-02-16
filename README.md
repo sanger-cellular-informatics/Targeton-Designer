@@ -216,6 +216,17 @@ Example command:
 ```
 Please note primer pair names in the iPCRess input file must be prefixed by the corresponding region name in the BED file.
 
+#### Primer data collation and output to csv & Json (for benchling)
+
+To collate the primer and scoring data and output to CSV & JSON file:
+```sh
+./designer.sh collate_primer_data [--p3_csv Primer3_output.csv] [--score_tsv scoring_output.tsv] [--dir DIR]
+```
+
+Examples of the output can be found below.
+
+Is also run as part of the design command.
+
 ### Docker
 
 Upcoming feature in later releases
@@ -335,6 +346,125 @@ ENSE00003571441_HG6_6_LibAmpR_1,ACCCAGGCTGCATCTCCC,1,42931021,42931039,61.415087
 ENSE00003571441_HG6_6_LibAmpF_1,AGTGCCAGGACCTCTCCTA,1,42931211,42931230,58.90293358584404,57.89473684210526,2.097066414155961,0.0,0.0,46.300612411542886,2.94
 ```
 
+### Primer Designer Output example
+Creates a data structure of LIST_PAIRS->PRIMER_PAIR->PRIMER
+
+Currently output as both a JSON and CSV.
+
+As a nested structure JSON.
+```
+[
+    {
+        "left": {
+            "chr_end": "77",
+            "chr_start": "55",
+            "chromosome": "chr1",
+            "gc_content": "45.45454545454545",
+            "melting_temp": "58.004800503683725",
+            "seq": "CTGTTCTGACAGTAGAAAGGCA"
+        },
+        "pair": "exon1_2_LibAmp_0",
+        "product_size": 210,
+        "right": {
+            "chr_end": "265",
+            "chr_start": "242",
+            "chromosome": "chr1",
+            "gc_content": "39.130434782608695",
+            "melting_temp": "59.347613464584356",
+            "seq": "AAGAATTTTCCCCAATGGTTGCT"
+        },
+        "score": "0.0",
+        "targeton": "exon1",
+        "version": "01"
+    },
+    {
+        "left": {
+            "chr_end": "77",
+            "chr_start": "55",
+            "chromosome": "chr1",
+            "gc_content": "45.45454545454545",
+            "melting_temp": "58.004800503683725",
+            "seq": "CTGTTCTGACAGTAGAAAGGCA"
+        },
+        "pair": "exon1_2_LibAmp_1",
+        "product_size": 210,
+        "right": {
+            "chr_end": "265",
+            "chr_start": "243",
+            "chromosome": "chr1",
+            "gc_content": "40.90909090909091",
+            "melting_temp": "57.98020807087107",
+            "seq": "AAGAATTTTCCCCAATGGTTGC"
+        },
+        "score": "0.0",
+        "targeton": "exon1",
+        "version": "01"
+    },
+    {
+        "left": {
+            "chr_end": "78",
+            "chr_start": "55",
+            "chromosome": "chr1",
+            "gc_content": "43.47826086956522",
+            "melting_temp": "58.426100173219595",
+            "seq": "CTGTTCTGACAGTAGAAAGGCAT"
+        },
+        "pair": "exon1_2_LibAmp_2",
+        "product_size": 210,
+        "right": {
+            "chr_end": "265",
+            "chr_start": "242",
+            "chromosome": "chr1",
+            "gc_content": "39.130434782608695",
+            "melting_temp": "59.347613464584356",
+            "seq": "AAGAATTTTCCCCAATGGTTGCT"
+        },
+        "score": "0.0",
+        "targeton": "exon1",
+        "version": "01"
+    },
+    {
+        "left": {
+            "chr_end": "78",
+            "chr_start": "55",
+            "chromosome": "chr1",
+            "gc_content": "43.47826086956522",
+            "melting_temp": "58.426100173219595",
+            "seq": "CTGTTCTGACAGTAGAAAGGCAT"
+        },
+        "pair": "exon1_2_LibAmp_3",
+        "product_size": 210,
+        "right": {
+            "chr_end": "265",
+            "chr_start": "243",
+            "chromosome": "chr1",
+            "gc_content": "40.90909090909091",
+            "melting_temp": "57.98020807087107",
+            "seq": "AAGAATTTTCCCCAATGGTTGC"
+        },
+        "score": "0.0",
+        "targeton": "exon1",
+        "version": "01"
+    }
+]
+```
+
+Flattened to a CSV table.
+```
+version,pair,score,targeton,product_size,side,chromosome,chr_start,chr_end,seq,melting_temp,gc_content
+01,exon1_2_LibAmp_0,0.0,exon1,210,left,chr1,55,77,CTGTTCTGACAGTAGAAAGGCA,58.004800503683725,45.45454545454545
+01,exon1_2_LibAmp_0,0.0,exon1,210,right,chr1,242,265,AAGAATTTTCCCCAATGGTTGCT,59.347613464584356,39.130434782608695
+01,exon1_2_LibAmp_1,0.0,exon1,210,left,chr1,55,77,CTGTTCTGACAGTAGAAAGGCA,58.004800503683725,45.45454545454545
+01,exon1_2_LibAmp_1,0.0,exon1,210,right,chr1,243,265,AAGAATTTTCCCCAATGGTTGC,57.98020807087107,40.90909090909091
+01,exon1_2_LibAmp_2,0.0,exon1,210,left,chr1,55,78,CTGTTCTGACAGTAGAAAGGCAT,58.426100173219595,43.47826086956522
+01,exon1_2_LibAmp_2,0.0,exon1,210,right,chr1,242,265,AAGAATTTTCCCCAATGGTTGCT,59.347613464584356,39.130434782608695
+01,exon1_2_LibAmp_3,0.0,exon1,210,left,chr1,55,78,CTGTTCTGACAGTAGAAAGGCAT,58.426100173219595,43.47826086956522
+01,exon1_2_LibAmp_3,0.0,exon1,210,right,chr1,243,265,AAGAATTTTCCCCAATGGTTGC,57.98020807087107,40.90909090909091
+```
+
+
+
+
 ### iPCRess Standard Input File
 Standard file format input for iPCRess. If you wish to use iPCRess as a standalone, use this file format.
 Otherwise point iPCRess at the Primer3 output CSV.
@@ -387,3 +517,16 @@ exon1_2_LibAmp_1,exon1
 exon1_2_LibAmp_2,exon1
 exon1_2_LibAmp_3,exon1
 ```
+
+### Debugging with python debugger
+To debug with a local debugger, insert at the top of the file:
+```
+import sys, os
+os.chdir(r'/home/ubuntu/lims2-webapp-filesystem/user/targeton-designer')
+sys.path.insert(0, '')
+sys.path.insert(0, 'src/')
+```
+This allows src and submodules inside src to be found.
+
+To debug with vscode, make sure the cwd in the debugger settings are pointed at targeton-designer.
+Additionally make sure the interpreter is pointed at the correct virtual environment (venv/bin/python).

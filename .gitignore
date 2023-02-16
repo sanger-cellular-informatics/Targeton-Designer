@@ -123,3 +123,10 @@ venv.bak/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
+# default output folder
+td_output/
+
+#Swap files
+*.swp
+*.swo

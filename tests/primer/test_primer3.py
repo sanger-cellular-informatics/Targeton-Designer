@@ -8,14 +8,14 @@ from unittest.mock import patch
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from tests.test_data.primer3_output_data import primer3_output_data
-from primer.primer3 import Primer
+from primer.primer3 import Primer3
 
 
 class TestPrimer3(TestCase):
     primer3_output_json_data = primer3_output_data
 
     def setUp(self):
-        self.primer = Primer()
+        self.primer = Primer3()
         self.setUpPyfakefs()
 
     def create_files(self):
@@ -188,7 +188,7 @@ class TestPrimer3(TestCase):
         # assert
         self.assertEqual(actual, expected)
 
-    @patch('primer.primer3.Primer.build_primers_dict')
+    @patch('primer.primer3.Primer3.build_primers_dict')
     def test_locate_primers_design_success(self, dict_mock):
         # arrange
         dict_mock.return_value = {'region1_1_libamp_name_2': 'build_primer_dict'}
@@ -206,9 +206,9 @@ class TestPrimer3(TestCase):
         self.assertEqual(expected, actual)
         self.assertEqual(dict_mock.call_count, 2)
 
-    @patch('primer.primer3.Primer.build_primer_loci')
-    @patch('primer.primer3.Primer.name_primers')
-    @patch('primer.primer3.Primer.capture_primer_details')
+    @patch('primer.primer3.Primer3.build_primer_loci')
+    @patch('primer.primer3.Primer3.name_primers')
+    @patch('primer.primer3.Primer3.capture_primer_details')
     def test_build_primers_dict_valid_success(
             self, details_mock, name_mock, loci_mock):
         # arrange
@@ -232,7 +232,7 @@ class TestPrimer3(TestCase):
             f"{loci_mock.call_args}", ("call({}, 'key_1', 'design', "
                                        "{'pair': '2'}, {'strand': '+', 'name': 'region1_1'})"))
 
-    @patch('primer.primer3.Primer.capture_primer_details')
+    @patch('primer.primer3.Primer3.capture_primer_details')
     def test_build_primers_dict_no_details_empty(self, details_mock):
         # arrange
         details_mock.return_value = {}
@@ -248,9 +248,9 @@ class TestPrimer3(TestCase):
         self.assertEqual(expected, actual)
         self.assertEqual(f"{details_mock.call_args}", "call('key_1')")
 
-    # @patch('primer.primer3.Primer.revcom_reverse_primer')
-    @patch('primer.primer3.Primer.determine_primer_strands')
-    @patch('primer.primer3.Primer.calculate_primer_coords')
+    # @patch('primer.primer3.Primer3.revcom_reverse_primer')
+    @patch('primer.primer3.Primer3.determine_primer_strands')
+    @patch('primer.primer3.Primer3.calculate_primer_coords')
     def test_build_primer_loci_with_coords_success(
             self, coords_mock, strands_mock
     ):

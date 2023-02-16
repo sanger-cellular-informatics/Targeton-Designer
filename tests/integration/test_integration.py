@@ -8,9 +8,11 @@ from tempfile import TemporaryDirectory
 
 from cli import (
     slicer_command, primer_command, ipcress_command,
-    generate_targeton_csv, scoring_command, design_command
+    scoring_command, design_command,
+    collate_primer_designer_data_command
 )
 from utils.arguments_parser import ParsedInputArguments
+from utils.write_output_files import DesignOutputData, write_targeton_csv
 
 
 class TestSlicerIntegration(TestCase):
@@ -51,15 +53,15 @@ class TestPrimerIntegration(TestCase):
                 args = parsed_input.get_args()
 
                 # Act
-                primer_result = primer_command(args["fasta"], prefix=args["dir"])
-                path_bed = Path(primer_result.bed)
-                path_csv = Path(primer_result.csv)
+                primer_result = primer_command(fasta=args["fasta"], prefix=args["dir"])
+                path_primer_bed = Path(primer_result.bed)
+                path_primer_csv = Path(primer_result.csv)
 
                 # Assert
-                self.assertTrue(path_bed.is_file())
-                self.assertTrue(path_csv.is_file())
-                self.assertGreater(path_bed.stat().st_size, 0)
-                self.assertGreater(path_csv.stat().st_size, 0)
+                self.assertTrue(path_primer_bed.is_file())
+                self.assertTrue(path_primer_csv.is_file())
+                self.assertGreater(path_primer_bed.stat().st_size, 0)
+                self.assertGreater(path_primer_csv.stat().st_size, 0)
 
 
 class TestIPcressIntegration(TestCase):
@@ -90,12 +92,43 @@ class TestIPcressIntegration(TestCase):
                 self.assertGreater(path_err.stat().st_size, 0)
 
 
+class TestPrimerDesignerIntegration(TestCase):
+    def setUp(self):
+        self.scoring_output_tsv_path = r"./tests/integration/fixtures/scoring_output.tsv"
+        self.p3_output_csv_path = r"./tests/integration/fixtures/p3_output.csv"
+
+    def test_primer_designer_output(self):
+        with TemporaryDirectory() as tmpdir:
+            # Arrange
+            # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
+            with patch.object(sys, 'argv', ["./designer.sh", "primer_designer", "--score_tsv", self.scoring_output_tsv_path, "--dir", tmpdir, "--p3_csv", self.p3_output_csv_path]):
+                parsed_input = ParsedInputArguments()
+                args = parsed_input.get_args()
+
+                # Act
+                design_output_data = DesignOutputData(tmpdir)
+                design_output_data.p3_csv = args['p3_csv']
+                design_output_data.scoring_tsv = args['score_tsv']
+                result = collate_primer_designer_data_command(
+                    design_output_data,
+                    prefix=args['dir']
+                    )
+                path_json = Path(result.json)
+                path_csv = Path(result.csv)
+
+                # Assert
+                self.assertTrue(path_json.is_file())
+                self.assertTrue(path_csv.is_file())
+                self.assertGreater(path_json.stat().st_size, 0)
+                self.assertGreater(path_csv.stat().st_size, 0)
+
+
 class TestTargetonCSVIntegration(TestCase):
     def setUp(self):
         self.ipcress_input_path = r"./tests/integration/fixtures/ipcress_primer_input.txt"
         self.bed_file_path = r"./tests/integration/fixtures/bed_example.bed"
 
-    def test_generate_targeton_csv_output(self):
+    def test_write_targeton_csv_output(self):
         with TemporaryDirectory() as tmpdir:
             # Arrange
             cli_input = [
@@ -110,7 +143,7 @@ class TestTargetonCSVIntegration(TestCase):
                 args = parsed_input.get_args()
 
                 # Act
-                result = generate_targeton_csv(args['primers'], args['bed'], args['dir'])
+                result = write_targeton_csv(args['primers'], args['bed'], args['dir'])
                 path_csv = Path(result.csv)
 
                 # Assert

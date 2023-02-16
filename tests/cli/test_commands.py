@@ -24,8 +24,8 @@ class TestCliCommands(TestCase):
         ]
 
         result = primer_for_ipcress(fasta=PRIMER_INPUT_FASTA_PATH,
-                                    prefix='!!test_', 
-                                    min=PARAMS_MIN, 
+                                    prefix='!!test_',
+                                    min=PARAMS_MIN,
                                     max=PARAMS_MAX
                                     )
 
