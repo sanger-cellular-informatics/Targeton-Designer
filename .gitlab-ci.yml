@@ -50,7 +50,7 @@ test:
   script:
     - tag="$CI_COMMIT_REF_SLUG"
     - docker run "${CI_REGISTRY_IMAGE}:${tag}"
-    - docker exec "${CI_REGISTRY_IMAGE}:${tag}" sh -c "make test"
+    - docker exec "${tag}" sh -c "make test"
   # Run this job in a branch where a Dockerfile exists
   rules:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
