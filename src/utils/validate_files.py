@@ -1,9 +1,10 @@
 import csv
 from Bio import SeqIO
 import re
+import json
 
 from utils.exceptions import FileFormatError, FileValidationError
-from utils.file_system import check_file_exists
+from utils.file_system import check_file_exists, parse_json
 
 
 def validate_bed_format(bed: str):
@@ -82,7 +83,22 @@ def validate_score_tsv(tsv: str):
             raise FileFormatError(f'Missing columns in Scoring TSV')
 
 
-def validate_files(bed='', fasta='', txt='', p3_csv='', score_tsv=''):
+def validate_primer_json(json: str) -> None:
+    data = parse_json(json)
+    if not data:
+        raise FileFormatError('Primer JSON is empty')
+    for item in data:
+        try:
+            for key in ['pair', 'product_size', 'score', 'targeton', 'version']:
+                item[key]
+            for key in ['chr_end', 'chr_start', 'chromosome', 'gc_content', 'melting_temp', 'seq']:
+                item['left'][key]
+                item['right'][key]
+        except (TypeError, KeyError):
+            raise FileFormatError('Primer JSON not in expected format')
+
+
+def validate_files(bed='', fasta='', txt='', p3_csv='', score_tsv='', primer_json=''):
     try:
         if bed:
             check_file_exists(bed)
@@ -103,6 +119,10 @@ def validate_files(bed='', fasta='', txt='', p3_csv='', score_tsv=''):
         if score_tsv:
             check_file_exists(score_tsv)
             validate_score_tsv(score_tsv)
+
+        if primer_json:
+            check_file_exists(primer_json)
+            validate_primer_json(primer_json)
 
     except ValueError as valErr:
         print('Error occurred while checking file content: {0}'.format(valErr))
