@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, List, Tuple, Type
+from typing import Any, List, Tuple
 from collections import defaultdict
 import re
 import json
