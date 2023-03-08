@@ -227,6 +227,18 @@ Examples of the output can be found below.
 
 Is also run as part of the design command.
 
+#### Post primers to Benchling
+
+To post the top 3 primer pairs for each targeton from the Primer Designer JSON output:
+```sh
+./designer.sh post_primers [--primer_json PRIMER_JSON]
+```
+Example command:
+```sh
+./designer.sh post_primers --primer_json primer_designer.json
+```
+A message will be printed if there are less than 3 primer pairs for a particular targeton. Please note some fields on Benchling will have to be updated manually for now.
+
 ### Docker
 
 Upcoming feature in later releases

@@ -27,6 +27,7 @@ from primer.primer3 import Primer3
 from ipcress.ipcress import Ipcress
 from adapters.primer3_to_ipcress import Primer3ToIpcressAdapter
 from primer_designer import PrimerDesigner
+from post_primer_pairs import post_primer_pairs
 
 sys.path.insert(
     0, path.abspath(path.join(path.dirname(__file__), '../sge-primer-scoring/src'))
@@ -169,11 +170,16 @@ def design_command(args) -> DesignOutputData:
     primer_designer_result = collate_primer_designer_data_command(
         design_result,
         existing_dir=slicer_result.dir
-        )
+    )
     design_result.pd_json = primer_designer_result.json
     design_result.pd_csv = primer_designer_result.csv
 
     return design_result
+
+
+def post_primers(primer_json) -> None:
+    validate_files(primer_json=primer_json)
+    post_primer_pairs(primer_json)
 
 
 def resolve_command(args):
@@ -218,6 +224,9 @@ def resolve_command(args):
 
         if command == 'design':
             design_command(args)
+
+        if command == 'post_primers':
+            post_primers(args['primer_json'])
 
 
 def main():

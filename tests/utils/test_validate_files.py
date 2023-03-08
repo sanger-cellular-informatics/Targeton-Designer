@@ -4,7 +4,14 @@ from unittest.mock import patch
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from utils.exceptions import FileFormatError
-from utils.validate_files import validate_bed_content, validate_bed_format, validate_fasta_format, validate_p3_csv, validate_score_tsv
+from utils.validate_files import (
+    validate_bed_content,
+    validate_bed_format,
+    validate_fasta_format,
+    validate_p3_csv,
+    validate_score_tsv,
+    validate_primer_json,
+)
 
 
 class TestValidateFiles(TestCase):
@@ -328,6 +335,99 @@ class TestValidateFiles(TestCase):
 
         # act
         validate_score_tsv(test_arg)
+
+    def test_validate_primer_json_success(self):
+        # arrange
+        json_contents = '''[
+            {
+                "left": {
+                    "chr_end": "77",
+                    "chr_start": "55",
+                    "chromosome": "chr1",
+                    "gc_content": "45.45454545454545",
+                    "melting_temp": "58.004800503683725",
+                    "seq": "CTGTTCTGACAGTAGAAAGGCA"
+                },
+                "pair": "exon1_2_LibAmp_0",
+                "product_size": 210,
+                "right": {
+                    "chr_end": "265",
+                    "chr_start": "242",
+                    "chromosome": "chr1",
+                    "gc_content": "39.130434782608695",
+                    "melting_temp": "59.347613464584356",
+                    "seq": "AAGAATTTTCCCCAATGGTTGCT"
+                },
+                "score": "0.0",
+                "targeton": "exon1",
+                "version": "01"
+            }
+        ]'''
+        self.fs.create_file('/test.json', contents=json_contents)
+
+        # act
+        validate_primer_json('/test.json')
+        # assert not raised?
+
+    def test_validate_primer_json_missing_field_fail(self):
+        # arrange
+        json_contents = '''[
+            {
+                "left": {
+                    "chr_start": "55",
+                    "chromosome": "chr1",
+                    "gc_content": "45.45454545454545",
+                    "melting_temp": "58.004800503683725",
+                    "seq": "CTGTTCTGACAGTAGAAAGGCA"
+                },
+                "pair": "exon1_2_LibAmp_0",
+                "product_size": 210,
+                "right": {
+                    "chr_end": "265",
+                    "chr_start": "242",
+                    "chromosome": "chr1",
+                    "gc_content": "39.130434782608695",
+                    "melting_temp": "59.347613464584356",
+                    "seq": "AAGAATTTTCCCCAATGGTTGCT"
+                },
+                "score": "0.0",
+                "targeton": "exon1",
+                "version": "01"
+            }
+        ]'''
+        self.fs.create_file('/test.json', contents=json_contents)
+        expected = 'Primer JSON not in expected format'
+
+        # act
+        with self.assertRaises(FileFormatError) as exception_context:
+            validate_primer_json('/test.json')
+
+        # assert
+        self.assertEqual(expected, str(exception_context.exception))
+
+    def test_validate_primer_json_invalid_type_fail(self):
+        # arrange
+        self.fs.create_file('/test.json', contents='[[]]')
+        expected = 'Primer JSON not in expected format'
+
+        # act
+        with self.assertRaises(FileFormatError) as exception_context:
+            validate_primer_json('/test.json')
+
+        # assert
+        self.assertEqual(expected, str(exception_context.exception))
+
+    def test_validate_primer_json_empty_fail(self):
+        # arrange
+        self.fs.create_file('/test.json', contents='[]')
+        expected = 'Primer JSON is empty'
+
+        # act
+        with self.assertRaises(FileFormatError) as exception_context:
+            validate_primer_json('/test.json')
+
+        # assert
+        self.assertEqual(expected, str(exception_context.exception))
 
 
 if __name__ == '__main__':
