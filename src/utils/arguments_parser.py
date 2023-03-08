@@ -17,7 +17,7 @@ class ParsedInputArguments:
             help=(
                 'Command to run in Designer CLI, available commands: '
                 'version, slicer, primer, collate_primer_data, ipcress, scoring, design, '
-                'primer_for_ipcress, generate_targeton_csv'
+                'primer_for_ipcress, generate_targeton_csv, post_primers'
             ),
             type=str, default='design'
         )
@@ -89,6 +89,12 @@ def add_input_args(parser):
         help=(
             'CSV of primer pairs and corresponding targetons'
             ' - adds targeton column to output'
+        ),
+    )
+    parser.add_argument(
+        '--primer_json',
+        help=(
+            'Primer Designer JSON output used to post primers to Benchling'
         ),
     )
 
