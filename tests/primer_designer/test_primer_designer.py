@@ -6,15 +6,14 @@ from pathlib import Path
 from unittest import TestCase
 from unittest.mock import patch
 from tempfile import TemporaryDirectory
-from src.primer_designer import PrimerDesigner, Primer, PrimerPair, translate_dict, iterate_design, map_primer_data
-from src.utils.write_output_files import DesignOutputData, export_primer_design_to_file, write_primer_design_output
+from primer_designer import PrimerDesigner, Primer, PrimerPair, translate_dict, iterate_design, map_primer_data
+from utils.write_output_files import DesignOutputData, export_primer_design_to_file, write_primer_design_output
 from collections import defaultdict
 
 VERSION = '01'
 
 # Test classes
 # PrimerDesigner
-
 
 class TestPrimerDesignerClass(TestCase):
     def setUp(self):

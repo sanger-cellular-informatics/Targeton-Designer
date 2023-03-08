@@ -139,7 +139,7 @@ Running full Designer Workflow:
 
 Example Command
 ```sh
-./designer.sh design --bed example.bed --fasta example_genomic_ref.fasta
+./designer.sh design --bed tests/integration/fixtures/bed_example.bed --fasta tests/integration/fixtures/fasta_example.fa
 ```
 
 #### Slicer Tool
@@ -473,8 +473,6 @@ version,pair,score,targeton,product_size,side,chromosome,chr_start,chr_end,seq,m
 01,exon1_2_LibAmp_3,0.0,exon1,210,left,chr1,55,78,CTGTTCTGACAGTAGAAAGGCAT,58.426100173219595,43.47826086956522
 01,exon1_2_LibAmp_3,0.0,exon1,210,right,chr1,243,265,AAGAATTTTCCCCAATGGTTGC,57.98020807087107,40.90909090909091
 ```
-
-
 
 
 ### iPCRess Standard Input File

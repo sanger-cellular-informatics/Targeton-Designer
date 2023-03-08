@@ -94,11 +94,17 @@ install-ipcress:
 venv/bin/activate:
 	@python -m venv venv
 
-setup-venv: venv/bin/activate
+setup-venv: venv/requirements_run
+
+venv/requirements_run: venv/bin/activate requirements.txt
 	@./venv/bin/pip install -U pip wheel setuptools 
 	@./venv/bin/pip install -r requirements.txt
 	@./venv/bin/pip install -r sge-primer-scoring/requirements.txt
+	@touch venv/requirements_run
 
+clean-venv/requirements_run:
+	@rm -f venv/requirements_run
+	
 test: setup-venv
 	@. venv/bin/activate \
 	&& python -m unittest
