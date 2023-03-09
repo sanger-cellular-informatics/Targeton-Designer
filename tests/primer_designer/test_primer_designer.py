@@ -15,6 +15,7 @@ VERSION = '01'
 # Test classes
 # PrimerDesigner
 
+
 class TestPrimerDesignerClass(TestCase):
     def setUp(self):
         self.scoring_output_tsv_path = r"scoring_output.tsv"
