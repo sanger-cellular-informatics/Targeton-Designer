@@ -3,7 +3,7 @@ from __future__ import annotations
 import csv
 import re
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, List
 from os import path
 from pathlib import Path
 from dataclasses import dataclass
@@ -117,15 +117,25 @@ def export_primers_to_csv(slices, export_dir):
                'penalty', 'self_any_th', 'self_end_th', 'hairpin_th', 'end_stability']
     rows = construct_csv_format(slices, headers)
 
-    csv_path = path.join(export_dir, PRIMER3_OUTPUT_CSV)
+    csv_path = export_to_csv(rows, export_dir, PRIMER3_OUTPUT_CSV, headers)
+    return csv_path
 
-    with open(csv_path, "w", newline='') as p3_fh:
-        p3_out = csv.DictWriter(p3_fh, fieldnames=headers)
-        p3_out.writeheader()
-        p3_out.writerows(rows)
+def export_to_csv(data:Any, export_dir:str, filename:str, headers:List[str]):
+    filetype = Path(filename).suffix
+    delimiter = {
+        ".csv":",",
+        ".tsv":"\t",
+        ".vcf":"\t",
+        }
+    writer = {dict:csv.DictWriter, list:csv.writer}
+    csv_path = Path(export_dir)/filename
 
-        return csv_path
+    with open(csv_path, "w", newline='') as f:
+        output_writer = writer[type(data)](f, fieldnames=headers, delimiter=delimiter[filetype])
+        output_writer.writeheader()
+        output_writer.writerows(data)
 
+    return csv_path
 
 def construct_csv_format(slices, headers):
     rows = []
