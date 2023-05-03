@@ -139,7 +139,7 @@ Running full Designer Workflow:
 
 Example Command
 ```sh
-./designer.sh design --bed example.bed --fasta example_genomic_ref.fasta
+./designer.sh design --bed tests/integration/fixtures/bed_example.bed --fasta tests/integration/fixtures/fasta_example.fa
 ```
 
 #### Slicer Tool
@@ -226,6 +226,18 @@ To collate the primer and scoring data and output to CSV & JSON file:
 Examples of the output can be found below.
 
 Is also run as part of the design command.
+
+#### Post primers to Benchling
+
+To post the top 3 primer pairs for each targeton from the Primer Designer JSON output:
+```sh
+./designer.sh post_primers [--primer_json PRIMER_JSON]
+```
+Example command:
+```sh
+./designer.sh post_primers --primer_json primer_designer.json
+```
+A message will be printed if there are less than 3 primer pairs for a particular targeton. Please note some fields on Benchling will have to be updated manually for now.
 
 ### Docker
 
@@ -461,8 +473,6 @@ version,pair,score,targeton,product_size,side,chromosome,chr_start,chr_end,seq,m
 01,exon1_2_LibAmp_3,0.0,exon1,210,left,chr1,55,78,CTGTTCTGACAGTAGAAAGGCAT,58.426100173219595,43.47826086956522
 01,exon1_2_LibAmp_3,0.0,exon1,210,right,chr1,243,265,AAGAATTTTCCCCAATGGTTGC,57.98020807087107,40.90909090909091
 ```
-
-
 
 
 ### iPCRess Standard Input File

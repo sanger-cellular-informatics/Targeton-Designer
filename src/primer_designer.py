@@ -5,9 +5,9 @@ from collections import defaultdict
 import re
 import json
 import numpy as np
-from src.utils.file_system import read_csv_to_list_dict
-from src.utils.exceptions import InputTypeError
-from src.utils.write_output_files import DesignOutputData
+from utils.file_system import read_csv_to_list_dict
+from utils.exceptions import InputTypeError
+from utils.write_output_files import DesignOutputData
 
 VERSION = '01'
 
@@ -88,14 +88,14 @@ class PrimerDesigner():
                 self.from_dict(data)
             else:
                 raise InputTypeError("PrimerDesigner class input dict (or list of dicts) doesn't contain needed fields.")
-        elif isinstance(data, DesignOutputData):
+        elif data.__class__.__name__ == DesignOutputData.__name__:
             data_check = self.validate_file_input(data)
             if data_check:
                 self.from_design_output(data)
             else:
                 raise InputTypeError("PrimerDesigner class input DesignOutputData doesn't contain needed fields.")
         else:
-            raise InputTypeError("PrimerDesigner class expects data input to be DesignOutputData or dict (or list of dicts).")
+            raise InputTypeError(f"PrimerDesigner class expects data input to be DesignOutputData or dict (or list of dicts), not: {type(data)}")
 
     @staticmethod
     def validate_file_input(data: DesignOutputData, needed_fields=["p3_csv", "scoring_tsv"]) -> bool:
