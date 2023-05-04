@@ -78,7 +78,7 @@ install-python3.8-dev:
 			@apt-get -y install python3.8-dev
 			PYTHONPATH38 = which python3.8
 		fi
-		@update-alternatives --install ${PYTHONPATH} python ${PYTHONPATH38} 2 
+		@update-alternatives --install $$PYTHONPATH python $$PYTHONPATH38 2 
 		@update-alternatives --config python 
 	fi
 
