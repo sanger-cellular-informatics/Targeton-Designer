@@ -25,7 +25,7 @@ class Slicer:
             return self.get_seq(slice_bed, params['fasta'])
 
         except Exception as err:
-            raise SlicerError('Unexpected error occurred: {0}'.format(err))
+            raise SlicerError(f'Unexpected error occurred: {err}')
 
     def handle_one_based_input(self, input_bed):
         adjusted_tsv = []

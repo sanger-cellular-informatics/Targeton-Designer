@@ -7,9 +7,7 @@ ENVIRONMENTAL_VARIABLE_FILE := .env
 
 -include ${ENVIRONMENTAL_VARIABLE_FILE}
 
-ifeq ($(PREFIX),)
-	PREFIX := /usr/local
-endif
+PREFIX ?= /usr/local
 
 APP = $(PREFIX)/src/app
 export DOCKER_ENV ?= test
@@ -94,7 +92,7 @@ install-autoconf:
 
 install-ipcress:
 	@echo "Installing ipcress..."
-	@git clone https://github.com/nathanweeks/exonerate.git $(APP)/
+	@git clone https://github.com/nathanweeks/exonerate.git $(APP)/exonerate
 	@cd $(APP)/exonerate \
 		&& autoreconf -fi \
 		&& ./configure \
