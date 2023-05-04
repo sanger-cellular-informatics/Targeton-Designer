@@ -70,7 +70,7 @@ install-python3.8-dev:
 		@apt-get -y install python3.8-dev
 	else
 		@PYTHONPATH = which python
-		@ver=$$(python3 -V 2>&1 | sed 's/.*([0-9]\).\([0-9]\).*/\1\2/')
+		@ver=$$(python3 -V 2>&1 | sed 's/.* \([0-9]\).\([0-9]\).*/\1\2/')
 		@if [ "$$ver" -ge 38 ]; then
 			PYTHONPATH38 = which python3
 		else
