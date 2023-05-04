@@ -9,10 +9,11 @@ COPY src src
 COPY tests tests
 
 RUN apt-get update
-RUN apt-get -y full-upgrade
 
 RUN make install
 RUN make setup-venv
+
+COPY . .
 
 FROM base as unittest
 ENV DOCKER_ENV=${DOCKER_ENV:-unittest}

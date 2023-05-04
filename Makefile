@@ -16,8 +16,8 @@ MAKE_VERSION := $(shell make --version | grep '^GNU Make' | sed 's/^.* //g')
 $(info "make version = ${MAKE_VERSION}, minimum version 3.82 required for multiline.")
 
 # Docker
-name = "primer-designer"
-tag=$$DOCKER_ENV
+name = primer-designer
+tag=${DOCKER_ENV}
 
 BUILD_DOCKER ?= ${name}-${tag}
 $(info $(BUILD_DOCKER))
@@ -38,9 +38,6 @@ install:
 	@if [ "$(shell which python3.8-dev)" = "" ]; then
 		$(MAKE) install-python3.8-dev;
 	fi
-	@if [ "$(shell which python3.8-venv)" = "" ]; then
-		$(MAKE) install-python3.8-venv;
-	fi
 	@if [ "$(shell which libglib2.0-dev)" = "" ]; then
 		$(MAKE) install-libglib2.0-dev;
 	fi
@@ -59,9 +56,6 @@ install-build-essential:
 	@echo "Installing build-essential..."
 	@apt-get -y install build-essential git
 
-install-python3.8-venv:
-	@echo "Installing python3.8-venv..."
-	@apt-get -y install python3.8-venv
 
 install-python3.8-dev:
 	@if [ "$(shell which python3)" = "" ]; then
@@ -95,7 +89,7 @@ install-ipcress:
 	@git clone https://github.com/nathanweeks/exonerate.git $(APP)/exonerate
 	@cd $(APP)/exonerate \
 		&& autoreconf -fi \
-		&& ./configure \
+		&& ./configure -q \
 		&& make -j 4 \
 		&& make install
 	@rm -rf $(APP)/exonerate
@@ -117,15 +111,15 @@ install-basics:install-install-curl install-autoconf
 	@apt-get -y install build-essential
 
 venv/bin/activate:
+	@pip install --user virtualenv
 	@python -m venv venv
 
 setup-venv: venv/requirements_run
 
 venv/requirements_run: venv/bin/activate requirements.txt
-	@. venv/bin/activate
-	@pip install -U pip wheel setuptools 
-	@pip install -r requirements.txt
-	@pip install -r sge-primer-scoring/requirements.txt
+	@./venv/bin/pip install -U pip wheel setuptools 
+	@./venv/bin/pip install -r requirements.txt
+	@./venv/bin/pip install -r sge-primer-scoring/requirements.txt
 	@echo "Python requirements installed."
 	@touch venv/requirements_run
 
@@ -134,6 +128,8 @@ clean-venv/requirements_run:
 	
 test: setup-venv
 	@. venv/bin/activate
+	$(MAKE) setup-venv
+	pip list
 	python -m unittest
 
 $(BUILD_DOCKER): 
