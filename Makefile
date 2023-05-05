@@ -44,6 +44,9 @@ install:
 	@if [ "$(shell which autoconf)" = "" ]; then
 		$(MAKE) install-autoconf;		
 	fi
+	@if [ "$(shell which ipcress)" = "" ]; then
+		$(MAKE) install-ipcress;		
+	fi
 
 install-bedtools:
 	@echo "Installing bedtools..."
@@ -112,7 +115,7 @@ venv/bin/activate:
 
 setup-venv: venv/requirements_run
 
-venv/requirements_run: venv/bin/activate requirements.txt
+venv/requirements_run: venv/bin/activate requirements.txt 
 	@./venv/bin/pip install -r requirements.txt
 	@./venv/bin/pip install -r sge-primer-scoring/requirements.txt
 	@echo "Python requirements installed."
