@@ -108,7 +108,6 @@ install-basics:install-install-curl install-autoconf
 	@apt-get -y install build-essential
 
 venv/bin/activate:
-	@pip install --user virtualenv
 	@python -m venv venv
 
 setup-venv: venv/requirements_run
