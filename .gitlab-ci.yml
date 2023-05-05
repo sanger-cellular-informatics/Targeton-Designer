@@ -18,10 +18,10 @@ docker-build:
   # Default branch leaves tag empty (= latest tag)
   # All other branches are tagged with the escaped branch name (commit ref slug)
   script:
-    - tag="$CI_COMMIT_REF_SLUG"
-    - docker build --pull -t "${CI_REGISTRY_IMAGE}:${tag}" .
-    - docker push "${CI_REGISTRY_IMAGE}:${tag}"
-    - docker run "${CI_REGISTRY_IMAGE}:${tag}"
+      - DOCKER_TAG="$CI_COMMIT_REF_SLUG"
+      - DOCKER_NAME=${CI_REGISTRY_IMAGE}
+      - make build-docker
+
   # Run this job in a branch where a Dockerfile exists
   rules:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
@@ -35,21 +35,12 @@ test:
   tags:
     - openstack-autoscale
     - autoscale-docker-in-docker
-  services:
-    - name: docker:20.10.14-dind
-      alias: thedockerhost
-  variables:
-    DOCKER_HOST: tcp://thedockerhost:2375/
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: ""
-    GIT_SUBMODULE_STRATEGY: recursive
-  before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   # Default branch leaves tag empty (= latest tag)
   # All other branches are tagged with the escaped branch name (commit ref slug)
   script:
-    - tag="$CI_COMMIT_REF_SLUG"
-    - docker run "${CI_REGISTRY_IMAGE}:${tag}" sh -c "make test"
+    - DOCKER_TAG="$CI_COMMIT_REF_SLUG"
+    - DOCKER_NAME=${CI_REGISTRY_IMAGE}
+    - make run-docker-test
   # Run this job in a branch where a Dockerfile exists
   rules:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH

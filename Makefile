@@ -16,10 +16,10 @@ MAKE_VERSION := $(shell make --version | grep '^GNU Make' | sed 's/^.* //g')
 $(info "make version = ${MAKE_VERSION}, minimum version 3.82 required for multiline.")
 
 # Docker
-name = primer-designer
-tag=${DOCKER_ENV}
+DOCKER_NAME ?= primer-designer
+DOCKER_TAG ?=${DOCKER_ENV}
 
-BUILD_DOCKER ?= ${name}-${tag}
+BUILD_DOCKER ?= ${DOCKER_NAME}-${DOCKER_TAG}
 $(info $(BUILD_DOCKER))
 
 init:
@@ -140,22 +140,25 @@ $(BUILD_DOCKER):
 		docker buildx install
 		DOCKER_BUILDKIT=1
 	fi
-	@docker build --pull -t "${name}:${tag}" --target base .;
+	@docker build --pull -t "${DOCKER_NAME}:${DOCKER_TAG}" --target base .;
+	@docker push "${DOCKER_NAME}:${DOCKER_TAG}"
 	@touch $(BUILD_DOCKER)
 
-build-docker-test: $(BUILD_DOCKER)
-	@docker build --pull -t "${name}:${tag}" --target unittest .;
+build-docker: $(BUILD_DOCKER)
 
-run-docker: $(BUILD_DOCKER)
-	@docker run --name "${name}" -p 8081:8081 -t "${name}:${tag}"
+build-docker-test: build-docker
+	@docker build --pull -t "${DOCKER_NAME}:${DOCKER_TAG}" --target unittest .;
+
+run-docker: build-docker
+	@docker run --name "${DOCKER_NAME}" -p 8081:8081 -t "${DOCKER_NAME}:${DOCKER_TAG}"
 
 run-docker-test: build-docker-test run-docker
 
-run-docker-interactive: $(BUILD_DOCKER)
-	@docker run -i --name "${name}" -t "${name}:${tag}" bash
+run-docker-interactive: build-docker
+	@docker run -i --name "${DOCKER_NAME}" -t "${DOCKER_NAME}:${DOCKER_TAG}" bash
 
 connect-docker-interactive: run-docker
-	@docker exec -it ${name} bash
+	@docker exec -it ${DOCKER_NAME} bash
 
 clean-docker:
 	@docker builder prune -af
