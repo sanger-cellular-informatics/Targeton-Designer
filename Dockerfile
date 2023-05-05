@@ -4,7 +4,7 @@ WORKDIR /
 
 COPY Makefile Makefile
 COPY requirements.txt requirements.txt
-COPY sge-primer-scoring/requirements.txt scoring_requirements.txt
+COPY sge-primer-scoring/requirements.txt sge-primer-scoring/scoring_requirements.txt
 COPY src src
 COPY tests tests
 
