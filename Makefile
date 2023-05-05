@@ -113,7 +113,7 @@ venv/bin/activate:
 setup-venv: venv/requirements_run
 
 venv/requirements_run: venv/bin/activate requirements.txt
-	@./venv/bin/pip install -U pip wheel setuptools 
+	@./venv/bin/pip install -U wheel setuptools 
 	@./venv/bin/pip install -r requirements.txt
 	@./venv/bin/pip install -r sge-primer-scoring/requirements.txt
 	@echo "Python requirements installed."
@@ -121,6 +121,9 @@ venv/requirements_run: venv/bin/activate requirements.txt
 
 clean-venv/requirements_run:
 	@rm -f venv/requirements_run
+
+clean-venv:
+	@rm -rf venv
 	
 test: setup-venv
 	@. venv/bin/activate
