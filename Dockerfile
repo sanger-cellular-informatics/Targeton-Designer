@@ -11,7 +11,7 @@ COPY tests tests
 RUN apt-get update
 
 RUN make install
-RUN make setup-venv
+RUN ./venv/bin/pip install -r requirements
 
 COPY . .
 
