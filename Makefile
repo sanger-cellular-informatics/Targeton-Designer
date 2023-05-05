@@ -62,14 +62,14 @@ install-python3.8-dev:
 	else
 		@PYTHONPATH = which python
 		@ver=$$(python3 -V 2>&1 | sed 's/.* \([0-9]\).\([0-9]\).*/\1\2/')
-		@if [ "$$ver" -ge 38 ]; then
+		@if [ "$$ver" -eq 38 ]; then
 			PYTHONPATH38 = which python3
 		else
 			@echo "Installing python3.8-dev..."
 			@apt-get -y install python3.8-dev
 			PYTHONPATH38 = which python3.8
 		fi
-		@update-alternatives --install $$PYTHONPATH python $$PYTHONPATH38 2 
+		@update-alternatives --install ${PYTHONPATH} python ${PYTHONPATH38} 2 
 		@update-alternatives --config python 
 	fi
 
@@ -113,7 +113,7 @@ venv/bin/activate:
 setup-venv: venv/requirements_run
 
 venv/requirements_run: venv/bin/activate requirements.txt
-	@./venv/bin/pip install -U wheel setuptools 
+	@./venv/bin/pip install -U wheel 
 	@./venv/bin/pip install -r requirements.txt
 	@./venv/bin/pip install -r sge-primer-scoring/requirements.txt
 	@echo "Python requirements installed."
