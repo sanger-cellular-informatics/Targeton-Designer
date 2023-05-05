@@ -11,7 +11,7 @@ COPY tests tests
 RUN apt-get update
 
 RUN make install
-RUN ./venv/bin/pip install -r requirements
+RUN ./venv/bin/pip install -r requirements.txt
 
 COPY . .
 
