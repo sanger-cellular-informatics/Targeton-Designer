@@ -142,7 +142,7 @@ $(BUILD_DOCKER):
 	fi
 	@docker build --pull -t "${DOCKER_NAME}:${DOCKER_TAG}" --target base .;
 	@docker push "${DOCKER_NAME}:${DOCKER_TAG}"
-	@touch $(BUILD_DOCKER)
+	@touch $(DOCKER_TAG)
 
 build-docker: $(BUILD_DOCKER)
 
