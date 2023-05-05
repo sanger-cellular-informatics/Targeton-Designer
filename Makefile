@@ -28,7 +28,7 @@ init:
 
 install:
 	@echo "Installing..."
-	@apt-get update
+	@apt-get update 
 	@if [ "$(shell which build-essential)" = "" ]; then
 		$(MAKE) install-build-essential;
 	fi
@@ -43,9 +43,6 @@ install:
 	fi
 	@if [ "$(shell which autoconf)" = "" ]; then
 		$(MAKE) install-autoconf;		
-	fi
-	@if [ "$(shell which ipcress)" = "" ]; then
-		$(MAKE) install-ipcress;
 	fi
 
 install-bedtools:
