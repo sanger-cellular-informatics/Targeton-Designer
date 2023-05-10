@@ -89,10 +89,10 @@ install-ipcress:
 	@echo "Installing ipcress..."
 	@git clone https://github.com/nathanweeks/exonerate.git $(APP)/exonerate
 	@cd $(APP)/exonerate \
-		&& autoreconf -fi \
-		&& ./configure -q \
-		&& make -j 4 \
-		&& make install > ipcress_install_log.txt
+		&& autoreconf -fi > /dev/null 2>&1\
+		&& ./configure -q > /dev/null 2>&1\
+		&& make -j 4 > /dev/null 2>&1\
+		&& make install > /dev/null 2>&1
 	@rm -rf $(APP)/exonerate
 
 install-sudo:
