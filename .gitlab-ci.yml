@@ -18,8 +18,6 @@ docker-build:
   # Default branch leaves tag empty (= latest tag)
   # All other branches are tagged with the escaped branch name (commit ref slug)
   script:
-      - DOCKER_TAG="$CI_COMMIT_REF_SLUG"
-      - DOCKER_NAME=${CI_REGISTRY_IMAGE}
       - apk add --update make && apk add --update bash && apk add --update sudo
       - make build-docker
 
@@ -49,8 +47,6 @@ test:
   # Default branch leaves tag empty (= latest tag)
   # All other branches are tagged with the escaped branch name (commit ref slug)
   script:
-    - DOCKER_TAG="$CI_COMMIT_REF_SLUG"
-    - DOCKER_NAME=${CI_REGISTRY_IMAGE}
     - apk add --update make && apk add --update bash && apk add --update sudo
     - make run-docker-test
   # Run this job in a branch where a Dockerfile exists

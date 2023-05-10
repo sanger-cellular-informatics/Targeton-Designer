@@ -18,6 +18,7 @@ $(info "make version = ${MAKE_VERSION}, minimum version 3.82 required for multil
 # Docker
 DOCKER_NAME ?= primer-designer
 DOCKER_TAG ?=${DOCKER_ENV}
+DOCKER_HOST ?=local
 
 BUILD_DOCKER ?= ${DOCKER_NAME}-${DOCKER_TAG}
 $(info $(BUILD_DOCKER))
@@ -148,7 +149,9 @@ $(BUILD_DOCKER): $(DOCKER_TAG)_touch
 		@echo "docker image already exists"
 	else
 		@docker build --pull -t "${DOCKER_NAME}:${DOCKER_TAG}" --target base .;
-		@docker push "${DOCKER_NAME}:${DOCKER_TAG}"
+		if [[ ${DOCKER_HOST} != "local" ]]; then
+			@docker push "${DOCKER_NAME}:${DOCKER_TAG}"
+		fi
 	fi
 	
 
