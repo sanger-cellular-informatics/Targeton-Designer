@@ -92,7 +92,7 @@ install-ipcress:
 		&& autoreconf -fi \
 		&& ./configure -q \
 		&& make -j 4 \
-		&& make install
+		&& make install > ipcress_install_log.txt
 	@rm -rf $(APP)/exonerate
 
 install-sudo:
