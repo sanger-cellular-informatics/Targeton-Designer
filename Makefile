@@ -149,7 +149,7 @@ $(BUILD_DOCKER): $(DOCKER_TAG)_touch
 		@echo "docker image already exists"
 	else
 		@docker build --pull -t "${DOCKER_NAME}:${DOCKER_TAG}" --target base .;
-		if [[ ${DOCKER_HOST} != "local" ]]; then
+		if [[ ${DOCKER_LOC} != "local" ]]; then
 			@docker push "${DOCKER_NAME}:${DOCKER_TAG}"
 		fi
 	fi
