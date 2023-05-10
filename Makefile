@@ -133,7 +133,7 @@ test: setup-venv
 	pip list
 	python -m unittest
 
-$(BUILD_DOCKER):
+$(BUILD_DOCKER): $(DOCKER_TAG)_touch
 	@ver=$$(docker version --format '{{.Server.Version}}' 2>&1 | sed -E 's/([0-9]+).*/\1/')
 	@echo Docker version $$ver
 	if [ "$$ver" -lt 23 ]; then
@@ -147,7 +147,7 @@ $(BUILD_DOCKER):
 		@docker build --pull -t "${DOCKER_NAME}:${DOCKER_TAG}" --target base .;
 		@docker push "${DOCKER_NAME}:${DOCKER_TAG}"
 	fi
-	@touch $(BUILD_DOCKER)
+	@touch $(DOCKER_TAG)_touch
 
 build-docker: $(BUILD_DOCKER)
 
