@@ -18,7 +18,7 @@ $(info "make version = ${MAKE_VERSION}, minimum version 3.82 required for multil
 # Docker
 DOCKER_NAME ?= primer-designer
 DOCKER_TAG ?=${DOCKER_ENV}
-DOCKER_HOST ?=local
+DOCKER_LOC ?=local
 
 BUILD_DOCKER ?= ${DOCKER_NAME}-${DOCKER_TAG}
 $(info $(BUILD_DOCKER))
