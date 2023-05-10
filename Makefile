@@ -150,7 +150,7 @@ $(BUILD_DOCKER): $(DOCKER_TAG)_touch
 	else
 		@docker build --pull -t "${DOCKER_NAME}:${DOCKER_TAG}" --target base .;
 		if [[ ${DOCKER_LOC} != "local" ]]; then
-			@docker push "${DOCKER_NAME}:${DOCKER_TAG}"
+			@docker push "$$DOCKER_HOST${DOCKER_NAME}:${DOCKER_TAG}" 
 		fi
 	fi
 	
