@@ -133,16 +133,21 @@ test: setup-venv
 	pip list
 	python -m unittest
 
-$(BUILD_DOCKER): 
+$(BUILD_DOCKER):
 	@ver=$$(docker version --format '{{.Server.Version}}' 2>&1 | sed -E 's/([0-9]+).*/\1/')
+	@echo Docker version $$ver
 	if [ "$$ver" -lt 23 ]; then
-		echo Warning Docker engine version $$ver< 23, changing build to buildx.
+		echo "Warning Docker engine version <23, changing build to buildx."
 		docker buildx install
-		DOCKER_BUILDKIT=1
+		export DOCKER_BUILDKIT=1
 	fi
-	@docker build --pull -t "${DOCKER_NAME}:${DOCKER_TAG}" --target base .;
-	@docker push "${DOCKER_NAME}:${DOCKER_TAG}"
-	@touch $(DOCKER_TAG)
+	if [[ "$(docker image inspect ${DOCKER_NAME}:${DOCKER_TAG}" --format="ignore me")" != "" ]]; then
+		@echo "docker image already exists"
+	else
+		@docker build --pull -t "${DOCKER_NAME}:${DOCKER_TAG}" --target base .;
+		@docker push "${DOCKER_NAME}:${DOCKER_TAG}"
+	fi
+	@touch $(BUILD_DOCKER)
 
 build-docker: $(BUILD_DOCKER)
 
