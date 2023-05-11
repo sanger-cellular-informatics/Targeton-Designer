@@ -15,7 +15,6 @@ docker-build:
     GIT_SUBMODULE_STRATEGY: recursive
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-    - docker image prune -a -f && docker container prune -f
   # Default branch leaves tag empty (= latest tag)
   # All other branches are tagged with the escaped branch name (commit ref slug)
   script:
@@ -40,7 +39,7 @@ test:
     - openstack-autoscale
     - autoscale-docker-in-docker
   script:
-    - make run-docker-test
+    - make test
   dependencies:
     - docker-build
   # Run this job in a branch where a Dockerfile exists
