@@ -19,11 +19,11 @@ $(info "make version = ${MAKE_VERSION}, minimum version 3.82 required for multil
 DOCKER_NAME ?= primer_designer
 DOCKER_TAG ?=${DOCKER_ENV}
 DOCKER_REPO ?=local
-BUILD_DOCKER ?= ${DOCKER_NAME}-${DOCKER_TAG}
-DOCKER_IMAGE_NAME ?= ${DOCKER_REPO}:${BUILD_DOCKER}
+BUILD_DOCKER ?= ${DOCKER_NAME}
+DOCKER_IMAGE_NAME ?= ${DOCKER_REPO}:${BUILD_DOCKER}-${DOCKER_TAG}
 
 
-$(info $(BUILD_DOCKER))
+$(info $(DOCKER_IMAGE_NAME))
 
 init:
 	git config core.hooksPath .githooks
@@ -136,10 +136,7 @@ test: setup-venv
 	pip list
 	python -m unittest
 
-$(DOCKER_TAG)_touch:
-	@touch $(DOCKER_TAG)_touch
-
-$(BUILD_DOCKER): $(DOCKER_TAG)_touch
+$(BUILD_DOCKER):
 	@ver=$$(docker version --format '{{.Server.Version}}' 2>&1 | sed -E 's/([0-9]+).*/\1/')
 	@echo Docker version $$ver
 	if [ "$$ver" -lt 23 ]; then
@@ -148,8 +145,7 @@ $(BUILD_DOCKER): $(DOCKER_TAG)_touch
 		export DOCKER_BUILDKIT=1
 	fi
 	if [[ "$(docker image inspect ${DOCKER_IMAGE_NAME}" --format="ignore me")" != "" ]]; then
-		@echo "docker image already exists, pulling"
-		docker pull ${DOCKER_IMAGE_NAME}
+		@echo "docker image already exists. ${DOCKER_IMAGE_NAME}"
 	else
 		@docker build --pull -t "${DOCKER_IMAGE_NAME}" --target base .;
 		if [[ ${DOCKER_REPO} != "local" ]]; then
@@ -161,7 +157,7 @@ $(BUILD_DOCKER): $(DOCKER_TAG)_touch
 build-docker: $(BUILD_DOCKER)
 
 build-docker-test: build-docker
-	@docker build --pull -t "${DOCKER_IMAGE_NAME}" --target unittest .;
+	docker build --cache-from="${DOCKER_IMAGE_NAME}" -t "${DOCKER_IMAGE_NAME}" --target unittest .;
 
 run-docker: build-docker
 	@docker run --name "${DOCKER_NAME}" -p 8081:8081 -t "${DOCKER_IMAGE_NAME}"
