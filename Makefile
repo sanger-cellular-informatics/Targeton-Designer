@@ -20,7 +20,7 @@ DOCKER_NAME ?= primer_designer
 DOCKER_TAG ?=${DOCKER_ENV}
 DOCKER_REPO ?=local
 BUILD_DOCKER ?= ${DOCKER_NAME}-${DOCKER_TAG}
-DOCKER_STR := ${DOCKER_REPO}:${BUILD_DOCKER}
+DOCKER_IMAGE_NAME ?= ${DOCKER_REPO}:${BUILD_DOCKER}
 
 
 $(info $(BUILD_DOCKER))
@@ -147,13 +147,13 @@ $(BUILD_DOCKER): $(DOCKER_TAG)_touch
 		docker buildx install
 		export DOCKER_BUILDKIT=1
 	fi
-	if [[ "$(docker image inspect ${DOCKER_STR}" --format="ignore me")" != "" ]]; then
+	if [[ "$(docker image inspect ${DOCKER_IMAGE_NAME}" --format="ignore me")" != "" ]]; then
 		@echo "docker image already exists, pulling"
-		docker pull ${DOCKER_STR}
+		docker pull ${DOCKER_IMAGE_NAME}
 	else
-		@docker build --pull -t "${DOCKER_STR}" --target base .;
+		@docker build --pull -t "${DOCKER_IMAGE_NAME}" --target base .;
 		if [[ ${DOCKER_REPO} != "local" ]]; then
-			@docker push "${DOCKER_STR}" 
+			@docker push "${DOCKER_IMAGE_NAME}" 
 		fi
 	fi
 	
@@ -161,15 +161,15 @@ $(BUILD_DOCKER): $(DOCKER_TAG)_touch
 build-docker: $(BUILD_DOCKER)
 
 build-docker-test: build-docker
-	@docker build --pull -t "${DOCKER_STR}" --target unittest .;
+	@docker build --pull -t "${DOCKER_IMAGE_NAME}" --target unittest .;
 
 run-docker: build-docker
-	@docker run --name "${DOCKER_NAME}" -p 8081:8081 -t "${DOCKER_STR}"
+	@docker run --name "${DOCKER_NAME}" -p 8081:8081 -t "${DOCKER_IMAGE_NAME}"
 
 run-docker-test: build-docker-test run-docker
 
 run-docker-interactive: build-docker
-	@docker run -i --name "${DOCKER_NAME}" -t "${DOCKER_STR}" bash
+	@docker run -i --name "${DOCKER_NAME}" -t "${DOCKER_IMAGE_NAME}" bash
 
 connect-docker-interactive: run-docker
 	@docker exec -it ${DOCKER_NAME} bash

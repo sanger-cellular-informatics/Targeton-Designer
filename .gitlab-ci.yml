@@ -1,7 +1,7 @@
 docker-build:
   # Use the official docker image.
   image: docker:23.0.6
-  stage: build
+  stage: .pre
   tags: 
     - openstack-autoscale
     - autoscale-docker-in-docker
@@ -15,10 +15,11 @@ docker-build:
     GIT_SUBMODULE_STRATEGY: recursive
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker image prune -a -f && docker container prune -f
   # Default branch leaves tag empty (= latest tag)
   # All other branches are tagged with the escaped branch name (commit ref slug)
   script:
-      - apk add --update make && apk add --update bash && apk add --update sudo
+      - apk add --update make && apk add --update bash && apk add --update sudo && apk add --update git
       - make build-docker
 
   # Run this job in a branch where a Dockerfile exists
@@ -26,28 +27,19 @@ docker-build:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
       exists:
         - Dockerfile
+    - changes:
+      - requirements.txt
+      - Dockerfile
+      - Makefile
 
 test:
-  # Use the official docker image.
-  image: docker:23.0.6
+  # Reuse built container.
+  image: $DOCKER_IMAGE_NAME
   stage: test
   tags:
     - openstack-autoscale
     - autoscale-docker-in-docker
-  services:
-    - name: docker:23.0.6-dind
-      alias: thedockerhost
-  variables:
-    DOCKER_HOST: tcp://thedockerhost:2375/
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: ""
-    GIT_SUBMODULE_STRATEGY: recursive
-  before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-  # Default branch leaves tag empty (= latest tag)
-  # All other branches are tagged with the escaped branch name (commit ref slug)
   script:
-    - apk add --update make && apk add --update bash && apk add --update sudo
     - make run-docker-test
   dependencies:
     - docker-build
