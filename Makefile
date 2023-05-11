@@ -18,9 +18,11 @@ $(info "make version = ${MAKE_VERSION}, minimum version 3.82 required for multil
 # Docker
 DOCKER_NAME ?= primer-designer
 DOCKER_TAG ?=${DOCKER_ENV}
-DOCKER_LOC ?=local
-
+DOCKER_HOST ?=local
 BUILD_DOCKER ?= ${DOCKER_NAME}-${DOCKER_TAG}
+DOCKER_STR := ${DOCKER_HOST}:${BUILD_DOCKER}
+
+
 $(info $(BUILD_DOCKER))
 
 init:
@@ -145,12 +147,12 @@ $(BUILD_DOCKER): $(DOCKER_TAG)_touch
 		docker buildx install
 		export DOCKER_BUILDKIT=1
 	fi
-	if [[ "$(docker image inspect ${DOCKER_NAME}:${DOCKER_TAG}" --format="ignore me")" != "" ]]; then
+	if [[ "$(docker image inspect ${DOCKER_STR}" --format="ignore me")" != "" ]]; then
 		@echo "docker image already exists"
 	else
-		@docker build --pull -t "${DOCKER_NAME}:${DOCKER_TAG}" --target base .;
-		if [[ ${DOCKER_LOC} != "local" ]]; then
-			@docker push "$$DOCKER_HOST${DOCKER_NAME}:${DOCKER_TAG}" 
+		@docker build --pull -t "${DOCKER_STR}" --target base .;
+		if [[ ${DOCKER_HOST} != "local" ]]; then
+			@docker push "${DOCKER_STR}" 
 		fi
 	fi
 	
