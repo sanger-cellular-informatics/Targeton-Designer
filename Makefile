@@ -20,7 +20,7 @@ DOCKER_NAME ?= primer_designer
 DOCKER_TAG ?=${DOCKER_ENV}
 DOCKER_REPO ?=local
 BUILD_DOCKER ?= ${DOCKER_NAME}
-DOCKER_IMAGE_NAME ?= ${DOCKER_REPO}:${BUILD_DOCKER}-${DOCKER_TAG}
+DOCKER_IMAGE_NAME ?= ${DOCKER_REPO}:${DOCKER_NAME}-${DOCKER_TAG}
 
 
 $(info $(DOCKER_IMAGE_NAME))
@@ -144,7 +144,7 @@ $(BUILD_DOCKER):
 		docker buildx install
 		export DOCKER_BUILDKIT=1
 	fi
-	docker image inspect ${DOCKER_IMAGE_NAME}
+	docker image ls
 	if [[ "$(docker image inspect ${DOCKER_IMAGE_NAME}" --format="ignore me")" != "" ]]; then
 		@echo "docker image already exists. ${DOCKER_IMAGE_NAME}"
 	else
