@@ -19,7 +19,6 @@ $(info "make version = ${MAKE_VERSION}, minimum version 3.82 required for multil
 DOCKER_NAME ?= primer_designer
 DOCKER_TAG ?=${DOCKER_ENV}
 DOCKER_REPO ?=local
-BUILD_DOCKER ?= ${DOCKER_NAME}
 DOCKER_IMAGE_NAME ?= ${DOCKER_REPO}:${DOCKER_NAME}-${DOCKER_TAG}
 
 
@@ -136,7 +135,7 @@ test: setup-venv
 	pip list
 	python -m unittest
 
-$(BUILD_DOCKER):
+build-docker:
 	@ver=$$(docker version --format '{{.Server.Version}}' 2>&1 | sed -E 's/([0-9]+).*/\1/')
 	@echo Docker version $$ver
 	if [ "$$ver" -lt 23 ]; then
@@ -145,6 +144,8 @@ $(BUILD_DOCKER):
 		export DOCKER_BUILDKIT=1
 	fi
 	docker pull ${DOCKER_IMAGE_NAME} || true
+	docker image ls
+	docker image inspect ${DOCKER_IMAGE_NAME}
 	if [[ "$(docker image inspect ${DOCKER_IMAGE_NAME}" --format="ignore me")" != "" ]]; then
 		@echo "docker image already exists. ${DOCKER_IMAGE_NAME}"
 	else
@@ -153,9 +154,6 @@ $(BUILD_DOCKER):
 			@docker push "${DOCKER_IMAGE_NAME}" 
 		fi
 	fi
-	
-
-build-docker: $(BUILD_DOCKER)
 
 build-docker-test: build-docker
 	docker build --cache-from="${DOCKER_IMAGE_NAME}" -t "${DOCKER_IMAGE_NAME}" --target unittest .;
