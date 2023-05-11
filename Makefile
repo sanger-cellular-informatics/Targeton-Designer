@@ -16,11 +16,11 @@ MAKE_VERSION := $(shell make --version | grep '^GNU Make' | sed 's/^.* //g')
 $(info "make version = ${MAKE_VERSION}, minimum version 3.82 required for multiline.")
 
 # Docker
-DOCKER_NAME ?= primer-designer
+DOCKER_NAME ?= primer_designer
 DOCKER_TAG ?=${DOCKER_ENV}
-DOCKER_HOST ?=local
-BUILD_DOCKER ?= ${DOCKER_NAME}-${DOCKER_TAG}
-DOCKER_STR := ${DOCKER_HOST}:${BUILD_DOCKER}
+DOCKER_REPO ?=local
+BUILD_DOCKER ?= ${DOCKER_NAME}${DOCKER_TAG}
+DOCKER_STR := ${DOCKER_REPO}${BUILD_DOCKER}
 
 
 $(info $(BUILD_DOCKER))
@@ -151,7 +151,7 @@ $(BUILD_DOCKER): $(DOCKER_TAG)_touch
 		@echo "docker image already exists"
 	else
 		@docker build --pull -t "${DOCKER_STR}" --target base .;
-		if [[ ${DOCKER_HOST} != "local" ]]; then
+		if [[ ${DOCKER_REPO} != "local" ]]; then
 			@docker push "${DOCKER_STR}" 
 		fi
 	fi
