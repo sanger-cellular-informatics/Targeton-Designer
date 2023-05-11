@@ -149,6 +149,7 @@ build-docker:
 	if [[ "$(docker image inspect ${DOCKER_IMAGE_NAME}" --format="ignore me")" != "" ]]; then
 		@echo "docker image already exists. ${DOCKER_IMAGE_NAME}"
 	else
+		@echo "Building docker image ${DOCKER_IMAGE_NAME}"
 		@docker build --pull -t "${DOCKER_IMAGE_NAME}" --target base .;
 		if [[ ${DOCKER_REPO} != "local" ]]; then
 			@docker push "${DOCKER_IMAGE_NAME}" 

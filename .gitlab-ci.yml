@@ -1,3 +1,7 @@
+stages:
+  - .pre
+  - test 
+
 docker-build:
   # Use the official docker image.
   image: docker:23.0.6
@@ -20,7 +24,6 @@ docker-build:
   script:
       - apk add --update make && apk add --update bash && apk add --update sudo && apk add --update git
       - make build-docker
-
   # Run this job in a branch where a Dockerfile exists
   rules:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
@@ -31,6 +34,7 @@ docker-build:
       - Dockerfile
       - Makefile
 
+
 test:
   # Reuse built container.
   image: $DOCKER_IMAGE_NAME
@@ -39,12 +43,7 @@ test:
     - openstack-autoscale
     - autoscale-docker-in-docker
   script:
-    - make test
+    - docker run $DOCKER_IMAGE_NAME make test
   dependencies:
     - docker-build
-  # Run this job in a branch where a Dockerfile exists
-  rules:
-    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
-      exists:
-        - Dockerfile
 
