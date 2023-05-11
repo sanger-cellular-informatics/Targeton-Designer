@@ -143,10 +143,9 @@ build-docker:
 		docker buildx install
 		export DOCKER_BUILDKIT=1
 	fi
-	docker pull ${DOCKER_IMAGE_NAME} || true
-	docker image ls
-	docker image inspect ${DOCKER_IMAGE_NAME}
-	if [[ "$(docker image inspect ${DOCKER_IMAGE_NAME}" --format="ignore me")" != "" ]]; then
+	docker pull ${DOCKER_IMAGE_NAME} || 
+	docker ps -a
+	if [[ "$(docker ps -a | grep ${DOCKER_IMAGE_NAME})" ]]; then
 		@echo "docker image already exists. ${DOCKER_IMAGE_NAME}"
 	else
 		@echo "Building docker image ${DOCKER_IMAGE_NAME}"
