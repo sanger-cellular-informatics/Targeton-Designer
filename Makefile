@@ -144,7 +144,7 @@ $(BUILD_DOCKER):
 		docker buildx install
 		export DOCKER_BUILDKIT=1
 	fi
-	docker image inspect ${DOCKER_IMAGE_NAME}"
+	docker image inspect ${DOCKER_IMAGE_NAME}
 	if [[ "$(docker image inspect ${DOCKER_IMAGE_NAME}" --format="ignore me")" != "" ]]; then
 		@echo "docker image already exists. ${DOCKER_IMAGE_NAME}"
 	else
