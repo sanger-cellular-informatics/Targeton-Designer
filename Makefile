@@ -19,8 +19,8 @@ $(info "make version = ${MAKE_VERSION}, minimum version 3.82 required for multil
 DOCKER_NAME ?= primer_designer
 DOCKER_TAG ?=${DOCKER_ENV}
 DOCKER_REPO ?=local
-BUILD_DOCKER ?= ${DOCKER_NAME}:${DOCKER_TAG}
-DOCKER_STR := ${DOCKER_REPO}/${BUILD_DOCKER}
+BUILD_DOCKER ?= ${DOCKER_NAME}-${DOCKER_TAG}
+DOCKER_STR := ${DOCKER_REPO}:${BUILD_DOCKER}
 
 
 $(info $(BUILD_DOCKER))
