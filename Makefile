@@ -144,15 +144,16 @@ build-docker:
 		export DOCKER_BUILDKIT=1
 	fi
 	echo docker repo = ${DOCKER_REPO}
+	echo docker image = ${DOCKER_IMAGE_NAME}
 	if [[ ${DOCKER_REPO} != "local" ]]; then
-		echo "Docker image found in repo, pulling..."
+		echo "Trying to pull docker image fromn repo..."
+		curl "https://gitlab.internal.sanger.ac.uk/api/v2/projects/5/registry/repositories/2/tags"
 		docker pull ${DOCKER_IMAGE_NAME} || true
 	fi
-	echo docker image = ${DOCKER_IMAGE_NAME}
 	if [ "$(docker images -q ${DOCKER_IMAGE_NAME} 2> /dev/null)" != "" ]; then
 		@echo "docker image already exists. ${DOCKER_IMAGE_NAME}"
 	else
-		@echo "Building docker image ${DOCKER_IMAGE_NAME}"
+		@echo "Building docker image..."
 		@docker build --pull -t "${DOCKER_IMAGE_NAME}" --target build .;
 		if [[ ${DOCKER_REPO} != "local" ]]; then
 			@docker push "${DOCKER_IMAGE_NAME}" 
