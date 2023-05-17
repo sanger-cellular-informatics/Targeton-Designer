@@ -25,7 +25,7 @@ DOCKER_PORT ?=8081
 DOCKER_IMAGE_NAME ?= ${DOCKER_REPO}:${DOCKER_PORT}/${DOCKER_NAME}:${DOCKER_TAG}
 
 
-$(info $(DOCKER_IMAGE_NAME))
+$(info docker image name =  $(DOCKER_IMAGE_NAME))
 
 init:
 	git config core.hooksPath .githooks
@@ -146,10 +146,11 @@ build-docker:
 		docker buildx install
 		export DOCKER_BUILDKIT=1
 	fi
-	echo ${DOCKER_REPO}
+	echo docker repo = ${DOCKER_REPO}
 	if [[ ${DOCKER_REPO} != "local" ]]; then
 		docker pull ${DOCKER_IMAGE_NAME} || true
 	fi
+	echo docker image = ${DOCKER_IMAGE_NAME}
 	if [ "$(docker images -q ${DOCKER_IMAGE_NAME} 2> /dev/null)" != "" ]; then
 		@echo "docker image already exists. ${DOCKER_IMAGE_NAME}"
 	else
