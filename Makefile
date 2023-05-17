@@ -148,6 +148,7 @@ build-docker:
 	fi
 	echo docker repo = ${DOCKER_REPO}
 	if [[ ${DOCKER_REPO} != "local" ]]; then
+		echo "Docker image found in repo, pulling..."
 		docker pull ${DOCKER_IMAGE_NAME} || true
 	fi
 	echo docker image = ${DOCKER_IMAGE_NAME}
