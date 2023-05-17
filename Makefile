@@ -13,10 +13,7 @@ PREFIX ?= /usr/local
 
 APP = $(PREFIX)/src/app
 export DOCKER_ENV ?= test
-
-MAKE_VERSION := $(shell make --version | grep '^GNU Make' | sed 's/^.* //g')
-$(info "make version = ${MAKE_VERSION}, minimum version 3.82 required for multiline.")
-
+	
 # Docker
 DOCKER_NAME ?= primer_designer
 DOCKER_TAG ?=${DOCKER_ENV}
@@ -24,9 +21,10 @@ DOCKER_REPO ?=local
 DOCKER_PORT ?=8081
 DOCKER_IMAGE_NAME ?= ${DOCKER_REPO}/${DOCKER_NAME}:${DOCKER_TAG}
 
-init:
+init: check-make
 	git config core.hooksPath .githooks
 	chmod +x .githooks/*
+	
 
 install:
 	@echo "Installing..."
@@ -111,6 +109,17 @@ install-docker:
 
 install-basics:install-install-curl install-autoconf
 	@apt-get -y install build-essential
+
+install-make:
+	@echo "Installing make..."
+	apt-get -y install make
+
+check-make:
+	@MAKE_VERSION = $$(make --version | grep '^GNU Make' | sed 's/^.* //g')
+	if (( $(echo "3.82 > $$MAKE_VERSION" |bc -l) )); then
+	echo "make version = ${MAKE_VERSION}, minimum version 3.82 required for multiline."
+		$(MAKE) install-make
+	fi
 
 venv/bin/activate:
 	@python -m venv venv
