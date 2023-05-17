@@ -1,4 +1,6 @@
+.EXPORT_ALL_VARIABLES:
 .ONESHELL:
+SHELL := /bin/bash
 
 VENV = venv
 PYTHON = $(VENV)/bin/python
@@ -19,7 +21,8 @@ $(info "make version = ${MAKE_VERSION}, minimum version 3.82 required for multil
 DOCKER_NAME ?= primer_designer
 DOCKER_TAG ?=${DOCKER_ENV}
 DOCKER_REPO ?=local
-DOCKER_IMAGE_NAME ?= ${DOCKER_REPO}:${DOCKER_NAME}-${DOCKER_TAG}
+DOCKER_PORT ?=8081
+DOCKER_IMAGE_NAME ?= ${DOCKER_REPO}:${DOCKER_PORT}/${DOCKER_NAME}:${DOCKER_TAG}
 
 
 $(info $(DOCKER_IMAGE_NAME))
@@ -137,7 +140,6 @@ test: setup-venv
 
 build-docker:
 	@ver=$$(docker version --format '{{.Server.Version}}' 2>&1 | sed -E 's/([0-9]+).*/\1/')
-	docker version
 	@echo Docker version $$ver
 	if [ "$$ver" -lt 23 ]; then
 		echo "Warning Docker engine version <23, changing build to buildx."
@@ -148,7 +150,7 @@ build-docker:
 	if [[ ${DOCKER_REPO} != "local" ]]; then
 		docker pull ${DOCKER_IMAGE_NAME} || true
 	fi
-	if [ $(docker image inspect ${DOCKER_IMAGE_NAME} >/dev/null 2>&1) ]; then
+	if [ "$(docker images -q ${DOCKER_IMAGE_NAME} 2> /dev/null)" != "" ]; then
 		@echo "docker image already exists. ${DOCKER_IMAGE_NAME}"
 	else
 		@echo "Building docker image ${DOCKER_IMAGE_NAME}"
@@ -162,15 +164,19 @@ build-docker-test: build-docker
 	docker build --cache-from="${DOCKER_IMAGE_NAME}" -t "${DOCKER_IMAGE_NAME}" --target unittest .;
 
 run-docker: build-docker
-	@docker run --name "${DOCKER_NAME}" -p 8081:8081 -t "${DOCKER_IMAGE_NAME}"
+	@docker run --name "${DOCKER_NAME}" -p ${DOCKER_PORT}:${DOCKER_PORT} -t "${DOCKER_IMAGE_NAME}"
 
-run-docker-test: build-docker-test run-docker
+run-docker-test: build-docker
+	@docker run --name "${DOCKER_NAME}" -p ${DOCKER_PORT}:${DOCKER_PORT} -t "${DOCKER_IMAGE_NAME}" make test
 
 run-docker-interactive: build-docker
 	@docker run -i --name "${DOCKER_NAME}" -t "${DOCKER_IMAGE_NAME}" bash
 
-connect-docker-interactive: run-docker
+connect-docker-interactive:
 	@docker exec -it ${DOCKER_NAME} bash
+
+clean-docker-containers:
+	@docker rm -f $$(docker ps -a -q)
 
 clean-docker:
 	@docker builder prune -af

@@ -5,7 +5,7 @@ WORKDIR /
 FROM base as build
 COPY Makefile Makefile
 COPY requirements.txt requirements.txt
-COPY sge-primer-scoring/requirements.txt sge-primer-scoring/requirements.txt
+COPY sge-primer-scoring sge-primer-scoring
 COPY src src
 COPY tests tests
 RUN apt-get update
@@ -14,6 +14,7 @@ RUN make setup-venv
 
 FROM base as unittest
 ENV DOCKER_ENV=${DOCKER_ENV:-unittest}
+RUN ls -l
 CMD [ "sh", "-c", "make test" ]
 
 
