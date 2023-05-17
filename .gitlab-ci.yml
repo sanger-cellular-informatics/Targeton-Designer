@@ -1,7 +1,11 @@
+stages:
+  - .pre
+  - test
+
 docker-build:
   # Use the official docker image.
   image: docker:23.0.6
-  stage: build
+  stage: .pre
   tags: 
     - openstack-autoscale
     - autoscale-docker-in-docker
