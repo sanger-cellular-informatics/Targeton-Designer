@@ -24,9 +24,6 @@ DOCKER_REPO ?=local
 DOCKER_PORT ?=8081
 DOCKER_IMAGE_NAME ?= ${DOCKER_REPO}:${DOCKER_PORT}/${DOCKER_NAME}:${DOCKER_TAG}
 
-
-$(info docker image name =  $(DOCKER_IMAGE_NAME))
-
 init:
 	git config core.hooksPath .githooks
 	chmod +x .githooks/*
@@ -166,12 +163,15 @@ build-docker-test: build-docker
 	docker build --cache-from="${DOCKER_IMAGE_NAME}" -t "${DOCKER_IMAGE_NAME}" --target unittest .;
 
 run-docker: build-docker
-	@docker run --name "${DOCKER_NAME}" -p ${DOCKER_PORT}:${DOCKER_PORT} -t "${DOCKER_IMAGE_NAME}"
+	@echo "Running Docker image =  $(DOCKER_IMAGE_NAME)"
+	docker run --name "${DOCKER_NAME}" -p ${DOCKER_PORT}:${DOCKER_PORT} -t "${DOCKER_IMAGE_NAME}"
 
 run-docker-test: build-docker
+	@echo "Running Docker image =  $(DOCKER_IMAGE_NAME)"
 	@docker run --name "${DOCKER_NAME}" -p ${DOCKER_PORT}:${DOCKER_PORT} -t "${DOCKER_IMAGE_NAME}" make test
 
 run-docker-interactive: build-docker
+	@echo "Running Docker image =  $(DOCKER_IMAGE_NAME)"
 	@docker run -i --name "${DOCKER_NAME}" -t "${DOCKER_IMAGE_NAME}" bash
 
 connect-docker-interactive:
