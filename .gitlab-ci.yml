@@ -34,7 +34,6 @@ docker-build:
       - Dockerfile
       - Makefile
 
-
 test:
   # Reuse built container.
   image: $DOCKER_IMAGE_NAME
