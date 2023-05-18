@@ -1,53 +1,16 @@
-# workflow:
-#   rules:
-#     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-
-test:
-  # Use the official docker image.
-  image: docker:20.10.14
-  stage: test
-  tags:
-    - openstack-autoscale
-    - autoscale-docker-in-docker
-  services:
-    - name: docker:20.10.14-dind
-      alias: thedockerhost
-  variables:
-    DOCKER_HOST: tcp://thedockerhost:2375/
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: ""
-    GIT_SUBMODULE_STRATEGY: recursive
-  before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-  # Default branch leaves tag empty (= latest tag)
-  # All other branches are tagged with the escaped branch name (commit ref slug)
-  script:
-    - |
-      if [[ "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" == "$CI_DEFAULT_BRANCH" ]]; then
-        tag=""
-        echo "Running on default branch '$CI_DEFAULT_BRANCH': tag = 'latest-test'"
-      else
-        tag=":$CI_COMMIT_REF_SLUG-test"
-        echo "Running on branch '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME': tag = $tag"
-      fi
-    - docker build --pull -t "$CI_REGISTRY_IMAGE${tag}" --target test .
-    - docker push "$CI_REGISTRY_IMAGE${tag}"
-    - docker run $CI_REGISTRY_IMAGE${tag}
-  # Run this job in a branch where a Dockerfile exists
-  rules:
-    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
-      exists:
-        - Dockerfile
+stages:
+  - .pre
+  - test
 
 docker-build:
   # Use the official docker image.
-  image: docker:20.10.14
-  stage: build
+  image: docker:23.0.6
+  stage: .pre
   tags: 
     - openstack-autoscale
     - autoscale-docker-in-docker
   services:
-    - name: docker:20.10.14-dind
+    - name: docker:23.0.6-dind
       alias: thedockerhost
   variables:
     DOCKER_HOST: tcp://thedockerhost:2375/
@@ -59,18 +22,28 @@ docker-build:
   # Default branch leaves tag empty (= latest tag)
   # All other branches are tagged with the escaped branch name (commit ref slug)
   script:
-    - |
-      if [[ "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" == "$CI_DEFAULT_BRANCH" ]]; then
-        tag=""
-        echo "Running on default branch '$CI_DEFAULT_BRANCH': tag = 'latest'"
-      else
-        tag=":$CI_COMMIT_REF_SLUG"
-        echo "Running on branch '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME': tag = $tag"
-      fi
-    - docker build --pull -t "$CI_REGISTRY_IMAGE${tag}" --target dev .
-    - docker push "$CI_REGISTRY_IMAGE${tag}"
+      - apk add --update make && apk add --update bash && apk add --update sudo && apk add --update git && apk add --update curl
+      - make build-docker
   # Run this job in a branch where a Dockerfile exists
   rules:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
       exists:
         - Dockerfile
+    - changes:
+      - requirements.txt
+      - Dockerfile
+      - Makefile
+
+test:
+  # Reuse built container.
+  image: $DOCKER_IMAGE_NAME
+  stage: test
+  tags:
+    - openstack-autoscale
+    - autoscale-docker-in-docker
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+  script:
+    - make test
+  dependencies:
+    - docker-build
