@@ -22,7 +22,7 @@ docker-build:
   # Default branch leaves tag empty (= latest tag)
   # All other branches are tagged with the escaped branch name (commit ref slug)
   script:
-      - apk add --update make && apk add --update bash && apk add --update sudo && apk add --update git
+      - apk add --update make && apk add --update bash && apk add --update sudo && apk add --update git && apk add --update curl
       - make build-docker
   # Run this job in a branch where a Dockerfile exists
   rules:

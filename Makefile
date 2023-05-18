@@ -157,11 +157,6 @@ build-docker:
 	fi
 	echo docker repo = ${DOCKER_REPO}
 	echo docker image = ${DOCKER_IMAGE_NAME}
-	if [[ ${DOCKER_REPO} != "local" ]]; then
-		echo "Trying to pull docker image fromn repo..."
-		curl "https://gitlab.internal.sanger.ac.uk/api/v2/projects/5/registry/repositories/2/tags"
-		docker pull ${DOCKER_IMAGE_NAME} || true
-	fi
 	if [ "$(docker images -q ${DOCKER_IMAGE_NAME} 2> /dev/null)" != "" ]; then
 		@echo "docker image already exists. ${DOCKER_IMAGE_NAME}"
 	else
