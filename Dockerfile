@@ -14,7 +14,6 @@ RUN make setup-venv
 
 FROM base as unittest
 ENV DOCKER_ENV=${DOCKER_ENV:-unittest}
-RUN ls -l
 CMD [ "sh", "-c", "make test" ]
 
 
