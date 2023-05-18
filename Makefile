@@ -140,7 +140,6 @@ clean-venv:
 	
 test: setup-venv
 	@. venv/bin/activate
-	$(MAKE) setup-venv
 	pip list
 	python -m unittest
 
