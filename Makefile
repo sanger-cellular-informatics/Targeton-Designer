@@ -166,7 +166,7 @@ build-docker:
 		@echo "docker image already exists. ${DOCKER_IMAGE_NAME}"
 	else
 		@echo "Building docker image..."
-		@docker build --pull -t "${DOCKER_IMAGE_NAME}" --target build .;
+		@docker build --pull -t "${DOCKER_IMAGE_NAME}" .;
 		if [[ ${DOCKER_REPO} != "local" ]]; then
 			@docker push "${DOCKER_IMAGE_NAME}" 
 		fi
