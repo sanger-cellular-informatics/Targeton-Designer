@@ -44,6 +44,9 @@ install:
 	@if [ "$(shell which autoconf)" = "" ]; then
 		$(MAKE) install-autoconf;		
 	fi
+	@if [ "$(shell which curl)" = "" ]; then
+		$(MAKE) install-curl;
+	fi
 	@if [ "$(shell which ipcress)" = "" ]; then
 		$(MAKE) install-ipcress;		
 	fi
@@ -107,8 +110,9 @@ install-docker:
 	@usermod -aG docker $$USER
 	@newgrp docker
 
-install-basics:install-install-curl install-autoconf
-	@apt-get -y install build-essential
+install-curl:
+	@echo "Installing curl..."
+	apt-get -y install curl
 
 install-make:
 	@echo "Installing make..."

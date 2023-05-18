@@ -24,7 +24,6 @@ docker-build:
   script:
       - apk add --update make && apk add --update bash && apk add --update sudo && apk add --update git
       - make build-docker
-      - ls sge-primer-scoring
   # Run this job in a branch where a Dockerfile exists
   rules:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
