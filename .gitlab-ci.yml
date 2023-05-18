@@ -43,9 +43,7 @@ test:
     - autoscale-docker-in-docker
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
-    GIT_STRATEGY: none
   script:
     - make test
   dependencies:
     - docker-build
-
