@@ -41,6 +41,8 @@ test:
   tags:
     - openstack-autoscale
     - autoscale-docker-in-docker
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
   script:
     - make test
   dependencies:
