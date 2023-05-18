@@ -6,7 +6,6 @@ COPY Makefile Makefile
 COPY requirements.txt requirements.txt
 COPY sge-primer-scoring/requirements.txt sge-primer-scoring/requirements.txt
 COPY sge-primer-scoring/src sge-primer-scoring/src
-RUN ls sge-primer-scoring
 COPY src src
 COPY tests tests
 
