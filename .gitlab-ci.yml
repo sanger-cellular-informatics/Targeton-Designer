@@ -43,7 +43,7 @@ test:
     - openstack-autoscale
     - autoscale-docker-in-docker
   script:
-    - ls
+    - ls sge-primer-scoring 
     - make test
   dependencies:
     - docker-build
