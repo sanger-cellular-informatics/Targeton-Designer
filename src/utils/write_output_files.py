@@ -122,12 +122,13 @@ def export_primers_to_csv(slices:List[dict], export_dir:str) -> str:
     return csv_path
 
 def export_to_csv(data:Tuple[list, dict], export_dir:str, filename:str, headers:List[str], delimiter=',') -> str:
-    writer = {dict:csv.DictWriter, list:csv.writer}
+    writer = {dict:csv.DictWriter(fieldnames=headers), list:csv.writer}
     csv_path = Path(export_dir)/filename
 
     with open(csv_path, "w", newline='') as f:
         output_writer = writer[type(data)](f, fieldnames=headers, delimiter=delimiter)
-        output_writer.writeheader()
+        if isinstance(data, dict):
+            output_writer.writeheader()
         output_writer.writerows(data)
 
     return csv_path
