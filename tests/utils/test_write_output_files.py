@@ -7,7 +7,9 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 from unittest.mock import patch, Mock
 from freezegun import freeze_time
 
-from src.utils.write_output_files import write_scoring_output, write_targeton_csv, export_to_csv
+from src.utils.write_output_files import write_scoring_output, write_targeton_csv
+from src.utils import write_output_files
+from tempfile import TemporaryDirectory
 
 
 class TestWriteOutputFiles(TestCase):
@@ -95,26 +97,28 @@ class TestWriteOutputFiles(TestCase):
         self.assertEqual(result.dir, expected_dir)
         self.assertEqual(result.tsv, expected_file)
 
-    @patch('csv.DictWriter')
-    def test_export_to_csv(self, mock_writer):
+    @patch('write_output_files.csv.DictWriter.writeheader')
+    @patch('write_output_files.csv.DictWriter.writerows')
+    def test_export_to_csv(self, mock_writeheader, mock_writerows):
         # arrange
-        expected_dir = Path('')
         expected_file = 'test_csv.csv'
-        mock_writer.return_value = expected_dir / expected_file
-        mock_writer.writeheader = Mock()
-        mock_writer.writerows = Mock()
 
         mock_data = {'test': [1, 2, 3, 4, 5], 'test2': 'things'}
         mock_headers = ['test', 'test2']
 
         # act
-        result = export_to_csv(mock_data, expected_dir, 'test_scoring.tsv', mock_headers, ',')
-
+        with TemporaryDirectory() as tmpdir:
+            result = write_output_files.export_to_csv(
+                mock_data,
+                tmpdir,
+                'test_scoring.tsv',
+                mock_headers,
+                ','
+            )
         # assert
-        mock_writer.assert_called()
-        mock_writer.writeheader.assert_called()
-        mock_writer.writerows.assert_called_with(mock_data)
-        self.assertEqual(result, expected_dir / expected_file)
+            self.assertEqual(result, tmpdir / expected_file)
+        mock_writeheader.assert_called()
+        mock_writerows.assert_called_with(mock_data)
 
 
 if __name__ == '__main__':
