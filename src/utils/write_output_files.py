@@ -121,7 +121,7 @@ def export_primers_to_csv(slices:List[dict], export_dir:str) -> str:
     csv_path = export_to_csv(rows, export_dir, PRIMER3_OUTPUT_CSV, headers, delimiter=',')
     return csv_path
 
-def export_to_csv(data:Union[list, dict], export_dir:str, filename:str, headers:List[str], delimiter=',') -> str:
+def export_to_csv(data:Union[list, dict], export_dir:str, filename:str, headers:List[str], delimiter:str=',') -> str:
     kwargs = {'delimiter':delimiter, 'fieldnames':headers}
     csv_path = Path(export_dir)/filename
 
