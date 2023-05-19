@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from pybedtools import BedTool
 from utils.file_system import write_to_text_file, FolderCreator
 from utils.exceptions import OutputError, FolderCreatorError, FileTypeError
-if TYPE_CHECKING: # For avoiding circular import dependencies, only import for type checking.
+if TYPE_CHECKING:  # For avoiding circular import dependencies, only import for type checking.
     from src.primer_designer import PrimerDesigner
     from src.cli import Scoring
 
@@ -81,7 +81,7 @@ def timestamped_dir(prefix):
     return FolderCreator.get_dir()
 
 
-def write_slicer_output(dir_prefix:str, slices:List[dict]) -> SlicerOutputData:
+def write_slicer_output(dir_prefix: str, slices: List[dict]) -> SlicerOutputData:
     export_dir = timestamped_dir(dir_prefix)
     result = SlicerOutputData(export_dir)
 
@@ -93,7 +93,7 @@ def write_slicer_output(dir_prefix:str, slices:List[dict]) -> SlicerOutputData:
     return result
 
 
-def write_slicer_bed_output(export_dir:str, slices:List[dict]) -> str:
+def write_slicer_bed_output(export_dir: str, slices: List[dict]) -> str:
     BED_OUTPUT = 'slicer_output.bed'
 
     bed_path = path.join(export_dir, BED_OUTPUT)
@@ -102,7 +102,7 @@ def write_slicer_bed_output(export_dir:str, slices:List[dict]) -> str:
     return bed_path
 
 
-def write_slicer_fasta_output(export_dir:str, slices:List[dict]) -> str:
+def write_slicer_fasta_output(export_dir: str, slices: List[dict]) -> str:
     FASTA_OUTPUT = 'slicer_output.fasta'
 
     fasta_path = path.join(export_dir, FASTA_OUTPUT)
@@ -111,7 +111,7 @@ def write_slicer_fasta_output(export_dir:str, slices:List[dict]) -> str:
     return fasta_path
 
 
-def export_primers_to_csv(slices:List[dict], export_dir:str) -> str:
+def export_primers_to_csv(slices: List[dict], export_dir: str) -> str:
     PRIMER3_OUTPUT_CSV = 'p3_output.csv'
 
     headers = ['primer', 'sequence', 'chr', 'primer_start', 'primer_end', 'tm', 'gc_percent',
@@ -121,9 +121,10 @@ def export_primers_to_csv(slices:List[dict], export_dir:str) -> str:
     csv_path = export_to_csv(rows, export_dir, PRIMER3_OUTPUT_CSV, headers, delimiter=',')
     return csv_path
 
-def export_to_csv(data:Union[list, dict], export_dir:str, filename:str, headers:List[str], delimiter:str=',') -> str:
-    kwargs = {'delimiter':delimiter, 'fieldnames':headers}
-    csv_path = Path(export_dir)/filename
+
+def export_to_csv(data: Union[list, dict], export_dir: str, filename: str, headers: List[str], delimiter: str = ',') -> str:
+    kwargs = {'delimiter': delimiter, 'fieldnames': headers}
+    csv_path = Path(export_dir) / filename
 
     with open(csv_path, "w", newline='') as f:
         output_writer = csv.DictWriter(f, **kwargs)
@@ -132,7 +133,8 @@ def export_to_csv(data:Union[list, dict], export_dir:str, filename:str, headers:
 
     return csv_path
 
-def construct_csv_format(slices:List[dict], headers:list) -> list:
+
+def construct_csv_format(slices: List[dict], headers: list) -> list:
     rows = []
 
     for slice_data in slices:
@@ -150,7 +152,7 @@ def construct_csv_format(slices:List[dict], headers:list) -> list:
     return rows
 
 
-def construct_bed_format(slices:List[dict])-> list:
+def construct_bed_format(slices: List[dict]) -> list:
     rows = []
     for slice_data in slices:
         primers = slice_data['primers']
@@ -170,7 +172,7 @@ def construct_bed_format(slices:List[dict])-> list:
     return rows
 
 
-def export_to_bed(bed_rows:list, export_dir:str) -> str:
+def export_to_bed(bed_rows: list, export_dir: str) -> str:
     PRIMER_OUTPUT_BED = 'p3_output.bed'
 
     p3_bed = BedTool(bed_rows)
@@ -223,7 +225,7 @@ def write_ipcress_output(stnd='', err='', existing_dir='') -> IpcressOutputData:
     return result
 
 
-def write_targeton_csv(ipcress_input:str, bed:str, dirname:str, dir_timestamped=False) -> TargetonCSVData:
+def write_targeton_csv(ipcress_input: str, bed: str, dirname: str, dir_timestamped=False) -> TargetonCSVData:
     TARGETON_CSV = 'targetons.csv'
     bed = BedTool(bed)
     csv_rows = []
@@ -249,7 +251,7 @@ def write_targeton_csv(ipcress_input:str, bed:str, dirname:str, dir_timestamped=
     return result
 
 
-def write_scoring_output(scoring:Scoring, output_tsv:str) -> ScoringOutputData:
+def write_scoring_output(scoring: Scoring, output_tsv: str) -> ScoringOutputData:
     scoring.save_mismatches(output_tsv)
 
     result = ScoringOutputData('')
