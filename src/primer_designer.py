@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, List, Tuple
+from typing import Any, List, Union
 from collections import defaultdict
 import re
 import json
@@ -13,7 +13,7 @@ VERSION = '01'
 
 
 class PrimerDesigner():
-    def __init__(self, data: Tuple[DesignOutputData, dict, List[dict]] = dict()) -> None:
+    def __init__(self, data: Union[DesignOutputData, dict, List[dict]] = dict()) -> None:
         self.primer_pairs = []
         if data:
             self.process_input(data)
@@ -81,7 +81,7 @@ class PrimerDesigner():
             pair_class = PrimerPair(pair)
             self.append_pair(pair_class)
 
-    def process_input(self, data: Tuple[DesignOutputData, dict, List[dict]]) -> bool:
+    def process_input(self, data: Union[DesignOutputData, dict, List[dict]]) -> bool:
         if isinstance(data, (dict, list)):
             data_check = self.validate_dict_input(data)
             if data_check:
@@ -108,7 +108,7 @@ class PrimerDesigner():
 
     def validate_dict_input(
             self,
-            data : Tuple[dict,List[dict]],
+            data : Union[dict,List[dict]],
             expected_structure={
                 'pair'  : str,
                 'score' : str,
