@@ -125,6 +125,10 @@ check-make:
 		$(MAKE) install-make
 	fi
 
+install-autopep8: venv/bin/activate
+	@echo "Installing autopep8..."
+	@./venv/bin/pip install autopep8
+
 venv/bin/activate:
 	@python -m venv venv
 
@@ -201,11 +205,13 @@ check-lint:
 	@echo "Running pycodestyle for tests/"
 	@pycodestyle --statistics -qq tests || true
 
-auto-lint-tests:
+auto-lint-tests: install-autopep8
+	@echo "Linting tests..."
 	@. venv/bin/activate
 	@python -m autopep8 -r -i tests/
 
-auto-lint-src:
+auto-lint-src: install-autopep8
+	@echo "Linting src..."
 	@. venv/bin/activate
 	@python -m autopep8 -r -i src/
 
