@@ -3,7 +3,7 @@ import re
 import os
 from collections import defaultdict
 from _collections_abc import dict_keys
-from typing import Union, List
+from typing import Tuple, List
 
 from Bio import SeqIO
 from Bio.Seq import Seq
@@ -181,7 +181,7 @@ class Primer3:
         return coord_data
 
     @staticmethod
-    def calculate_primer_coords(side, coords, slice_start) -> Union[int, int]:
+    def calculate_primer_coords(side, coords, slice_start) -> Tuple[int, int]:
         slice_start = int(slice_start)
         left_flank = {
             'start': slice_start,

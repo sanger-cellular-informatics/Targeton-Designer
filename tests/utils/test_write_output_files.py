@@ -1,13 +1,13 @@
 import unittest
 import sys
 from os import path
+from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 from unittest.mock import patch, Mock
 from freezegun import freeze_time
 
-from src.utils.write_output_files import write_scoring_output, write_targeton_csv
-
+from src.utils.write_output_files import write_scoring_output, write_targeton_csv, export_to_csv
 
 class TestWriteOutputFiles(TestCase):
     def setUp(self):
@@ -93,6 +93,27 @@ class TestWriteOutputFiles(TestCase):
         mock_print.assert_called_with('Scoring file saved: test_scoring.tsv')
         self.assertEqual(result.dir, expected_dir)
         self.assertEqual(result.tsv, expected_file)
+        
+    @patch('csv.DictWriter')
+    def test_export_to_csv(self, mock_writer):
+        # arrange
+        expected_dir = Path('')
+        expected_file = 'test_csv.csv'
+        mock_writer.return_value = expected_dir/expected_file
+        mock_writer.writeheader = Mock()
+        mock_writer.writerows = Mock()
+        
+        mock_data = {'test':[1, 2, 3, 4, 5], 'test2': 'things'}
+        mock_headers = ['test', 'test2']
+
+        # act
+        result = export_to_csv(mock_data, expected_dir, 'test_scoring.tsv', mock_headers, ',')
+
+        # assert
+        mock_writer.assert_called()
+        mock_writer.writeheader.assert_called()
+        mock_writer.writerows.assert_called_with(mock_data)
+        self.assertEqual(result, expected_dir/expected_file)
 
 
 if __name__ == '__main__':
