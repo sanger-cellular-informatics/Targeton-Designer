@@ -123,7 +123,7 @@ class TestWriteOutputFiles(TestCase):
         test_data = read_csv_to_list_dict(result, test_delimiter)[0]
         self.assertEqual(test_delimiter, expected_delimiter)
         self.assertDictEqual(test_data, mock_data)
-        
+
 
 if __name__ == '__main__':
     unittest.main()

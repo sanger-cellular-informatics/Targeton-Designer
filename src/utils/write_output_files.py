@@ -129,7 +129,10 @@ def export_to_csv(data: Union[list, dict], export_dir: str, filename: str, heade
     with open(csv_path, "w", newline='') as f:
         output_writer = csv.DictWriter(f, **kwargs)
         output_writer.writeheader()
-        output_writer.writerows(data)
+        if isinstance(data, dict):
+            output_writer.writerow(data)
+        else:
+            output_writer.writerows(data)
 
     return csv_path
 
