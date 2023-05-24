@@ -107,7 +107,7 @@ class TestWriteOutputFiles(TestCase):
         mock_headers = ['test', 'test2']
 
         # act
-        with Path(TemporaryDirectory()) as tmpdir:
+        with TemporaryDirectory() as tmpdir:
             result = write_output_files.export_to_csv(
                 mock_data,
                 tmpdir,
@@ -116,7 +116,7 @@ class TestWriteOutputFiles(TestCase):
                 ','
             )
         # assert
-            self.assertEqual(result, tmpdir / expected_file)
+            self.assertEqual(result, Path(tmpdir) / expected_file)
         mock_writeheader.assert_called()
         mock_writerows.assert_called_with(mock_data)
 
