@@ -99,7 +99,7 @@ class TestWriteOutputFiles(TestCase):
 
     @patch('src.utils.write_output_files.csv.DictWriter.writeheader')
     @patch('src.utils.write_output_files.csv.DictWriter.writerows')
-    def test_export_to_csv(self, mock_writeheader, mock_writerows):
+    def test_export_to_csv(self, mock_writerows, mock_writeheader):
         # arrange
         expected_file = 'test_scoring.tsv'
 
