@@ -1,5 +1,4 @@
 import unittest
-import sys
 from os import path
 from pathlib import Path
 
@@ -9,7 +8,8 @@ from freezegun import freeze_time
 
 from src.utils.write_output_files import write_scoring_output, write_targeton_csv
 from src.utils import write_output_files
-from tempfile import TemporaryDirectory
+import csv
+from src.utils.file_system import read_csv_to_list_dict
 
 
 class TestWriteOutputFiles(TestCase):
@@ -97,29 +97,33 @@ class TestWriteOutputFiles(TestCase):
         self.assertEqual(result.dir, expected_dir)
         self.assertEqual(result.tsv, expected_file)
 
-    @patch('src.utils.write_output_files.csv.DictWriter.writeheader')
-    @patch('src.utils.write_output_files.csv.DictWriter.writerows')
-    def test_export_to_csv(self, mock_writerows, mock_writeheader):
+    def test_export_to_csv(self):
         # arrange
         expected_file = 'test_scoring.tsv'
-
+        fake_dir = '/fake_dir/test'
+        self.fs.create_dir(fake_dir)
         mock_data = {'test': [1, 2, 3, 4, 5], 'test2': 'things'}
         mock_headers = ['test', 'test2']
+        expected_delimiter = '\t'
 
         # act
-        with TemporaryDirectory() as tmpdir:
-            result = write_output_files.export_to_csv(
-                mock_data,
-                tmpdir,
-                expected_file,
-                mock_headers,
-                delimiter='\t'
-            )
+        result = write_output_files.export_to_csv(
+            mock_data,
+            fake_dir,
+            expected_file,
+            mock_headers,
+            delimiter=expected_delimiter
+        )
+        expected_file_path = Path(fake_dir) / expected_file
         # assert
-            self.assertEqual(result, Path(tmpdir) / expected_file)
-        mock_writeheader.assert_called()
-        mock_writerows.assert_called_with(mock_data)
-
+        self.assertEqual(result, expected_file_path)
+        sniffer = csv.Sniffer()
+        with open(expected_file_path) as f:
+            test_delimiter = sniffer.sniff(f.read(5000)).delimiter
+        test_data = read_csv_to_list_dict(result, test_delimiter)[0]
+        self.assertEqual(test_delimiter, expected_delimiter)
+        self.assertDictEqual(test_data, mock_data)
+        
 
 if __name__ == '__main__':
     unittest.main()
