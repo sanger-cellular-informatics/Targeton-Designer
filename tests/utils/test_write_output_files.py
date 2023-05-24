@@ -107,7 +107,7 @@ class TestWriteOutputFiles(TestCase):
         mock_headers = ['test', 'test2']
 
         # act
-        with TemporaryDirectory() as tmpdir:
+        with Path(TemporaryDirectory()) as tmpdir:
             result = write_output_files.export_to_csv(
                 mock_data,
                 tmpdir,
