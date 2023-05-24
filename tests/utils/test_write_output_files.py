@@ -97,8 +97,8 @@ class TestWriteOutputFiles(TestCase):
         self.assertEqual(result.dir, expected_dir)
         self.assertEqual(result.tsv, expected_file)
 
-    @patch('write_output_files.csv.DictWriter.writeheader')
-    @patch('write_output_files.csv.DictWriter.writerows')
+    @patch('src.utils.write_output_files.csv.DictWriter.writeheader')
+    @patch('src.utils.write_output_files.csv.DictWriter.writerows')
     def test_export_to_csv(self, mock_writeheader, mock_writerows):
         # arrange
         expected_file = 'test_csv.csv'
