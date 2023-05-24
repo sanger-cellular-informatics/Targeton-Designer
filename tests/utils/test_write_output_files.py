@@ -101,7 +101,7 @@ class TestWriteOutputFiles(TestCase):
     @patch('src.utils.write_output_files.csv.DictWriter.writerows')
     def test_export_to_csv(self, mock_writeheader, mock_writerows):
         # arrange
-        expected_file = 'test_csv.csv'
+        expected_file = 'test_scoring.tsv'
 
         mock_data = {'test': [1, 2, 3, 4, 5], 'test2': 'things'}
         mock_headers = ['test', 'test2']
@@ -111,9 +111,9 @@ class TestWriteOutputFiles(TestCase):
             result = write_output_files.export_to_csv(
                 mock_data,
                 tmpdir,
-                'test_scoring.tsv',
+                expected_file,
                 mock_headers,
-                ','
+                delimiter='\t'
             )
         # assert
             self.assertEqual(result, Path(tmpdir) / expected_file)
