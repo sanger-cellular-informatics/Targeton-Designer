@@ -75,6 +75,49 @@ def read_csv_to_list_dict(csv_path, delimiter=',') -> List[dict]:
     return data
 
 
+def read_csv(csv_path, delimiter=',') -> Any:
+    check_file_exists(csv_path)
+    data = []
+    with open(csv_path, mode='r', newline='') as csv_file:
+        reader = csv.reader(csv_file, delimiter=delimiter)
+        for row in reader:
+            new_row = []
+            for element in row:
+                new_row.append(convert_string_to_python(element))
+            data.append(new_row)
+    return data
+
+
+def convert_string_to_python(string: str) -> Any:
+    # group 0: all, 1: first element if iterable, 2: inner element no delimiter
+    patterns = {
+        list: r"^\[.+]$",  # list start/end with []
+        tuple: r"^\(.+\)$",  # tuple start/end with ()
+        dict: r"^\{.+\}$",  # dict start/end with {} with : somewhere between
+        int: r"\d+",  # Integer
+        float: r"[0-9.]+",  # Numeric only
+        bool: r"True|False"  # Bool
+    }
+    for dtype, pattern in patterns.items():
+        match = re.search(pattern, string)
+        if match:
+            if dtype in (list, tuple):
+                split_string = string.split(',')
+                data = []
+                for element in split_string:
+                    data.append(convert_string_to_python(element))
+            elif dtype == dict:
+                split_string = string.split(',')
+                data = dict()
+                for element in split_string:
+                    key, value = element.split(':')
+                    data.update({key: convert_string_to_python(value)})
+            else:
+                data = match.group()
+            return dtype(data)
+    return string  # default string
+
+
 def parse_json(file_path: str) -> dict:
     with open(file_path, "r") as file:
         try:
