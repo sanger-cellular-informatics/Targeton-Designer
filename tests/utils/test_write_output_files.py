@@ -118,11 +118,15 @@ class TestWriteOutputFiles(TestCase):
         
         sniffer = csv.Sniffer()
         with open(expected_file_path) as f:
-            test_delimiter = sniffer.sniff(f.read(5000)).delimiter
+            test_delimiter = sniffer.sniff(f.read()).delimiter
+            f.seek(0)
+            test_data = f.read()
+        expected_read_data = f"test{expected_delimiter}test2\n[1, 2, 3, 4, 5]{expected_delimiter}things\n"
         # assert
         self.assertEqual(result, expected_file_path)
         self.assertEqual(test_delimiter, expected_delimiter)
         self.assertTrue(expected_file_path.exists())
+        self.assertEqual(test_data, expected_read_data)
 
 
 if __name__ == '__main__':
