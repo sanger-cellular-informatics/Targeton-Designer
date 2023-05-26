@@ -1,19 +1,14 @@
 FROM python:3.8.0 as base
 
 WORKDIR /
-
 COPY Makefile Makefile
+RUN apt-get update
+RUN make install
+
 COPY requirements.txt requirements.txt
 COPY sge-primer-scoring/requirements.txt sge-primer-scoring/requirements.txt
-COPY sge-primer-scoring/src sge-primer-scoring/src
-COPY src src
-COPY tests tests
-
-RUN apt-get update
-
-RUN make install
 RUN make setup-venv
 
-FROM base as unittest
-ENV DOCKER_ENV=${DOCKER_ENV:-unittest}
-CMD [ "sh", "-c", "make test" ]
+COPY src src
+COPY tests tests
+COPY sge-primer-scoring sge-primer-scoring
