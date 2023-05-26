@@ -20,7 +20,6 @@ DOCKER_TAG ?=${DOCKER_ENV}
 DOCKER_REPO ?=local
 DOCKER_PORT ?=8081
 DOCKER_IMAGE_NAME ?= ${DOCKER_REPO}/${DOCKER_NAME}
-DOCKER_IMAGE_NAME_TAG ?= ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}
 
 init: check-make
 	git config core.hooksPath .githooks
@@ -159,35 +158,35 @@ build-docker:
 	echo docker repo = ${DOCKER_REPO}
 	echo docker image = ${DOCKER_IMAGE_NAME}
 	echo docker tag = ${DOCKER_TAG}
-	echo $(docker images -q ${DOCKER_IMAGE_NAME_TAG})
-	if [ "$(docker images -q ${DOCKER_IMAGE_NAME_TAG} 2> /dev/null)" != "" ]; then
-		echo "docker image with tag already exists. ${DOCKER_IMAGE_NAME_TAG}"
+	echo $(docker images -q ${DOCKER_IMAGE_NAME}:${DOCKER_TAG})
+	if [ "$(docker images -q ${DOCKER_IMAGE_NAME}:${DOCKER_TAG} 2> /dev/null)" != "" ]; then
+		echo "docker image with tag already exists. ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
 	elif [ "$(docker images -q ${DOCKER_IMAGE_NAME} 2> /dev/null)" != "" ]; then
 		echo "Using existing base as cache. ${DOCKER_IMAGE_NAME}"
 		DOCKER_CACHE_ID = $(docker images -q ${DOCKER_IMAGE_NAME})
 	else
 		@echo "Building docker image..."
-		@docker build -t "${DOCKER_IMAGE_NAME_TAG}" .;
+		@docker build -t "${DOCKER_IMAGE_NAME}:${DOCKER_TAG}" .;
 		if [[ ${DOCKER_REPO} != "local" ]]; then
-			@docker push "${DOCKER_IMAGE_NAME_TAG}" 
+			@docker push "${DOCKER_IMAGE_NAME}:${DOCKER_TAG}" 
 		fi
 	fi
 	echo "build finished..."
 
 run-docker: build-docker clean-docker-containers
-	@echo "Running Docker image =  $(DOCKER_IMAGE_NAME_TAG)"
-	docker run --name "${DOCKER_NAME}" -p ${DOCKER_PORT}:${DOCKER_PORT} -t "${DOCKER_IMAGE_NAME_TAG}"
+	@echo "Running Docker image =  $(DOCKER_IMAGE_NAME):${DOCKER_TAG}"
+	docker run --name "${DOCKER_NAME}" -p ${DOCKER_PORT}:${DOCKER_PORT} -t "${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
 	$(MAKE) clean-docker-containers
 
 run-docker-test: DOCKER_TAG=test
 run-docker-test: build-docker clean-docker-containers
 	@echo "Running Docker image =  $(DOCKER_IMAGE_NAME_TAG)"
-	@docker run --name "${DOCKER_NAME}" -p ${DOCKER_PORT}:${DOCKER_PORT} -t "${DOCKER_IMAGE_NAME_TAG}" make test
+	@docker run --name "${DOCKER_NAME}" -p ${DOCKER_PORT}:${DOCKER_PORT} -t "${DOCKER_IMAGE_NAME}:${DOCKER_TAG}" make test
 
 run-docker-interactive: DOCKER_TAG=interactive
 run-docker-interactive: build-docker clean-docker-containers
-	@echo "Running Docker image =  $(DOCKER_IMAGE_NAME_TAG)"
-	@docker run -i --name "${DOCKER_NAME}" -t "${DOCKER_IMAGE_NAME_TAG}" bash
+	@echo "Running Docker image =  $(DOCKER_IMAGE_NAME):${DOCKER_TAG}"
+	@docker run -i --name "${DOCKER_NAME}" -t "${DOCKER_IMAGE_NAME}:${DOCKER_TAG}" bash
 
 connect-docker-interactive:
 	@docker exec -it ${DOCKER_NAME} bash
