@@ -1,12 +1,15 @@
 import unittest
-import sys
 from os import path
+from pathlib import Path
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 from unittest.mock import patch, Mock
 from freezegun import freeze_time
 
 from src.utils.write_output_files import write_scoring_output, write_targeton_csv
+from src.utils import write_output_files
+import csv
+from src.utils.file_system import read_csv_to_list_dict
 
 
 class TestWriteOutputFiles(TestCase):
@@ -93,6 +96,37 @@ class TestWriteOutputFiles(TestCase):
         mock_print.assert_called_with('Scoring file saved: test_scoring.tsv')
         self.assertEqual(result.dir, expected_dir)
         self.assertEqual(result.tsv, expected_file)
+
+    def test_export_to_csv(self):
+        # arrange
+        expected_file = 'test_scoring.tsv'
+        fake_dir = '/fake_dir/test'
+        self.fs.create_dir(fake_dir)
+        mock_data = {'test': [1, 2, 3, 4, 5], 'test2': 'things'}
+        mock_headers = ['test', 'test2']
+        expected_delimiter = '\t'
+        expected_file_path = Path(fake_dir) / expected_file
+
+        # act
+        result = write_output_files.export_to_csv(
+            mock_data,
+            fake_dir,
+            expected_file,
+            mock_headers,
+            delimiter=expected_delimiter
+        )
+        
+        sniffer = csv.Sniffer()
+        with open(expected_file_path) as f:
+            test_delimiter = sniffer.sniff(f.read()).delimiter
+            f.seek(0)
+            test_data = f.read()
+        expected_read_data = f"test{expected_delimiter}test2\n[1, 2, 3, 4, 5]{expected_delimiter}things\n"
+        # assert
+        self.assertEqual(result, expected_file_path)
+        self.assertEqual(test_delimiter, expected_delimiter)
+        self.assertTrue(expected_file_path.exists())
+        self.assertEqual(test_data, expected_read_data)
 
 
 if __name__ == '__main__':
