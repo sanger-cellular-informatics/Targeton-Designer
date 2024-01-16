@@ -53,7 +53,7 @@ def slicer_command(args) -> SlicerOutputData:
 def primer_command(
     fasta='',
     prefix='',
-    dir=''
+    existing_dir='',
 ) -> PrimerOutputData:
 
     validate_files(fasta=fasta)
@@ -63,7 +63,7 @@ def primer_command(
     primer_result = write_primer_output(
         primers=primers,
         prefix=prefix,
-        dir=dir,
+        existing_dir=existing_dir,
     )
 
     return primer_result
@@ -139,19 +139,21 @@ def scoring_command(ipcress_output, mismatch, output_tsv, targeton_csv=None) -> 
 def design_command(args) -> DesignOutputData:
     validate_files(fasta=args['fasta'])
     
-    primer_result = primer_command(fasta=args['fasta'], dir=args['dir'])
-    ipcress_result = ipcress_command(args, csv=primer_result.csv, existing_dir=primer_result.dir)
+    primer_result = primer_command(fasta=args['fasta'], prefix=args['dir'])
+    output_dir = primer_result.dir
+
+    ipcress_result = ipcress_command(args, csv=primer_result.csv, existing_dir=output_dir)
     targeton_result = write_targeton_csv(
-        ipcress_result.input_file, args['bed'], primer_result.dir, dir_timestamped=True
+        ipcress_result.input_file, args['bed'], output_dir, dir_timestamped=True
     )
-    scoring_output_path = path.join(primer_result.dir, 'scoring_output.tsv')
+    scoring_output_path = path.join(output_dir, 'scoring_output.tsv')
     scoring_result = scoring_command(
         ipcress_result.stnd,
         args['mismatch'],
         scoring_output_path,
         targeton_result.csv
     )
-    design_result = DesignOutputData(primer_result.dir)
+    design_result = DesignOutputData(output_dir)
     # Slicer
   #  design_result.slice_bed = slicer_result.bed
   #  design_result.slice_fasta = slicer_result.fasta
