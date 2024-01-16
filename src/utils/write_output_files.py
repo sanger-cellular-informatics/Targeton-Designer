@@ -195,11 +195,11 @@ def export_to_bed(bed_rows: list, export_dir: str) -> str:
 def write_primer_output(
     prefix='',
     primers=[],
-    existing_dir='',
+    dir='',
 ) -> PrimerOutputData:
 
-    if existing_dir:
-        export_dir = existing_dir
+    if dir:
+        export_dir = dir
     else:
         export_dir = timestamped_dir(prefix)
 
