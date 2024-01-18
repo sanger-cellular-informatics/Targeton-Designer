@@ -215,7 +215,7 @@ class TestPrimer3(TestCase):
         input_slice_data = {'strand': '+', 'name': 'region1_1'}
 
         # act
-        actual = self.primer.build_primers_dict(
+        actual = self.primer._build_primers_dict(
             input_design, input_primer_keys, input_slice_data)
 
         # assert
@@ -236,7 +236,7 @@ class TestPrimer3(TestCase):
         input_slice_data = {'strand': '+', 'name': 'region1_1'}
 
         # act
-        actual = self.primer.build_primers_dict(input_design, input_primer_keys, input_slice_data)
+        actual = self.primer._build_primers_dict(input_design, input_primer_keys, input_slice_data)
 
         # assert
         self.assertEqual(expected, actual)
@@ -270,7 +270,7 @@ class TestPrimer3(TestCase):
         # revcom_mock.return_value = 'primer_seq'
 
         # act
-        actual = self.primer.build_primer_loci(
+        actual = self.primer._build_primer_loci(
             input_primer, input_key, input_design,
             input_primer_details, input_slice_data)
 
@@ -300,7 +300,7 @@ class TestPrimer3(TestCase):
         expected['penalty'] = 1
 
         # act
-        actual = self.primer.build_primer_loci(
+        actual = self.primer._build_primer_loci(
             input_primer, input_key, input_design,
             input_primer_details, input_slice_data)
 

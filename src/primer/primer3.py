@@ -48,7 +48,7 @@ class Primer3:
         return slices
 
     def primer3_design(self, primer3_inputs: list) -> List[dict]:
-        config_data = self.get_config_data()
+        config_data = self._get_config_data()
 
         for slice_data in primer3_inputs:
             primer3_input = slice_data['p3_input']
@@ -65,7 +65,7 @@ class Primer3:
             design = slice_data['design']
             primer_keys = design.keys()
 
-            primers = self.build_primers_dict(design, primer_keys, slice_data)
+            primers = self._build_primers_dict(design, primer_keys, slice_data)
 
             del slice_data['design']
             slice_data['primers'] = primers
@@ -73,7 +73,7 @@ class Primer3:
 
         return slice_designs
 
-    def build_primers_dict(self, design, primer_keys: dict_keys, slice_data: dict) -> defaultdict(dict):
+    def _build_primers_dict(self, design, primer_keys: dict_keys, slice_data: dict) -> defaultdict(dict):
         primers = defaultdict(dict)
 
         for key in primer_keys:
@@ -83,13 +83,13 @@ class Primer3:
                 libamp_name = self.name_primers(primer_details, slice_data['strand'])
                 primer_name = slice_data['name'] + "_" + libamp_name + "_" + primer_details['pair']
 
-                primers[primer_name] = self.build_primer_loci(
+                primers[primer_name] = self._build_primer_loci(
                     primers[primer_name], key, design,
                     primer_details, slice_data)
 
         return primers
 
-    def build_primer_loci(
+    def _build_primer_loci(
         self, primer, key, design, primer_details, slice_data: dict
     ) -> dict:
 
@@ -110,7 +110,7 @@ class Primer3:
 
         return primer
 
-    def get_config_data(self) -> dict:
+    def _get_config_data(self) -> dict:
         try:
             config_data = parse_json(self._config)
         except Exception as err:
