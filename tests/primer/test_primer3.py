@@ -1,8 +1,5 @@
-from cgi import test
 import unittest
-import os
 import json
-import collections
 
 from unittest.mock import patch
 from pyfakefs.fake_filesystem_unittest import TestCase
@@ -155,9 +152,6 @@ class TestPrimer3(TestCase):
         # arrange
         self.create_files()
 
-        with open('/primer3_test_config.json', "r") as file:
-            config = json.load(file)
-
         input = [{
             'name'      : 'region1_1',
             'start'     : '5',
@@ -183,7 +177,7 @@ class TestPrimer3(TestCase):
             'PRIMER_PAIR_NUM_RETURNED': 0
         }
         # act
-        actual = self.primer.primer3_design(input, config)[0]['design']
+        actual = Primer3('/primer3_test_config.json').primer3_design(input)[0]['design']
 
         # assert
         self.assertEqual(actual, expected)
@@ -312,6 +306,18 @@ class TestPrimer3(TestCase):
 
         # assert
         self.assertEqual(expected, actual)
+
+    def test_primer3_initialisation_with_no_user_config_file_as_parameter(self):
+        primer = Primer3()
+
+        self.assertEqual(primer._config, './src/primer/primer3.config.json')
+
+    def test_primer3_initialisation_with_user_config_file_as_parameter(self):
+        user_config_file = "config.json"
+
+        primer = Primer3(user_config_file)
+
+        self.assertEqual(primer._config, user_config_file)
 
 
 if __name__ == '__main__':
