@@ -172,5 +172,10 @@ def add_input_args(parser):
         '--output_tsv',
         help='Path for output TSV file',
     )
+    parser.add_argument(
+        '--primer3_params',
+        type=str,
+        help='Path for the optional primer3 config file (JSON)',
+    )
 
     return parser

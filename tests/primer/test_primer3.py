@@ -182,7 +182,7 @@ class TestPrimer3(TestCase):
         # assert
         self.assertEqual(actual, expected)
 
-    @patch('primer.primer3.Primer3.build_primers_dict')
+    @patch('primer.primer3.Primer3._build_primers_dict')
     def test_locate_primers_design_success(self, dict_mock):
         # arrange
         dict_mock.return_value = {'region1_1_libamp_name_2': 'build_primer_dict'}
@@ -200,7 +200,7 @@ class TestPrimer3(TestCase):
         self.assertEqual(expected, actual)
         self.assertEqual(dict_mock.call_count, 2)
 
-    @patch('primer.primer3.Primer3.build_primer_loci')
+    @patch('primer.primer3.Primer3._build_primer_loci')
     @patch('primer.primer3.Primer3.name_primers')
     @patch('primer.primer3.Primer3.capture_primer_details')
     def test_build_primers_dict_valid_success(
