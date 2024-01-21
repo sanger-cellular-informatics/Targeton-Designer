@@ -113,8 +113,10 @@ class Primer3:
     def _get_config_data(self) -> dict:
         try:
             config_data = parse_json(self._config)
-        except Exception as err:
-            raise InvalidConfigError(f'Primer3 config file is not a correct JSON')
+        except FileNotFoundError:
+            raise
+        except Exception:
+            raise InvalidConfigError('Primer3 config file is not a correct JSON')
 
         return config_data
 
