@@ -1,8 +1,26 @@
 import re
+from typing import List
 from Bio import SeqIO
 
 
-def construct_slice_coord_dict(match) -> dict:
+class SliceData:
+    def __init__(self, name: str, start: str, end: str, strand: str, chrom: str, bases: str):
+        self.name = name
+        self.start = start
+        self.end = end
+        self.strand = strand
+        self.chrom = chrom
+        self.bases = bases
+
+    @property
+    def p3_input(self):
+        return {
+            'SEQUENCE_ID': self.name,
+            'SEQUENCE_TEMPLATE': self.bases,
+        }
+
+
+def parse_slice(match) -> dict:
     coord_data = {
         'name': match.group(1),
         'start': match.group(4),
@@ -12,7 +30,7 @@ def construct_slice_coord_dict(match) -> dict:
     }
     return coord_data
 
-def parse_fasta(fasta: str) -> str:
+def parse_fasta(fasta: str) -> List[SliceData]:
     with open(fasta) as fasta_data:
         rows = SeqIO.parse(fasta_data, 'fasta')
 
@@ -23,12 +41,17 @@ def parse_fasta(fasta: str) -> str:
             match = re.search(
                 r'^(\w+)::((chr)?\d+):(\d+)\-(\d+)\(([+-\.]{1})\)$', row.id)
             if match:
-                slice_data = construct_slice_coord_dict(match)
-                p3_input = {
-                    'SEQUENCE_ID': slice_data['name'],
-                    'SEQUENCE_TEMPLATE': str(row.seq),
-                }
-                slice_data['p3_input'] = p3_input
-                slices.append(slice_data)
+                parsed_id = parse_slice(match)
+
+                slice = SliceData(
+                    parsed_id["name"],
+                    parsed_id["start"],
+                    parsed_id["end"],
+                    parsed_id["strand"],
+                    parsed_id["chrom"],
+                    str(row.seq),
+                )
+
+                slices.append(slice)
 
     return slices

@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from pybedtools import BedTool
 from utils.file_system import write_to_text_file, FolderCreator
 from utils.exceptions import OutputError, FolderCreatorError, FileTypeError
+from utils.parsers import SliceData
 if TYPE_CHECKING:  # For avoiding circular import dependencies, only import for type checking.
     from src.primer_designer import PrimerDesigner
     from src.cli import Scoring
@@ -144,14 +145,14 @@ def export_to_csv(
     return csv_path
 
 
-def construct_csv_format(slices: List[dict], headers: list) -> list:
+def construct_csv_format(slices: List[SliceData], headers: list) -> list:
     rows = []
 
     for slice_data in slices:
-        primers = slice_data['primers']
+        primers = slice_data.primers
         for primer in primers:
             primers[primer]['primer'] = primer
-            primers[primer]['chr'] = slice_data['chrom']
+            primers[primer]['chr'] = slice_data.chrom
 
             del primers[primer]['coords']
             del primers[primer]['side']
@@ -162,16 +163,16 @@ def construct_csv_format(slices: List[dict], headers: list) -> list:
     return rows
 
 
-def construct_bed_format(slices: List[dict]) -> list:
+def construct_bed_format(slices: List[SliceData]) -> list:
     rows = []
     for slice_data in slices:
-        primers = slice_data['primers']
+        primers = slice_data.primers
         for primer in primers:
             primer_data = primers[primer]
             # chr,chrStart,chrEnd,name,score,strand
             # Score unknown until iPCRess
             row = [
-                slice_data['chrom'],
+                slice_data.chrom,
                 primer_data['primer_start'],
                 primer_data['primer_end'],
                 primer,

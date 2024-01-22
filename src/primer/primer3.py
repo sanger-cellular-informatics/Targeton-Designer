@@ -11,6 +11,8 @@ from utils.exceptions import Primer3Error, InvalidConfigError
 from utils.file_system import parse_json
 from utils.parsers import parse_fasta
 
+from utils.parsers import SliceData
+
 
 class Primer3:
     def __init__(self) -> None:
@@ -39,13 +41,13 @@ class Primer3:
     def read_input_fasta(self, fasta: str) -> List[dict]:
         return parse_fasta(fasta)
 
-    def primer3_design(self, primer3_inputs: list, primer3_config: dict) -> List[dict]:
+    def primer3_design(self, primer3_inputs: List[SliceData], primer3_config: dict) -> List[dict]:
         designs = []
         for slice_data in primer3_inputs:
-            primer3_input = slice_data['p3_input']
+            primer3_input = slice_data.p3_input
 
             design = primer3.bindings.designPrimers(primer3_input, primer3_config)
-            slice_data['design'] = design
+            slice_data.design = design
             designs.append(slice_data)
 
         return designs
@@ -54,13 +56,13 @@ class Primer3:
         slice_designs = []
 
         for slice_data in designs:
-            design = slice_data['design']
+            design = slice_data.design
             primer_keys = design.keys()
 
             primers = self.build_primers_dict(design, primer_keys, slice_data)
 
-            del slice_data['design']
-            slice_data['primers'] = primers
+            del slice_data.design
+            slice_data.primers = primers
             slice_designs.append(slice_data)
 
         return slice_designs
@@ -72,8 +74,8 @@ class Primer3:
             primer_details = self.capture_primer_details(key)
 
             if primer_details:
-                libamp_name = self.name_primers(primer_details, slice_data['strand'])
-                primer_name = slice_data['name'] + "_" + libamp_name + "_" + primer_details['pair']
+                libamp_name = self.name_primers(primer_details, slice_data.strand)
+                primer_name = slice_data.name + "_" + libamp_name + "_" + primer_details['pair']
 
                 primers[primer_name] = self.build_primer_loci(
                     primers[primer_name], key, design,
@@ -92,12 +94,12 @@ class Primer3:
 
         if primer_field == 'coords':
             primer_coords = self.calculate_primer_coords(
-                primer_details['side'], design[key], slice_data['start'])
+                primer_details['side'], design[key], slice_data.start)
 
             primer['primer_start'] = primer_coords[0]
             primer['primer_end'] = primer_coords[1]
             primer['strand'] = self.determine_primer_strands(
-                primer_details['side'], slice_data['strand']
+                primer_details['side'], slice_data.strand
             )
 
         return primer
