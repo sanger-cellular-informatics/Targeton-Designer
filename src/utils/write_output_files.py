@@ -198,7 +198,7 @@ def write_primer_output(
     existing_dir='',
 ) -> PrimerOutputData:
 
-    if dir:
+    if existing_dir:
         export_dir = existing_dir
     else:
         export_dir = timestamped_dir(prefix)

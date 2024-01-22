@@ -171,7 +171,7 @@ def design_command(args) -> DesignOutputData:
     # Primer Designer
     primer_designer_result = collate_primer_designer_data_command(
         design_result,
-        existing_dir=primer_result.dir
+        existing_dir=output_dir
     )
     design_result.pd_json = primer_designer_result.json
     design_result.pd_csv = primer_designer_result.csv
