@@ -13,7 +13,8 @@ from utils.file_system import parse_json
 
 class Primer3:
     def __init__(self, user_config: str = None) -> None:
-        self._config = user_config or './src/primer/primer3.config.json'
+        default_config = './src/primer/primer3.config.json'
+        self._config = user_config or default_config
 
     def get_primers(self, fasta: str) -> List[dict]:
         print('Reading Fasta file')
@@ -90,7 +91,7 @@ class Primer3:
         return primers
 
     def _build_primer_loci(
-        self, primer, key, design, primer_details, slice_data: dict
+            self, primer, key, design, primer_details, slice_data: dict
     ) -> dict:
 
         primer_field = primer_details['field']
@@ -151,10 +152,10 @@ class Primer3:
             if primer_field is None:
                 primer_field = 'coords'
             result = {
-                'id'    : primer_id,
-                'side'  : primer_side,
-                'field' : primer_field,
-                'pair'  : pair_number
+                'id': primer_id,
+                'side': primer_side,
+                'field': primer_field,
+                'pair': pair_number
             }
 
         return result
@@ -162,11 +163,11 @@ class Primer3:
     @staticmethod
     def construct_slice_coord_dict(match) -> dict:
         coord_data = {
-            'name'  : match.group(1),
-            'start' : match.group(4),
-            'end'   : match.group(5),
+            'name': match.group(1),
+            'start': match.group(4),
+            'end': match.group(5),
             'strand': match.group(6),
-            'chrom' : match.group(2),
+            'chrom': match.group(2),
         }
         return coord_data
 
