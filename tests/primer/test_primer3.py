@@ -1,8 +1,5 @@
-from cgi import test
 import unittest
-import os
 import json
-import collections
 
 from unittest.mock import patch
 from pyfakefs.fake_filesystem_unittest import TestCase
@@ -155,9 +152,6 @@ class TestPrimer3(TestCase):
         # arrange
         self.create_files()
 
-        with open('/primer3_test_config.json', "r") as file:
-            config = json.load(file)
-
         input = [{
             'name'      : 'region1_1',
             'start'     : '5',
@@ -183,12 +177,12 @@ class TestPrimer3(TestCase):
             'PRIMER_PAIR_NUM_RETURNED': 0
         }
         # act
-        actual = self.primer.primer3_design(input, config)[0]['design']
+        actual = Primer3('/primer3_test_config.json').primer3_design(input)[0]['design']
 
         # assert
         self.assertEqual(actual, expected)
 
-    @patch('primer.primer3.Primer3.build_primers_dict')
+    @patch('primer.primer3.Primer3._build_primers_dict')
     def test_locate_primers_design_success(self, dict_mock):
         # arrange
         dict_mock.return_value = {'region1_1_libamp_name_2': 'build_primer_dict'}
@@ -206,7 +200,7 @@ class TestPrimer3(TestCase):
         self.assertEqual(expected, actual)
         self.assertEqual(dict_mock.call_count, 2)
 
-    @patch('primer.primer3.Primer3.build_primer_loci')
+    @patch('primer.primer3.Primer3._build_primer_loci')
     @patch('primer.primer3.Primer3.name_primers')
     @patch('primer.primer3.Primer3.capture_primer_details')
     def test_build_primers_dict_valid_success(
@@ -221,7 +215,7 @@ class TestPrimer3(TestCase):
         input_slice_data = {'strand': '+', 'name': 'region1_1'}
 
         # act
-        actual = self.primer.build_primers_dict(
+        actual = self.primer._build_primers_dict(
             input_design, input_primer_keys, input_slice_data)
 
         # assert
@@ -242,7 +236,7 @@ class TestPrimer3(TestCase):
         input_slice_data = {'strand': '+', 'name': 'region1_1'}
 
         # act
-        actual = self.primer.build_primers_dict(input_design, input_primer_keys, input_slice_data)
+        actual = self.primer._build_primers_dict(input_design, input_primer_keys, input_slice_data)
 
         # assert
         self.assertEqual(expected, actual)
@@ -276,7 +270,7 @@ class TestPrimer3(TestCase):
         # revcom_mock.return_value = 'primer_seq'
 
         # act
-        actual = self.primer.build_primer_loci(
+        actual = self.primer._build_primer_loci(
             input_primer, input_key, input_design,
             input_primer_details, input_slice_data)
 
@@ -306,12 +300,24 @@ class TestPrimer3(TestCase):
         expected['penalty'] = 1
 
         # act
-        actual = self.primer.build_primer_loci(
+        actual = self.primer._build_primer_loci(
             input_primer, input_key, input_design,
             input_primer_details, input_slice_data)
 
         # assert
         self.assertEqual(expected, actual)
+
+    def test_primer3_initialisation_with_no_user_config_file_as_parameter(self):
+        primer = Primer3()
+
+        self.assertEqual(primer._config, './src/primer/primer3.config.json')
+
+    def test_primer3_initialisation_with_user_config_file_as_parameter(self):
+        user_config_file = "config.json"
+
+        primer = Primer3(user_config_file)
+
+        self.assertEqual(primer._config, user_config_file)
 
 
 if __name__ == '__main__':
