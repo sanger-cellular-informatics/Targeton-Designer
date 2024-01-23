@@ -236,17 +236,22 @@ def write_ipcress_output(stnd='', err='', existing_dir='') -> IpcressOutputData:
     return result
 
 
-def write_targeton_csv(ipcress_input: str, bed: str, dirname: str, dir_timestamped=False) -> TargetonCSVData:
+def write_targeton_csv(
+        ipcress_input: str,
+        slices: List[SliceData],
+        dirname: str,
+        dir_timestamped=False
+) -> TargetonCSVData:
     TARGETON_CSV = 'targetons.csv'
-    bed = BedTool(bed)
+
     csv_rows = []
     with open(ipcress_input) as fh:
         ipcress_input_data = fh.read()
-    for region in bed:
+    for slice in slices:
         # corresponding primer pair names will be prefixed by region name
-        primer_pair_iterator = re.finditer(rf'^{region.name}\S*', ipcress_input_data, re.MULTILINE)
+        primer_pair_iterator = re.finditer(rf'^{slice.name}\S*', ipcress_input_data, re.MULTILINE)
         for primer_pair in primer_pair_iterator:
-            csv_rows.append([primer_pair.group(), region.name])
+            csv_rows.append([primer_pair.group(), slice.name])
 
     if not dir_timestamped:
         dirname = timestamped_dir(dirname)

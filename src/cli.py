@@ -28,6 +28,7 @@ from ipcress.ipcress import Ipcress
 from adapters.primer3_to_ipcress import Primer3ToIpcressAdapter
 from primer_designer import PrimerDesigner
 from post_primer_pairs import post_primer_pairs
+from utils.parsers import parse_fasta
 
 sys.path.append(path.abspath(path.join(path.dirname(__file__), '../sge-primer-scoring/src')))
 from scoring import Scoring
@@ -140,11 +141,16 @@ def design_command(args) -> DesignOutputData:
     validate_files(fasta=args['fasta'])
     
     primer_result = primer_command(fasta=args['fasta'], prefix=args['dir'])
+    slices = parse_fasta(args['fasta'])
+    
     output_dir = primer_result.dir
 
     ipcress_result = ipcress_command(args, csv=primer_result.csv, existing_dir=output_dir)
     targeton_result = write_targeton_csv(
-        ipcress_result.input_file, args['bed'], output_dir, dir_timestamped=True
+        ipcress_input=ipcress_result.input_file,
+        slices=slices,
+        dirname=output_dir,
+        dir_timestamped=True,
     )
     scoring_output_path = path.join(output_dir, 'scoring_output.tsv')
     scoring_result = scoring_command(
