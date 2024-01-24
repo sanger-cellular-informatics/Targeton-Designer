@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 import sys
-import re
 from os import path
-from pybedtools import BedTool
 
 from utils.arguments_parser import ParsedInputArguments
 from utils.validate_files import validate_files
@@ -17,7 +15,6 @@ from utils.write_output_files import (
     SlicerOutputData,
     PrimerOutputData,
     IpcressOutputData,
-    TargetonCSVData,
     ScoringOutputData,
     PrimerDesignerOutputData,
     DesignOutputData,
@@ -32,7 +29,6 @@ from utils.parsers import parse_fasta
 
 sys.path.append(path.abspath(path.join(path.dirname(__file__), '../sge-primer-scoring/src')))
 from scoring import Scoring
-                                        
 
 
 def version_command():
@@ -55,10 +51,10 @@ def primer_command(
     fasta='',
     prefix='',
     existing_dir='',
+    config='',
 ) -> PrimerOutputData:
-
     validate_files(fasta=fasta)
-    p3_class = Primer3()
+    p3_class = Primer3(config)
     primers = p3_class.get_primers(fasta)
 
     primer_result = write_primer_output(
@@ -76,7 +72,6 @@ def collate_primer_designer_data_command(
     prefix='',
     existing_dir=''
 ) -> PrimerDesignerOutputData:
-
     validate_files(p3_csv=design_output_data.p3_csv, score_tsv=design_output_data.scoring_tsv)
 
     primer_designer.from_design_output(design_output_data)
@@ -88,8 +83,8 @@ def collate_primer_designer_data_command(
     return primer_designer_result
 
 
-def primer_for_ipcress(fasta='', prefix='', min=0, max=0):
-    primer_result = primer_command(fasta=fasta, prefix=prefix)
+def primer_for_ipcress(fasta='', prefix='', min=0, max=0, config=''):
+    primer_result = primer_command(fasta=fasta, prefix=prefix, config=config)
 
     adapter = Primer3ToIpcressAdapter()
     adapter.prepare_input(primer_result.csv, min, max, primer_result.dir)
@@ -140,12 +135,13 @@ def scoring_command(ipcress_output, mismatch, output_tsv, targeton_csv=None) -> 
 def design_command(args) -> DesignOutputData:
     validate_files(fasta=args['fasta'])
     
-    primer_result = primer_command(fasta=args['fasta'], prefix=args['dir'])
+    primer_result = primer_command(fasta=args['fasta'], prefix=args['dir'], config=args['primer3_params'])
     slices = parse_fasta(args['fasta'])
     
     output_dir = primer_result.dir
 
     ipcress_result = ipcress_command(args, csv=primer_result.csv, existing_dir=output_dir)
+
     targeton_result = write_targeton_csv(
         ipcress_input=ipcress_result.input_file,
         slices=slices,
@@ -198,14 +194,15 @@ def resolve_command(args):
             slicer_command(args)
 
         if command == 'primer':
-            primer_command(fasta=args['fasta'], prefix=args['dir'])
+            primer_command(fasta=args['fasta'], prefix=args['dir'], config=args['primer3_params'])
 
         if command == 'primer_for_ipcress':
             primer_for_ipcress(
                 fasta=args['fasta'],
                 prefix=args['dir'],
                 min=args['min'],
-                max=args['max']
+                max=args['max'],
+                config=args['primer3_params'],
             )
 
         if command == 'collate_primer_data':

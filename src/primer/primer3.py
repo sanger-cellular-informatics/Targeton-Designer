@@ -1,13 +1,12 @@
 import primer3
 import re
-import os
 from collections import defaultdict
 from _collections_abc import dict_keys
 from typing import Tuple, List
 
 from Bio.Seq import Seq
 
-from utils.exceptions import Primer3Error, InvalidConfigError
+from utils.exceptions import InvalidConfigError
 from utils.file_system import parse_json
 from utils.parsers import parse_fasta
 
@@ -15,24 +14,17 @@ from utils.parsers import SliceData
 
 
 class Primer3:
-    def __init__(self) -> None:
-        pass
-
-        self.user_config = './config/primer3.config.json'
-        self.default_config = './src/primer/primer3.config.json'
+    def __init__(self, user_config: str = None) -> None:
+        default_config = './src/primer/primer3.config.json'
+        self._config = user_config or default_config
 
     def get_primers(self, fasta: str) -> List[dict]:
-        config = self.get_config_data(self.default_config, self.user_config)
-
-        result = self.primer3_runner(fasta=fasta, config=config)
-
-        return result
-
-    def primer3_runner(self, fasta: str, config: dict) -> List[dict]:
-        print('Reading FA file')
+        print('Reading Fasta file')
         design_inputs = self.read_input_fasta(fasta)
-        print('Designing primers for the region')
-        designs = self.primer3_design(design_inputs, config)
+
+        print('Designing primers')
+        designs = self.primer3_design(design_inputs)
+
         print('Naming primers')
         slices = self.locate_primers(designs)
 
@@ -41,16 +33,19 @@ class Primer3:
     def read_input_fasta(self, fasta: str) -> List[SliceData]:
         return parse_fasta(fasta)
 
-    def primer3_design(self, primer3_inputs: List[SliceData], primer3_config: dict) -> List[dict]:
+
+    def primer3_design(self, primer3_inputs: List[SliceData]) -> List[dict]:
+        config_data = self._get_config_data()
+
         designs = []
         for slice in primer3_inputs:
             primer3_input = slice.p3_input
 
-            design = primer3.bindings.designPrimers(primer3_input, primer3_config)
+            design = primer3.bindings.designPrimers(primer3_input, config_data)
             slice.design = design
             designs.append(slice)
 
-        return designs
+        return primer3_inputs
 
     def locate_primers(self, designs: List[SliceData]) -> List[dict]:
         slice_designs = []
@@ -59,7 +54,7 @@ class Primer3:
             design = slice_data.design
             primer_keys = design.keys()
 
-            primers = self.build_primers_dict(design, primer_keys, slice_data)
+            primers = self._build_primers_dict(design, primer_keys, slice_data)
 
             del slice_data.design
             slice_data.primers = primers
@@ -67,7 +62,7 @@ class Primer3:
 
         return slice_designs
 
-    def build_primers_dict(self, design, primer_keys: dict_keys, slice_data: dict) -> defaultdict(dict):
+    def _build_primers_dict(self, design, primer_keys: dict_keys, slice_data: dict) -> defaultdict(dict):
         primers = defaultdict(dict)
 
         for key in primer_keys:
@@ -77,14 +72,14 @@ class Primer3:
                 libamp_name = self.name_primers(primer_details, slice_data.strand)
                 primer_name = slice_data.name + "_" + libamp_name + "_" + primer_details['pair']
 
-                primers[primer_name] = self.build_primer_loci(
+                primers[primer_name] = self._build_primer_loci(
                     primers[primer_name], key, design,
                     primer_details, slice_data
                 )
 
         return primers
 
-    def build_primer_loci(
+    def _build_primer_loci(
         self, primer, key, design, primer_details, slice_data: SliceData
     ) -> dict:
 
@@ -105,14 +100,13 @@ class Primer3:
 
         return primer
 
-    def get_config_data(self, default_config: str, user_config: str) -> dict:
-        config_file = self.get_config_file(default_config, user_config)
-
+    def _get_config_data(self) -> dict:
         try:
-            config_data = parse_json(config_file)
-
-        except Exception as err:
-            raise InvalidConfigError(f'Primer3 config file is not a correct JSON')
+            config_data = parse_json(self._config)
+        except FileNotFoundError:
+            raise
+        except Exception:
+            raise InvalidConfigError('Primer3 config file is not a correct JSON')
 
         return config_data
 
@@ -147,10 +141,10 @@ class Primer3:
             if primer_field is None:
                 primer_field = 'coords'
             result = {
-                'id'    : primer_id,
-                'side'  : primer_side,
-                'field' : primer_field,
-                'pair'  : pair_number
+                'id': primer_id,
+                'side': primer_side,
+                'field': primer_field,
+                'pair': pair_number
             }
 
         return result
@@ -197,12 +191,6 @@ class Primer3:
         }
 
         return strands[slice_strand][side]
-
-    @staticmethod
-    def get_config_file(default_config: str, user_config: str) -> str:
-        config_file_path = user_config if os.path.exists(user_config) else default_config
-
-        return config_file_path
 
     @staticmethod
     def revcom_reverse_primer(seq, strand) -> Seq:
