@@ -79,7 +79,8 @@ class Primer3:
 
                 primers[primer_name] = self.build_primer_loci(
                     primers[primer_name], key, design,
-                    primer_details, slice_data)
+                    primer_details, slice_data
+                )
 
         return primers
 

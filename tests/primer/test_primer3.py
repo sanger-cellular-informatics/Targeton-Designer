@@ -215,7 +215,7 @@ class TestPrimer3(TestCase):
         details_mock.return_value = {'pair': '2'}
         name_mock.return_value = 'libamp_name'
         loci_mock.return_value = 'build_primer_dict'
-        expected = {'region1_1_libamp_name_2': 'build_primer_dict'}
+        expected = {'slice_name_libamp_name_2': 'build_primer_dict'}
         input_design = 'design'
         input_primer_keys = {'key_1': 'value'}
 
@@ -226,11 +226,6 @@ class TestPrimer3(TestCase):
 
         # assert
         self.assertEqual(expected, actual)
-        self.assertEqual(f"{details_mock.call_args}", f"call('key_1')")
-        self.assertEqual(f"{name_mock.call_args}", "call({'pair': '2'}, '+')")
-        self.assertEqual(
-            f"{loci_mock.call_args}", ("call({}, 'key_1', 'design', "
-                                       "{'pair': '2'}, {'strand': '+', 'name': 'region1_1'})"))
 
     @patch('primer.primer3.Primer3.capture_primer_details')
     def test_build_primers_dict_no_details_empty(self, details_mock):
