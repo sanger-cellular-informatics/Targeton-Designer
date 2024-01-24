@@ -12,6 +12,9 @@ class SliceData:
         self.chrom = chrom
         self.bases = bases
 
+    def __repr__(self):
+        return f'SliceData:  {self.name}, {self.start}, {self.end}, {self.strand}, {self.chrom}, {self.bases}'
+
     @property
     def p3_input(self):
         return {
@@ -23,10 +26,10 @@ class SliceData:
 def parse_slice(match) -> dict:
     coord_data = {
         'name': match.group(1),
-        'start': match.group(5),
-        'end': match.group(6),
-        'strand': match.group(7),
-        'chrom': match.group(3),
+        'start': match.group(4),
+        'end': match.group(5),
+        'strand': match.group(6),
+        'chrom': match.group(2),
     }
     return coord_data
 
@@ -39,7 +42,7 @@ def parse_fasta(fasta: str) -> List[SliceData]:
             # Name::Chr:Start-End(Strand)
             # ENSE00000769557_HG8_1::1:42929543-42929753
             match = re.search(
-              r'^(ENSE\d+_HG\d+)(_\d+)::((chr)?\d+):(\d+)\-(\d+)\(([+-\.]{1})\)$', row.id)
+              r'^(\w+)::((chr)?\d+):(\d+)\-(\d+)\(([+-\.]{1})\)$', row.id)
             if match:
                 parsed_id = parse_slice(match)
 

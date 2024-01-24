@@ -38,21 +38,21 @@ class Primer3:
 
         return slices
 
-    def read_input_fasta(self, fasta: str) -> List[dict]:
+    def read_input_fasta(self, fasta: str) -> List[SliceData]:
         return parse_fasta(fasta)
 
     def primer3_design(self, primer3_inputs: List[SliceData], primer3_config: dict) -> List[dict]:
         designs = []
-        for slice_data in primer3_inputs:
-            primer3_input = slice_data.p3_input
+        for slice in primer3_inputs:
+            primer3_input = slice.p3_input
 
             design = primer3.bindings.designPrimers(primer3_input, primer3_config)
-            slice_data.design = design
-            designs.append(slice_data)
+            slice.design = design
+            designs.append(slice)
 
         return designs
 
-    def locate_primers(self, designs: list) -> List[dict]:
+    def locate_primers(self, designs: List[SliceData]) -> List[dict]:
         slice_designs = []
 
         for slice_data in designs:
@@ -84,7 +84,7 @@ class Primer3:
         return primers
 
     def build_primer_loci(
-        self, primer, key, design, primer_details, slice_data: dict
+        self, primer, key, design, primer_details, slice_data: SliceData
     ) -> dict:
 
         primer_field = primer_details['field']
