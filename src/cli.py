@@ -159,10 +159,8 @@ def design_command(args) -> DesignOutputData:
         scoring_output_path,
         targeton_result.csv
     )
+
     design_result = DesignOutputData(output_dir)
-    # Slicer
-  #  design_result.slice_bed = slicer_result.bed
-  #  design_result.slice_fasta = slicer_result.fasta
     # Primer
     design_result.p3_bed = primer_result.bed
     design_result.p3_csv = primer_result.csv

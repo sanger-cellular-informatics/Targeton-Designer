@@ -61,8 +61,6 @@ class ScoringOutputData(OutputFilesData):
 
 @dataclass
 class DesignOutputData(OutputFilesData):
-    slice_bed: str = ''
-    slice_fasta: str = ''
     p3_bed: str = ''
     p3_csv: str = ''
     pd_csv: str = ''
