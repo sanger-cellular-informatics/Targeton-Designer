@@ -13,5 +13,6 @@ pyfakefs==5.2.2
 pycodestyle==2.9.1
 freezegun==1.2.2
 requests==2.30.0
+typing==3.7.4.3
 pybedtools==0.9.0
 pandas==2.0.3

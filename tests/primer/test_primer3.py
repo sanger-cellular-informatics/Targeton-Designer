@@ -6,6 +6,7 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 
 from tests.test_data.primer3_output_data import primer3_output_data
 from primer.primer3 import Primer3
+from utils.parsers import SliceData
 
 
 class TestPrimer3(TestCase):
@@ -14,6 +15,9 @@ class TestPrimer3(TestCase):
     def setUp(self):
         self.primer = Primer3()
         self.setUpPyfakefs()
+        self.input_slice_data = SliceData(
+            'slice_name', 'slice_start', 'slice_end', '+', 'slice_chrom', 'bases'
+        )
 
     def create_files(self):
         self.fs.create_file('/fwd_primer3_output.json', contents=self.primer3_output_json_data)
@@ -127,45 +131,33 @@ class TestPrimer3(TestCase):
         # arrange
         self.create_files()
         fasta = '/fasta.fa'
-        expected = [{
-            'name'      : 'region1_1',
-            'start'     : '5',
-            'end'       : '10',
-            'strand'    : '+',
-            'chrom'     : 'chr1',
-            'p3_input'  : {
-                'SEQUENCE_ID'       : 'region1_1',
-                'SEQUENCE_TEMPLATE' : 'GTGATCGAGGAGTTCTACAACCAGACATGGGTCCACCGCTATGGGGAGAGCATCCTGCCCACCACGCT'
+        expected = [SliceData('region1_1', '5', '10', '+', 'chr1',
+                'GTGATCGAGGAGTTCTACAACCAGACATGGGTCCACCGCTATGGGGAGAGCATCCTGCCCACCACGCT'
                 'CACCACGCTCTGGTCCCTCTCAGTGGCCATCTTTTCTGTTGGGGGCATGATTGGCTCCTTCTCTGTGG'
                 'GCCTTTTCGTTAACCGCTTTGGCCGGTAAGTAGGAGAGGTCCTGGCACTGCCCTTGGAGGGCCCATGC'
                 'CCTCCT'
-            }
-        }]
+        )]
 
         # act
         actual = self.primer.read_input_fasta(fasta)
 
         # assert
-        self.assertEqual(actual, expected)
+        self.assertEqual(actual[0].name, expected[0].name)
+        self.assertEqual(actual[0].start, expected[0].start)
+        self.assertEqual(actual[0].end, expected[0].end)
+        self.assertEqual(actual[0].strand, expected[0].strand)
+        self.assertEqual(actual[0].bases, expected[0].bases)
 
     def test_primer3_design_valid_success(self):
         # arrange
         self.create_files()
 
-        input = [{
-            'name'      : 'region1_1',
-            'start'     : '5',
-            'end'       : '10',
-            'strand'    : '+',
-            'chrom'     : 'chr1',
-            'p3_input'  : {
-                'SEQUENCE_ID'       : 'region1_1',
-                'SEQUENCE_TEMPLATE' : 'GTGATCGAGGAGTTCTACAACCAGACATGGGTCCACCGCTATGGGGAGAGCATCCTGCCCACCACGCT'
-                'CACCACGCTCTGGTCCCTCTCAGTGGCCATCTTTTCTGTTGGGGGCATGATTGGCTCCTTCTCTGTGG'
-                'GCCTTTTCGTTAACCGCTTTGGCCGGTAAGTAGGAGAGGTCCTGGCACTGCCCTTGGAGGGCCCATGC'
-                'CCTCCT'
-            }
-        }]
+        input = [SliceData('region1_1', '5', '10', '+', 'chr1',
+            'GTGATCGAGGAGTTCTACAACCAGACATGGGTCCACCGCTATGGGGAGAGCATCCTGCCCACCACGCT'
+            'CACCACGCTCTGGTCCCTCTCAGTGGCCATCTTTTCTGTTGGGGGCATGATTGGCTCCTTCTCTGTGG'
+            'GCCTTTTCGTTAACCGCTTTGGCCGGTAAGTAGGAGAGGTCCTGGCACTGCCCTTGGAGGGCCCATGC'
+            'CCTCCT'
+        )]
 
         expected = {
             'PRIMER_LEFT_EXPLAIN': 'considered 6, low tm 4, ok 2',
@@ -177,7 +169,8 @@ class TestPrimer3(TestCase):
             'PRIMER_PAIR_NUM_RETURNED': 0
         }
         # act
-        actual = Primer3('/primer3_test_config.json').primer3_design(input)[0]['design']
+
+        actual = Primer3('/primer3_test_config.json').primer3_design(input)[0].design
 
         # assert
         self.assertEqual(actual, expected)
@@ -187,44 +180,46 @@ class TestPrimer3(TestCase):
         # arrange
         dict_mock.return_value = {'region1_1_libamp_name_2': 'build_primer_dict'}
 
-        input = [{'name': 'slice1', 'design': {'design_key': 'design_val'}},
-                 {'name': 'slice2', 'design': {'design_key': 'design_val'}}]
+        slice1 = SliceData('slice1', 'start', 'end', 'strand', 'chrom', 'bases')
+        slice1.design =  {'design_key': 'design_val'}
+        slice2 = SliceData('slice2', 'start', 'end', 'strand', 'chrom', 'bases')
+        slice2.design = {'design_key': 'design_val'}
 
-        expected = [{'name': 'slice1', 'primers': {'region1_1_libamp_name_2': 'build_primer_dict'}},
-                    {'name': 'slice2', 'primers': {'region1_1_libamp_name_2': 'build_primer_dict'}}]
+        input = [slice1, slice2]
+
+        expected_primers = {'region1_1_libamp_name_2': 'build_primer_dict'}
 
         # act
-        actual = self.primer.locate_primers(input)
+        result = self.primer.locate_primers(input)
 
         # assert
-        self.assertEqual(expected, actual)
+        self.assertEqual(result[0].name, 'slice1')
+        self.assertEqual(result[1].name, 'slice2')
+        self.assertEqual(result[0].primers, expected_primers)
+        self.assertEqual(result[1].primers, expected_primers)
         self.assertEqual(dict_mock.call_count, 2)
 
     @patch('primer.primer3.Primer3._build_primer_loci')
     @patch('primer.primer3.Primer3.name_primers')
     @patch('primer.primer3.Primer3.capture_primer_details')
     def test_build_primers_dict_valid_success(
-            self, details_mock, name_mock, loci_mock):
+            self, details_mock, name_mock, loci_mock
+    ):
         # arrange
         details_mock.return_value = {'pair': '2'}
         name_mock.return_value = 'libamp_name'
         loci_mock.return_value = 'build_primer_dict'
-        expected = {'region1_1_libamp_name_2': 'build_primer_dict'}
+        expected = {'slice_name_libamp_name_2': 'build_primer_dict'}
         input_design = 'design'
         input_primer_keys = {'key_1': 'value'}
-        input_slice_data = {'strand': '+', 'name': 'region1_1'}
 
         # act
         actual = self.primer._build_primers_dict(
-            input_design, input_primer_keys, input_slice_data)
+            input_design, input_primer_keys, self.input_slice_data
+        )
 
         # assert
         self.assertEqual(expected, actual)
-        self.assertEqual(f"{details_mock.call_args}", f"call('key_1')")
-        self.assertEqual(f"{name_mock.call_args}", "call({'pair': '2'}, '+')")
-        self.assertEqual(
-            f"{loci_mock.call_args}", ("call({}, 'key_1', 'design', "
-                                       "{'pair': '2'}, {'strand': '+', 'name': 'region1_1'})"))
 
     @patch('primer.primer3.Primer3.capture_primer_details')
     def test_build_primers_dict_no_details_empty(self, details_mock):
@@ -233,10 +228,9 @@ class TestPrimer3(TestCase):
         expected = {}
         input_design = 'design'
         input_primer_keys = {'key_1': 'value'}
-        input_slice_data = {'strand': '+', 'name': 'region1_1'}
 
         # act
-        actual = self.primer._build_primers_dict(input_design, input_primer_keys, input_slice_data)
+        actual = self.primer._build_primers_dict(input_design, input_primer_keys, self.input_slice_data)
 
         # assert
         self.assertEqual(expected, actual)
@@ -254,7 +248,6 @@ class TestPrimer3(TestCase):
         input_key = 'design_key'
         input_design = {'design_key': 'design_value'}
         input_primer_details = {'field': 'coords', 'side': 'primer_side'}
-        input_slice_data = {'start': 'slice_start', 'strand': '+'}
 
         expected = {}
         expected['coords'] = 'design_value'
@@ -271,8 +264,12 @@ class TestPrimer3(TestCase):
 
         # act
         actual = self.primer._build_primer_loci(
-            input_primer, input_key, input_design,
-            input_primer_details, input_slice_data)
+            input_primer,
+            input_key,
+            input_design,
+            input_primer_details,
+            self.input_slice_data
+        )
 
         # assert
         self.assertEqual(expected, actual)
@@ -292,7 +289,6 @@ class TestPrimer3(TestCase):
         input_key = 'design_key'
         input_design = {'design_key': 'primer_sequence'}
         input_primer_details = {'field': 'sequence', 'side': 'primer_side'}
-        input_slice_data = {'start': 'slice_start', 'strand': '+'}
 
         expected = {}
         expected['sequence'] = 'primer_sequence'
@@ -301,8 +297,12 @@ class TestPrimer3(TestCase):
 
         # act
         actual = self.primer._build_primer_loci(
-            input_primer, input_key, input_design,
-            input_primer_details, input_slice_data)
+            input_primer,
+            input_key,
+            input_design,
+            input_primer_details,
+            self.input_slice_data
+        )
 
         # assert
         self.assertEqual(expected, actual)

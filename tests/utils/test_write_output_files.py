@@ -1,6 +1,7 @@
 import unittest
 from os import path
 from pathlib import Path
+import csv
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 from unittest.mock import patch, Mock
@@ -8,8 +9,8 @@ from freezegun import freeze_time
 
 from src.utils.write_output_files import write_scoring_output, write_targeton_csv
 from src.utils import write_output_files
-import csv
 from src.utils.file_system import read_csv_to_list_dict
+from src.utils.parsers import SliceData
 
 
 class TestWriteOutputFiles(TestCase):
@@ -27,6 +28,10 @@ class TestWriteOutputFiles(TestCase):
             'chr2\t100\t250\tregion_2\t.\t+\n'
         )
         self.fs.create_file('/test.bed', contents=contents)
+        self.slices = [
+            SliceData('region_1', 'start', 'end', 'strand', 'chrom', 'bases'),
+            SliceData('region_2', 'start', 'end', 'strand', 'chrom', 'bases'),
+        ]
 
     @patch('builtins.print')
     def test_write_targeton_csv_success_with_timestamped_dir(self, mock_print):
@@ -37,7 +42,7 @@ class TestWriteOutputFiles(TestCase):
 
         # act
         result = write_targeton_csv(
-            '/test_ipcress_input.txt', '/test.bed', 'test_dir/td_310123', dir_timestamped=True
+            '/test_ipcress_input.txt', self.slices, 'test_dir/td_310123', dir_timestamped=True
         )
 
         # assert
@@ -54,7 +59,7 @@ class TestWriteOutputFiles(TestCase):
         expected_file = 'test_dir/td_20230131000000000000/targetons.csv'
 
         # act
-        result = write_targeton_csv('/test_ipcress_input.txt', '/test.bed', 'test_dir')
+        result = write_targeton_csv('/test_ipcress_input.txt', self.slices, 'test_dir')
 
         # assert
         self.assertTrue(path.exists(expected_file))
@@ -74,7 +79,7 @@ class TestWriteOutputFiles(TestCase):
         )
 
         # act
-        write_targeton_csv('test_ipcress_input.txt', 'test.bed', 'test_dir', True)
+        write_targeton_csv('test_ipcress_input.txt', self.slices, 'test_dir', True)
         with open('/test_dir/targetons.csv') as f:
             actual = f.read()
 

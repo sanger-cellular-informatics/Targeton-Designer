@@ -4,11 +4,13 @@ from collections import defaultdict
 from _collections_abc import dict_keys
 from typing import Tuple, List
 
-from Bio import SeqIO
 from Bio.Seq import Seq
 
 from utils.exceptions import InvalidConfigError
 from utils.file_system import parse_json
+from utils.parsers import parse_fasta
+
+from utils.parsers import SliceData
 
 
 class Primer3:
@@ -28,48 +30,34 @@ class Primer3:
 
         return slices
 
-    def read_input_fasta(self, fasta: str) -> List[dict]:
-        with open(fasta) as fasta_data:
-            rows = SeqIO.parse(fasta_data, 'fasta')
+    def read_input_fasta(self, fasta: str) -> List[SliceData]:
+        return parse_fasta(fasta)
 
-            slices = []
-            for row in rows:
-                # Name::Chr:Start-End(Strand)
-                # ENSE00000769557_HG8_1::1:42929543-42929753
-                match = re.search(r'^(\w+)::((chr)?\d+):(\d+)\-(\d+)\(([+-\.]{1})\)$', row.id)
-                if match:
-                    slice_data = self.construct_slice_coord_dict(match)
-                    p3_input = {
-                        'SEQUENCE_ID': slice_data['name'],
-                        'SEQUENCE_TEMPLATE': str(row.seq),
-                    }
-                    slice_data['p3_input'] = p3_input
-                    slices.append(slice_data)
+
+    def primer3_design(self, slices: List[SliceData]) -> List[SliceData]:
+        config_data = self._get_config_data()
+
+        designs = []
+        for slice in slices:
+            primer3_input = slice.p3_input
+
+            design = primer3.bindings.designPrimers(primer3_input, config_data)
+            slice.design = design
+            designs.append(slice)
 
         return slices
 
-    def primer3_design(self, primer3_inputs: list) -> List[dict]:
-        config_data = self._get_config_data()
-
-        for slice_data in primer3_inputs:
-            primer3_input = slice_data['p3_input']
-
-            design = primer3.bindings.designPrimers(primer3_input, config_data)
-            slice_data['design'] = design
-
-        return primer3_inputs
-
-    def locate_primers(self, designs: list) -> List[dict]:
+    def locate_primers(self, designs: List[SliceData]) -> List[dict]:
         slice_designs = []
 
         for slice_data in designs:
-            design = slice_data['design']
+            design = slice_data.design
             primer_keys = design.keys()
 
             primers = self._build_primers_dict(design, primer_keys, slice_data)
 
-            del slice_data['design']
-            slice_data['primers'] = primers
+            del slice_data.design
+            slice_data.primers = primers
             slice_designs.append(slice_data)
 
         return slice_designs
@@ -81,17 +69,18 @@ class Primer3:
             primer_details = self.capture_primer_details(key)
 
             if primer_details:
-                libamp_name = self.name_primers(primer_details, slice_data['strand'])
-                primer_name = slice_data['name'] + "_" + libamp_name + "_" + primer_details['pair']
+                libamp_name = self.name_primers(primer_details, slice_data.strand)
+                primer_name = slice_data.name + "_" + libamp_name + "_" + primer_details['pair']
 
                 primers[primer_name] = self._build_primer_loci(
                     primers[primer_name], key, design,
-                    primer_details, slice_data)
+                    primer_details, slice_data
+                )
 
         return primers
 
     def _build_primer_loci(
-            self, primer, key, design, primer_details, slice_data: dict
+        self, primer, key, design, primer_details, slice_data: SliceData
     ) -> dict:
 
         primer_field = primer_details['field']
@@ -101,12 +90,12 @@ class Primer3:
 
         if primer_field == 'coords':
             primer_coords = self.calculate_primer_coords(
-                primer_details['side'], design[key], slice_data['start'])
+                primer_details['side'], design[key], slice_data.start)
 
             primer['primer_start'] = primer_coords[0]
             primer['primer_end'] = primer_coords[1]
             primer['strand'] = self.determine_primer_strands(
-                primer_details['side'], slice_data['strand']
+                primer_details['side'], slice_data.strand
             )
 
         return primer
@@ -159,17 +148,6 @@ class Primer3:
             }
 
         return result
-
-    @staticmethod
-    def construct_slice_coord_dict(match) -> dict:
-        coord_data = {
-            'name': match.group(1),
-            'start': match.group(4),
-            'end': match.group(5),
-            'strand': match.group(6),
-            'chrom': match.group(2),
-        }
-        return coord_data
 
     @staticmethod
     def calculate_primer_coords(side, coords, slice_start) -> Tuple[int, int]:

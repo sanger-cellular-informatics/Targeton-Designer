@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from pybedtools import BedTool
 from utils.file_system import write_to_text_file, FolderCreator
 from utils.exceptions import OutputError, FolderCreatorError, FileTypeError
+from utils.parsers import SliceData
 if TYPE_CHECKING:  # For avoiding circular import dependencies, only import for type checking.
     from src.primer_designer import PrimerDesigner
     from src.cli import Scoring
@@ -60,8 +61,6 @@ class ScoringOutputData(OutputFilesData):
 
 @dataclass
 class DesignOutputData(OutputFilesData):
-    slice_bed: str = ''
-    slice_fasta: str = ''
     p3_bed: str = ''
     p3_csv: str = ''
     pd_csv: str = ''
@@ -116,7 +115,7 @@ def export_primers_to_csv(slices: List[dict], export_dir: str) -> str:
 
     headers = ['primer', 'sequence', 'chr', 'primer_start', 'primer_end', 'tm', 'gc_percent',
                'penalty', 'self_any_th', 'self_end_th', 'hairpin_th', 'end_stability']
-    rows = construct_csv_format(slices, headers)
+    rows = construct_csv_format(slices)
 
     csv_path = export_to_csv(rows, export_dir, PRIMER3_OUTPUT_CSV, headers, delimiter=',')
     return csv_path
@@ -144,14 +143,14 @@ def export_to_csv(
     return csv_path
 
 
-def construct_csv_format(slices: List[dict], headers: list) -> list:
+def construct_csv_format(slices: List[SliceData]) -> list:
     rows = []
 
     for slice_data in slices:
-        primers = slice_data['primers']
+        primers = slice_data.primers
         for primer in primers:
             primers[primer]['primer'] = primer
-            primers[primer]['chr'] = slice_data['chrom']
+            primers[primer]['chr'] = slice_data.chrom
 
             del primers[primer]['coords']
             del primers[primer]['side']
@@ -162,16 +161,16 @@ def construct_csv_format(slices: List[dict], headers: list) -> list:
     return rows
 
 
-def construct_bed_format(slices: List[dict]) -> list:
+def construct_bed_format(slices: List[SliceData]) -> list:
     rows = []
     for slice_data in slices:
-        primers = slice_data['primers']
+        primers = slice_data.primers
         for primer in primers:
             primer_data = primers[primer]
             # chr,chrStart,chrEnd,name,score,strand
             # Score unknown until iPCRess
             row = [
-                slice_data['chrom'],
+                slice_data.chrom,
                 primer_data['primer_start'],
                 primer_data['primer_end'],
                 primer,
@@ -235,17 +234,22 @@ def write_ipcress_output(stnd='', err='', existing_dir='') -> IpcressOutputData:
     return result
 
 
-def write_targeton_csv(ipcress_input: str, bed: str, dirname: str, dir_timestamped=False) -> TargetonCSVData:
+def write_targeton_csv(
+        ipcress_input: str,
+        slices: List[SliceData],
+        dirname: str,
+        dir_timestamped=False
+) -> TargetonCSVData:
     TARGETON_CSV = 'targetons.csv'
-    bed = BedTool(bed)
+
     csv_rows = []
     with open(ipcress_input) as fh:
         ipcress_input_data = fh.read()
-    for region in bed:
+    for slice in slices:
         # corresponding primer pair names will be prefixed by region name
-        primer_pair_iterator = re.finditer(rf'^{region.name}\S*', ipcress_input_data, re.MULTILINE)
+        primer_pair_iterator = re.finditer(rf'^{slice.name}\S*', ipcress_input_data, re.MULTILINE)
         for primer_pair in primer_pair_iterator:
-            csv_rows.append([primer_pair.group(), region.name])
+            csv_rows.append([primer_pair.group(), slice.name])
 
     if not dir_timestamped:
         dirname = timestamped_dir(dirname)

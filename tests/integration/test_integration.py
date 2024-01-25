@@ -13,6 +13,7 @@ from cli import (
 )
 from utils.arguments_parser import ParsedInputArguments
 from utils.write_output_files import DesignOutputData, write_targeton_csv
+from utils.parsers import SliceData
 
 
 class TestSlicerIntegration(TestCase):
@@ -126,7 +127,7 @@ class TestPrimerDesignerIntegration(TestCase):
 class TestTargetonCSVIntegration(TestCase):
     def setUp(self):
         self.ipcress_input_path = r"./tests/integration/fixtures/ipcress_primer_input.txt"
-        self.bed_file_path = r"./tests/integration/fixtures/bed_example.bed"
+        self.slices = [SliceData('exon1', '100', '250', '+', 'chr1', 'bases')]
 
     def test_write_targeton_csv_output(self):
         with TemporaryDirectory() as tmpdir:
@@ -134,7 +135,6 @@ class TestTargetonCSVIntegration(TestCase):
             cli_input = [
                 "./designer.sh", "generate_targeton_csv",
                 "--primers", self.ipcress_input_path,
-                "--bed", self.bed_file_path,
                 "--dir", tmpdir,
             ]
             # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
@@ -143,7 +143,7 @@ class TestTargetonCSVIntegration(TestCase):
                 args = parsed_input.get_args()
 
                 # Act
-                result = write_targeton_csv(args['primers'], args['bed'], args['dir'])
+                result = write_targeton_csv(args['primers'], self.slices, args['dir'])
                 path_csv = Path(result.csv)
 
                 # Assert
@@ -183,14 +183,13 @@ class TestScoringIntegration(TestCase):
 
 class TestTargetonDesignerIntegration(TestCase):
     def setUp(self):
-        self.fasta_file_path = r"./tests/integration/fixtures/fasta_example.fa"
-        self.bed_file_path = r"./tests/integration/fixtures/bed_example.bed"
+        self.fasta_file_path = r"./tests/integration/fixtures/slicer_output.fasta"
 
     def test_TDOutput(self):
         with TemporaryDirectory() as tmpdir:
             # Arrange
             # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
-            with patch.object(sys, 'argv', ["./designer.sh", "design", "--bed", self.bed_file_path, "--fasta", self.fasta_file_path, "--dir", tmpdir]):
+            with patch.object(sys, 'argv', ["./designer.sh", "design", "--fasta", self.fasta_file_path, "--dir", tmpdir]):
                 parsed_input = ParsedInputArguments()
                 args = parsed_input.get_args()
 
@@ -199,10 +198,12 @@ class TestTargetonDesignerIntegration(TestCase):
 
                 # Assert
                 fields = result.fields()
+
                 fields.remove('dir')
                 for field in fields:
                     field_value = getattr(result, field)
                     path = Path(field_value)
+
                     print(f"Checking file {field} -> {path.name}")
                     self.assertTrue(path.is_file())
                     self.assertGreater(path.stat().st_size, 0)

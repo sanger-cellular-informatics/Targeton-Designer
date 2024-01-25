@@ -25,6 +25,7 @@ from ipcress.ipcress import Ipcress
 from adapters.primer3_to_ipcress import Primer3ToIpcressAdapter
 from primer_designer import PrimerDesigner
 from post_primer_pairs import post_primer_pairs
+from utils.parsers import parse_fasta
 
 sys.path.append(path.abspath(path.join(path.dirname(__file__), '../sge-primer-scoring/src')))
 from scoring import Scoring
@@ -132,24 +133,30 @@ def scoring_command(ipcress_output, mismatch, output_tsv, targeton_csv=None) -> 
 
 
 def design_command(args) -> DesignOutputData:
-    slicer_result = slicer_command(args)
-    primer_result = primer_command(fasta=slicer_result.fasta, existing_dir=slicer_result.dir,
-                                   config=args['primer3_params'])
-    ipcress_result = ipcress_command(args, csv=primer_result.csv, existing_dir=slicer_result.dir)
+    validate_files(fasta=args['fasta'])
+    
+    primer_result = primer_command(fasta=args['fasta'], prefix=args['dir'], config=args['primer3_params'])
+    slices = parse_fasta(args['fasta'])
+    
+    output_dir = primer_result.dir
+
+    ipcress_result = ipcress_command(args, csv=primer_result.csv, existing_dir=output_dir)
+
     targeton_result = write_targeton_csv(
-        ipcress_result.input_file, args['bed'], slicer_result.dir, dir_timestamped=True
+        ipcress_input=ipcress_result.input_file,
+        slices=slices,
+        dirname=output_dir,
+        dir_timestamped=True,
     )
-    scoring_output_path = path.join(slicer_result.dir, 'scoring_output.tsv')
+    scoring_output_path = path.join(output_dir, 'scoring_output.tsv')
     scoring_result = scoring_command(
         ipcress_result.stnd,
         args['mismatch'],
         scoring_output_path,
         targeton_result.csv
     )
-    design_result = DesignOutputData(slicer_result.dir)
-    # Slicer
-    design_result.slice_bed = slicer_result.bed
-    design_result.slice_fasta = slicer_result.fasta
+
+    design_result = DesignOutputData(output_dir)
     # Primer
     design_result.p3_bed = primer_result.bed
     design_result.p3_csv = primer_result.csv
@@ -164,7 +171,7 @@ def design_command(args) -> DesignOutputData:
     # Primer Designer
     primer_designer_result = collate_primer_designer_data_command(
         design_result,
-        existing_dir=slicer_result.dir
+        existing_dir=output_dir
     )
     design_result.pd_json = primer_designer_result.json
     design_result.pd_csv = primer_designer_result.csv
