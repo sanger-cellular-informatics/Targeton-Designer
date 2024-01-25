@@ -115,7 +115,7 @@ def export_primers_to_csv(slices: List[dict], export_dir: str) -> str:
 
     headers = ['primer', 'sequence', 'chr', 'primer_start', 'primer_end', 'tm', 'gc_percent',
                'penalty', 'self_any_th', 'self_end_th', 'hairpin_th', 'end_stability']
-    rows = construct_csv_format(slices, headers)
+    rows = construct_csv_format(slices)
 
     csv_path = export_to_csv(rows, export_dir, PRIMER3_OUTPUT_CSV, headers, delimiter=',')
     return csv_path
