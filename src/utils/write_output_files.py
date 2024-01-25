@@ -143,7 +143,7 @@ def export_to_csv(
     return csv_path
 
 
-def construct_csv_format(slices: List[SliceData], headers: list) -> list:
+def construct_csv_format(slices: List[SliceData]) -> list:
     rows = []
 
     for slice_data in slices:

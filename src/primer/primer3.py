@@ -34,18 +34,18 @@ class Primer3:
         return parse_fasta(fasta)
 
 
-    def primer3_design(self, primer3_inputs: List[SliceData]) -> List[dict]:
+    def primer3_design(self, slices: List[SliceData]) -> List[SliceData]:
         config_data = self._get_config_data()
 
         designs = []
-        for slice in primer3_inputs:
+        for slice in slices:
             primer3_input = slice.p3_input
 
-            design = primer3.bindings.designPrimers(primer3_input, config_data)
+            design = primer3.bindings.design_primers(primer3_input, config_data)
             slice.design = design
             designs.append(slice)
 
-        return primer3_inputs
+        return slices
 
     def locate_primers(self, designs: List[SliceData]) -> List[dict]:
         slice_designs = []
