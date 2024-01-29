@@ -1,11 +1,9 @@
-import unittest
 import sys
-
+import unittest
 from unittest import TestCase
 from unittest.mock import patch
 
 from cli import primer_for_ipcress
-
 
 PRIMER_INPUT_FASTA_PATH = 'tests/test_data/primer_input.fasta'
 PARAMS_MIN = '200'

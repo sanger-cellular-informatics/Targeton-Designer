@@ -1,6 +1,6 @@
-from collections import defaultdict
-import re
 import os
+import re
+from collections import defaultdict
 
 from utils.file_system import read_csv_to_list_dict
 

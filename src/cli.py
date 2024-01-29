@@ -2,30 +2,16 @@
 import sys
 from os import path
 
-from utils.arguments_parser import ParsedInputArguments
-from utils.validate_files import validate_files
-from utils.write_output_files import (
-    write_slicer_output,
-    write_primer_output,
-    write_ipcress_input,
-    write_ipcress_output,
-    write_targeton_csv,
-    write_scoring_output,
-    write_primer_design_output,
-    SlicerOutputData,
-    PrimerOutputData,
-    IpcressOutputData,
-    ScoringOutputData,
-    PrimerDesignerOutputData,
-    DesignOutputData,
-)
-from slicer.slicer import Slicer
-from primer.primer3 import Primer3
-from ipcress.ipcress import Ipcress
 from adapters.primer3_to_ipcress import Primer3ToIpcressAdapter
-from primer_designer import PrimerDesigner
+from ipcress.ipcress import Ipcress
 from post_primer_pairs import post_primer_pairs
+from primer.primer3 import Primer3
+from primer_designer import PrimerDesigner
+from slicer.slicer import Slicer
+from utils.arguments_parser import ParsedInputArguments
 from utils.parsers import parse_fasta
+from utils.validate_files import validate_files
+from utils.write_output_files import DesignOutputData, IpcressOutputData, PrimerDesignerOutputData, PrimerOutputData, ScoringOutputData, SlicerOutputData, write_ipcress_input, write_ipcress_output, write_primer_design_output, write_primer_output, write_scoring_output, write_slicer_output, write_targeton_csv  # NOQA
 
 sys.path.append(path.abspath(path.join(path.dirname(__file__), '../sge-primer-scoring/src')))
 from scoring import Scoring

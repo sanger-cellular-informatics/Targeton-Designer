@@ -1,16 +1,14 @@
-import primer3
 import re
 from collections import defaultdict
-from _collections_abc import dict_keys
-from typing import Tuple, List
+from typing import List, Tuple
 
+import primer3
+from _collections_abc import dict_keys
 from Bio.Seq import Seq
 
 from utils.exceptions import InvalidConfigError
 from utils.file_system import parse_json
-from utils.parsers import parse_fasta
-
-from utils.parsers import SliceData
+from utils.parsers import SliceData, parse_fasta
 
 
 class Primer3:

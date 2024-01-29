@@ -1,16 +1,16 @@
+import csv
 import unittest
 from os import path
 from pathlib import Path
-import csv
+from unittest.mock import Mock, patch
 
-from pyfakefs.fake_filesystem_unittest import TestCase
-from unittest.mock import patch, Mock
 from freezegun import freeze_time
+from pyfakefs.fake_filesystem_unittest import TestCase
 
-from src.utils.write_output_files import write_scoring_output, write_targeton_csv
 from src.utils import write_output_files
 from src.utils.file_system import read_csv_to_list_dict
 from src.utils.parsers import SliceData
+from src.utils.write_output_files import write_scoring_output, write_targeton_csv  # NOQA
 
 
 class TestWriteOutputFiles(TestCase):

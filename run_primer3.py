@@ -1,7 +1,7 @@
-import os
 import argparse
-import sys
+import os
 import subprocess
+import sys
 
 
 def positive_int(arg):

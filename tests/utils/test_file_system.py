@@ -1,6 +1,6 @@
 import unittest
-
 from unittest.mock import patch
+
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from src.utils.file_system import check_file_exists

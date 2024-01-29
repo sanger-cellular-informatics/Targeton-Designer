@@ -1,14 +1,14 @@
-import unittest
 import json
-
+import unittest
+from collections import defaultdict
 from os import linesep
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from unittest import TestCase
 from unittest.mock import patch
-from tempfile import TemporaryDirectory
-from primer_designer import PrimerDesigner, Primer, PrimerPair, translate_dict, iterate_design, map_primer_data
-from utils.write_output_files import DesignOutputData, export_primer_design_to_file, write_primer_design_output
-from collections import defaultdict
+
+from primer_designer import Primer, PrimerDesigner, PrimerPair, iterate_design, map_primer_data, translate_dict  # NOQA
+from utils.write_output_files import DesignOutputData, export_primer_design_to_file, write_primer_design_output  # NOQA
 
 VERSION = '01'
 

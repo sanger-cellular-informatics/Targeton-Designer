@@ -1,7 +1,8 @@
 import csv
-from Bio import SeqIO
-import re
 import json
+import re
+
+from Bio import SeqIO
 
 from utils.exceptions import FileFormatError, FileValidationError
 from utils.file_system import check_file_exists, parse_json

@@ -1,12 +1,14 @@
 from __future__ import annotations
 
-from typing import Any, List, Union
-from collections import defaultdict
-import re
 import json
+import re
+from collections import defaultdict
+from typing import Any, List, Union
+
 import numpy as np
-from utils.file_system import read_csv_to_list_dict
+
 from utils.exceptions import InputTypeError
+from utils.file_system import read_csv_to_list_dict
 from utils.write_output_files import DesignOutputData
 
 VERSION = '01'

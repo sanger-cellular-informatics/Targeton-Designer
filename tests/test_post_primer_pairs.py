@@ -1,7 +1,8 @@
-from pyfakefs.fake_filesystem_unittest import TestCase
 from unittest.mock import patch
 
-from post_primer_pairs import parse_primer_json, filter_primer_pairs, post_primer_data
+from pyfakefs.fake_filesystem_unittest import TestCase
+
+from post_primer_pairs import filter_primer_pairs, parse_primer_json, post_primer_data  # NOQA
 
 
 class TestPostPrimerPairs(TestCase):

@@ -1,11 +1,11 @@
 import re
 import subprocess
 from dataclasses import dataclass
-from utils.exceptions import IpcressError
 
 from adapters.primer3_to_ipcress import Primer3ToIpcressAdapter
-from utils.write_output_files import write_ipcress_input
+from utils.exceptions import IpcressError
 from utils.logger import Logger
+from utils.write_output_files import write_ipcress_input
 
 
 @dataclass

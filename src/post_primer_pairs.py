@@ -1,4 +1,5 @@
 from collections import defaultdict
+
 import requests
 
 from utils.file_system import parse_json

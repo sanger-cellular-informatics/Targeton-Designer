@@ -1,10 +1,10 @@
-import unittest
 import argparse
-
+import unittest
 from unittest.mock import patch
+
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-from src.utils.arguments_parser import positive_int, len_positive_int
+from src.utils.arguments_parser import len_positive_int, positive_int
 
 
 class TestFileSystem(TestCase):

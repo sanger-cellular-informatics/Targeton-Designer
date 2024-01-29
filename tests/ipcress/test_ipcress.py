@@ -1,11 +1,10 @@
-import unittest
 import sys
-
+import unittest
 from unittest import TestCase
 from unittest.mock import patch
-from utils.arguments_parser import ParsedInputArguments
 
 from ipcress.ipcress import Ipcress
+from utils.arguments_parser import ParsedInputArguments
 
 
 class TestIpcress(TestCase):

@@ -1,17 +1,10 @@
 import unittest
-
 from unittest.mock import patch
+
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from utils.exceptions import FileFormatError
-from utils.validate_files import (
-    validate_bed_content,
-    validate_bed_format,
-    validate_fasta_format,
-    validate_p3_csv,
-    validate_score_tsv,
-    validate_primer_json,
-)
+from utils.validate_files import validate_bed_content, validate_bed_format, validate_fasta_format, validate_p3_csv, validate_primer_json, validate_score_tsv  # NOQA
 
 
 class TestValidateFiles(TestCase):

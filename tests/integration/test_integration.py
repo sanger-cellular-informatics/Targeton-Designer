@@ -1,22 +1,14 @@
-import unittest
 import sys
-
-from unittest.mock import patch
-from unittest import TestCase
+import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from unittest import TestCase
+from unittest.mock import patch
 
-from cli import (
-    slicer_command,
-    primer_command,
-    ipcress_command,
-    scoring_command,
-    design_command,
-    collate_primer_designer_data_command,
-)
+from cli import collate_primer_designer_data_command, design_command, ipcress_command, primer_command, scoring_command, slicer_command  # NOQA
 from utils.arguments_parser import ParsedInputArguments
-from utils.write_output_files import DesignOutputData, write_targeton_csv
 from utils.parsers import SliceData
+from utils.write_output_files import DesignOutputData, write_targeton_csv
 
 
 class TestSlicerIntegration(TestCase):

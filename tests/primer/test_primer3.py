@@ -1,11 +1,11 @@
-import unittest
 import json
-
+import unittest
 from unittest.mock import patch
+
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-from tests.test_data.primer3_output_data import primer3_output_data
 from primer.primer3 import Primer3
+from tests.test_data.primer3_output_data import primer3_output_data
 from utils.parsers import SliceData
 
 
