@@ -26,9 +26,7 @@ def filter_primer_pairs(targeton_primer_pairs: defaultdict) -> list:
 
 def post_primer_data(primer_data: list) -> None:
     response = requests.post(
-        'https://sge-service.link:8081/libamp',
-        json=primer_data,
-        headers={'Content-Type': 'application/json'}
+        'https://sge-service.link:8081/libamp', json=primer_data, headers={'Content-Type': 'application/json'}
     )
     if response.status_code == 201:
         print(f'Successfully posted primers!')

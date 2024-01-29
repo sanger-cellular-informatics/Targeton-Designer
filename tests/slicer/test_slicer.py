@@ -22,17 +22,9 @@ class TestSlicer(TestCase):
 
     def test_get_slice_data_named_exon_success(self):
         # arrange
-        expected = [
-            ('chr1', 50, 260, 'exon1_1', '.', '+'),
-            ('chr1', 90, 300, 'exon1_2', '.', '+')
-        ]
+        expected = [('chr1', 50, 260, 'exon1_1', '.', '+'), ('chr1', 90, 300, 'exon1_2', '.', '+')]
         bed = BedTool(self.bed_file_data, from_string=True)
-        params = {
-            'flank_5': 50,
-            'flank_3': 50,
-            'length': 210,
-            'offset': 40
-        }
+        params = {'flank_5': 50, 'flank_3': 50, 'length': 210, 'offset': 40}
 
         # act
         actual = self.slicer.get_slice_data(bed, params)
@@ -42,17 +34,9 @@ class TestSlicer(TestCase):
 
     def test_get_slice_data_unnamed_exon_success(self):
         # arrange
-        expected = [
-            ('chr1', 50, 260, 'region1_1', '.', '-'),
-            ('chr1', 90, 300, 'region1_2', '.', '-')
-        ]
+        expected = [('chr1', 50, 260, 'region1_1', '.', '-'), ('chr1', 90, 300, 'region1_2', '.', '-')]
         bed = BedTool('chr1\t100\t250\t.\t.\t-', from_string=True)
-        params = {
-            'flank_5': 50,
-            'flank_3': 50,
-            'length': 210,
-            'offset': 40
-        }
+        params = {'flank_5': 50, 'flank_3': 50, 'length': 210, 'offset': 40}
 
         # act
         actual = self.slicer.get_slice_data(bed, params)
@@ -74,16 +58,14 @@ class TestSlicer(TestCase):
     @patch('pybedtools.BedTool.sequence')
     def test_get_seq_throw_bad_error_BEDToolsError(self, sequence_mock):
         # arrange
-        sequence_mock.side_effect = pybedtools.helpers.BEDToolsError('throw bad error',
-                                                                     'this is an unexpected error')
-        input_slice_bed = BedTool([
-            ('chr1', 50, 260, 'region1_1', '.', '-'),
-            ('chr1', 90, 300, 'region1_2', '.', '-')
-        ])
+        sequence_mock.side_effect = pybedtools.helpers.BEDToolsError('throw bad error', 'this is an unexpected error')
+        input_slice_bed = BedTool([('chr1', 50, 260, 'region1_1', '.', '-'), ('chr1', 90, 300, 'region1_2', '.', '-')])
         input_fasta = '/test.fa'
-        expected = "\nCommand was:\n\n\t\nCommand was:\n\n\tthrow bad error\n\nError message was:\nthis is an " \
-                   "unexpected error\n\nError message was:\nPyBEDTools exited with err type BEDToolsError. " \
-                   "Arguments:\n'this is an unexpected error'"
+        expected = (
+            "\nCommand was:\n\n\t\nCommand was:\n\n\tthrow bad error\n\nError message was:\nthis is an "
+            "unexpected error\n\nError message was:\nPyBEDTools exited with err type BEDToolsError. "
+            "Arguments:\n'this is an unexpected error'"
+        )
 
         expected_seq_options = f"fi='{input_fasta}', s=True, name+=True"
 
@@ -99,15 +81,15 @@ class TestSlicer(TestCase):
     @patch('pybedtools.BedTool.sequence')
     def test_get_seq_throw_good_error_success(self, sequence_mock):
         # arrange
-        sequence_mock.side_effect = pybedtools.helpers.BEDToolsError('throw good error',
-                                                                     '*****ERROR: Unrecognized parameter: -name+ *****')
-        input_slice_bed = BedTool([
-            ('chr1', 50, 260, 'region1_1', '.', '-'),
-            ('chr1', 90, 300, 'region1_2', '.', '-')
-        ])
+        sequence_mock.side_effect = pybedtools.helpers.BEDToolsError(
+            'throw good error', '*****ERROR: Unrecognized parameter: -name+ *****'
+        )
+        input_slice_bed = BedTool([('chr1', 50, 260, 'region1_1', '.', '-'), ('chr1', 90, 300, 'region1_2', '.', '-')])
         input_fasta = '/test.fa'
-        expected = '\nCommand was:\n\n\tthrow good error\n\nError message was:\n*****ERROR: Unrecognized parameter: ' \
-                   '-name+ *****'
+        expected = (
+            '\nCommand was:\n\n\tthrow good error\n\nError message was:\n*****ERROR: Unrecognized parameter: '
+            '-name+ *****'
+        )
 
         expected_seq_options = f"fi='{input_fasta}', s=True, name=True"
 

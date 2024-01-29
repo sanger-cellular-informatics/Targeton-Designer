@@ -33,7 +33,6 @@ class Primer3:
     def read_input_fasta(self, fasta: str) -> List[SliceData]:
         return parse_fasta(fasta)
 
-
     def primer3_design(self, slices: List[SliceData]) -> List[SliceData]:
         config_data = self._get_config_data()
 
@@ -73,15 +72,12 @@ class Primer3:
                 primer_name = slice_data.name + "_" + libamp_name + "_" + primer_details['pair']
 
                 primers[primer_name] = self._build_primer_loci(
-                    primers[primer_name], key, design,
-                    primer_details, slice_data
+                    primers[primer_name], key, design, primer_details, slice_data
                 )
 
         return primers
 
-    def _build_primer_loci(
-        self, primer, key, design, primer_details, slice_data: SliceData
-    ) -> dict:
+    def _build_primer_loci(self, primer, key, design, primer_details, slice_data: SliceData) -> dict:
 
         primer_field = primer_details['field']
 
@@ -89,14 +85,11 @@ class Primer3:
         primer['side'] = primer_details['side']
 
         if primer_field == 'coords':
-            primer_coords = self.calculate_primer_coords(
-                primer_details['side'], design[key], slice_data.start)
+            primer_coords = self.calculate_primer_coords(primer_details['side'], design[key], slice_data.start)
 
             primer['primer_start'] = primer_coords[0]
             primer['primer_end'] = primer_coords[1]
-            primer['strand'] = self.determine_primer_strands(
-                primer_details['side'], slice_data.strand
-            )
+            primer['strand'] = self.determine_primer_strands(primer_details['side'], slice_data.strand)
 
         return primer
 
@@ -140,22 +133,14 @@ class Primer3:
             primer_field = match.group(5)
             if primer_field is None:
                 primer_field = 'coords'
-            result = {
-                'id': primer_id,
-                'side': primer_side,
-                'field': primer_field,
-                'pair': pair_number
-            }
+            result = {'id': primer_id, 'side': primer_side, 'field': primer_field, 'pair': pair_number}
 
         return result
 
     @staticmethod
     def calculate_primer_coords(side, coords, slice_start) -> Tuple[int, int]:
         slice_start = int(slice_start)
-        left_flank = {
-            'start': slice_start,
-            'end': slice_start + int(coords[1])
-        }
+        left_flank = {'start': slice_start, 'end': slice_start + int(coords[1])}
 
         slice_end = slice_start + int(coords[0])
         right_flank = {
@@ -163,10 +148,7 @@ class Primer3:
             'end': 1 + slice_end,
         }
 
-        slice_coords = {
-            'left': left_flank,
-            'right': right_flank
-        }
+        slice_coords = {'left': left_flank, 'right': right_flank}
 
         start = slice_coords[side]['start']
         end = slice_coords[side]['end']

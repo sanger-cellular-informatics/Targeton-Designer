@@ -15,19 +15,22 @@ class TestPrimer3(TestCase):
     def setUp(self):
         self.primer = Primer3()
         self.setUpPyfakefs()
-        self.input_slice_data = SliceData(
-            'slice_name', 'slice_start', 'slice_end', '+', 'slice_chrom', 'bases'
-        )
+        self.input_slice_data = SliceData('slice_name', 'slice_start', 'slice_end', '+', 'slice_chrom', 'bases')
 
     def create_files(self):
         self.fs.create_file('/fwd_primer3_output.json', contents=self.primer3_output_json_data)
         self.fs.create_file('/rev_primer3_output.json', contents=self.primer3_output_json_data)
-        self.fs.create_file('/fasta.fa', contents='>region1_1::chr1:5-10(+)\nGTGATCGAGGAGTTCTACAACCAGACATGGGTCCACCGCTA'
-                                                  'TGGGGAGAGCATCCTGCCCACCACGCTCACCACGCTCTGGTCCCTCTCAGTGGCCATCTTTTCTGTT'
-                                                  'GGGGGCATGATTGGCTCCTTCTCTGTGGGCCTTTTCGTTAACCGCTTTGGCCGGTAAGTAGGAGAGG'
-                                                  'TCCTGGCACTGCCCTTGGAGGGCCCATGCCCTCCT')
+        self.fs.create_file(
+            '/fasta.fa',
+            contents='>region1_1::chr1:5-10(+)\nGTGATCGAGGAGTTCTACAACCAGACATGGGTCCACCGCTA'
+            'TGGGGAGAGCATCCTGCCCACCACGCTCACCACGCTCTGGTCCCTCTCAGTGGCCATCTTTTCTGTT'
+            'GGGGGCATGATTGGCTCCTTCTCTGTGGGCCTTTTCGTTAACCGCTTTGGCCGGTAAGTAGGAGAGG'
+            'TCCTGGCACTGCCCTTGGAGGGCCCATGCCCTCCT',
+        )
 
-        self.fs.create_file('/primer3_test_config.json', contents='{\
+        self.fs.create_file(
+            '/primer3_test_config.json',
+            contents='{\
             "PRIMER_TASK": "pick_cloning_primers",\
             "PRIMER_PICK_LEFT_PRIMER": 1,\
             "PRIMER_PICK_RIGHT_PRIMER": 1,\
@@ -37,7 +40,8 @@ class TestPrimer3(TestCase):
             "P3_FILE_FLAG": 1,\
             "SEQUENCE_INCLUDED_REGION": [0,212],\
             "PRIMER_EXPLAIN_FLAG": 1\
-        }')
+        }',
+        )
 
     def test_name_primers_left_fwd_success(self):
         # arrange
@@ -131,12 +135,19 @@ class TestPrimer3(TestCase):
         # arrange
         self.create_files()
         fasta = '/fasta.fa'
-        expected = [SliceData('region1_1', '5', '10', '+', 'chr1',
+        expected = [
+            SliceData(
+                'region1_1',
+                '5',
+                '10',
+                '+',
+                'chr1',
                 'GTGATCGAGGAGTTCTACAACCAGACATGGGTCCACCGCTATGGGGAGAGCATCCTGCCCACCACGCT'
                 'CACCACGCTCTGGTCCCTCTCAGTGGCCATCTTTTCTGTTGGGGGCATGATTGGCTCCTTCTCTGTGG'
                 'GCCTTTTCGTTAACCGCTTTGGCCGGTAAGTAGGAGAGGTCCTGGCACTGCCCTTGGAGGGCCCATGC'
-                'CCTCCT'
-        )]
+                'CCTCCT',
+            )
+        ]
 
         # act
         actual = self.primer.read_input_fasta(fasta)
@@ -152,12 +163,19 @@ class TestPrimer3(TestCase):
         # arrange
         self.create_files()
 
-        input = [SliceData('region1_1', '5', '10', '+', 'chr1',
-            'GTGATCGAGGAGTTCTACAACCAGACATGGGTCCACCGCTATGGGGAGAGCATCCTGCCCACCACGCT'
-            'CACCACGCTCTGGTCCCTCTCAGTGGCCATCTTTTCTGTTGGGGGCATGATTGGCTCCTTCTCTGTGG'
-            'GCCTTTTCGTTAACCGCTTTGGCCGGTAAGTAGGAGAGGTCCTGGCACTGCCCTTGGAGGGCCCATGC'
-            'CCTCCT'
-        )]
+        input = [
+            SliceData(
+                'region1_1',
+                '5',
+                '10',
+                '+',
+                'chr1',
+                'GTGATCGAGGAGTTCTACAACCAGACATGGGTCCACCGCTATGGGGAGAGCATCCTGCCCACCACGCT'
+                'CACCACGCTCTGGTCCCTCTCAGTGGCCATCTTTTCTGTTGGGGGCATGATTGGCTCCTTCTCTGTGG'
+                'GCCTTTTCGTTAACCGCTTTGGCCGGTAAGTAGGAGAGGTCCTGGCACTGCCCTTGGAGGGCCCATGC'
+                'CCTCCT',
+            )
+        ]
 
         expected = {
             'PRIMER_LEFT_EXPLAIN': 'considered 6, low tm 4, ok 2',
@@ -166,7 +184,7 @@ class TestPrimer3(TestCase):
             'PRIMER_LEFT_NUM_RETURNED': 0,
             'PRIMER_RIGHT_NUM_RETURNED': 0,
             'PRIMER_INTERNAL_NUM_RETURNED': 0,
-            'PRIMER_PAIR_NUM_RETURNED': 0
+            'PRIMER_PAIR_NUM_RETURNED': 0,
         }
         # act
 
@@ -181,7 +199,7 @@ class TestPrimer3(TestCase):
         dict_mock.return_value = {'region1_1_libamp_name_2': 'build_primer_dict'}
 
         slice1 = SliceData('slice1', 'start', 'end', 'strand', 'chrom', 'bases')
-        slice1.design =  {'design_key': 'design_val'}
+        slice1.design = {'design_key': 'design_val'}
         slice2 = SliceData('slice2', 'start', 'end', 'strand', 'chrom', 'bases')
         slice2.design = {'design_key': 'design_val'}
 
@@ -202,9 +220,7 @@ class TestPrimer3(TestCase):
     @patch('primer.primer3.Primer3._build_primer_loci')
     @patch('primer.primer3.Primer3.name_primers')
     @patch('primer.primer3.Primer3.capture_primer_details')
-    def test_build_primers_dict_valid_success(
-            self, details_mock, name_mock, loci_mock
-    ):
+    def test_build_primers_dict_valid_success(self, details_mock, name_mock, loci_mock):
         # arrange
         details_mock.return_value = {'pair': '2'}
         name_mock.return_value = 'libamp_name'
@@ -214,9 +230,7 @@ class TestPrimer3(TestCase):
         input_primer_keys = {'key_1': 'value'}
 
         # act
-        actual = self.primer._build_primers_dict(
-            input_design, input_primer_keys, self.input_slice_data
-        )
+        actual = self.primer._build_primers_dict(input_design, input_primer_keys, self.input_slice_data)
 
         # assert
         self.assertEqual(expected, actual)
@@ -239,12 +253,9 @@ class TestPrimer3(TestCase):
     # @patch('primer.primer3.Primer3.revcom_reverse_primer')
     @patch('primer.primer3.Primer3.determine_primer_strands')
     @patch('primer.primer3.Primer3.calculate_primer_coords')
-    def test_build_primer_loci_with_coords_success(
-            self, coords_mock, strands_mock
-    ):
+    def test_build_primer_loci_with_coords_success(self, coords_mock, strands_mock):
         # arrange
-        input_primer = {
-            'penalty': 1, 'side': 'primer_side', 'sequence': 'primer_seq'}
+        input_primer = {'penalty': 1, 'side': 'primer_side', 'sequence': 'primer_seq'}
         input_key = 'design_key'
         input_design = {'design_key': 'design_value'}
         input_primer_details = {'field': 'coords', 'side': 'primer_side'}
@@ -264,24 +275,16 @@ class TestPrimer3(TestCase):
 
         # act
         actual = self.primer._build_primer_loci(
-            input_primer,
-            input_key,
-            input_design,
-            input_primer_details,
-            self.input_slice_data
+            input_primer, input_key, input_design, input_primer_details, self.input_slice_data
         )
 
         # assert
         self.assertEqual(expected, actual)
-        self.assertEqual(
-            f"{coords_mock.call_args}",
-            "call('primer_side', 'design_value', 'slice_start')"
-        )
-        self.assertEqual(
-            f"{strands_mock.call_args}", "call('primer_side', '+')"
-        )
-       # self.assertEqual(
-        #    f"{revcom_mock.call_args}", "call('primer_seq', 'primer_side_+')")
+        self.assertEqual(f"{coords_mock.call_args}", "call('primer_side', 'design_value', 'slice_start')")
+        self.assertEqual(f"{strands_mock.call_args}", "call('primer_side', '+')")
+
+    # self.assertEqual(
+    #    f"{revcom_mock.call_args}", "call('primer_seq', 'primer_side_+')")
 
     def test_build_primer_loci_no_coords_success(self):
         # arrange
@@ -297,11 +300,7 @@ class TestPrimer3(TestCase):
 
         # act
         actual = self.primer._build_primer_loci(
-            input_primer,
-            input_key,
-            input_design,
-            input_primer_details,
-            self.input_slice_data
+            input_primer, input_key, input_design, input_primer_details, self.input_slice_data
         )
 
         # assert

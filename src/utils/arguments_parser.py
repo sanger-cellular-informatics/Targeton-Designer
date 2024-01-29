@@ -9,8 +9,7 @@ class ParsedInputArguments:
         self.parse_arguments()
 
     def parse_arguments(self):
-        parser = argparse.ArgumentParser(
-            description='Targeton Designer CLI')
+        parser = argparse.ArgumentParser(description='Targeton Designer CLI')
 
         parser.add_argument(
             'command',
@@ -19,7 +18,8 @@ class ParsedInputArguments:
                 'version, slicer, primer, collate_primer_data, ipcress, scoring, design, '
                 'primer_for_ipcress, generate_targeton_csv, post_primers'
             ),
-            type=str, default='design'
+            type=str,
+            default='design',
         )
 
         parser = add_input_args(parser)
@@ -69,16 +69,11 @@ def add_input_args(parser):
     )
     parser.add_argument(
         '--p3_csv',
-        help=(
-            'Optional: Point at specific Primer3 output CSV file. '
-            'Either primers or p3_csv must be supplied.'
-        ),
+        help=('Optional: Point at specific Primer3 output CSV file. ' 'Either primers or p3_csv must be supplied.'),
     )
     parser.add_argument(
         '--score_tsv',
-        help=(
-            'input for Primer Designer: point at a scoring TSV file. '
-        ),
+        help=('input for Primer Designer: point at a scoring TSV file. '),
     )
     parser.add_argument(
         '--ipcress_file',
@@ -86,21 +81,17 @@ def add_input_args(parser):
     )
     parser.add_argument(
         '--targeton_csv',
-        help=(
-            'CSV of primer pairs and corresponding targetons'
-            ' - adds targeton column to output'
-        ),
+        help=('CSV of primer pairs and corresponding targetons' ' - adds targeton column to output'),
     )
     parser.add_argument(
         '--primer_json',
-        help=(
-            'Primer Designer JSON output used to post primers to Benchling'
-        ),
+        help=('Primer Designer JSON output used to post primers to Benchling'),
     )
 
     # CONFIG
     parser.add_argument(
-        '-f5', '--flank_5',
+        '-f5',
+        '--flank_5',
         help='how far to extend region at 5\' end (default 50nt)',
         type=int,
         default=50,
@@ -111,19 +102,22 @@ def add_input_args(parser):
         action='store_true',
     )
     parser.add_argument(
-        '-f3', '--flank_3',
+        '-f3',
+        '--flank_3',
         help='how far to extend region at 3\' end (default 50nt)',
         type=int,
         default=50,
     )
     parser.add_argument(
-        '-l', '--length',
+        '-l',
+        '--length',
         help='length of each slice (default 210nt)',
         type=len_positive_int,
         default=210,
     )
     parser.add_argument(
-        '-o', '--offset',
+        '-o',
+        '--offset',
         help='offset between each slice (default 5nt)',
         type=positive_int,
         default=5,
@@ -163,7 +157,8 @@ def add_input_args(parser):
 
     # OUTPUTS
     parser.add_argument(
-        '-d', '--dir',
+        '-d',
+        '--dir',
         help='output directory name to be timestamped (default \'td_output\')',
         type=str,
         default='td_output',

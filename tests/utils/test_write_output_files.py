@@ -41,9 +41,7 @@ class TestWriteOutputFiles(TestCase):
         expected_file = 'test_dir/td_310123/targetons.csv'
 
         # act
-        result = write_targeton_csv(
-            '/test_ipcress_input.txt', self.slices, 'test_dir/td_310123', dir_timestamped=True
-        )
+        result = write_targeton_csv('/test_ipcress_input.txt', self.slices, 'test_dir/td_310123', dir_timestamped=True)
 
         # assert
         self.assertTrue(path.exists(expected_file))
@@ -63,9 +61,7 @@ class TestWriteOutputFiles(TestCase):
 
         # assert
         self.assertTrue(path.exists(expected_file))
-        mock_print.assert_called_with(
-            'Targeton csv generated: test_dir/td_20230131000000000000/targetons.csv'
-        )
+        mock_print.assert_called_with('Targeton csv generated: test_dir/td_20230131000000000000/targetons.csv')
         self.assertEqual(result.dir, expected_dir)
         self.assertEqual(result.csv, expected_file)
 
@@ -114,13 +110,9 @@ class TestWriteOutputFiles(TestCase):
 
         # act
         result = write_output_files.export_to_csv(
-            mock_data,
-            fake_dir,
-            expected_file,
-            mock_headers,
-            delimiter=expected_delimiter
+            mock_data, fake_dir, expected_file, mock_headers, delimiter=expected_delimiter
         )
-        
+
         sniffer = csv.Sniffer()
         with open(expected_file_path) as f:
             test_delimiter = sniffer.sniff(f.read()).delimiter

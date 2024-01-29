@@ -41,21 +41,29 @@ def validate_bed_content(bed: str):
                 raise ValueError(f'End coordinate format incorrect on line {line_num}: {line[2]}')
 
             if int(line[2]) < int(line[1]):
-                raise ValueError(f'End coordinate must be greater than start coordinate '
-                                 f'on line {line_num}. Start: {line[1]} End: {line[2]}')
+                raise ValueError(
+                    f'End coordinate must be greater than start coordinate '
+                    f'on line {line_num}. Start: {line[1]} End: {line[2]}'
+                )
 
             if (int(line[2]) - int(line[1])) > 10000:
-                raise ValueError(f'Difference between start coordinate and end coordinate '
-                                 f'must be less than 10000. On line {line_num} '
-                                 f'Difference: {int(line[2]) - int(line[1])}')
+                raise ValueError(
+                    f'Difference between start coordinate and end coordinate '
+                    f'must be less than 10000. On line {line_num} '
+                    f'Difference: {int(line[2]) - int(line[1])}'
+                )
 
             if not line[3]:
-                raise ValueError(f'Error with name field, if no name is supplied please mark '
-                                 f'with a \'.\' on line {line_num}: {line[3]}')
+                raise ValueError(
+                    f'Error with name field, if no name is supplied please mark '
+                    f'with a \'.\' on line {line_num}: {line[3]}'
+                )
 
             if not line[4]:
-                raise ValueError(f'Error with score field, if no score is supplied please mark '
-                                 f'with a \'.\' on line {line_num}: {line[4]}')
+                raise ValueError(
+                    f'Error with score field, if no score is supplied please mark '
+                    f'with a \'.\' on line {line_num}: {line[4]}'
+                )
 
             if not re.search(r'^[+-]$', line[5]):
                 raise ValueError(f'Strand format incorrect on line {line_num}: {line[5]}')
@@ -67,9 +75,18 @@ def validate_p3_csv(p3_csv: str):
     with open(p3_csv, newline='') as csv_file:
         data = csv.DictReader(csv_file, delimiter=',')
         expected_cols = [
-            'primer', 'sequence', 'chr', 'primer_start', 'primer_end',
-            'tm', 'gc_percent', 'penalty', 'self_any_th', 'self_end_th',
-            'hairpin_th', 'end_stability'
+            'primer',
+            'sequence',
+            'chr',
+            'primer_start',
+            'primer_end',
+            'tm',
+            'gc_percent',
+            'penalty',
+            'self_any_th',
+            'self_end_th',
+            'hairpin_th',
+            'end_stability',
         ]
         if check_if_missing_fields(data, expected_cols):
             raise FileFormatError(f'Missing columns in Primer3 CSV')

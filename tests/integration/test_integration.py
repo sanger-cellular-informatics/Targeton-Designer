@@ -7,9 +7,12 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from cli import (
-    slicer_command, primer_command, ipcress_command,
-    scoring_command, design_command,
-    collate_primer_designer_data_command
+    slicer_command,
+    primer_command,
+    ipcress_command,
+    scoring_command,
+    design_command,
+    collate_primer_designer_data_command,
 )
 from utils.arguments_parser import ParsedInputArguments
 from utils.write_output_files import DesignOutputData, write_targeton_csv
@@ -25,7 +28,20 @@ class TestSlicerIntegration(TestCase):
         with TemporaryDirectory() as tmpdir:
             # Arrange
             # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
-            with patch.object(sys, 'argv', ["./designer.sh", "slicer", "--bed", self.bed_file_path, "--fasta", self.fasta_file_path, "--dir", tmpdir]):
+            with patch.object(
+                sys,
+                'argv',
+                [
+                    "./designer.sh",
+                    "slicer",
+                    "--bed",
+                    self.bed_file_path,
+                    "--fasta",
+                    self.fasta_file_path,
+                    "--dir",
+                    tmpdir,
+                ],
+            ):
                 parsed_input = ParsedInputArguments()
                 args = parsed_input.get_args()
 
@@ -49,7 +65,9 @@ class TestPrimerIntegration(TestCase):
         with TemporaryDirectory() as tmpdir:
             # Arrange
             # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
-            with patch.object(sys, 'argv', ["./designer.sh", "primer", "--fasta", self.fasta_file_path, "--dir", tmpdir]):
+            with patch.object(
+                sys, 'argv', ["./designer.sh", "primer", "--fasta", self.fasta_file_path, "--dir", tmpdir]
+            ):
                 parsed_input = ParsedInputArguments()
                 args = parsed_input.get_args()
 
@@ -74,7 +92,20 @@ class TestIPcressIntegration(TestCase):
         with TemporaryDirectory() as tmpdir:
             # Arrange
             # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
-            with patch.object(sys, 'argv', ["./designer.sh", "ipcress", "--fasta", self.fasta_file_path, "--dir", tmpdir, "--p3_csv", self.p3_output_csv_path]):
+            with patch.object(
+                sys,
+                'argv',
+                [
+                    "./designer.sh",
+                    "ipcress",
+                    "--fasta",
+                    self.fasta_file_path,
+                    "--dir",
+                    tmpdir,
+                    "--p3_csv",
+                    self.p3_output_csv_path,
+                ],
+            ):
                 parsed_input = ParsedInputArguments()
                 args = parsed_input.get_args()
 
@@ -102,7 +133,20 @@ class TestPrimerDesignerIntegration(TestCase):
         with TemporaryDirectory() as tmpdir:
             # Arrange
             # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
-            with patch.object(sys, 'argv', ["./designer.sh", "primer_designer", "--score_tsv", self.scoring_output_tsv_path, "--dir", tmpdir, "--p3_csv", self.p3_output_csv_path]):
+            with patch.object(
+                sys,
+                'argv',
+                [
+                    "./designer.sh",
+                    "primer_designer",
+                    "--score_tsv",
+                    self.scoring_output_tsv_path,
+                    "--dir",
+                    tmpdir,
+                    "--p3_csv",
+                    self.p3_output_csv_path,
+                ],
+            ):
                 parsed_input = ParsedInputArguments()
                 args = parsed_input.get_args()
 
@@ -110,10 +154,7 @@ class TestPrimerDesignerIntegration(TestCase):
                 design_output_data = DesignOutputData(tmpdir)
                 design_output_data.p3_csv = args['p3_csv']
                 design_output_data.scoring_tsv = args['score_tsv']
-                result = collate_primer_designer_data_command(
-                    design_output_data,
-                    prefix=args['dir']
-                    )
+                result = collate_primer_designer_data_command(design_output_data, prefix=args['dir'])
                 path_json = Path(result.json)
                 path_csv = Path(result.csv)
 
@@ -133,9 +174,12 @@ class TestTargetonCSVIntegration(TestCase):
         with TemporaryDirectory() as tmpdir:
             # Arrange
             cli_input = [
-                "./designer.sh", "generate_targeton_csv",
-                "--primers", self.ipcress_input_path,
-                "--dir", tmpdir,
+                "./designer.sh",
+                "generate_targeton_csv",
+                "--primers",
+                self.ipcress_input_path,
+                "--dir",
+                tmpdir,
             ]
             # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
             with patch.object(sys, 'argv', cli_input):
@@ -160,10 +204,14 @@ class TestScoringIntegration(TestCase):
             # Arrange
             scoring_output_path = str(Path(tmpdir) / 'scoring_output.tsv')
             cli_input = [
-                "./designer.sh", "scoring",
-                "--ipcress_file", self.ipcress_output_path,
-                "--scoring_mismatch", "5",
-                "--output_tsv", scoring_output_path,
+                "./designer.sh",
+                "scoring",
+                "--ipcress_file",
+                self.ipcress_output_path,
+                "--scoring_mismatch",
+                "5",
+                "--output_tsv",
+                scoring_output_path,
             ]
             # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
             with patch.object(sys, 'argv', cli_input):
@@ -171,9 +219,7 @@ class TestScoringIntegration(TestCase):
                 args = parsed_input.get_args()
 
                 # Act
-                result = scoring_command(
-                    args['ipcress_file'], args['scoring_mismatch'], args['output_tsv']
-                )
+                result = scoring_command(args['ipcress_file'], args['scoring_mismatch'], args['output_tsv'])
                 path_tsv = Path(result.tsv)
 
                 # Assert
@@ -189,7 +235,9 @@ class TestTargetonDesignerIntegration(TestCase):
         with TemporaryDirectory() as tmpdir:
             # Arrange
             # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
-            with patch.object(sys, 'argv', ["./designer.sh", "design", "--fasta", self.fasta_file_path, "--dir", tmpdir]):
+            with patch.object(
+                sys, 'argv', ["./designer.sh", "design", "--fasta", self.fasta_file_path, "--dir", tmpdir]
+            ):
                 parsed_input = ParsedInputArguments()
                 args = parsed_input.get_args()
 

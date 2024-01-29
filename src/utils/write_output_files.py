@@ -11,6 +11,7 @@ from pybedtools import BedTool
 from utils.file_system import write_to_text_file, FolderCreator
 from utils.exceptions import OutputError, FolderCreatorError, FileTypeError
 from utils.parsers import SliceData
+
 if TYPE_CHECKING:  # For avoiding circular import dependencies, only import for type checking.
     from src.primer_designer import PrimerDesigner
     from src.cli import Scoring
@@ -113,8 +114,20 @@ def write_slicer_fasta_output(export_dir: str, slices: List[dict]) -> str:
 def export_primers_to_csv(slices: List[dict], export_dir: str) -> str:
     PRIMER3_OUTPUT_CSV = 'p3_output.csv'
 
-    headers = ['primer', 'sequence', 'chr', 'primer_start', 'primer_end', 'tm', 'gc_percent',
-               'penalty', 'self_any_th', 'self_end_th', 'hairpin_th', 'end_stability']
+    headers = [
+        'primer',
+        'sequence',
+        'chr',
+        'primer_start',
+        'primer_end',
+        'tm',
+        'gc_percent',
+        'penalty',
+        'self_any_th',
+        'self_end_th',
+        'hairpin_th',
+        'end_stability',
+    ]
     rows = construct_csv_format(slices)
 
     csv_path = export_to_csv(rows, export_dir, PRIMER3_OUTPUT_CSV, headers, delimiter=',')
@@ -122,13 +135,9 @@ def export_primers_to_csv(slices: List[dict], export_dir: str) -> str:
 
 
 def export_to_csv(
-    data: Union[list, dict],
-    export_dir: str, 
-    filename: str, 
-    headers: List[str],
-    delimiter: str = ','
-    ) -> str:
-    
+    data: Union[list, dict], export_dir: str, filename: str, headers: List[str], delimiter: str = ','
+) -> str:
+
     kwargs = {'delimiter': delimiter, 'fieldnames': headers}
     csv_path = Path(export_dir) / filename
 
@@ -175,7 +184,7 @@ def construct_bed_format(slices: List[SliceData]) -> list:
                 primer_data['primer_end'],
                 primer,
                 '0',
-                primer_data['strand']
+                primer_data['strand'],
             ]
             rows.append(row)
     return rows
@@ -235,10 +244,7 @@ def write_ipcress_output(stnd='', err='', existing_dir='') -> IpcressOutputData:
 
 
 def write_targeton_csv(
-        ipcress_input: str,
-        slices: List[SliceData],
-        dirname: str,
-        dir_timestamped=False
+    ipcress_input: str, slices: List[SliceData], dirname: str, dir_timestamped=False
 ) -> TargetonCSVData:
     TARGETON_CSV = 'targetons.csv'
 
@@ -276,7 +282,9 @@ def write_scoring_output(scoring: Scoring, output_tsv: str) -> ScoringOutputData
     return result
 
 
-def export_primer_design_to_file(primer_designer: PrimerDesigner, filename: str, export_dir: str, file_type: str) -> str:
+def export_primer_design_to_file(
+    primer_designer: PrimerDesigner, filename: str, export_dir: str, file_type: str
+) -> str:
     accepted_file_types = [r'.json', r'.csv']
     if file_type not in accepted_file_types:
         raise FileTypeError(f"Unknown filetype passed {file_type}.")
@@ -298,7 +306,7 @@ def export_primer_design_to_file(primer_designer: PrimerDesigner, filename: str,
 
 
 def write_primer_design_output(
-    primer_designer : PrimerDesigner,
+    primer_designer: PrimerDesigner,
     prefix='',
     existing_dir='',
 ) -> PrimerDesignerOutputData:

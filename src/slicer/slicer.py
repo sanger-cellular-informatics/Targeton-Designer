@@ -45,11 +45,7 @@ class Slicer:
 
     @staticmethod
     def get_seq(slice_bed, fasta_param):
-        seq_options = {
-            "fi": fasta_param,
-            "s": True,
-            "name+": True
-        }
+        seq_options = {"fi": fasta_param, "s": True, "name+": True}
 
         try:
             seq = slice_bed.sequence(**seq_options)
@@ -80,8 +76,7 @@ class Slicer:
         count = 1
         while end <= (exon.end + params['flank_3']):
             slice_name = f'{exon_name}_{count}'
-            slices.append((exon.chrom, start, end, slice_name,
-                           exon.score, exon.strand))
+            slices.append((exon.chrom, start, end, slice_name, exon.score, exon.strand))
             start += params['offset']
             end += params['offset']
             count += 1

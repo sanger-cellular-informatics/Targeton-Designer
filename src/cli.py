@@ -67,10 +67,7 @@ def primer_command(
 
 
 def collate_primer_designer_data_command(
-    design_output_data : DesignOutputData,
-    primer_designer=PrimerDesigner(),
-    prefix='',
-    existing_dir=''
+    design_output_data: DesignOutputData, primer_designer=PrimerDesigner(), prefix='', existing_dir=''
 ) -> PrimerDesignerOutputData:
     validate_files(p3_csv=design_output_data.p3_csv, score_tsv=design_output_data.scoring_tsv)
 
@@ -104,20 +101,12 @@ def ipcress_command(params, csv='', existing_dir='') -> IpcressOutputData:
     if existing_dir:
         ipcress_params['dir'] = existing_dir
 
-    validate_files(
-        fasta=ipcress_params['fasta'],
-        txt=ipcress_params['primers'],
-        p3_csv=ipcress_params['p3_csv']
-    )
+    validate_files(fasta=ipcress_params['fasta'], txt=ipcress_params['primers'], p3_csv=ipcress_params['p3_csv'])
 
     ipcress = Ipcress(ipcress_params)
     ipcress_result = ipcress.run()
 
-    result = write_ipcress_output(
-        stnd=ipcress_result.stnd,
-        err=ipcress_result.err,
-        existing_dir=ipcress_params['dir']
-    )
+    result = write_ipcress_output(stnd=ipcress_result.stnd, err=ipcress_result.err, existing_dir=ipcress_params['dir'])
     result.input_file = ipcress_result.input_file
 
     return result
@@ -134,10 +123,10 @@ def scoring_command(ipcress_output, mismatch, output_tsv, targeton_csv=None) -> 
 
 def design_command(args) -> DesignOutputData:
     validate_files(fasta=args['fasta'])
-    
+
     primer_result = primer_command(fasta=args['fasta'], prefix=args['dir'], config=args['primer3_params'])
     slices = parse_fasta(args['fasta'])
-    
+
     output_dir = primer_result.dir
 
     ipcress_result = ipcress_command(args, csv=primer_result.csv, existing_dir=output_dir)
@@ -149,12 +138,7 @@ def design_command(args) -> DesignOutputData:
         dir_timestamped=True,
     )
     scoring_output_path = path.join(output_dir, 'scoring_output.tsv')
-    scoring_result = scoring_command(
-        ipcress_result.stnd,
-        args['mismatch'],
-        scoring_output_path,
-        targeton_result.csv
-    )
+    scoring_result = scoring_command(ipcress_result.stnd, args['mismatch'], scoring_output_path, targeton_result.csv)
 
     design_result = DesignOutputData(output_dir)
     # Primer
@@ -169,10 +153,7 @@ def design_command(args) -> DesignOutputData:
     # Scoring
     design_result.scoring_tsv = scoring_result.tsv
     # Primer Designer
-    primer_designer_result = collate_primer_designer_data_command(
-        design_result,
-        existing_dir=output_dir
-    )
+    primer_designer_result = collate_primer_designer_data_command(design_result, existing_dir=output_dir)
     design_result.pd_json = primer_designer_result.json
     design_result.pd_csv = primer_designer_result.csv
 

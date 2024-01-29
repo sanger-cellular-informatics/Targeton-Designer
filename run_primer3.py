@@ -39,7 +39,7 @@ def main(params):
     subprocess.run(['cp', '-r', dir_path, f'/tmp/primer3/{dir_file}'])
     subprocess.run(['cp', ref_path, f'/tmp/primer3{ref_file}'])
 
-    #pwd = subprocess.run(['pwd'], stdout=subprocess.PIPE).stdout.decode('utf-8').strip()
+    # pwd = subprocess.run(['pwd'], stdout=subprocess.PIPE).stdout.decode('utf-8').strip()
     cmd = f'docker run -i -t --rm -v targetondesigner_data:/data -v /tmp/primer3/:/tmp/ targetondesigner_primer3 {seqs_param} {dir_param} {ref_param}'
 
     os.system(cmd)

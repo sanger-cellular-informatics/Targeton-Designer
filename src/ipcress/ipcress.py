@@ -32,7 +32,7 @@ class Ipcress:
         self.logger.log(self.params)
         params = self.params
 
-        if params['primers']:                               # Comes from --primers argument, should be a path to a txt file
+        if params['primers']:  # Comes from --primers argument, should be a path to a txt file
             self.logger.log('Loading custom iPCRess input file')
             input_path = params['primers']
             result = self.run_ipcress(input_path, params)
@@ -40,24 +40,18 @@ class Ipcress:
             self.logger.log('Building iPCRess input file.')
 
             adapter = Primer3ToIpcressAdapter()
-            adapter.prepare_input(
-                params['p3_csv'], params['min'], params['max'], params['dir']
-            )
+            adapter.prepare_input(params['p3_csv'], params['min'], params['max'], params['dir'])
             input_path = write_ipcress_input(params['dir'], adapter.formatted_primers)
 
             result = self.run_ipcress(input_path, params)
-            self.validate_primers(
-                result.stnd.decode(), adapter.primer_data, params
-            )
+            self.validate_primers(result.stnd.decode(), adapter.primer_data, params)
 
         self.logger.log('Finished!')
 
         return result
 
     def run_ipcress(self, input_path, params) -> IpcressResult:
-        cmd = ' '.join([
-            'ipcress', input_path, params['fasta'], '--mismatch', str(params['mismatch'])
-        ])
+        cmd = ' '.join(['ipcress', input_path, params['fasta'], '--mismatch', str(params['mismatch'])])
 
         cmd = self.prettify_output(params['pretty'], cmd)
 

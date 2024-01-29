@@ -15,7 +15,7 @@ class FolderCreator:
 
     @classmethod
     def get_dir(self) -> str:
-        return (self.dir)
+        return self.dir
 
     @classmethod
     def create(self, dir: str) -> None:

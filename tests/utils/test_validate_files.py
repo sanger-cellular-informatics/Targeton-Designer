@@ -302,9 +302,18 @@ class TestValidateFiles(TestCase):
         # arrange
         test_arg = '/p3_output.csv'
         headers = [
-            'primer', 'sequence', 'chr', 'primer_start', 'primer_end',
-            'tm', 'gc_percent', 'penalty', 'self_any_th', 'self_end_th',
-            'hairpin_th', 'end_stability'
+            'primer',
+            'sequence',
+            'chr',
+            'primer_start',
+            'primer_end',
+            'tm',
+            'gc_percent',
+            'penalty',
+            'self_any_th',
+            'self_end_th',
+            'hairpin_th',
+            'end_stability',
         ]
         self.fs.create_file('/p3_output.csv', contents=','.join(headers))
 
@@ -328,8 +337,22 @@ class TestValidateFiles(TestCase):
         # arrange
         test_arg = '/scoring_output.tsv'
         headers = [
-            'Targeton', 'Primer pair', 'A/B/Total', '0', '1', '2',
-            '3', '4', '5', '6', '7', '8', '9', '10', 'WGE format', 'Score'
+            'Targeton',
+            'Primer pair',
+            'A/B/Total',
+            '0',
+            '1',
+            '2',
+            '3',
+            '4',
+            '5',
+            '6',
+            '7',
+            '8',
+            '9',
+            '10',
+            'WGE format',
+            'Score',
         ]
         self.fs.create_file('/scoring_output.tsv', contents='\t'.join(headers))
 
