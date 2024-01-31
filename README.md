@@ -4,12 +4,31 @@ Standalone primer designer tool.
 
 ## Table of contents
 
-1. [Installation](#installation)
-2. [Usage](#usage)
-3. [File formats](#file-formats)
+- [Installation](#installation)
+  - [Clone Repository](#clone-repository)
+  - [Python Virtual Environment](#python-virtual-environment)
+  - [Exonerate iPCRess](#exonerate-ipcress)
+  - [Git Hooks (for devs)](#git-hooks-for-devs)
+  - [Docker Images](#docker-images)
+- [Usage](#usage)
+  -  []
+- [File formats](#file-formats)
 
 
 ## Installation
+
+### Clone Repository
+Pull down the Targeton Designer repo and cd into it.
+Recursively pull any submodules.
+```sh
+git clone --recurse-submodule https://gitlab.internal.sanger.ac.uk/sci/targeton-designer.git
+cd targeton-designer
+```
+### Python Virtual Environment
+
+Requirements:
+ - Python3.8+
+ - Python-venv
 
 Run
 ```sh
@@ -32,27 +51,11 @@ sudo apt-get update \
 && sudo update-alternatives --config python
 ```
 
-### Python3
-
 Check Python3 (base) and Python (updated) version
 ```sh
 python3 --version
 python --version
 ```
-
-### Clone the repo
-Pull down the Targeton Designer repo and cd into it.
-Recursively pull any submodules.
-```sh
-git clone --recurse-submodule https://gitlab.internal.sanger.ac.uk/sci/targeton-designer.git
-cd targeton-designer
-```
-
-### Python Virtual Environment
-
-Requirements:
- - Python3.8+
- - Python-venv
 
 Setting up Virtual Env:
 ```sh
@@ -76,16 +79,6 @@ cd sge-primer-scoring
 python -m unittest
 
 deactivate
-```
-### Git Hooks (for devs)
-
-Located in  .githooks/
-Follows standard Git hook methodology: https://git-scm.com/docs/githooks
-Currently just "pre-push" that is run on ```git push```
-To run either invoke ```make``` or:
-```sh
-git config core.hooksPath .githooks
-chmod +x .githooks/*
 ```
 
 ### Exonerate iPCRess
@@ -115,6 +108,17 @@ If you happen to get the error: no module found 'apt_pkg', create a symbolic lin
 ```sh
 cd /usr/lib/python3/dist-packages
 sudo ln -s apt_pkg.cpython-{version-number}-x86_64-linux-gnu.so apt_pkg.so
+```
+
+### Git Hooks (for devs)
+
+Located in  .githooks/
+Follows standard Git hook methodology: https://git-scm.com/docs/githooks
+Currently just "pre-push" that is run on ```git push```
+To run either invoke ```make``` or:
+```sh
+git config core.hooksPath .githooks
+chmod +x .githooks/*
 ```
 
 ### Docker images
