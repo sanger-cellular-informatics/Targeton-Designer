@@ -69,11 +69,11 @@ def add_input_args(parser):
     )
     parser.add_argument(
         '--p3_csv',
-        help=('Optional: Point at specific Primer3 output CSV file. ' 'Either primers or p3_csv must be supplied.'),
+        help='Optional: Point at specific Primer3 output CSV file. Either primers or p3_csv must be supplied.',
     )
     parser.add_argument(
         '--score_tsv',
-        help=('input for Primer Designer: point at a scoring TSV file. '),
+        help='input for Primer Designer: point at a scoring TSV file. ',
     )
     parser.add_argument(
         '--ipcress_file',
@@ -81,11 +81,11 @@ def add_input_args(parser):
     )
     parser.add_argument(
         '--targeton_csv',
-        help=('CSV of primer pairs and corresponding targetons' ' - adds targeton column to output'),
+        help='CSV of primer pairs and corresponding targetons - adds targeton column to output',
     )
     parser.add_argument(
         '--primer_json',
-        help=('Primer Designer JSON output used to post primers to Benchling'),
+        help='Primer Designer JSON output used to post primers to Benchling',
     )
 
     # CONFIG
