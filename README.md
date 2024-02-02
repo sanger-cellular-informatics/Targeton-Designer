@@ -1,10 +1,54 @@
-# Targeton Designer
+# Primer Designer
 
-Standalone targeton designer tool.
+Standalone primer designer tool.
 
-[[_TOC_]]
+## Table of contents
+
+- [Installation](#installation)
+  - [Clone Repository](#clone-repository)
+  - [Python Virtual Environment](#python-virtual-environment)
+  - [Exonerate iPCRess](#exonerate-ipcress)
+  - [Git Hooks (for devs)](#git-hooks-for-devs)
+  - [Docker Images](#docker-images)
+  - [Python debugger](#python-debugger)
+- [Usage](#usage)
+    -  [Primer Designer Tool](#primer-designer-tool) 
+        -  [Designer Workflow (Primer3 -> Ipcress -> Scoring)](#designer-workflow-primer3---ipcress---scoring)
+        -  [Primer3 Runner](#primer3-runner)
+        -  [Exonerate iPCRess](#exonerate-ipcress)
+        -  [Primer Scoring](#primer-scoring)
+    -  [Slicer Tool](#slicer-tool)
+    -  [Other Tools](#other-tools)
+        - [Targeton CSV generation](#targeton-csv-generation) 
+        - [Primer data collation and output to csv & Json (for benchling)](#primer-data-collation-and-output-to-csv--json-for-benchling) 
+        - [Post primers to Benchling](#post-primers-to-benchling) 
+- [File formats](#file-formats)
+   - [Genomic Reference file](#genomic-reference-file) 
+   - [Slicer Input BED File](#slicer-input-bed-file) 
+   - [Slicer BED output](#slicer-bed-output) 
+   - [Primer3 and Designer Fasta Input File (Slicer Fasta output)](#primer3-and-designer-fasta-input-file-slicer-fasta-output) 
+   - [Primer3 Output BED file](#primer3-output-bed-file) 
+   - [Primer3 Output CSV file (iPCRess Primer3 CSV Input file)](#primer3-output-csv-file-ipcress-primer3-csv-input-file) 
+   - [Primer Designer Output example](#primer-designer-output-example) 
+   - [iPCRess Standard Input File](#ipcress-standard-input-file) 
+   - [iPCRess Output example](#ipcress-output-example) 
+
 
 ## Installation
+
+### Clone Repository
+Pull down the Targeton Designer repo and cd into it.
+Recursively pull any submodules.
+```sh
+git clone --recurse-submodule https://gitlab.internal.sanger.ac.uk/sci/targeton-designer.git
+cd targeton-designer
+```
+
+### Python Virtual Environment
+
+Requirements:
+ - Python3.8+
+ - Python-venv
 
 Run
 ```sh
@@ -13,7 +57,7 @@ make install
 make setup-venv
 ```
 ```make``` sets up the git hooks that run unittests and pycodestyle on /src and /tests on ```git push```.
-```make install``` installs dependancies below.
+```make install``` installs dependencies below.
 ```make setup-venv``` creates a venv at ./venv and installs requirements.txt(s)
 
 Dependencies:
@@ -27,27 +71,11 @@ sudo apt-get update \
 && sudo update-alternatives --config python
 ```
 
-### Python3
-
 Check Python3 (base) and Python (updated) version
 ```sh
 python3 --version
 python --version
 ```
-
-### Clone the repo
-Pull down the Targeton Designer repo and cd into it.
-Recursively pull any submodules.
-```sh
-git clone --recurse-submodule https://gitlab.internal.sanger.ac.uk/sci/targeton-designer.git
-cd targeton-designer
-```
-
-### Python Virtual Environment
-
-Requirements:
- - Python3.8+
- - Python-venv
 
 Setting up Virtual Env:
 ```sh
@@ -71,16 +99,6 @@ cd sge-primer-scoring
 python -m unittest
 
 deactivate
-```
-### Git Hooks
-
-Located in  .githooks/
-Follows standard Git hook methodology: https://git-scm.com/docs/githooks
-Currently just "pre-push" that is run on ```git push```
-To run either invoke ```make``` or:
-```sh
-git config core.hooksPath .githooks
-chmod +x .githooks/*
 ```
 
 ### Exonerate iPCRess
@@ -112,13 +130,35 @@ cd /usr/lib/python3/dist-packages
 sudo ln -s apt_pkg.cpython-{version-number}-x86_64-linux-gnu.so apt_pkg.so
 ```
 
+### Git Hooks (for devs)
+
+Located in  .githooks/
+Follows standard Git hook methodology: https://git-scm.com/docs/githooks
+Currently just "pre-push" that is run on ```git push```
+To run either invoke ```make``` or:
+```sh
+git config core.hooksPath .githooks
+chmod +x .githooks/*
+```
+
 ### Docker images
 
 Upcoming feature in later releases
 
-## Usage
+### Python debugger
+To debug with a local debugger, insert at the top of the file:
+```
+import sys, os
+os.chdir(r'/home/ubuntu/lims2-webapp-filesystem/user/targeton-designer')
+sys.path.insert(0, '')
+sys.path.insert(0, 'src/')
+```
+This allows src and submodules inside src to be found.
 
-### Command Line
+To debug with vscode, make sure the cwd in the debugger settings are pointed at targeton-designer.
+Additionally, make sure the interpreter is pointed at the correct virtual environment (venv/bin/python).
+
+## Usage
 
 Make designer.sh executable
 ```sh
@@ -130,28 +170,18 @@ Check Designer Version:
 ./designer.sh version
 ```
 
-#### Designer Workflow
+### Primer Designer Tool
+
+#### Designer Workflow (Primer3 -> Ipcress -> Scoring)
 
 Running full Designer Workflow:
 ```sh
-./designer.sh design [-h] [--bed INPUT_BED] [--fasta REF_FASTA]
+./designer.sh design [-h] [--fasta SLICES_FASTA] [--primer3_params PRIMER_CONFIG_JSON]
 ```
 
 Example Command
 ```sh
-./designer.sh design --bed tests/integration/fixtures/bed_example.bed --fasta tests/integration/fixtures/fasta_example.fa
-```
-
-#### Slicer Tool
-
-Running Slicer tool:
-```sh
-./designer.sh slicer [-h] [-f5 FLANK_5] [-f3 FLANK_3] [-l LENGTH] [-o OFFSET] [-d DIR] [--bed INPUT_BED] [--fasta REF_FASTA]
-```
-
-Example command:
-```sh
-./designer.sh slicer --bed example.bed --fasta example_genomic_ref.fa -d example_dir
+./designer.sh design --fasta tests/integration/fixtures/fasta_example.fa
 ```
 
 #### Primer3 Runner
@@ -163,7 +193,7 @@ If there is no config file for primer3, it will run with the default configurati
 
 Running Primer3:
 ```sh
-./designer.sh primer [--fasta INPUT_FASTA] [--dir OUTPUT_FOLDER] 
+./designer.sh primer [--fasta SLICES_FASTA] [--dir OUTPUT_FOLDER] [--primer3_params PRIMER_CONFIG_JSON]
 ```
 The input fasta and BED files are intended to be sourced from the slicer tool. Examples of how these files are constructed can be found below.
 
@@ -187,7 +217,7 @@ or
 ./designer.sh ipcress --dir example_dir --fasta example_genomic_ref.fa --p3_csv example_p3_output.csv
 ```
 
-#### Primer scoring
+#### Primer Scoring
 
 Running primer scoring:
 ```sh
@@ -203,6 +233,20 @@ Example command with targeton csv:
 ./designer.sh scoring --ipcress_file example_ipcress_file.txt --scoring_mismatch 4 --output_tsv example_targeton_output.tsv --targeton_csv example_targetons.csv
 ```
 For more information and example files see the [Primer Scoring repo](https://gitlab.internal.sanger.ac.uk/sci/sge-primer-scoring).
+
+### Slicer Tool
+
+Running Slicer tool:
+```sh
+./designer.sh slicer [-h] [-f5 FLANK_5] [-f3 FLANK_3] [-l LENGTH] [-o OFFSET] [-d DIR] [--bed INPUT_BED] [--fasta REF_FASTA]
+```
+
+Example command:
+```sh
+./designer.sh slicer --bed example.bed --fasta example_genomic_ref.fa -d example_dir
+```
+
+### Other Tools
 
 #### Targeton CSV generation
 
@@ -239,11 +283,8 @@ Example command:
 ```
 A message will be printed if there are less than 3 primer pairs for a particular targeton. Please note some fields on Benchling will have to be updated manually for now.
 
-### Docker
-
-Upcoming feature in later releases
-
 ## File formats
+
 ### Genomic Reference file
 A Fasta file of latest GRCh38 genome. This is used for gathering the slice sequences and retrieving primer information. 
 Either supply a local genome reference file or download one from EnsEMBL and point to it with the relevant parameters:
@@ -254,7 +295,7 @@ We've included a bash script to download the reference genome:
 ./download_reference_genome.sh
 ```
 
-Otherwise you can download it manually here:
+Otherwise, you can download it manually here:
 ```sh
 wget http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
 gunzip Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz 
@@ -263,7 +304,7 @@ gunzip Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
 ### Slicer Input BED File
 A BED file containing the regions you wish to slice across. 
 
-The chromosome column data must match your reference fasta file IDs. If youre reference had >chr1 then you must call chromosome 1 'chr1' in this column and vice-versa.
+The chromosome column data must match your reference fasta file IDs. If your reference had >chr1 then you must call chromosome 1 'chr1' in this column and vice-versa.
 
 Note: BED effectively are applied tsv files so use tabs to separate the values. Headers are optional in BED file and can be a cause of issues if they aren't perfect. Strand is required for the slicer to ensure sequences are output in the correct orientation. Score isn't used but the field must be present for the file format to be read correctly.
 
@@ -300,7 +341,7 @@ Raw file
 1	42931016	42931226	ENSE00003571441_HG6_5	0	-
 ```
 
-### Primer3 Fasta Input File (Slicer Fasta output)
+### Primer3 and Designer Fasta Input File (Slicer Fasta output)
 Contains the slice sequences, with their IDs including an increment, coordinates and strand in the header
 
 ```
@@ -340,7 +381,7 @@ Raw file
 ```
 
 ### Primer3 Output CSV file (iPCRess Primer3 CSV Input file)
-Contains all of the extra information from Primer3 for the individual primers
+It contains all the additional information from Primer3 for the individual primers
 
 | primer | sequence | chr | primer_start | primer_end | tm | gc_percent | penalty | self_any_th | self_end_th | hairpin_th | end_stability |
 | ------ | -------- | --- | ------------ | ---------- | -- | ---------- | ------- | ----------- | ----------- | ---------- | ------------- |
@@ -474,10 +515,9 @@ version,pair,score,targeton,product_size,side,chromosome,chr_start,chr_end,seq,m
 01,exon1_2_LibAmp_3,0.0,exon1,210,right,chr1,243,265,AAGAATTTTCCCCAATGGTTGC,57.98020807087107,40.90909090909091
 ```
 
-
 ### iPCRess Standard Input File
 Standard file format input for iPCRess. If you wish to use iPCRess as a standalone, use this file format.
-Otherwise point iPCRess at the Primer3 output CSV.
+Otherwise, point iPCRess at the Primer3 output CSV.
 Space separated text file containing name, left & right primer, minimum & maximum amplicon lengths.
 
 | name | left | right | min_amplicon_len | max_amplicon_len |
@@ -516,9 +556,9 @@ err: is a .txt error output from ipcress or if it fails early system.run().
 #### Targeton CSV example
 A row for each primer pair and the region it originated from.
 
-| Primer pair | Region |
- ------------ | ------ |
-| exon1_2_LibAmp_0 | exon1 |
+| Primer pair       | Region |
+|-------------------|--------|
+| exon1_2_LibAmp_0 | exon1  |
 
 Raw file
 ```
@@ -527,16 +567,3 @@ exon1_2_LibAmp_1,exon1
 exon1_2_LibAmp_2,exon1
 exon1_2_LibAmp_3,exon1
 ```
-
-### Debugging with python debugger
-To debug with a local debugger, insert at the top of the file:
-```
-import sys, os
-os.chdir(r'/home/ubuntu/lims2-webapp-filesystem/user/targeton-designer')
-sys.path.insert(0, '')
-sys.path.insert(0, 'src/')
-```
-This allows src and submodules inside src to be found.
-
-To debug with vscode, make sure the cwd in the debugger settings are pointed at targeton-designer.
-Additionally make sure the interpreter is pointed at the correct virtual environment (venv/bin/python).
