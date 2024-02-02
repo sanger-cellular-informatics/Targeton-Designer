@@ -176,12 +176,12 @@ Check Designer Version:
 
 Running full Designer Workflow:
 ```sh
-./designer.sh design [-h] [--bed INPUT_BED] [--fasta SLICES_FASTA] [--primer3_params PRIMER_CONFIG_JSON]
+./designer.sh design [-h] [--fasta SLICES_FASTA] [--primer3_params PRIMER_CONFIG_JSON]
 ```
 
 Example Command
 ```sh
-./designer.sh design --bed tests/integration/fixtures/bed_example.bed --fasta tests/integration/fixtures/fasta_example.fa
+./designer.sh design --fasta tests/integration/fixtures/fasta_example.fa
 ```
 
 #### Primer3 Runner
