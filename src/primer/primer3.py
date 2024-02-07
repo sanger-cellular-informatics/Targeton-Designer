@@ -8,9 +8,9 @@ from Bio.Seq import Seq
 
 from utils.exceptions import InvalidConfigError
 from utils.file_system import parse_json
-from utils.parsers import parse_fasta
+from utils.slice_data import parse_fasta
 
-from utils.parsers import SliceData
+from utils.slice_data import SliceData
 
 
 class Primer3:

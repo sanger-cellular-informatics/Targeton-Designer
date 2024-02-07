@@ -6,7 +6,7 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 
 from tests.test_data.primer3_output_data import primer3_output_data
 from primer.primer3 import Primer3
-from utils.parsers import SliceData
+from utils.slice_data import SliceData
 
 
 class TestPrimer3(TestCase):
