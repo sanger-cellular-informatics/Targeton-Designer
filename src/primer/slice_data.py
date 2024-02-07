@@ -2,6 +2,8 @@ import re
 from typing import List
 from Bio import SeqIO
 
+from primer.ensembl import get_seq_from_ensembl_by_coords
+
 
 class SliceData:
     def __init__(self, name: str, start: str, end: str, strand: str, chrom: str, bases: str):
@@ -21,6 +23,17 @@ class SliceData:
             'SEQUENCE_ID': self.name,
             'SEQUENCE_TEMPLATE': self.bases,
         }
+
+    @property
+    def surrounding_region(self) -> str:
+        surrounding_band = 1000
+
+        return get_seq_from_ensembl_by_coords(
+            chromosome=self.chrom,
+            start=int(self.start) - surrounding_band,
+            end=int(self.end) + surrounding_band
+        )
+
 
     @staticmethod
     def parse_fasta(fasta: str) -> List['SliceData']:
