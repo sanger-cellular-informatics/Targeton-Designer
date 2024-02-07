@@ -149,7 +149,7 @@ class TestPrimer3(TestCase):
         }
         # act
 
-        actual = Primer3('/primer3_test_config.json').primer3_design(input)[0].design
+        actual = Primer3('/primer3_test_config.json')._primer3_design(input)[0].design
 
         # assert
         self.assertEqual(actual, expected)
@@ -169,7 +169,7 @@ class TestPrimer3(TestCase):
         expected_primers = {'region1_1_libamp_name_2': 'build_primer_dict'}
 
         # act
-        result = self.primer.locate_primers(input)
+        result = self.primer._locate_primers(input)
 
         # assert
         self.assertEqual(result[0].name, 'slice1')

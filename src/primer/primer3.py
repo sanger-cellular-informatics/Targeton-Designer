@@ -22,15 +22,14 @@ class Primer3:
         slices = SliceData.parse_fasta(fasta)
 
         print('Designing primers')
-        designs = self.primer3_design(slices)
+        designs = self._primer3_design(slices)
 
         print('Naming primers')
-        slices = self.locate_primers(designs)
+        slices_dict = self._locate_primers(designs)
 
-        return slices
+        return slices_dict
 
-
-    def primer3_design(self, slices: List[SliceData]) -> List[SliceData]:
+    def _primer3_design(self, slices: List[SliceData]) -> List[SliceData]:
         config_data = self._get_config_data()
 
         designs = []
@@ -43,7 +42,7 @@ class Primer3:
 
         return slices
 
-    def locate_primers(self, designs: List[SliceData]) -> List[dict]:
+    def _locate_primers(self, designs: List[SliceData]) -> List[dict]:
         slice_designs = []
 
         for slice_data in designs:
