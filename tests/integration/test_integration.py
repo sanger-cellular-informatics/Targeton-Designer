@@ -13,7 +13,7 @@ from cli import (
 )
 from utils.arguments_parser import ParsedInputArguments
 from utils.write_output_files import DesignOutputData, write_targeton_csv
-from utils.slice_data import SliceData
+from primer.slice_data import SliceData
 
 
 class TestSlicerIntegration(TestCase):

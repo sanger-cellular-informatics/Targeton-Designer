@@ -25,7 +25,7 @@ from ipcress.ipcress import Ipcress
 from adapters.primer3_to_ipcress import Primer3ToIpcressAdapter
 from primer_designer import PrimerDesigner
 from post_primer_pairs import post_primer_pairs
-from utils.slice_data import parse_fasta
+from primer.slice_data import parse_fasta
 
 sys.path.append(path.abspath(path.join(path.dirname(__file__), '../sge-primer-scoring/src')))
 from scoring import Scoring
