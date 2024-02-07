@@ -12,7 +12,6 @@ from utils.parsers import parse_fasta
 
 from utils.parsers import SliceData
 
-import pdb
 
 class Primer3:
     def __init__(self, user_config: str = None) -> None:
