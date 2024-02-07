@@ -2,6 +2,7 @@
 import sys
 from os import path
 
+from primer.slice_data import SliceData
 from utils.arguments_parser import ParsedInputArguments
 from utils.validate_files import validate_files
 from utils.write_output_files import (
@@ -25,7 +26,6 @@ from ipcress.ipcress import Ipcress
 from adapters.primer3_to_ipcress import Primer3ToIpcressAdapter
 from primer_designer import PrimerDesigner
 from post_primer_pairs import post_primer_pairs
-from primer.slice_data import parse_fasta
 
 sys.path.append(path.abspath(path.join(path.dirname(__file__), '../sge-primer-scoring/src')))
 from scoring import Scoring
@@ -136,7 +136,7 @@ def design_command(args) -> DesignOutputData:
     validate_files(fasta=args['fasta'])
     
     primer_result = primer_command(fasta=args['fasta'], prefix=args['dir'], config=args['primer3_params'])
-    slices = parse_fasta(args['fasta'])
+    slices = SliceData.parse_fasta(args['fasta'])
     
     output_dir = primer_result.dir
 
