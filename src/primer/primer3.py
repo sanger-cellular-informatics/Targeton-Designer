@@ -12,6 +12,7 @@ from utils.parsers import parse_fasta
 
 from utils.parsers import SliceData
 
+import pdb
 
 class Primer3:
     def __init__(self, user_config: str = None) -> None:
@@ -40,8 +41,7 @@ class Primer3:
         designs = []
         for slice in slices:
             primer3_input = slice.p3_input
-
-            design = primer3.bindings.designPrimers(primer3_input, config_data)
+            design = primer3.bindings.design_primers(primer3_input, config_data)
             slice.design = design
             designs.append(slice)
 
