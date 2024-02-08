@@ -15,7 +15,7 @@ class SliceData:
         self.bases = bases
 
     def __repr__(self):
-        return f'SliceData:  {self.name}, {self.start}, {self.end}, {self.strand}, {self.chrom}, {self.bases}'
+        return f'SliceData({self.name}, {self.start}, {self.end}, {self.strand}, {self.chrom}, {self.bases})'
 
     @property
     def p3_input(self):
