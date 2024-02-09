@@ -8,9 +8,8 @@ from Bio.Seq import Seq
 
 from utils.exceptions import InvalidConfigError
 from utils.file_system import parse_json
-from utils.parsers import parse_fasta
 
-from utils.parsers import SliceData
+from primer.slice_data import SliceData
 
 
 class Primer3:
@@ -20,21 +19,17 @@ class Primer3:
 
     def get_primers(self, fasta: str) -> List[dict]:
         print('Reading Fasta file')
-        design_inputs = self.read_input_fasta(fasta)
+        slices = SliceData.parse_fasta(fasta)
 
         print('Designing primers')
-        designs = self.primer3_design(design_inputs)
+        designs = self._primer3_design(slices)
 
         print('Naming primers')
-        slices = self.locate_primers(designs)
+        slices_dict = self._locate_primers(designs)
 
-        return slices
+        return slices_dict
 
-    def read_input_fasta(self, fasta: str) -> List[SliceData]:
-        return parse_fasta(fasta)
-
-
-    def primer3_design(self, slices: List[SliceData]) -> List[SliceData]:
+    def _primer3_design(self, slices: List[SliceData]) -> List[SliceData]:
         config_data = self._get_config_data()
 
         designs = []
@@ -47,7 +42,7 @@ class Primer3:
 
         return slices
 
-    def locate_primers(self, designs: List[SliceData]) -> List[dict]:
+    def _locate_primers(self, designs: List[SliceData]) -> List[dict]:
         slice_designs = []
 
         for slice_data in designs:
