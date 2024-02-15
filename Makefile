@@ -135,7 +135,8 @@ venv/bin/activate:
 setup-venv: venv/requirements_run
 
 venv/requirements_run: venv/bin/activate requirements.txt 
-	sudo apt-get install python3-setuptools
+	@apt-get install python3-setuptools
+	pip install --upgrade pip
 	python3 -m pip install --upgrade pip setuptools wheel
 	@./venv/bin/pip install -r requirements.txt
 	@./venv/bin/pip install -r sge-primer-scoring/requirements.txt
