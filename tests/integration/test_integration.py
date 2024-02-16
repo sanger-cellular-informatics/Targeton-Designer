@@ -44,17 +44,21 @@ class TestSlicerIntegration(TestCase):
 class TestPrimerIntegration(TestCase):
     def setUp(self):
         self.fasta_file_path = r"./tests/integration/fixtures/slicer_output.fasta"
+        self.config_file_path = r"./tests/primer3_test_config.json"
 
     def test_primer_output(self):
         with TemporaryDirectory() as tmpdir:
             # Arrange
             # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
-            with patch.object(sys, 'argv', ["./designer.sh", "primer", "--fasta", self.fasta_file_path, "--dir", tmpdir]):
+            with patch.object(
+                sys, 'argv',
+                ["./designer.sh", "primer", "--fasta", self.fasta_file_path, "--dir", tmpdir, "--primer3_params", self.config_file_path]
+            ):
                 parsed_input = ParsedInputArguments()
                 args = parsed_input.get_args()
 
                 # Act
-                primer_result = primer_command(fasta=args["fasta"], prefix=args["dir"])
+                primer_result = primer_command(fasta=args["fasta"], prefix=args["dir"], config=args["primer3_params"])
                 path_primer_bed = Path(primer_result.bed)
                 path_primer_csv = Path(primer_result.csv)
 
@@ -184,12 +188,19 @@ class TestScoringIntegration(TestCase):
 class TestTargetonDesignerIntegration(TestCase):
     def setUp(self):
         self.fasta_file_path = r"./tests/integration/fixtures/slicer_output.fasta"
+        self.config_file_path = r"./tests/primer3_test_config.json"
 
     def test_TDOutput(self):
         with TemporaryDirectory() as tmpdir:
             # Arrange
             # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
-            with patch.object(sys, 'argv', ["./designer.sh", "design", "--fasta", self.fasta_file_path, "--dir", tmpdir]):
+            with patch.object(
+                sys, 'argv', [
+                    "./designer.sh", "design",
+                    "--fasta", self.fasta_file_path,
+                    "--dir", tmpdir,
+                    "--primer3_params", self.config_file_path,
+            ]):
                 parsed_input = ParsedInputArguments()
                 args = parsed_input.get_args()
 
