@@ -35,7 +35,7 @@ class TestPrimer3(TestCase):
             "PRIMER_MIN_SIZE": 18,\
             "PRIMER_MAX_SIZE": 23,\
             "P3_FILE_FLAG": 1,\
-            "SEQUENCE_INCLUDED_REGION": [0,212],\
+            "SEQUENCE_INCLUDED_REGION": [0,200],\
             "PRIMER_EXPLAIN_FLAG": 1\
         }')
 
@@ -160,6 +160,10 @@ class TestPrimer3(TestCase):
         )]
 
         expected = {
+            'PRIMER_INTERNAL': [],
+            'PRIMER_LEFT': [],
+            'PRIMER_RIGHT': [],
+            'PRIMER_PAIR': [],
             'PRIMER_LEFT_EXPLAIN': 'considered 6, low tm 4, ok 2',
             'PRIMER_RIGHT_EXPLAIN': 'considered 6, high tm 6, ok 0',
             'PRIMER_PAIR_EXPLAIN': 'considered 0, ok 0',
@@ -170,7 +174,7 @@ class TestPrimer3(TestCase):
         }
         # act
 
-        actual = Primer3('/primer3_test_config.json').primer3_design(input)[0].design
+        actual = Primer3('primer3_test_config.json').primer3_design(input)[0].design
 
         # assert
         self.assertEqual(actual, expected)
