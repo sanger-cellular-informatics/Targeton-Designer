@@ -202,6 +202,11 @@ Example command:
 ./designer.sh primer --fasta slices.fa --dir p3_output
 ```
 
+To use kmer lists for primer generation: 
+1. Set config parameters (example config/primer3_kmer.config.json)
+2. Provide 2 files with kmers: homo_sapiens_11.list and homo_sapiens_16.list
+ 
+
 #### Exonerate iPCRess
 
 Running Exonerate iPCRess:
