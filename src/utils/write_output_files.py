@@ -3,14 +3,14 @@ from __future__ import annotations
 import csv
 import re
 
-from typing import TYPE_CHECKING, Any, List, Union
+from typing import TYPE_CHECKING, List, Union
 from os import path
 from pathlib import Path
 from dataclasses import dataclass
 from pybedtools import BedTool
 from utils.file_system import write_to_text_file, FolderCreator
 from utils.exceptions import OutputError, FolderCreatorError, FileTypeError
-from utils.parsers import SliceData
+from primer.slice_data import SliceData
 if TYPE_CHECKING:  # For avoiding circular import dependencies, only import for type checking.
     from src.primer_designer import PrimerDesigner
     from src.cli import Scoring

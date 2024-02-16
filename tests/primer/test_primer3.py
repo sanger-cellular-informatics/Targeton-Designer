@@ -1,12 +1,11 @@
 import unittest
-import json
 
 from unittest.mock import patch
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from tests.test_data.primer3_output_data import primer3_output_data
 from primer.primer3 import Primer3
-from utils.parsers import SliceData
+from primer.slice_data import SliceData
 
 
 class TestPrimer3(TestCase):
@@ -127,26 +126,6 @@ class TestPrimer3(TestCase):
         # assert
         self.assertEqual(actual['id'], expected)
 
-    def test_read_input_fasta_valid_success(self):
-        # arrange
-        self.create_files()
-        fasta = '/fasta.fa'
-        expected = [SliceData('region1_1', '5', '10', '+', 'chr1',
-                'GTGATCGAGGAGTTCTACAACCAGACATGGGTCCACCGCTATGGGGAGAGCATCCTGCCCACCACGCT'
-                'CACCACGCTCTGGTCCCTCTCAGTGGCCATCTTTTCTGTTGGGGGCATGATTGGCTCCTTCTCTGTGG'
-                'GCCTTTTCGTTAACCGCTTTGGCCGGTAAGTAGGAGAGGTCCTGGCACTGCCCTTGGAGGGCCCATGC'
-                'CCTCCT'
-        )]
-
-        # act
-        actual = self.primer.read_input_fasta(fasta)
-
-        # assert
-        self.assertEqual(actual[0].name, expected[0].name)
-        self.assertEqual(actual[0].start, expected[0].start)
-        self.assertEqual(actual[0].end, expected[0].end)
-        self.assertEqual(actual[0].strand, expected[0].strand)
-        self.assertEqual(actual[0].bases, expected[0].bases)
 
     def test_primer3_design_valid_success(self):
         # arrange
@@ -174,7 +153,7 @@ class TestPrimer3(TestCase):
         }
         # act
 
-        actual = Primer3('primer3_test_config.json').primer3_design(input)[0].design
+        actual = Primer3('/primer3_test_config.json')._primer3_design(input)[0].design
 
         # assert
         self.assertEqual(actual, expected)
@@ -194,7 +173,7 @@ class TestPrimer3(TestCase):
         expected_primers = {'region1_1_libamp_name_2': 'build_primer_dict'}
 
         # act
-        result = self.primer.locate_primers(input)
+        result = self.primer._locate_primers(input)
 
         # assert
         self.assertEqual(result[0].name, 'slice1')

@@ -9,8 +9,7 @@ from freezegun import freeze_time
 
 from src.utils.write_output_files import write_scoring_output, write_targeton_csv
 from src.utils import write_output_files
-from src.utils.file_system import read_csv_to_list_dict
-from src.utils.parsers import SliceData
+from primer.slice_data import SliceData
 
 
 class TestWriteOutputFiles(TestCase):
