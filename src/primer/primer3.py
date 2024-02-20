@@ -25,8 +25,6 @@ class Primer3:
         print('Designing primers')
         designs = self._primer3_run(slices)
 
-        print("DESIGNS::::", designs)
-
         print('Naming primers')
         slices_dict = self._locate_primers(designs)
 
@@ -50,25 +48,23 @@ class Primer3:
         for slice in slices:
             primer3_input = slice.p3_input
             design = primer3.bindings.design_primers(primer3_input, config)
-            slice.design = design
+            slice.designs.append(design)
             designs.append(slice)
-
-            print("DESIGN:::", design)
 
         return designs
 
-    def _locate_primers(self, designs: List[SliceData]) -> List[dict]:
+    def _locate_primers(self, slices: List[SliceData]) -> List[dict]:
         slice_designs = []
 
-        for slice_data in designs:
-            design = slice_data.design
-            primer_keys = design.keys()
+        for slice_data in slices:
+            for design in slice_data.designs:
+                primer_keys = design.keys()
 
-            primers = self._build_primers_dict(design, primer_keys, slice_data)
+                primers = self._build_primers_dict(design, primer_keys, slice_data)
 
-            del slice_data.design
-            slice_data.primers = primers
-            slice_designs.append(slice_data)
+                slice_data.primers = primers
+                slice_designs.append(slice_data)
+            del slice_data.designs
 
         return slice_designs
 
@@ -83,8 +79,11 @@ class Primer3:
                 primer_name = slice_data.name + "_" + libamp_name + "_" + primer_details['pair']
 
                 primers[primer_name] = self._build_primer_loci(
-                    primers[primer_name], key, design,
-                    primer_details, slice_data
+                    primers[primer_name],
+                    key,
+                    design,
+                    primer_details,
+                    slice_data
                 )
 
         return primers

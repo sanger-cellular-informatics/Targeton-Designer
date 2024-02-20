@@ -152,9 +152,9 @@ def construct_csv_format(slices: List[SliceData]) -> list:
             primers[primer]['primer'] = primer
             primers[primer]['chr'] = slice_data.chrom
 
-            del primers[primer]['coords']
-            del primers[primer]['side']
-            del primers[primer]['strand']
+            primers[primer].pop('coords', '')
+            primers[primer].pop('side', '')
+            primers[primer].pop('strand', '')
 
             rows.append(primers[primer])
 
