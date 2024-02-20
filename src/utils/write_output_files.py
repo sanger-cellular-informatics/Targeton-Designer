@@ -3,6 +3,8 @@ from __future__ import annotations
 import csv
 import re
 
+import pandas as pd
+
 from typing import TYPE_CHECKING, List, Union
 from os import path
 from pathlib import Path
@@ -113,12 +115,12 @@ def write_slicer_fasta_output(export_dir: str, slices: List[dict]) -> str:
 def export_primers_to_csv(slices: List[dict], export_dir: str) -> str:
     PRIMER3_OUTPUT_CSV = 'p3_output.csv'
 
-    headers = ['primer', 'sequence', 'chr', 'primer_start', 'primer_end', 'tm', 'gc_percent',
-               'penalty', 'self_any_th', 'self_end_th', 'hairpin_th', 'end_stability']
     rows = construct_csv_format(slices)
 
-    csv_path = export_to_csv(rows, export_dir, PRIMER3_OUTPUT_CSV, headers, delimiter=',')
-    return csv_path
+    full_path = path.join(export_dir, PRIMER3_OUTPUT_CSV)
+    rows.to_csv(full_path, index=True, index_label="primer")
+
+    return full_path
 
 
 def export_to_csv(
@@ -144,7 +146,7 @@ def export_to_csv(
 
 
 def construct_csv_format(slices: List[SliceData]) -> list:
-    rows = []
+    rows = pd.DataFrame()
 
     for slice_data in slices:
         primers = slice_data.primers
@@ -156,9 +158,10 @@ def construct_csv_format(slices: List[SliceData]) -> list:
             primers[primer].pop('side', '')
             primers[primer].pop('strand', '')
 
-            rows.append(primers[primer])
+            primer_df = pd.DataFrame(primers[primer], [primer])
+            rows = pd.concat([rows, primer_df])
 
-    return rows
+    return rows.drop_duplicates()
 
 
 def construct_bed_format(slices: List[SliceData]) -> list:
