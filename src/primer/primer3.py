@@ -10,6 +10,7 @@ from utils.exceptions import InvalidConfigError
 from utils.file_system import parse_json
 
 from primer.slice_data import SliceData
+from primer.primer3_prepare_config import prepare_config
 
 
 class Primer3:
@@ -22,24 +23,39 @@ class Primer3:
         slices = SliceData.parse_fasta(fasta)
 
         print('Designing primers')
-        designs = self._primer3_design(slices)
+        designs = self._primer3_run(slices)
+
+        print("DESIGNS::::", designs)
 
         print('Naming primers')
         slices_dict = self._locate_primers(designs)
 
         return slices_dict
 
-    def _primer3_design(self, slices: List[SliceData]) -> List[SliceData]:
-        config_data = self._get_config_data()
+    def _primer3_run(self, slices: List[SliceData]) -> List[SliceData]:
+        STRINGENCY_VECTOR = ["0.1", "0.25", "0.5", "0.75", "1.0"]
 
+        base_config = self._get_config_data()
+
+        for stringency in STRINGENCY_VECTOR:
+            config_data = prepare_config(base_config, stringency)
+
+            print(config_data)
+            result = self._primer3_design(slices, config_data)
+
+        return result
+
+    def _primer3_design(self, slices: List[SliceData], config: dict) -> List[SliceData]:
         designs = []
         for slice in slices:
             primer3_input = slice.p3_input
-            design = primer3.bindings.design_primers(primer3_input, config_data)
+            design = primer3.bindings.design_primers(primer3_input, config)
             slice.design = design
             designs.append(slice)
 
-        return slices
+            print("DESIGN:::", design)
+
+        return designs
 
     def _locate_primers(self, designs: List[SliceData]) -> List[dict]:
         slice_designs = []
