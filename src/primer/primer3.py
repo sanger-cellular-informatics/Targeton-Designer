@@ -48,6 +48,10 @@ class Primer3:
         for slice in slices:
             primer3_input = slice.p3_input
             design = primer3.bindings.design_primers(primer3_input, config)
+
+            stringency = config["PRIMER_MASK_FAILURE_RATE"]
+            design["stringency"] = stringency
+
             slice.designs.append(design)
             designs.append(slice)
 
@@ -60,7 +64,7 @@ class Primer3:
             for design in slice_data.designs:
                 primer_keys = design.keys()
 
-                primers = self._build_primers_dict(design, primer_keys, slice_data)
+                primers = self._build_primers_dict(design, primer_keys, slice_data, design['stringency'])
 
                 slice_data.primers = primers
                 slice_designs.append(slice_data)
@@ -68,7 +72,13 @@ class Primer3:
 
         return slice_designs
 
-    def _build_primers_dict(self, design, primer_keys: dict_keys, slice_data: dict) -> defaultdict(dict):
+    def _build_primers_dict(
+            self,
+            design,
+            primer_keys: dict_keys,
+            slice_data: dict,
+            stringency: str,
+    ) -> defaultdict(dict):
         primers = defaultdict(dict)
 
         for key in primer_keys:
@@ -76,26 +86,34 @@ class Primer3:
 
             if primer_details:
                 libamp_name = self.name_primers(primer_details, slice_data.strand)
-                primer_name = slice_data.name + "_" + libamp_name + "_" + primer_details['pair']
+                primer_name = slice_data.name + "_" + libamp_name + "_" + primer_details['pair'] + "_str" + stringency
 
                 primers[primer_name] = self._build_primer_loci(
                     primers[primer_name],
                     key,
                     design,
                     primer_details,
-                    slice_data
+                    slice_data,
+                    stringency,
                 )
 
         return primers
 
     def _build_primer_loci(
-        self, primer, key, design, primer_details, slice_data: SliceData
+        self,
+        primer,
+        key,
+        design,
+        primer_details,
+        slice_data: SliceData,
+        stringency: str,
     ) -> dict:
 
         primer_field = primer_details['field']
 
         primer[primer_field] = design[key]
         primer['side'] = primer_details['side']
+        primer['stringency'] = stringency
 
         if primer_field == 'coords':
             primer_coords = self.calculate_primer_coords(
