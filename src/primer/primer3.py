@@ -50,7 +50,10 @@ class Primer3:
             primer3_input = slice.p3_input
             design = primer3.bindings.design_primers(primer3_input, config)
 
-            stringency = config["PRIMER_MASK_FAILURE_RATE"]
+            stringency = ""
+            if "PRIMER_MASK_FAILURE_RATE" in config:
+                stringency = config["PRIMER_MASK_FAILURE_RATE"]
+
             design["stringency"] = stringency
 
             slice.designs.append(design)
@@ -127,7 +130,9 @@ class Primer3:
         primer[primer_field] = design[key]
         
         primer['side'] = primer_details['side']
-        primer['stringency'] = stringency
+
+        if stringency is not "":
+            primer['stringency'] = stringency
         primer['pair_id'] = primer_pair_id
 
         if primer_field == 'coords':
