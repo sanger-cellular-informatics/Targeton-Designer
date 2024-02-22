@@ -118,7 +118,7 @@ def export_primers_to_csv(slices: List[dict], export_dir: str) -> str:
     rows = construct_csv_format(slices)
 
     full_path = path.join(export_dir, PRIMER3_OUTPUT_CSV)
-    rows.to_csv(full_path, index=True, index_label="primer")
+    rows.to_csv(full_path, index=False)
 
     return full_path
 
@@ -151,7 +151,7 @@ def construct_csv_format(slices: List[SliceData]) -> list:
     for slice_data in slices:
         primers = slice_data.primers
         for primer in primers:
-            primers[primer]['primer'] = primer
+           # primers[primer]['primer'] = primer
             primers[primer]['chr'] = slice_data.chrom
 
             primers[primer].pop('coords', '')
