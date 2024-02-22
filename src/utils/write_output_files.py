@@ -3,75 +3,19 @@ from __future__ import annotations
 import csv
 import re
 
-import pandas as pd
-
 from typing import TYPE_CHECKING, List, Union
 from os import path
 from pathlib import Path
-from dataclasses import dataclass
+
 from pybedtools import BedTool
 from utils.file_system import write_to_text_file, FolderCreator
 from utils.exceptions import OutputError, FolderCreatorError, FileTypeError
 from primer.slice_data import SliceData
+from designer.output_data_classes import SlicerOutputData, IpcressOutputData
+
 if TYPE_CHECKING:  # For avoiding circular import dependencies, only import for type checking.
     from src.primer_designer import PrimerDesigner
     from src.cli import Scoring
-
-
-@dataclass
-class OutputFilesData:
-    dir: str
-
-    def fields(self):
-        return list(self.__dataclass_fields__.keys())
-
-
-@dataclass
-class SlicerOutputData(OutputFilesData):
-    bed: str = ''
-    fasta: str = ''
-
-
-@dataclass
-class PrimerOutputData(OutputFilesData):
-    bed: str = ''
-    csv: str = ''
-
-
-@dataclass
-class PrimerDesignerOutputData(OutputFilesData):
-    csv: str = ''
-    json: str = ''
-
-
-@dataclass
-class IpcressOutputData(OutputFilesData):
-    input_file: str = ''
-    stnd: str = ''
-    err: str = ''
-
-
-@dataclass
-class TargetonCSVData(OutputFilesData):
-    csv: str = ''
-
-
-@dataclass
-class ScoringOutputData(OutputFilesData):
-    tsv: str = ''
-
-
-@dataclass
-class DesignOutputData(OutputFilesData):
-    p3_bed: str = ''
-    p3_csv: str = ''
-    pd_csv: str = ''
-    pd_json: str = ''
-    ipcress_input: str = ''
-    ipcress_output: str = ''
-    ipcress_err: str = ''
-    targeton_csv: str = ''
-    scoring_tsv: str = ''
 
 
 def timestamped_dir(prefix):
@@ -112,25 +56,18 @@ def write_slicer_fasta_output(export_dir: str, slices: List[dict]) -> str:
     return fasta_path
 
 
-def export_primers_to_csv(slices: List[dict], export_dir: str) -> str:
-    PRIMER3_OUTPUT_CSV = 'p3_output.csv'
+def export_to_bed(bed_rows: list, export_dir: str) -> str:
+    PRIMER_OUTPUT_BED = 'p3_output.bed'
 
-    rows = construct_csv_format(slices)
+    p3_bed = BedTool(bed_rows)
+    bed_path = path.join(export_dir, PRIMER_OUTPUT_BED)
+    p3_bed.saveas(bed_path)
 
-    full_path = path.join(export_dir, PRIMER3_OUTPUT_CSV)
-    rows.to_csv(full_path, index=False)
-
-    return full_path
+    return bed_path
 
 
-def export_to_csv(
-    data: Union[list, dict],
-    export_dir: str, 
-    filename: str, 
-    headers: List[str],
-    delimiter: str = ','
-    ) -> str:
-    
+def export_to_csv(data: Union[list, dict], export_dir: str, filename: str,
+        headers: List[str], delimiter: str = ',') -> str:
     kwargs = {'delimiter': delimiter, 'fieldnames': headers}
     csv_path = Path(export_dir) / filename
 
@@ -143,79 +80,6 @@ def export_to_csv(
             output_writer.writerows(data)
 
     return csv_path
-
-
-def construct_csv_format(slices: List[SliceData]) -> list:
-    rows = pd.DataFrame()
-
-    for slice_data in slices:
-        primers = slice_data.primers
-        for primer in primers:
-           # primers[primer]['primer'] = primer
-            primers[primer]['chr'] = slice_data.chrom
-
-            primers[primer].pop('coords', '')
-            primers[primer].pop('side', '')
-            primers[primer].pop('strand', '')
-
-            primer_df = pd.DataFrame(primers[primer], [primer])
-            rows = pd.concat([rows, primer_df])
-
-    return rows.drop_duplicates()
-
-
-def construct_bed_format(slices: List[SliceData]) -> list:
-    rows = []
-    for slice_data in slices:
-        primers = slice_data.primers
-        for primer in primers:
-            primer_data = primers[primer]
-            # chr,chrStart,chrEnd,name,score,strand
-            # Score unknown until iPCRess
-            row = [
-                slice_data.chrom,
-                primer_data['primer_start'],
-                primer_data['primer_end'],
-                primer,
-                '0',
-                primer_data['strand']
-            ]
-            rows.append(row)
-    return rows
-
-
-def export_to_bed(bed_rows: list, export_dir: str) -> str:
-    PRIMER_OUTPUT_BED = 'p3_output.bed'
-
-    p3_bed = BedTool(bed_rows)
-    bed_path = path.join(export_dir, PRIMER_OUTPUT_BED)
-    p3_bed.saveas(bed_path)
-
-    return bed_path
-
-
-def write_primer_output(
-    prefix='',
-    primers=[],
-    existing_dir='',
-) -> PrimerOutputData:
-
-    if existing_dir:
-        export_dir = existing_dir
-    else:
-        export_dir = timestamped_dir(prefix)
-
-    result = PrimerOutputData(export_dir)
-
-    bed_rows = construct_bed_format(primers)
-
-    result.bed = export_to_bed(bed_rows, export_dir)
-    result.csv = export_primers_to_csv(primers, export_dir)
-    result.dir = export_dir
-
-    print('Primer files saved:', result.bed, result.csv)
-
-    return result
 
 
 def write_ipcress_input(export_dir, formatted_primers) -> str:

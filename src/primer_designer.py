@@ -7,7 +7,7 @@ import json
 import numpy as np
 from utils.file_system import read_csv_to_list_dict
 from utils.exceptions import InputTypeError
-from utils.write_output_files import DesignOutputData
+from designer.output_data_classes import DesignOutputData
 
 VERSION = '01'
 
