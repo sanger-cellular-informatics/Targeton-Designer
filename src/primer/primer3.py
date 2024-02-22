@@ -31,7 +31,8 @@ class Primer3:
         return slices_dict
 
     def _primer3_run(self, slices: List[SliceData]) -> List[SliceData]:
-        STRINGENCY_VECTOR = ["0.1", "0.25", "0.5", "0.75", "1.0"]
+       # STRINGENCY_VECTOR = ["0.1", "0.25", "0.5", "0.75", "1.0"]
+        STRINGENCY_VECTOR = ["0.1", "1.0"]
 
         base_config = self._get_config_data()
 
@@ -61,13 +62,17 @@ class Primer3:
         slice_designs = []
 
         for slice_data in slices:
+            slice_data.primers = {}
             for design in slice_data.designs:
+
                 primer_keys = design.keys()
 
                 primers = self._build_primers_dict(design, primer_keys, slice_data, design['stringency'])
 
-                slice_data.primers = primers
-                slice_designs.append(slice_data)
+                for primer in primers:
+                    slice_data.primers[primer] = primers[primer]
+                    slice_designs.append(slice_data)
+
             del slice_data.designs
 
         return slice_designs
@@ -86,15 +91,20 @@ class Primer3:
 
             if primer_details:
                 libamp_name = self.name_primers(primer_details, slice_data.strand)
-                primer_name = slice_data.name + "_" + libamp_name + "_" + primer_details['pair'] + "_str" + stringency
+                primer_name = slice_data.name + "_" + libamp_name + "_" + primer_details['pair']
 
-                primers[primer_name] = self._build_primer_loci(
-                    primers[primer_name],
+                primer_name_with_stringency = primer_name + "_str" + stringency.replace(".", "_")
+                primer_pair_id = slice_data.name + "_" + primer_details['pair'] + "_str" + stringency.replace(".", "_")
+
+                primers[primer_name_with_stringency] = self._build_primer_loci(
+                    primers[primer_name_with_stringency],
                     key,
                     design,
                     primer_details,
                     slice_data,
                     stringency,
+                    primer_name,
+                    primer_pair_id,
                 )
 
         return primers
@@ -107,13 +117,18 @@ class Primer3:
         primer_details,
         slice_data: SliceData,
         stringency: str,
+        primer_name: str,
+        primer_pair_id: str,
     ) -> dict:
 
         primer_field = primer_details['field']
 
+        primer['name'] = primer_name
         primer[primer_field] = design[key]
+        
         primer['side'] = primer_details['side']
         primer['stringency'] = stringency
+        primer['pair_id'] = primer_pair_id
 
         if primer_field == 'coords':
             primer_coords = self.calculate_primer_coords(
