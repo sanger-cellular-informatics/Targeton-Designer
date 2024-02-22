@@ -12,7 +12,8 @@ from cli import (
     collate_primer_designer_data_command
 )
 from utils.arguments_parser import ParsedInputArguments
-from utils.write_output_files import DesignOutputData, write_targeton_csv
+from utils.write_output_files import write_targeton_csv
+from designer.output_data_classes import DesignOutputData, PrimerDesignerOutputData, ScoringOutputData
 from primer.slice_data import SliceData
 
 

@@ -85,7 +85,7 @@ class Primer3:
             design,
             primer_keys: dict_keys,
             slice_data: dict,
-            stringency: str,
+            stringency: str = "",
     ) -> defaultdict(dict):
         primers = defaultdict(dict)
 
@@ -105,9 +105,9 @@ class Primer3:
                     design,
                     primer_details,
                     slice_data,
-                    stringency,
                     primer_name,
                     primer_pair_id,
+                    stringency,
                 )
 
         return primers
@@ -119,9 +119,9 @@ class Primer3:
         design,
         primer_details,
         slice_data: SliceData,
-        stringency: str,
         primer_name: str,
         primer_pair_id: str,
+        stringency: str = "",
     ) -> dict:
 
         primer_field = primer_details['field']
@@ -131,7 +131,7 @@ class Primer3:
         
         primer['side'] = primer_details['side']
 
-        if stringency is not "":
+        if stringency != "":
             primer['stringency'] = stringency
         primer['pair_id'] = primer_pair_id
 

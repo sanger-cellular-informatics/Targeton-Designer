@@ -11,7 +11,14 @@ from pybedtools import BedTool
 from utils.file_system import write_to_text_file, FolderCreator
 from utils.exceptions import OutputError, FolderCreatorError, FileTypeError
 from primer.slice_data import SliceData
-from designer.output_data_classes import SlicerOutputData, IpcressOutputData
+from designer.output_data_classes import (
+    SlicerOutputData,
+    IpcressOutputData,
+    TargetonCSVData,
+    ScoringOutputData,
+    PrimerDesignerOutputData,
+    DesignOutputData,
+)
 
 if TYPE_CHECKING:  # For avoiding circular import dependencies, only import for type checking.
     from src.primer_designer import PrimerDesigner
