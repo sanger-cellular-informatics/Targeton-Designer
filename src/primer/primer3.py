@@ -36,10 +36,12 @@ class Primer3:
 
         base_config = self._get_config_data()
 
-        for stringency in STRINGENCY_VECTOR:
-            config_data = prepare_config(base_config, stringency)
+        vector = STRINGENCY_VECTOR
+        if base_config.get('PRIMER_MASK_FAILURE_RATE') is None:
+            vector = [""]
 
-            print(config_data)
+        for stringency in vector:
+            config_data = prepare_config(base_config, stringency)
             result = self._primer3_design(slices, config_data)
 
         return result

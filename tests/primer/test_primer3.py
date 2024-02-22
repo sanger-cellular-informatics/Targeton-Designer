@@ -3,6 +3,7 @@ import unittest
 from unittest.mock import patch
 from pyfakefs.fake_filesystem_unittest import TestCase
 
+from collections import defaultdict
 from tests.test_data.primer3_output_data import primer3_output_data
 from primer.primer3 import Primer3
 from primer.slice_data import SliceData
@@ -127,7 +128,7 @@ class TestPrimer3(TestCase):
         self.assertEqual(actual['id'], expected)
 
 
-    def test_primer3_design_valid_success(self):
+    def test_primer3_run_valid_success(self):
         # arrange
         self.create_files()
 
@@ -138,7 +139,7 @@ class TestPrimer3(TestCase):
             'CCTCCT'
         )]
 
-        expected = {
+        expected = [{
             'PRIMER_INTERNAL': [],
             'PRIMER_LEFT': [],
             'PRIMER_RIGHT': [],
@@ -149,11 +150,11 @@ class TestPrimer3(TestCase):
             'PRIMER_LEFT_NUM_RETURNED': 0,
             'PRIMER_RIGHT_NUM_RETURNED': 0,
             'PRIMER_INTERNAL_NUM_RETURNED': 0,
-            'PRIMER_PAIR_NUM_RETURNED': 0
-        }
+            'PRIMER_PAIR_NUM_RETURNED': 0,
+            'stringency': ''
+        }]
         # act
-
-        actual = Primer3('/primer3_test_config.json')._primer3_design(input)[0].design
+        actual = Primer3('/primer3_test_config.json')._primer3_run(input)[0].designs
 
         # assert
         self.assertEqual(actual, expected)
@@ -192,7 +193,7 @@ class TestPrimer3(TestCase):
         details_mock.return_value = {'pair': '2'}
         name_mock.return_value = 'libamp_name'
         loci_mock.return_value = 'build_primer_dict'
-        expected = {'slice_name_libamp_name_2': 'build_primer_dict'}
+        expected = defaultdict({'slice_name_libamp_name_2': 'build_primer_dict'})
         input_design = 'design'
         input_primer_keys = {'key_1': 'value'}
 
@@ -272,11 +273,16 @@ class TestPrimer3(TestCase):
         input_key = 'design_key'
         input_design = {'design_key': 'primer_sequence'}
         input_primer_details = {'field': 'sequence', 'side': 'primer_side'}
+        primer_name = 'name'
+        primer_pair_id = 'id'
 
-        expected = {}
-        expected['sequence'] = 'primer_sequence'
-        expected['side'] = 'primer_side'
-        expected['penalty'] = 1
+        expected = {
+            'penalty': 1,
+            'side': 'primer_side',
+            'name': 'name',
+            'sequence': 'primer_sequence',
+            'pair_id': 'id',
+        }
 
         # act
         actual = self.primer._build_primer_loci(
@@ -284,7 +290,9 @@ class TestPrimer3(TestCase):
             input_key,
             input_design,
             input_primer_details,
-            self.input_slice_data
+            self.input_slice_data,
+            primer_name,
+            primer_pair_id,
         )
 
         # assert
