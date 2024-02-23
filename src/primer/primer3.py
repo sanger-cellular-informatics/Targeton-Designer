@@ -128,7 +128,7 @@ class Primer3:
 
         primer_field = primer_details['field']
 
-        primer['name'] = primer_name
+        primer['primer'] = primer_name
         primer[primer_field] = design[key]
         
         primer['side'] = primer_details['side']

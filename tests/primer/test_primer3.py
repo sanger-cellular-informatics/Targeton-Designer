@@ -239,7 +239,7 @@ class TestPrimer3(TestCase):
         input_id = 'id'
 
         expected = {'coords': 'design_value',
-            'name': 'name',
+            'primer': 'name',
             'pair_id': 'id',
             'penalty': 1,
             'primer_end': '250',
@@ -289,7 +289,7 @@ class TestPrimer3(TestCase):
         expected = {
             'penalty': 1,
             'side': 'primer_side',
-            'name': 'name',
+            'primer': 'name',
             'sequence': 'primer_sequence',
             'pair_id': 'id',
         }
