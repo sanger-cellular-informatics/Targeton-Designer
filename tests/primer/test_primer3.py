@@ -165,9 +165,9 @@ class TestPrimer3(TestCase):
         dict_mock.return_value = {'region1_1_libamp_name_2': 'build_primer_dict'}
 
         slice1 = SliceData('slice1', 'start', 'end', 'strand', 'chrom', 'bases')
-        slice1.design =  {'design_key': 'design_val'}
+        slice1.designs =  [{'design_key': 'design_val', 'stringency': '0.1'}]
         slice2 = SliceData('slice2', 'start', 'end', 'strand', 'chrom', 'bases')
-        slice2.design = {'design_key': 'design_val'}
+        slice2.designs = [{'design_key': 'design_val', 'stringency': '0.1'}]
 
         input = [slice1, slice2]
 
@@ -193,7 +193,10 @@ class TestPrimer3(TestCase):
         details_mock.return_value = {'pair': '2'}
         name_mock.return_value = 'libamp_name'
         loci_mock.return_value = 'build_primer_dict'
-        expected = defaultdict({'slice_name_libamp_name_2': 'build_primer_dict'})
+
+        expected = defaultdict(dict)
+        expected['slice_name_libamp_name_2_str'] = 'build_primer_dict'
+
         input_design = 'design'
         input_primer_keys = {'key_1': 'value'}
 
@@ -232,15 +235,19 @@ class TestPrimer3(TestCase):
         input_key = 'design_key'
         input_design = {'design_key': 'design_value'}
         input_primer_details = {'field': 'coords', 'side': 'primer_side'}
+        input_name = 'name'
+        input_id = 'id'
 
-        expected = {}
-        expected['coords'] = 'design_value'
-        expected['side'] = 'primer_side'
-        expected['primer_start'] = '100'
-        expected['primer_end'] = '250'
-        expected['strand'] = 'primer_side_+'
-        expected['sequence'] = 'primer_seq'
-        expected['penalty'] = 1
+        expected = {'coords': 'design_value',
+            'name': 'name',
+            'pair_id': 'id',
+            'penalty': 1,
+            'primer_end': '250',
+            'primer_start': '100',
+            'sequence': 'primer_seq',
+            'side': 'primer_side',
+            'strand': 'primer_side_+',
+        }
 
         coords_mock.return_value = ['100', '250']
         strands_mock.return_value = 'primer_side_+'
@@ -252,7 +259,9 @@ class TestPrimer3(TestCase):
             input_key,
             input_design,
             input_primer_details,
-            self.input_slice_data
+            self.input_slice_data,
+            input_name,
+            input_id,
         )
 
         # assert
@@ -261,6 +270,7 @@ class TestPrimer3(TestCase):
             f"{coords_mock.call_args}",
             "call('primer_side', 'design_value', 'slice_start')"
         )
+
         self.assertEqual(
             f"{strands_mock.call_args}", "call('primer_side', '+')"
         )
