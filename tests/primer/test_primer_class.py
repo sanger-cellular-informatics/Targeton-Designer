@@ -1,4 +1,5 @@
 from pyfakefs.fake_filesystem_unittest import TestCase
+from parameterized import parameterized
 from unittest.mock import patch
 
 from collections import defaultdict
@@ -16,46 +17,15 @@ from primer.primer_class import \
 
 
 class TestPrimerClassNamePrimers(TestCase):
-    def test_name_primers_left_fwd_success(self):
-        # arrange
-        test_input = {'side': 'left'}
-        expected = 'LibAmpF'
-
+    @parameterized.expand([
+        ({'side': 'left'}, '+', 'LibAmpF'),
+        ({'side': 'left'}, '-', 'LibAmpR'),
+        ({'side': 'right'}, '+', 'LibAmpR'),
+        ({'side': 'right'}, '-', 'LibAmpF'),
+    ])
+    def test_name_primers(self, test_input, strand, expected):
         # act
-        actual = name_primers(test_input, '+')
-
-        # assert
-        self.assertEqual(actual, expected)
-
-    def test_name_primers_left_rev_success(self):
-        # arrange
-        test_input = {'side': 'left'}
-        expected = 'LibAmpR'
-
-        # act
-        actual = name_primers(test_input, '-')
-
-        # assert
-        self.assertEqual(actual, expected)
-
-    def test_name_primers_right_fwd_success(self):
-        # arrange
-        test_input = {'side': 'right'}
-        expected = 'LibAmpR'
-
-        # act
-        actual = name_primers(test_input, '+')
-
-        # assert
-        self.assertEqual(actual, expected)
-
-    def test_name_primers_right_rev_success(self):
-        # arrange
-        test_input = {'side': 'right'}
-        expected = 'LibAmpF'
-
-        # act
-        actual = name_primers(test_input, '-')
+        actual = name_primers(test_input, strand)
 
         # assert
         self.assertEqual(actual, expected)
@@ -209,7 +179,6 @@ class TestPrimerClass(TestCase):
 
         coords_mock.return_value = ['100', '250']
         strands_mock.return_value = 'primer_side_+'
-        # revcom_mock.return_value = 'primer_seq'
 
         # act
         actual = build_primer_loci(
@@ -232,8 +201,6 @@ class TestPrimerClass(TestCase):
         self.assertEqual(
             f"{strands_mock.call_args}", "call('primer_side', '+')"
         )
-       # self.assertEqual(
-        #    f"{revcom_mock.call_args}", "call('primer_seq', 'primer_side_+')")
 
     def test_build_primer_loci_no_coords_success(self):
         # arrange

@@ -9,12 +9,7 @@ from primer.slice_data import SliceData
 class TestPrimer3(TestCase):
     primer3_output_json_data = primer3_output_data
 
-    def setUp(self):
-        self.primer = Primer3()
-        self.setUpPyfakefs()
-        self.input_slice_data = SliceData(
-            'slice_name', 'slice_start', 'slice_end', '+', 'slice_chrom', 'bases'
-        )
+
 
     def create_files(self):
         self.fs.create_file('/fwd_primer3_output.json', contents=self.primer3_output_json_data)
