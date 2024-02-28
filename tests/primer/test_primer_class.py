@@ -32,49 +32,22 @@ class TestPrimerClassNamePrimers(TestCase):
 
 
 class TestPrimerClassCapturePrimerDetails(TestCase):
-    def test_capture_primer_details_left_side_success(self):
-        # arrange
-        test_input = 'primer_left_1_assembly'
-        expected = 'left'
-
+    @parameterized.expand(
+        [('primer_left_1_assembly', 'side', 'left'),
+        ('primer_right_3_start', 'side', 'right'),
+        ('primer_left_1_assembly', 'pair', '1'),
+        ('primer_left_1_assembly', 'id', 'primer_left_1'), ])
+    def test_capture_primer_details(
+            self,
+            test_input,
+            field,
+            expected_value
+    ):
         # act
         actual = capture_primer_details(test_input)
 
         # assert
-        self.assertEqual(actual['side'], expected)
-
-    def test_capture_primer_details_right_success(self):
-        # arrange
-        test_input = 'primer_right_3_start'
-        expected = 'right'
-
-        # act
-        actual = capture_primer_details(test_input)
-
-        # assert
-        self.assertEqual(actual['side'], expected)
-
-    def test_capture_primer_details_left_pair_success(self):
-        # arrange
-        test_input = 'primer_left_1_assembly'
-        expected = '1'
-
-        # act
-        actual = capture_primer_details(test_input)
-
-        # assert
-        self.assertEqual(actual['pair'], expected)
-
-    def test_capture_primer_details_left_id_success(self):
-        # arrange
-        test_input = 'primer_left_1_assembly'
-        expected = 'primer_left_1'
-
-        # act
-        actual = capture_primer_details(test_input)
-
-        # assert
-        self.assertEqual(actual['id'], expected)
+        self.assertEqual(actual[field], expected_value)
 
 
 class TestPrimerClass(TestCase):
