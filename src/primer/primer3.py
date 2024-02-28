@@ -8,7 +8,7 @@ from utils.file_system import parse_json
 
 from primer.slice_data import SliceData
 from primer.primer3_prepare_config import prepare_config
-from primer.primer_class import parse_designs_to_primers
+from primer.primer_class import parse_designs_to_primers, parse_designs_to_primer_pairs
 
 
 class Primer3:
@@ -17,30 +17,33 @@ class Primer3:
         self._config = user_config or default_config
 
     def get_primers(self, fasta: str) -> List[dict]:
+        # STRINGENCY_VECTOR = ["0.1", "0.25", "0.5", "0.75", "1.0"]
+        STRINGENCY_VECTOR = ["0.1", "1.0"]
+
         print('Reading Fasta file')
         slices = SliceData.parse_fasta(fasta)
 
-        print('Designing primers')
-        designs = self._primer3_run(slices)
+        slices_list = []
 
-        print('Naming primers')
-        slices_dict = parse_designs_to_primers(designs)
+        for stringency in STRINGENCY_VECTOR:
+            print('Designing primers, stringency:', stringency)
+            designs = self._primer3_run(slices, stringency)
+
+            print('Parsing primer pairs:', stringency)
+            primer_pairs = parse_designs_to_primer_pairs(designs)
+            print('Primer pairs::::', primer_pairs)
+
+            print('Naming primers, stringency:', stringency)
+            slices_dict = parse_designs_to_primers(designs)
+            slices_list.append(parse_designs_to_primers(designs))
 
         return slices_dict
 
-    def _primer3_run(self, slices: List[SliceData]) -> List[SliceData]:
-       # STRINGENCY_VECTOR = ["0.1", "0.25", "0.5", "0.75", "1.0"]
-        STRINGENCY_VECTOR = ["0.1", "1.0"]
-
+    def _primer3_run(self, slices: List[SliceData], stringency: str) -> List[SliceData]:
         base_config = self._get_config_data()
 
-        vector = STRINGENCY_VECTOR
-        if base_config.get('PRIMER_MASK_FAILURE_RATE') is None:
-            vector = [""]
-
-        for stringency in vector:
-            config_data = prepare_config(base_config, stringency)
-            result = self._primer3_design(slices, config_data)
+        config_data = prepare_config(base_config, stringency)
+        result = self._primer3_design(slices, config_data)
 
         return result
 

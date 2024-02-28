@@ -4,8 +4,20 @@ from collections import defaultdict
 from _collections_abc import dict_keys
 from Bio.Seq import Seq
 import re
+import uuid
 
 from primer.slice_data import SliceData
+
+
+class PrimerPair:
+    def __init__(self, id: str):
+        #self.id = self.create_pair_id(left, right)
+        self.id = id
+        self.forward = {}
+        self.reverse = {}
+
+    def __repr__(self):
+        return f'id:{self.id}, forward:{self.forward}, reverse: {self.reverse}'
 
 
 @dataclass
@@ -24,6 +36,22 @@ class Primer:
     hairpin_th: str
     end_stability: str
 
+
+def parse_designs_to_primer_pairs(slices: List[SliceData]) -> List[PrimerPair]:
+    for slice_data in slices:
+        slice_data.primer_pairs = {}
+        for design in slice_data.designs:
+
+            primer_keys = design.keys()
+
+            primer_pairs = build_primer_pairs(
+                design,
+                primer_keys,
+                slice_data,
+                design['stringency']
+            )
+
+    return primer_pairs
 
 def parse_designs_to_primers(slices: List[SliceData]) -> List[Primer]:
     slice_designs = []
@@ -45,7 +73,7 @@ def parse_designs_to_primers(slices: List[SliceData]) -> List[Primer]:
                 slice_data.primers[primer] = primers[primer]
                 slice_designs.append(slice_data)
 
-        del slice_data.designs
+        slice_data.designs = []
 
     return slice_designs
 
@@ -83,7 +111,7 @@ def build_primer_loci(
 
     return primer
 
-def name_primers(primer_details: dict, strand: str) -> str:
+def name_primers(side: str, strand: str) -> str:
         fwd_primers = {
             'left': 'LibAmpF',
             'right': 'LibAmpR',
@@ -97,7 +125,7 @@ def name_primers(primer_details: dict, strand: str) -> str:
             '-': rev_primers,
         }
 
-        primer_name = names[strand][primer_details['side']]
+        primer_name = names[strand][side]
 
         return primer_name
 
@@ -170,7 +198,7 @@ def revcom_reverse_primer(seq: str, strand: str) -> Seq:
         return seq_obj
 
 def build_primers_dict(
-        design,
+        design: dict,
         primer_keys: dict_keys,
         slice_data: dict,
         stringency: str = "",
@@ -182,7 +210,7 @@ def build_primers_dict(
             primer_details = capture_primer_details(key)
 
             if primer_details:
-                libamp_name = name_primers(primer_details, slice_data.strand)
+                libamp_name = name_primers(primer_details['side'], slice_data.strand)
                 primer_name = slice_data.name + "_" + libamp_name + "_" + \
                               primer_details['pair']
 
@@ -206,7 +234,60 @@ def build_primers_dict(
         return primers
 
 
+def build_primer_pairs(
+        design,
+        primer_keys: dict_keys,
+        slice_data: dict,
+        stringency: str = "",
+) -> List[PrimerPair]:
 
+    primer_pairs = []
+    primers = defaultdict(dict)
+
+    for key in primer_keys:
+        primer_details = capture_primer_details(key)
+
+        if primer_details:
+            libamp_name = name_primers(primer_details['side'], slice_data.strand)
+            primer_name = slice_data.name + "_" + libamp_name + "_" + \
+                          primer_details['pair']
+
+            primer_name_with_stringency = primer_name + "_str" + stringency.replace(
+                ".", "_")
+            primer_pair_id = slice_data.name + "_" + primer_details[
+                'pair'] + "_str" + stringency.replace(".", "_")
+
+            primer = build_primer_loci(
+                primers[primer_name_with_stringency],
+                key,
+                design,
+                primer_details,
+                slice_data,
+                primer_name,
+                primer_pair_id,
+                stringency,
+            )
+
+            pair = find_pair_by_id(primer_pairs, primer_pair_id)
+            if pair is None:
+                pair = PrimerPair(primer_pair_id)
+                primer_pairs.append(pair)
+
+            if libamp_name == "LibAmpF":
+                pair.forward = primer
+            if libamp_name == "LibAmpR":
+                pair.reverse = primer
+
+    return primer_pairs
+
+def find_pair_by_id(list: List[PrimerPair], id:str) -> PrimerPair:
+    result = None
+
+    for pair in list:
+        if pair.id == id:
+            result = pair
+
+    return result
 
 
     
