@@ -8,5 +8,4 @@ def check_variant_in_region(chrom: str, start: int, end: int) -> bool:
             if variant.chrom == chrom and start <= variant.pos <= end:
                 return True
 
-    vcf_file.close()
     return False
