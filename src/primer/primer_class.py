@@ -10,9 +10,10 @@ from primer.slice_data import SliceData
 
 
 class PrimerPair:
-    def __init__(self, id: str):
+    def __init__(self, id: str, chromosome: str):
         #self.id = self.create_pair_id(left, right)
         self.id = id
+        self.chromosome = chromosome
         self.forward = {}
         self.reverse = {}
 
@@ -270,7 +271,7 @@ def build_primer_pairs(
 
             pair = find_pair_by_id(primer_pairs, primer_pair_id)
             if pair is None:
-                pair = PrimerPair(primer_pair_id)
+                pair = PrimerPair(primer_pair_id, slice_data.chrom)
                 primer_pairs.append(pair)
 
             if libamp_name == "LibAmpF":

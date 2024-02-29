@@ -23,21 +23,14 @@ class Primer3:
         print('Reading Fasta file')
         slices = SliceData.parse_fasta(fasta)
 
-        slices_list = []
-
         for stringency in STRINGENCY_VECTOR:
-            print('Designing primers, stringency:', stringency)
+            print('Designing primers, stringency: ', stringency)
             designs = self._primer3_run(slices, stringency)
 
-            print('Parsing primer pairs:', stringency)
+            print('Parsing primer pairs: ', stringency)
             primer_pairs = parse_designs_to_primer_pairs(designs)
-            print('Primer pairs::::', primer_pairs)
 
-            print('Naming primers, stringency:', stringency)
-            slices_dict = parse_designs_to_primers(designs)
-            slices_list.append(parse_designs_to_primers(designs))
-
-        return slices_dict
+        return primer_pairs
 
     def _primer3_run(self, slices: List[SliceData], stringency: str) -> List[SliceData]:
         base_config = self._get_config_data()
