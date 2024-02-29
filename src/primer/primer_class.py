@@ -54,31 +54,6 @@ def parse_designs_to_primer_pairs(slices: List[SliceData]) -> List[PrimerPair]:
 
     return primer_pairs
 
-def parse_designs_to_primers(slices: List[SliceData]) -> List[Primer]:
-    slice_designs = []
-
-    for slice_data in slices:
-        slice_data.primers = {}
-        for design in slice_data.designs:
-
-            primer_keys = design.keys()
-
-            primers = build_primers_dict(
-                design,
-                primer_keys,
-                slice_data,
-                design['stringency']
-            )
-
-            for primer in primers:
-                slice_data.primers[primer] = primers[primer]
-                slice_designs.append(slice_data)
-
-        slice_data.designs = []
-
-    return slice_designs
-
-
 def build_primer_loci(
         primer,
         key,
@@ -197,43 +172,6 @@ def revcom_reverse_primer(seq: str, strand: str) -> Seq:
             seq_obj = seq_obj.reverse_complement()
 
         return seq_obj
-
-def build_primers_dict(
-        design: dict,
-        primer_keys: dict_keys,
-        slice_data: dict,
-        stringency: str = "",
-) -> defaultdict(dict):
-
-        primers = defaultdict(dict)
-
-        for key in primer_keys:
-            primer_details = capture_primer_details(key)
-
-            if primer_details:
-                libamp_name = name_primers(primer_details['side'], slice_data.strand)
-                primer_name = slice_data.name + "_" + libamp_name + "_" + \
-                              primer_details['pair']
-
-                primer_name_with_stringency = primer_name + "_str" + stringency.replace(
-                    ".", "_")
-                primer_pair_id = slice_data.name + "_" + primer_details[
-                    'pair'] + "_str" + stringency.replace(".", "_")
-
-                primers[primer_name_with_stringency] = \
-                    build_primer_loci(
-                        primers[primer_name_with_stringency],
-                        key,
-                        design,
-                        primer_details,
-                        slice_data,
-                        primer_name,
-                        primer_pair_id,
-                        stringency,
-                    )
-
-        return primers
-
 
 def build_primer_pairs(
         design,
