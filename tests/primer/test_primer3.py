@@ -59,7 +59,7 @@ class TestPrimer3(TestCase):
             'stringency': ''
         }]
         # act
-        actual = Primer3('/primer3_test_config.json')._primer3_run(input)[0].designs
+        actual = Primer3('/primer3_test_config.json')._primer3_run(input, "")[0].designs
 
         # assert
         self.assertEqual(actual, expected)
