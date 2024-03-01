@@ -37,7 +37,7 @@ Standalone primer designer tool.
 ## Installation
 
 ### Clone Repository
-Pull down the Targeton Designer repo and cd into it.
+Pull down the Primer Designer repo and cd into it.
 Recursively pull any submodules.
 ```sh
 git clone --recurse-submodule https://gitlab.internal.sanger.ac.uk/sci/targeton-designer.git

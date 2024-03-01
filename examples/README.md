@@ -1,6 +1,6 @@
 # Example CLI commands with test data
 
-### Targeton Designer end-to-end (slicer-primer3-ipcress)
+### Primer Designer end-to-end (slicer-primer3-ipcress)
 
 Run **design** command with test input data:
 
