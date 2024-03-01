@@ -11,7 +11,6 @@ from primer.slice_data import SliceData
 
 class PrimerPair:
     def __init__(self, id: str, chromosome: str):
-        #self.id = self.create_pair_id(left, right)
         self.id = id
         self.chromosome = chromosome
         self.forward = {}
@@ -42,7 +41,6 @@ def parse_designs_to_primer_pairs(slices: List[SliceData]) -> List[PrimerPair]:
     for slice_data in slices:
         slice_data.primer_pairs = {}
         for design in slice_data.designs:
-
             primer_keys = design.keys()
 
             primer_pairs = build_primer_pairs(
@@ -216,7 +214,6 @@ def build_primer_pairs(
                 pair.forward = primer
             if libamp_name == "LibAmpR":
                 pair.reverse = primer
-
     return primer_pairs
 
 def find_pair_by_id(list: List[PrimerPair], id:str) -> PrimerPair:
