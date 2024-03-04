@@ -11,10 +11,10 @@ COPY tests tests
 COPY download_kmer_lists.sh download_kmer_lists.sh
 
 RUN apt-get update
+CMD ["/bin/sh", "download_kmer_lists.sh"]
 
 RUN make install
 RUN make setup-venv
-CMD ["/bin/sh", "download_kmer_lists.sh"]
 
 FROM base as unittest
 ENV DOCKER_ENV=${DOCKER_ENV:-unittest}
