@@ -53,7 +53,7 @@ class TestPrimerIntegration(TestCase):
             # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
             with patch.object(
                 sys, 'argv',
-                ["./designer.sh", "primer", "--fasta", self.fasta_file_path, "--dir", tmpdir, "--primer3_params", self.config_file_path]
+                ["./designer.sh", "primer", "--fasta", self.fasta_file_path, "--dir", tmpdir]
             ):
                 parsed_input = ParsedInputArguments()
                 args = parsed_input.get_args()
