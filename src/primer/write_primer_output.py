@@ -5,7 +5,7 @@ from os import path
 
 from designer.output_data_classes import PrimerOutputData
 from primer.slice_data import SliceData
-from primer.primer_class import PrimerPair
+from primer.primer_pair import PrimerPair
 from utils.write_output_files import timestamped_dir, export_to_bed
 
 

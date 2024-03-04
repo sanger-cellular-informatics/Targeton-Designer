@@ -10,7 +10,7 @@ COPY src src
 COPY tests tests
 COPY download_kmer_lists.sh download_kmer_lists.sh
 
-RUN download_kmer_lists.sh
+RUN sh download_kmer_lists.sh
 RUN apt-get update
 
 RUN make install

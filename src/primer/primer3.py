@@ -8,7 +8,7 @@ from utils.file_system import parse_json
 
 from primer.slice_data import SliceData
 from primer.primer3_prepare_config import prepare_config
-from primer.primer_class import parse_designs_to_primer_pairs
+from primer.primer_pair import parse_designs_to_primer_pairs
 
 
 class Primer3:

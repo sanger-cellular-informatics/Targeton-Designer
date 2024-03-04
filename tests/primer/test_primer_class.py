@@ -7,7 +7,7 @@ from collections import defaultdict
 from tests.test_data.primer3_output_data import primer3_output_data
 from primer.primer3 import Primer3
 from primer.slice_data import SliceData
-from primer.primer_class import \
+from primer.primer_pair import \
     PrimerPair, \
     parse_designs_to_primer_pairs, \
     build_primer_pairs, \
@@ -60,9 +60,9 @@ class TestPrimerClass(TestCase):
             'slice_name', 'slice_start', 'slice_end', '+', 'slice_chrom', 'bases'
         )
 
-    @patch('primer.primer_class.build_primer_loci')
-    @patch('primer.primer_class.name_primers')
-    @patch('primer.primer_class.capture_primer_details')
+    @patch('primer.primer_pair.build_primer_loci')
+    @patch('primer.primer_pair.name_primers')
+    @patch('primer.primer_pair.capture_primer_details')
     def test_build_primers_pairs_valid_success(
             self, details_mock, name_mock, loci_mock
     ):
@@ -91,7 +91,7 @@ class TestPrimerClass(TestCase):
         self.assertEqual(expected.forward, actual[0].forward)
         self.assertEqual(expected.reverse, actual[0].reverse)
 
-    @patch('primer.primer_class.capture_primer_details')
+    @patch('primer.primer_pair.capture_primer_details')
     def test_build_primer_pairs_no_details_empty_(self, details_mock):
         # arrange
         details_mock.return_value = {}
@@ -107,8 +107,8 @@ class TestPrimerClass(TestCase):
         self.assertEqual(f"{details_mock.call_args}", "call('key_1')")
 
 
-    @patch('primer.primer_class.determine_primer_strands')
-    @patch('primer.primer_class.calculate_primer_coords')
+    @patch('primer.primer_pair.determine_primer_strands')
+    @patch('primer.primer_pair.calculate_primer_coords')
     def test_build_primer_loci_with_coords_success(
             self, coords_mock, strands_mock
     ):
