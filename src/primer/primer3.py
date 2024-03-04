@@ -18,7 +18,8 @@ class Primer3:
 
     def get_primers(self, fasta: str) -> List[dict]:
         # STRINGENCY_VECTOR = ["0.1", "0.25", "0.5", "0.75", "1.0"]
-        STRINGENCY_VECTOR = ["0.1", "1.0"]
+        STRINGENCY_VECTOR = ["1.0", "0.1"]
+        primer_pairs = []
 
         print('Reading Fasta file')
         slices = SliceData.parse_fasta(fasta)
@@ -28,7 +29,8 @@ class Primer3:
             designs = self._primer3_run(slices, stringency)
 
             print('Parsing primer pairs: ', stringency)
-            primer_pairs = parse_designs_to_primer_pairs(designs)
+            pairs = parse_designs_to_primer_pairs(designs)
+            primer_pairs.extend(pairs)
 
         return primer_pairs
 
@@ -36,19 +38,15 @@ class Primer3:
         base_config = self._get_config_data()
 
         config_data = prepare_config(base_config, stringency)
-        result = self._primer3_design(slices, config_data)
+        result = self._primer3_design(slices, config_data, stringency)
 
         return result
 
-    def _primer3_design(self, slices: List[SliceData], config: dict) -> List[SliceData]:
+    def _primer3_design(self, slices: List[SliceData], config: dict, stringency: str) -> List[SliceData]:
         designs = []
         for slice in slices:
             primer3_input = slice.p3_input
             design = primer3.bindings.design_primers(primer3_input, config)
-
-            stringency = ""
-            if "PRIMER_MASK_FAILURE_RATE" in config:
-                stringency = config["PRIMER_MASK_FAILURE_RATE"]
 
             design["stringency"] = stringency
 
