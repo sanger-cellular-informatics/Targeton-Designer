@@ -40,8 +40,8 @@ Standalone primer designer tool.
 Pull down the Primer Designer repo and cd into it.
 Recursively pull any submodules.
 ```sh
-git clone --recurse-submodule https://gitlab.internal.sanger.ac.uk/sci/targeton-designer.git
-cd targeton-designer
+git clone --recurse-submodule https://gitlab.internal.sanger.ac.uk/sci/primer-designer.git
+cd primer-designer
 ```
 
 ### Python Virtual Environment
@@ -149,13 +149,13 @@ Upcoming feature in later releases
 To debug with a local debugger, insert at the top of the file:
 ```
 import sys, os
-os.chdir(r'/home/ubuntu/lims2-webapp-filesystem/user/targeton-designer')
+os.chdir(r'/home/ubuntu/lims2-webapp-filesystem/user/primer-designer')
 sys.path.insert(0, '')
 sys.path.insert(0, 'src/')
 ```
 This allows src and submodules inside src to be found.
 
-To debug with vscode, make sure the cwd in the debugger settings are pointed at targeton-designer.
+To debug with vscode, make sure the cwd in the debugger settings are pointed at primer-designer.
 Additionally, make sure the interpreter is pointed at the correct virtual environment (venv/bin/python).
 
 ## Usage
