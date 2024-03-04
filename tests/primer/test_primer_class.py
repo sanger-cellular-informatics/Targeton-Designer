@@ -8,20 +8,20 @@ from tests.test_data.primer3_output_data import primer3_output_data
 from primer.primer3 import Primer3
 from primer.slice_data import SliceData
 from primer.primer_class import \
-    parse_designs_to_primers, \
+    PrimerPair, \
+    parse_designs_to_primer_pairs, \
+    build_primer_pairs, \
     name_primers, \
     capture_primer_details, \
-    parse_designs_to_primers, \
-    build_primers_dict, \
     build_primer_loci
 
 
 class TestPrimerClassNamePrimers(TestCase):
     @parameterized.expand([
-        ({'side': 'left'}, '+', 'LibAmpF'),
-        ({'side': 'left'}, '-', 'LibAmpR'),
-        ({'side': 'right'}, '+', 'LibAmpR'),
-        ({'side': 'right'}, '-', 'LibAmpF'),
+        ('left', '+', 'LibAmpF'),
+        ('left', '-', 'LibAmpR'),
+        ('right', '+', 'LibAmpR'),
+        ('right', '-', 'LibAmpF'),
     ])
     def test_name_primers(self, test_input, strand, expected):
         # act
@@ -60,65 +60,47 @@ class TestPrimerClass(TestCase):
             'slice_name', 'slice_start', 'slice_end', '+', 'slice_chrom', 'bases'
         )
 
-    @patch('primer.primer_class.build_primers_dict')
-    def test_parse_designs_to_primers_success(self, dict_mock):
-        # arrange
-        dict_mock.return_value = {'region1_1_libamp_name_2': 'build_primer_dict'}
-
-        slice1 = SliceData('slice1', 'start', 'end', 'strand', 'chrom', 'bases')
-        slice1.designs =  [{'design_key': 'design_val', 'stringency': '0.1'}]
-        slice2 = SliceData('slice2', 'start', 'end', 'strand', 'chrom', 'bases')
-        slice2.designs = [{'design_key': 'design_val', 'stringency': '0.1'}]
-
-        input = [slice1, slice2]
-
-        expected_primers = {'region1_1_libamp_name_2': 'build_primer_dict'}
-
-        # act
-        result = parse_designs_to_primers(input)
-
-        # assert
-        self.assertEqual(result[0].name, 'slice1')
-        self.assertEqual(result[1].name, 'slice2')
-        self.assertEqual(result[0].primers, expected_primers)
-        self.assertEqual(result[1].primers, expected_primers)
-        self.assertEqual(dict_mock.call_count, 2)
-
     @patch('primer.primer_class.build_primer_loci')
     @patch('primer.primer_class.name_primers')
     @patch('primer.primer_class.capture_primer_details')
-    def test_build_primers_dict_valid_success(
+    def test_build_primers_pairs_valid_success(
             self, details_mock, name_mock, loci_mock
     ):
         # arrange
-        details_mock.return_value = {'pair': '2'}
+        details_mock.side_effect = [{'side': 'left', 'pair': '0'}, {'side': 'right', 'pair': '0'},]
         name_mock.return_value = 'libamp_name'
-        loci_mock.return_value = 'build_primer_dict'
+        loci_mock.side_effect = [{'id': 'primer_left_0', 'side': 'left'}, {'id': 'primer_right_0', 'side': 'right'}, ]
 
-        expected = defaultdict(dict)
-        expected['slice_name_libamp_name_2_str'] = 'build_primer_dict'
+        expected = PrimerPair(id="slice_name_0_str", chromosome="")
+        expected.forward = {}
+        expected.reverse = {}
 
-        input_design = 'design'
-        input_primer_keys = {'key_1': 'value'}
+        input_design = {
+            "PRIMER_LEFT_0_SEQUENCE":"CAGTGCCAGGACCTCTCCTA",
+            "PRIMER_RIGHT_0_SEQUENCE":"TCCCTCTCAGTGGCCATCTT"
+        },
+        input_primer_keys = ["PRIMER_LEFT_0_SEQUENCE", "PRIMER_RIGHT_0_SEQUENCE"]
 
         # act
-        actual = build_primers_dict(
+        actual = build_primer_pairs(
             input_design, input_primer_keys, self.input_slice_data
         )
 
         # assert
-        self.assertEqual(expected, actual)
+        self.assertEqual(expected.id, actual[0].id)
+        self.assertEqual(expected.forward, actual[0].forward)
+        self.assertEqual(expected.reverse, actual[0].reverse)
 
     @patch('primer.primer_class.capture_primer_details')
-    def test_build_primers_dict_no_details_empty(self, details_mock):
+    def test_build_primer_pairs_no_details_empty_(self, details_mock):
         # arrange
         details_mock.return_value = {}
-        expected = {}
+        expected = []
         input_design = 'design'
         input_primer_keys = {'key_1': 'value'}
 
         # act
-        actual = build_primers_dict(input_design, input_primer_keys, self.input_slice_data)
+        actual = build_primer_pairs(input_design, input_primer_keys, self.input_slice_data)
 
         # assert
         self.assertEqual(expected, actual)

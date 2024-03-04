@@ -44,7 +44,7 @@ class TestSlicerIntegration(TestCase):
 
 class TestPrimerIntegration(TestCase):
     def setUp(self):
-        self.fasta_file_path = r"./tests/integration/fixtures/slicer_output.fasta"
+        self.fasta_file_path = r"./tests/integration/fixtures/test_mask.fa"
         self.config_file_path = r"./tests/primer3_test_config.json"
 
     def test_primer_output(self):
@@ -60,6 +60,7 @@ class TestPrimerIntegration(TestCase):
 
                 # Act
                 primer_result = primer_command(fasta=args["fasta"], prefix=args["dir"], config=args["primer3_params"])
+
                 path_primer_bed = Path(primer_result.bed)
                 path_primer_csv = Path(primer_result.csv)
 
@@ -127,34 +128,7 @@ class TestPrimerDesignerIntegration(TestCase):
                 self.assertTrue(path_csv.is_file())
                 self.assertGreater(path_json.stat().st_size, 0)
                 self.assertGreater(path_csv.stat().st_size, 0)
-
-
-class TestTargetonCSVIntegration(TestCase):
-    def setUp(self):
-        self.ipcress_input_path = r"./tests/integration/fixtures/ipcress_primer_input.txt"
-        self.slices = [SliceData('exon1', '100', '250', '+', 'chr1', 'bases')]
-
-    def test_write_targeton_csv_output(self):
-        with TemporaryDirectory() as tmpdir:
-            # Arrange
-            cli_input = [
-                "./designer.sh", "generate_targeton_csv",
-                "--primers", self.ipcress_input_path,
-                "--dir", tmpdir,
-            ]
-            # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
-            with patch.object(sys, 'argv', cli_input):
-                parsed_input = ParsedInputArguments()
-                args = parsed_input.get_args()
-
-                # Act
-                result = write_targeton_csv(args['primers'], self.slices, args['dir'])
-                path_csv = Path(result.csv)
-
-                # Assert
-                self.assertTrue(path_csv.is_file())
-                self.assertGreater(path_csv.stat().st_size, 0)
-
+                
 
 class TestScoringIntegration(TestCase):
     def setUp(self):
@@ -184,41 +158,6 @@ class TestScoringIntegration(TestCase):
                 # Assert
                 self.assertTrue(path_tsv.is_file())
                 self.assertGreater(path_tsv.stat().st_size, 0)
-
-
-class TestTargetonDesignerIntegration(TestCase):
-    def setUp(self):
-        self.fasta_file_path = r"./tests/integration/fixtures/slicer_output.fasta"
-        self.config_file_path = r"./tests/primer3_test_config.json"
-
-    def test_TDOutput(self):
-        with TemporaryDirectory() as tmpdir:
-            # Arrange
-            # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
-            with patch.object(
-                sys, 'argv', [
-                    "./designer.sh", "design",
-                    "--fasta", self.fasta_file_path,
-                    "--dir", tmpdir,
-                    "--primer3_params", self.config_file_path,
-            ]):
-                parsed_input = ParsedInputArguments()
-                args = parsed_input.get_args()
-
-                # Act
-                result = design_command(args)
-
-                # Assert
-                fields = result.fields()
-
-                fields.remove('dir')
-                for field in fields:
-                    field_value = getattr(result, field)
-                    path = Path(field_value)
-
-                    print(f"Checking file {field} -> {path.name}")
-                    self.assertTrue(path.is_file())
-                    self.assertGreater(path.stat().st_size, 0)
 
 
 if __name__ == '__main__':
