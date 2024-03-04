@@ -10,7 +10,7 @@ class ParsedInputArguments:
 
     def parse_arguments(self):
         parser = argparse.ArgumentParser(
-            description='Targeton Designer CLI')
+            description='Primer Designer CLI')
 
         parser.add_argument(
             'command',
