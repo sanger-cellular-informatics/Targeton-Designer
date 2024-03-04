@@ -151,6 +151,7 @@ clean-venv:
 	
 test: setup-venv
 	@. venv/bin/activate
+	download_kmer_lists.sh
 	pip list
 	python -m unittest
 
