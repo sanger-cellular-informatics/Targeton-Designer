@@ -99,6 +99,31 @@ class TestIPcressIntegration(TestCase):
                 self.assertGreater(path_err.stat().st_size, 0)
 
 
+class TestTargetonCSVIntegration(TestCase):
+    def setUp(self):
+        self.ipcress_input_path = r"./tests/integration/fixtures/ipcress_primer_input.txt"
+        self.slices = [SliceData('exon1', '100', '250', '+', 'chr1', 'bases')]
+
+    def test_write_targeton_csv_output(self):
+        with TemporaryDirectory() as tmpdir:
+            # Arrange
+            cli_input = ["./designer.sh", "generate_targeton_csv", "--primers",
+                self.ipcress_input_path, "--dir", tmpdir, ]
+            # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
+            with patch.object(sys, 'argv', cli_input):
+                parsed_input = ParsedInputArguments()
+                args = parsed_input.get_args()
+
+                # Act
+                result = write_targeton_csv(args['primers'], self.slices,
+                                            args['dir'])
+                path_csv = Path(result.csv)
+
+                # Assert
+                self.assertTrue(path_csv.is_file())
+                self.assertGreater(path_csv.stat().st_size, 0)
+                
+
 class TestPrimerDesignerIntegration(TestCase):
     def setUp(self):
         self.scoring_output_tsv_path = r"./tests/integration/fixtures/scoring_output.tsv"
