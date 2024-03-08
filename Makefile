@@ -151,6 +151,9 @@ clean-venv:
 	
 test: setup-venv
 	@. venv/bin/activate
+	bash download_kmer_lists.sh
+	@echo Folder content:
+	ls -lsa 
 	pip list
 	python -m unittest
 

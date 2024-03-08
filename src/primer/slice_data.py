@@ -13,6 +13,7 @@ class SliceData:
         self.strand = strand
         self.chrom = chrom
         self.bases = bases
+        self.designs = []
 
     def __repr__(self):
         return f'SliceData({self.name}, {self.start}, {self.end}, {self.strand}, {self.chrom}, {self.bases})'

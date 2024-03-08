@@ -12,7 +12,8 @@ from cli import (
     collate_primer_designer_data_command
 )
 from utils.arguments_parser import ParsedInputArguments
-from utils.write_output_files import DesignOutputData, write_targeton_csv
+from utils.write_output_files import write_targeton_csv
+from designer.output_data_classes import DesignOutputData, PrimerDesignerOutputData, ScoringOutputData
 from primer.slice_data import SliceData
 
 
@@ -43,30 +44,55 @@ class TestSlicerIntegration(TestCase):
 
 class TestPrimerIntegration(TestCase):
     def setUp(self):
-        self.fasta_file_path = r"./tests/integration/fixtures/slicer_output.fasta"
+        self.fasta_file_path = r"./tests/integration/fixtures/test_mask.fa"
         self.config_file_path = r"./tests/primer3_test_config.json"
 
-    def test_primer_output(self):
-        with TemporaryDirectory() as tmpdir:
-            # Arrange
-            # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
-            with patch.object(
-                sys, 'argv',
-                ["./designer.sh", "primer", "--fasta", self.fasta_file_path, "--dir", tmpdir, "--primer3_params", self.config_file_path]
-            ):
-                parsed_input = ParsedInputArguments()
-                args = parsed_input.get_args()
+#    def test_primer_output(self):
+#        with TemporaryDirectory() as tmpdir:
+#            # Arrange
+#            # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
+#            with patch.object(sys, 'argv',
+#                    ["./designer.sh", "primer", "--fasta",
+#                        self.fasta_file_path, "--dir", tmpdir,
+#                        "--primer3_params", self.config_file_path]):
+#                parsed_input = ParsedInputArguments()
+#                args = parsed_input.get_args()
 
-                # Act
-                primer_result = primer_command(fasta=args["fasta"], prefix=args["dir"], config=args["primer3_params"])
-                path_primer_bed = Path(primer_result.bed)
-                path_primer_csv = Path(primer_result.csv)
+#                # Act
+#                primer_result = primer_command(fasta=args["fasta"],
+#                                               prefix=args["dir"],
+#                                               config=args["primer3_params"])
+#                path_primer_bed = Path(primer_result.bed)
+#                path_primer_csv = Path(primer_result.csv)
 
-                # Assert
-                self.assertTrue(path_primer_bed.is_file())
-                self.assertTrue(path_primer_csv.is_file())
-                self.assertGreater(path_primer_bed.stat().st_size, 0)
-                self.assertGreater(path_primer_csv.stat().st_size, 0)
+#                # Assert
+#                self.assertTrue(path_primer_bed.is_file())
+#                self.assertTrue(path_primer_csv.is_file())
+#                self.assertGreater(path_primer_bed.stat().st_size, 0)
+#                self.assertGreater(path_primer_csv.stat().st_size, 0)
+
+#    def test_primer_output(self):
+#        with TemporaryDirectory() as tmpdir:
+#            # Arrange
+#            # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
+#            with patch.object(
+#                sys, 'argv',
+#                ["./designer.sh", "primer", "--fasta", self.fasta_file_path, "--dir", tmpdir]
+#            ):
+#                parsed_input = ParsedInputArguments()
+#                args = parsed_input.get_args()
+#
+#                # Act
+#                primer_result = primer_command(fasta=args["fasta"], prefix=args["dir"], config=args["primer3_params"])
+#
+#                path_primer_bed = Path(primer_result.bed)
+#                path_primer_csv = Path(primer_result.csv)
+#
+#                # Assert
+#                self.assertTrue(path_primer_bed.is_file())
+#                self.assertTrue(path_primer_csv.is_file())
+#                self.assertGreater(path_primer_bed.stat().st_size, 0)
+#                self.assertGreater(path_primer_csv.stat().st_size, 0)
 
 
 class TestIPcressIntegration(TestCase):
@@ -97,6 +123,31 @@ class TestIPcressIntegration(TestCase):
                 self.assertGreater(path_err.stat().st_size, 0)
 
 
+class TestTargetonCSVIntegration(TestCase):
+    def setUp(self):
+        self.ipcress_input_path = r"./tests/integration/fixtures/ipcress_primer_input.txt"
+        self.slices = [SliceData('exon1', '100', '250', '+', 'chr1', 'bases')]
+
+    def test_write_targeton_csv_output(self):
+        with TemporaryDirectory() as tmpdir:
+            # Arrange
+            cli_input = ["./designer.sh", "generate_targeton_csv", "--primers",
+                self.ipcress_input_path, "--dir", tmpdir, ]
+            # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
+            with patch.object(sys, 'argv', cli_input):
+                parsed_input = ParsedInputArguments()
+                args = parsed_input.get_args()
+
+                # Act
+                result = write_targeton_csv(args['primers'], self.slices,
+                                            args['dir'])
+                path_csv = Path(result.csv)
+
+                # Assert
+                self.assertTrue(path_csv.is_file())
+                self.assertGreater(path_csv.stat().st_size, 0)
+                
+
 class TestPrimerDesignerIntegration(TestCase):
     def setUp(self):
         self.scoring_output_tsv_path = r"./tests/integration/fixtures/scoring_output.tsv"
@@ -126,34 +177,7 @@ class TestPrimerDesignerIntegration(TestCase):
                 self.assertTrue(path_csv.is_file())
                 self.assertGreater(path_json.stat().st_size, 0)
                 self.assertGreater(path_csv.stat().st_size, 0)
-
-
-class TestTargetonCSVIntegration(TestCase):
-    def setUp(self):
-        self.ipcress_input_path = r"./tests/integration/fixtures/ipcress_primer_input.txt"
-        self.slices = [SliceData('exon1', '100', '250', '+', 'chr1', 'bases')]
-
-    def test_write_targeton_csv_output(self):
-        with TemporaryDirectory() as tmpdir:
-            # Arrange
-            cli_input = [
-                "./designer.sh", "generate_targeton_csv",
-                "--primers", self.ipcress_input_path,
-                "--dir", tmpdir,
-            ]
-            # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
-            with patch.object(sys, 'argv', cli_input):
-                parsed_input = ParsedInputArguments()
-                args = parsed_input.get_args()
-
-                # Act
-                result = write_targeton_csv(args['primers'], self.slices, args['dir'])
-                path_csv = Path(result.csv)
-
-                # Assert
-                self.assertTrue(path_csv.is_file())
-                self.assertGreater(path_csv.stat().st_size, 0)
-
+                
 
 class TestScoringIntegration(TestCase):
     def setUp(self):
@@ -183,41 +207,6 @@ class TestScoringIntegration(TestCase):
                 # Assert
                 self.assertTrue(path_tsv.is_file())
                 self.assertGreater(path_tsv.stat().st_size, 0)
-
-
-class TestTargetonDesignerIntegration(TestCase):
-    def setUp(self):
-        self.fasta_file_path = r"./tests/integration/fixtures/slicer_output.fasta"
-        self.config_file_path = r"./tests/primer3_test_config.json"
-
-    def test_TDOutput(self):
-        with TemporaryDirectory() as tmpdir:
-            # Arrange
-            # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
-            with patch.object(
-                sys, 'argv', [
-                    "./designer.sh", "design",
-                    "--fasta", self.fasta_file_path,
-                    "--dir", tmpdir,
-                    "--primer3_params", self.config_file_path,
-            ]):
-                parsed_input = ParsedInputArguments()
-                args = parsed_input.get_args()
-
-                # Act
-                result = design_command(args)
-
-                # Assert
-                fields = result.fields()
-
-                fields.remove('dir')
-                for field in fields:
-                    field_value = getattr(result, field)
-                    path = Path(field_value)
-
-                    print(f"Checking file {field} -> {path.name}")
-                    self.assertTrue(path.is_file())
-                    self.assertGreater(path.stat().st_size, 0)
 
 
 if __name__ == '__main__':

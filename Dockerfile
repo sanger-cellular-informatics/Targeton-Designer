@@ -8,7 +8,10 @@ COPY sge-primer-scoring/requirements.txt sge-primer-scoring/requirements.txt
 COPY sge-primer-scoring/src sge-primer-scoring/src
 COPY src src
 COPY tests tests
+COPY download_kmer_lists.sh download_kmer_lists.sh
 
+RUN sh download_kmer_lists.sh
+RUN ls -lsa kmer
 RUN apt-get update
 
 RUN make install

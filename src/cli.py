@@ -7,12 +7,14 @@ from utils.arguments_parser import ParsedInputArguments
 from utils.validate_files import validate_files
 from utils.write_output_files import (
     write_slicer_output,
-    write_primer_output,
     write_ipcress_input,
     write_ipcress_output,
     write_targeton_csv,
     write_scoring_output,
     write_primer_design_output,
+)
+
+from designer.output_data_classes import (
     SlicerOutputData,
     PrimerOutputData,
     IpcressOutputData,
@@ -20,6 +22,7 @@ from utils.write_output_files import (
     PrimerDesignerOutputData,
     DesignOutputData,
 )
+from primer.write_primer_output import write_primer_output
 from slicer.slicer import Slicer
 from primer.primer3 import Primer3
 from ipcress.ipcress import Ipcress
