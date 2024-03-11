@@ -4,8 +4,8 @@ from collections import defaultdict
 from _collections_abc import dict_keys
 from Bio.Seq import Seq
 import re
-import uuid
 
+from primer.hap1 import contain_variant
 from primer.slice_data import SliceData
 
 
@@ -18,6 +18,14 @@ class PrimerPair:
 
     def __repr__(self):
         return f'id:{self.id}, forward:{self.forward}, reverse: {self.reverse}'
+
+    @property
+    def contain_hap_one_variant(self) -> bool:
+        forward_start, forward_end = self.forward['primer_start'], self.forward['primer_end']
+        reverse_start, reverse_end = self.reverse['primer_start'], self.reverse['primer_end']
+
+        return (contain_variant(self.chromosome, forward_start, forward_end) or
+                contain_variant(self.chromosome, reverse_start, reverse_end))
 
 
 @dataclass
@@ -52,6 +60,7 @@ def parse_designs_to_primer_pairs(slices: List[SliceData]) -> List[PrimerPair]:
 
     return primer_pairs
 
+
 def build_primer_loci(
         primer,
         key,
@@ -62,7 +71,6 @@ def build_primer_loci(
         primer_pair_id: str,
         stringency: str = "",
 ) -> dict:
-    
     primer_field = primer_details['field']
 
     primer['primer'] = primer_name
@@ -76,7 +84,7 @@ def build_primer_loci(
 
     if primer_field == 'coords':
         primer_coords = calculate_primer_coords(primer_details['side'],
-            design[key], slice_data.start)
+                                                design[key], slice_data.start)
 
         primer['primer_start'] = primer_coords[0]
         primer['primer_end'] = primer_coords[1]
@@ -85,91 +93,97 @@ def build_primer_loci(
 
     return primer
 
+
 def name_primers(side: str, strand: str) -> str:
-        fwd_primers = {
-            'left': 'LibAmpF',
-            'right': 'LibAmpR',
-        }
-        rev_primers = {
-            'left': 'LibAmpR',
-            'right': 'LibAmpF',
-        }
-        names = {
-            '+': fwd_primers,
-            '-': rev_primers,
-        }
+    fwd_primers = {
+        'left': 'LibAmpF',
+        'right': 'LibAmpR',
+    }
+    rev_primers = {
+        'left': 'LibAmpR',
+        'right': 'LibAmpF',
+    }
+    names = {
+        '+': fwd_primers,
+        '-': rev_primers,
+    }
 
-        primer_name = names[strand][side]
+    primer_name = names[strand][side]
 
-        return primer_name
+    return primer_name
+
 
 def capture_primer_details(primer_name: str) -> dict:
-        match = re.search(r'^(primer_(left|right)_(\d+))(\_(\S+))?$', primer_name.lower())
-        result = {}
-        if match:
-            primer_id = match.group(1)
-            primer_side = match.group(2)
-            pair_number = match.group(3)
-            primer_field = match.group(5)
-            if primer_field is None:
-                primer_field = 'coords'
-            result = {
-                'id': primer_id,
-                'side': primer_side,
-                'field': primer_field,
-                'pair': pair_number
-            }
+    match = re.search(r'^(primer_(left|right)_(\d+))(\_(\S+))?$', primer_name.lower())
+    result = {}
+    if match:
+        primer_id = match.group(1)
+        primer_side = match.group(2)
+        pair_number = match.group(3)
+        primer_field = match.group(5)
+        if primer_field is None:
+            primer_field = 'coords'
+        result = {
+            'id': primer_id,
+            'side': primer_side,
+            'field': primer_field,
+            'pair': pair_number
+        }
 
-        return result
+    return result
+
 
 def calculate_primer_coords(side: str, coords: list, slice_start: str) -> Tuple[int, int]:
-        slice_start = int(slice_start)
-        left_flank = {
-            'start': slice_start,
-            'end': slice_start + int(coords[1])
-        }
+    slice_start = int(slice_start)
+    left_flank = {
+        'start': slice_start,
+        'end': slice_start + int(coords[1])
+    }
 
-        slice_end = slice_start + int(coords[0])
-        right_flank = {
-            'start': 1 + slice_end - int(coords[1]),
-            'end': 1 + slice_end,
-        }
+    slice_end = slice_start + int(coords[0])
+    right_flank = {
+        'start': 1 + slice_end - int(coords[1]),
+        'end': 1 + slice_end,
+    }
 
-        slice_coords = {
-            'left': left_flank,
-            'right': right_flank
-        }
+    slice_coords = {
+        'left': left_flank,
+        'right': right_flank
+    }
 
-        start = slice_coords[side]['start']
-        end = slice_coords[side]['end']
+    start = slice_coords[side]['start']
+    end = slice_coords[side]['end']
 
-        return start, end
+    return start, end
+
 
 def determine_primer_strands(side: str, slice_strand: str) -> str:
-        positive = {
-            'left': '+',
-            'right': '-',
-        }
+    positive = {
+        'left': '+',
+        'right': '-',
+    }
 
-        negative = {
-            'left': '-',
-            'right': '+',
-        }
+    negative = {
+        'left': '-',
+        'right': '+',
+    }
 
-        strands = {
-            '+': positive,
-            '-': negative,
-        }
+    strands = {
+        '+': positive,
+        '-': negative,
+    }
 
-        return strands[slice_strand][side]
+    return strands[slice_strand][side]
+
 
 def revcom_reverse_primer(seq: str, strand: str) -> Seq:
-        seq_obj = Seq(seq)
+    seq_obj = Seq(seq)
 
-        if strand == '-':
-            seq_obj = seq_obj.reverse_complement()
+    if strand == '-':
+        seq_obj = seq_obj.reverse_complement()
 
-        return seq_obj
+    return seq_obj
+
 
 def build_primer_pairs(
         design,
@@ -177,7 +191,6 @@ def build_primer_pairs(
         slice_data: dict,
         stringency: str = "",
 ) -> List[PrimerPair]:
-
     primer_pairs = []
     primers = defaultdict(dict)
 
@@ -216,7 +229,8 @@ def build_primer_pairs(
                 pair.reverse = primer
     return primer_pairs
 
-def find_pair_by_id(list: List[PrimerPair], id:str) -> PrimerPair:
+
+def find_pair_by_id(list: List[PrimerPair], id: str) -> PrimerPair:
     result = None
 
     for pair in list:
@@ -224,6 +238,3 @@ def find_pair_by_id(list: List[PrimerPair], id:str) -> PrimerPair:
             result = pair
 
     return result
-
-
-    
