@@ -155,7 +155,8 @@ test: setup-venv
 	python -m unittest
 
 download-kmers:
-	bash download_kmer_list.sh
+	ls -lsa
+	bash download_kmer_lists.sh
 
 build-docker:
 	@ver=$$(docker version --format '{{.Server.Version}}' 2>&1 | sed -E 's/([0-9]+).*/\1/')
