@@ -155,12 +155,12 @@ test: setup-venv
 	python -m unittest
 
 download-kmers:
-	mkdir /kmer
-	curl -o /kmer/homo_sapiens_16.list https://primer3.ut.ee/lists/homo_sapiens_16.list
-	curl -o /kmer/homo_sapiens_11.list https://primer3.ut.ee/lists/homo_sapiens_11.list
+	mkdir kmer
+	curl -o kmer/homo_sapiens_16.list https://primer3.ut.ee/lists/homo_sapiens_16.list
+	curl -o kmer/homo_sapiens_11.list https://primer3.ut.ee/lists/homo_sapiens_11.list
 	@echo Folder content:
 	ls -lsa
-	ls -lsa /kmer
+	ls -lsa kmer
 
 build-docker:
 	@ver=$$(docker version --format '{{.Server.Version}}' 2>&1 | sed -E 's/([0-9]+).*/\1/')
