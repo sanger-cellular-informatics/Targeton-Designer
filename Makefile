@@ -155,7 +155,6 @@ test: setup-venv
 	python -m unittest
 
 download-kmers:
-	ls -lsa
 	bash download_kmer_lists.sh
 
 build-docker:
