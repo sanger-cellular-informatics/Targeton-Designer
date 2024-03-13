@@ -12,9 +12,9 @@ from primer.primer_pair import parse_designs_to_primer_pairs
 
 
 class Primer3:
-    def __init__(self, user_config: str = None) -> None:
-        default_config = './src/primer/primer3.config.json'
-        self._config = user_config or default_config
+    def __init__(self, user_p3_config: str = None) -> None:
+        default_p3_config = './src/primer/primer3.config.json'
+        self._p3_config = user_p3_config or default_p3_config
 
     def get_primers(self, fasta: str) -> List[dict]:
         # STRINGENCY_VECTOR = ["0.1", "0.25", "0.5", "0.75", "1.0"]
@@ -35,9 +35,9 @@ class Primer3:
         return primer_pairs
 
     def _primer3_run(self, slices: List[SliceData], stringency: str) -> List[SliceData]:
-        base_config = self._get_config_data()
+        base_p3_config = self._get_config_data()
 
-        config_data = prepare_config(base_config, stringency)
+        config_data = prepare_config(base_p3_config, stringency)
         result = self._primer3_design(slices, config_data, stringency)
 
         return result
@@ -57,7 +57,7 @@ class Primer3:
 
     def _get_config_data(self) -> dict:
         try:
-            config_data = parse_json(self._config)
+            config_data = parse_json(self._p3_config)
         except FileNotFoundError:
             raise
         except Exception:
