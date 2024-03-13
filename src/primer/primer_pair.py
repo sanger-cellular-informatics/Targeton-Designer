@@ -5,7 +5,7 @@ from _collections_abc import dict_keys
 from Bio.Seq import Seq
 import re
 
-from primer.hap1 import contain_variant
+from primer.filter.hap1 import contain_variant
 from primer.slice_data import SliceData
 
 

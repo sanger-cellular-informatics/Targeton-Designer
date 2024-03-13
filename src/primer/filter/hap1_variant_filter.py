@@ -21,4 +21,3 @@ class HAP1VariantFilter(Filter):
                 pairs_to_keep.append(pair)
 
         return FilterResponse(pairs_to_keep, pairs_to_discard)
-
