@@ -2,6 +2,7 @@
 import sys
 from os import path
 
+from config.config import Config
 from primer.slice_data import SliceData
 from utils.arguments_parser import ParsedInputArguments
 from utils.validate_files import validate_files
@@ -54,10 +55,14 @@ def primer_command(
     fasta='',
     prefix='',
     existing_dir='',
-    config='',
+    p3_config='',
+    config_file=''
 ) -> PrimerOutputData:
+
     validate_files(fasta=fasta)
-    p3_class = Primer3(config)
+    designer_config = Config(config_file)
+
+    p3_class = Primer3(designer_config, p3_config)
     primers = p3_class.get_primers(fasta)
 
     primer_result = write_primer_output(
@@ -197,7 +202,12 @@ def resolve_command(args):
             slicer_command(args)
 
         if command == 'primer':
-            primer_command(fasta=args['fasta'], prefix=args['dir'], config=args['primer3_params'])
+            primer_command(
+                fasta=args['fasta'],
+                prefix=args['dir'],
+                config= args['conf'],
+                p3_config=args['primer3_params']
+            )
 
         if command == 'primer_for_ipcress':
             primer_for_ipcress(

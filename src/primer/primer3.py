@@ -9,12 +9,21 @@ from utils.file_system import parse_json
 from primer.slice_data import SliceData
 from primer.primer3_prepare_config import prepare_config
 from primer.primer_pair import parse_designs_to_primer_pairs
+from config.config import Config
 
+
+DEFAULT_P3_CONFIG = './src/primer/primer3.config.json'
 
 class Primer3:
-    def __init__(self, user_p3_config: str = None) -> None:
-        default_p3_config = './src/primer/primer3.config.json'
-        self._p3_config = user_p3_config or default_p3_config
+    def __init__(
+            self,
+            designer_config: Config,
+            user_p3_config: str = DEFAULT_P3_CONFIG
+    ) -> None:
+        print('DESIGNER_CONFIG::::', designer_config)
+
+        self._p3_config = user_p3_config
+        self._stringency_vector = designer_config.stringency_vector
 
     def get_primers(self, fasta: str) -> List[dict]:
         # STRINGENCY_VECTOR = ["0.1", "0.25", "0.5", "0.75", "1.0"]

@@ -7,14 +7,11 @@ from utils.arguments_parser import ParsedInputArguments
 
 
 class TestConfigClass(TestCase):
-    @patch('utils.arguments_parser.ParsedInputArguments')
-    def test_stringency_is_set(self, mock_arguments):
+    def test_stringency_is_set(self):
         config_path = 'tests/config/designer.config.json'
         expected = [1, 0.5, 0.1]
-        
-        mock_arguments.arguments = {'conf': config_path}
 
-        config = Config(mock_arguments)
+        config = Config(config_path)
 
         self.assertEqual(config.stringency_vector, expected)
 
@@ -33,7 +30,6 @@ class TestPrepareConfig(TestCase):
 
         with self.assertRaises(FileNotFoundError):
             prepare_config(incorrect_path)
-
 
     def test_use_default_config(self):
         default_config_path = 'tests/config/designer_default.config.json'

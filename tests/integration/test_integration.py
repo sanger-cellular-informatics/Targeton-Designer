@@ -15,6 +15,7 @@ from utils.arguments_parser import ParsedInputArguments
 from utils.write_output_files import write_targeton_csv
 from designer.output_data_classes import DesignOutputData, ScoringOutputData
 from primer.slice_data import SliceData
+from config.config import Config
 
 
 class TestSlicerIntegration(TestCase):
@@ -46,6 +47,7 @@ class TestPrimerIntegration(TestCase):
     def setUp(self):
         self.fasta_file_path = r"./tests/integration/fixtures/test_mask.fa"
         self.config_file_path = r"./tests/primer3_test_config.json"
+        self.designer_config = r"./tests/config/designer.config.json"
 
     def test_primer_output(self):
         with TemporaryDirectory() as tmpdir:
@@ -57,6 +59,7 @@ class TestPrimerIntegration(TestCase):
                     "./designer.sh", "primer",
                     "--fasta", self.fasta_file_path,
                     "--dir", tmpdir,
+                    "--conf", self.designer_config,
                     "--primer3_params", self.config_file_path
                 ]
             ):
@@ -64,7 +67,12 @@ class TestPrimerIntegration(TestCase):
                 args = parsed_input.get_args()
 
                 # Act
-                primer_result = primer_command(fasta=args["fasta"], prefix=args["dir"], config=args["primer3_params"])
+                primer_result = primer_command(
+                    fasta=args["fasta"],
+                    prefix=args["dir"],
+                    config_file=args["conf"],
+                    p3_config=args["primer3_params"]
+                )
 
                 path_primer_bed = Path(primer_result.bed)
                 path_primer_csv = Path(primer_result.csv)

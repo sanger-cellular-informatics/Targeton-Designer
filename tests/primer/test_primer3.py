@@ -1,16 +1,23 @@
 import unittest
+from unittest.mock import patch
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from tests.test_data.primer3_output_data import primer3_output_data
 from primer.primer3 import Primer3
 from primer.slice_data import SliceData
+from config.config import Config
 
 
 class TestPrimer3(TestCase):
     primer3_output_json_data = primer3_output_data
 
-    def setUp(self):
+    @patch('config.config.Config')
+    def setUp(self, config):
         self.setUpPyfakefs()
+
+        config.stringency_vector = ["1.0", "0.1"]
+        self.config = config
+
 
     def create_files(self):
         self.fs.create_file('/fwd_primer3_output.json', contents=self.primer3_output_json_data)
@@ -31,7 +38,6 @@ class TestPrimer3(TestCase):
             "SEQUENCE_INCLUDED_REGION": [0,200],\
             "PRIMER_EXPLAIN_FLAG": 1\
         }')
-
 
     def test_primer3_run_valid_success(self):
         # arrange
@@ -59,20 +65,20 @@ class TestPrimer3(TestCase):
             'stringency': ''
         }]
         # act
-        actual = Primer3('/primer3_test_config.json')._primer3_run(input, "")[0].designs
+        actual = Primer3(self.config, '/primer3_test_config.json')._primer3_run(input, "")[0].designs
 
         # assert
         self.assertEqual(actual, expected)
 
     def test_primer3_initialisation_with_no_user_config_file_as_parameter(self):
-        primer = Primer3()
+        primer = Primer3(self.config)
 
         self.assertEqual(primer._p3_config, './src/primer/primer3.config.json')
 
     def test_primer3_initialisation_with_user_config_file_as_parameter(self):
         user_config_file = "config.json"
 
-        primer = Primer3(user_config_file)
+        primer = Primer3(self.config, user_config_file)
 
         self.assertEqual(primer._p3_config, user_config_file)
 

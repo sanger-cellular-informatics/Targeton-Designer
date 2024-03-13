@@ -7,6 +7,7 @@ from collections import defaultdict
 from tests.test_data.primer3_output_data import primer3_output_data
 from primer.primer3 import Primer3
 from primer.slice_data import SliceData
+from config.config import Config
 from primer.primer_pair import \
     PrimerPair, \
     parse_designs_to_primer_pairs, \
@@ -16,7 +17,7 @@ from primer.primer_pair import \
     build_primer_loci
 
 
-class TestPrimerClassNamePrimers(TestCase):
+class TestPrimerPairNamePrimers(TestCase):
     @parameterized.expand([
         ('left', '+', 'LibAmpF'),
         ('left', '-', 'LibAmpR'),
@@ -31,7 +32,7 @@ class TestPrimerClassNamePrimers(TestCase):
         self.assertEqual(actual, expected)
 
 
-class TestPrimerClassCapturePrimerDetails(TestCase):
+class TestPrimerPairCapturePrimerDetails(TestCase):
     @parameterized.expand(
         [('primer_left_1_assembly', 'side', 'left'),
         ('primer_right_3_start', 'side', 'right'),
@@ -50,11 +51,13 @@ class TestPrimerClassCapturePrimerDetails(TestCase):
         self.assertEqual(actual[field], expected_value)
 
 
-class TestPrimerClass(TestCase):
+class TestPrimerPair(TestCase):
     primer3_output_json_data = primer3_output_data
 
-    def setUp(self):
-        self.primer = Primer3()
+    @patch('config.config.Config')
+    def setUp(self, config):
+        config.stringency_vector = ["1.0", "0.1"]
+        self.primer = Primer3(config)
         self.setUpPyfakefs()
         self.input_slice_data = SliceData(
             'slice_name', 'slice_start', 'slice_end', '+', 'slice_chrom', 'bases'

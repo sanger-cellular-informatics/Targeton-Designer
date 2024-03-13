@@ -1,15 +1,13 @@
 from pathlib import Path
 
-from utils.arguments_parser import ParsedInputArguments
 from utils.file_system import parse_json
 
 
 DEFAULT_CONFIG_FILE = Path(__file__).parent / '../../config/designer.config.json'
 
 class Config:
-    def __init__(self, input_args: ParsedInputArguments):
-        args = input_args.arguments
-        config = prepare_config(args.get('conf'))
+    def __init__(self, config_file: str):
+        config = prepare_config(config_file)
 
         self.stringency_vector = config['stringency_vector']
 
