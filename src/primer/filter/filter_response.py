@@ -6,7 +6,7 @@ from primer.primer_pair import PrimerPair
 
 @dataclass
 class PrimerPairDiscarded:
-    primer_pai: PrimerPair
+    primer_pair: PrimerPair
     filter_applied: str
 
 
