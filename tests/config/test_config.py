@@ -1,7 +1,22 @@
 import unittest
+from unittest.mock import patch
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-from config.config import prepare_config
+from config.config import Config, prepare_config
+from utils.arguments_parser import ParsedInputArguments
+
+
+class TestConfigClass(TestCase):
+    @patch('utils.arguments_parser.ParsedInputArguments')
+    def test_stringency_is_set(self, mock_arguments):
+        config_path = 'tests/config/designer.config.json'
+        expected = [1, 0.5, 0.1]
+        
+        mock_arguments.arguments = {'conf': config_path}
+
+        config = Config(mock_arguments)
+
+        self.assertEqual(config.stringency_vector, expected)
 
 
 class TestPrepareConfig(TestCase):
@@ -13,6 +28,13 @@ class TestPrepareConfig(TestCase):
 
         self.assertEqual(result, expected)
 
+    def test_no_config_file_found(self):
+        incorrect_path = 'tests/config/111.config.json'
+
+        with self.assertRaises(FileNotFoundError):
+            prepare_config(incorrect_path)
+
+
     def test_use_default_config(self):
         default_config_path = 'tests/config/designer_default.config.json'
         expected = {'stringency_vector': [1, 0.1]}
@@ -20,3 +42,10 @@ class TestPrepareConfig(TestCase):
         result = prepare_config(None, default_config_path)
 
         self.assertEqual(result, expected)
+
+    def test_no_default_config_file_found(self):
+        incorrect_default_path = 'tests/config/111.config.json'
+        config_path = 'tests/config/designer.config.json'
+
+        with self.assertRaises(FileNotFoundError):
+            prepare_config(config_path, incorrect_default_path)
