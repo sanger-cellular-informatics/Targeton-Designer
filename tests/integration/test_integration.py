@@ -7,13 +7,13 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from cli import (
-    slicer_command, primer_command, ipcress_command,
-    scoring_command, design_command,
+    slicer_command, primer_command,
+    ipcress_command, scoring_command,
     collate_primer_designer_data_command
 )
 from utils.arguments_parser import ParsedInputArguments
 from utils.write_output_files import write_targeton_csv
-from designer.output_data_classes import DesignOutputData, PrimerDesignerOutputData, ScoringOutputData
+from designer.output_data_classes import DesignOutputData, ScoringOutputData
 from primer.slice_data import SliceData
 
 
@@ -53,7 +53,12 @@ class TestPrimerIntegration(TestCase):
             # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
             with patch.object(
                 sys, 'argv',
-                ["./designer.sh", "primer", "--fasta", self.fasta_file_path, "--dir", tmpdir, "--primer3_params", self.config_file_path]
+                [
+                    "./designer.sh", "primer",
+                    "--fasta", self.fasta_file_path,
+                    "--dir", tmpdir,
+                    "--primer3_params", self.config_file_path
+                ]
             ):
                 parsed_input = ParsedInputArguments()
                 args = parsed_input.get_args()
