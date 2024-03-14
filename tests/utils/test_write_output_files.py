@@ -10,24 +10,23 @@ from freezegun import freeze_time
 from src.utils.write_output_files import write_scoring_output, write_targeton_csv
 from src.utils import write_output_files
 from primer.slice_data import SliceData
-from designer.output_data_classes import ScoringOutputData, TargetonCSVData
 
 
 class TestWriteOutputFiles(TestCase):
     def setUp(self):
         self.setUpPyfakefs()
-        self.fs.create_dir('/test_dir')
+        self.fs.create_dir('test_dir')
         contents = (
             'region_1_1 ATCG GCTA 200 300\n'
             'region_1_2 ATCG GCTA 200 300\n'
             'region_2_1 ATCG GCTA 200 300\n'
         )
-        self.fs.create_file('/test_ipcress_input.txt', contents=contents)
+        self.fs.create_file('test_ipcress_input.txt', contents=contents)
         contents = (
             'chr1\t100\t250\tregion_1\t.\t+\n'
             'chr2\t100\t250\tregion_2\t.\t+\n'
         )
-        self.fs.create_file('/test.bed', contents=contents)
+        self.fs.create_file('test.bed', contents=contents)
         self.slices = [
             SliceData('region_1', 'start', 'end', 'strand', 'chrom', 'bases'),
             SliceData('region_2', 'start', 'end', 'strand', 'chrom', 'bases'),
@@ -36,13 +35,13 @@ class TestWriteOutputFiles(TestCase):
     @patch('builtins.print')
     def test_write_targeton_csv_success_with_timestamped_dir(self, mock_print):
         # arrange
-        self.fs.create_dir('/test_dir/td_310123')
+        self.fs.create_dir('test_dir/td_310123')
         expected_dir = 'test_dir/td_310123'
         expected_file = 'test_dir/td_310123/targetons.csv'
 
         # act
         result = write_targeton_csv(
-            '/test_ipcress_input.txt', self.slices, 'test_dir/td_310123', dir_timestamped=True
+            'test_ipcress_input.txt', self.slices, 'test_dir/td_310123', dir_timestamped=True
         )
 
         # assert
@@ -59,7 +58,7 @@ class TestWriteOutputFiles(TestCase):
         expected_file = 'test_dir/td_20230131000000000000/targetons.csv'
 
         # act
-        result = write_targeton_csv('/test_ipcress_input.txt', self.slices, 'test_dir')
+        result = write_targeton_csv('test_ipcress_input.txt', self.slices, 'test_dir')
 
         # assert
         self.assertTrue(path.exists(expected_file))
@@ -80,7 +79,7 @@ class TestWriteOutputFiles(TestCase):
 
         # act
         write_targeton_csv('test_ipcress_input.txt', self.slices, 'test_dir', True)
-        with open('/test_dir/targetons.csv') as f:
+        with open('test_dir/targetons.csv') as f:
             actual = f.read()
 
         # assert
@@ -105,7 +104,7 @@ class TestWriteOutputFiles(TestCase):
     def test_export_to_csv(self):
         # arrange
         expected_file = 'test_scoring.tsv'
-        fake_dir = '/fake_dir/test'
+        fake_dir = 'fake_dir/test'
         self.fs.create_dir(fake_dir)
         mock_data = {'test': [1, 2, 3, 4, 5], 'test2': 'things'}
         mock_headers = ['test', 'test2']
@@ -120,7 +119,7 @@ class TestWriteOutputFiles(TestCase):
             mock_headers,
             delimiter=expected_delimiter
         )
-        
+
         sniffer = csv.Sniffer()
         with open(expected_file_path) as f:
             test_delimiter = sniffer.sniff(f.read()).delimiter
