@@ -12,7 +12,7 @@ class Config:
         self.stringency_vector = config['stringency_vector']
 
 def prepare_config(
-        config_file: str = None,
+        config_file: str = '',
         default_config_file: str = DEFAULT_CONFIG_FILE
 ) -> dict:
     default_config = parse_json(default_config_file)
@@ -20,7 +20,7 @@ def prepare_config(
 
     print('CONFIG', config_file)
 
-    if config_file is None or config_file == default_config_file:
+    if config_file == '' or config_file == default_config_file:
         return default_config
     else:
         config = parse_json(config_file)

@@ -143,7 +143,11 @@ def scoring_command(ipcress_output, mismatch, output_tsv, targeton_csv=None) -> 
 def design_command(args) -> DesignOutputData:
     validate_files(fasta=args['fasta'])
     
-    primer_result = primer_command(fasta=args['fasta'], prefix=args['dir'], config=args['primer3_params'])
+    primer_result = primer_command(
+        fasta=args['fasta'],
+        prefix=args['dir'],
+        p3_config=args['primer3_params']
+    )
     slices = SliceData.parse_fasta(args['fasta'])
     
     output_dir = primer_result.dir
@@ -205,7 +209,7 @@ def resolve_command(args):
             primer_command(
                 fasta=args['fasta'],
                 prefix=args['dir'],
-                config= args['conf'],
+                config_file= args['conf'],
                 p3_config=args['primer3_params']
             )
 

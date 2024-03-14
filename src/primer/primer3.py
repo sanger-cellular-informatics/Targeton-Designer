@@ -20,22 +20,19 @@ class Primer3:
             designer_config: Config,
             user_p3_config: str = DEFAULT_P3_CONFIG
     ) -> None:
-        print('DESIGNER_CONFIG::::', designer_config)
 
         self._p3_config = user_p3_config
         self._stringency_vector = designer_config.stringency_vector
 
     def get_primers(self, fasta: str) -> List[dict]:
-        # STRINGENCY_VECTOR = ["0.1", "0.25", "0.5", "0.75", "1.0"]
-        STRINGENCY_VECTOR = ["1.0", "0.1"]
         primer_pairs = []
 
         print('Reading Fasta file')
         slices = SliceData.parse_fasta(fasta)
 
-        for stringency in STRINGENCY_VECTOR:
+        for stringency in self._stringency_vector:
             print('Designing primers, stringency: ', stringency)
-            designs = self._primer3_run(slices, stringency)
+            designs = self._primer3_run(slices, str(stringency))
 
             print('Parsing primer pairs: ', stringency)
             pairs = parse_designs_to_primer_pairs(designs)
