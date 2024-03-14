@@ -130,3 +130,6 @@ td_output/
 #Swap files
 *.swp
 *.swo
+
+#kmer lists
+kmer
