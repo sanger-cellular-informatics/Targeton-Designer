@@ -59,12 +59,13 @@ def primer_command(
     designer_config_file: str = None
 ) -> PrimerOutputData:
 
-    print('!!!!! designer_config_file:', designer_config_file)
     validate_files(fasta=fasta)
-    designer_config = DesignerConfig(designer_config_file)
-    p3_config = Primer3ParamsConfig(p3_config_file)
 
-    p3_class = Primer3(designer_config, p3_config.params)
+    p3_class = Primer3(
+        DesignerConfig(designer_config_file).params,
+        Primer3ParamsConfig(p3_config_file).params,
+    )
+
     primers = p3_class.get_primers(fasta)
 
     primer_result = write_primer_output(

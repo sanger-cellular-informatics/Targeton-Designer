@@ -1,6 +1,6 @@
 from pyfakefs.fake_filesystem_unittest import TestCase
 from parameterized import parameterized
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 from collections import defaultdict
 

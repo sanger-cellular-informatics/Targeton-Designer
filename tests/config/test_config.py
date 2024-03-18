@@ -15,7 +15,7 @@ class TestDesignerConfigClass(TestCase):
     def test_stringency_is_set(self):
         expected = [1, 0.5, 0.1]
 
-        self.assertEqual(self.designer_config.stringency_vector, expected)
+        self.assertEqual(self.designer_config.params['stringency_vector'], expected)
 
     def test_read_config(self):
         expected = {'stringency_vector': [1, 0.5, 0.1]}
@@ -59,12 +59,12 @@ class TestPrimer3ParamsClass(TestCase):
         self.p3_params_config = Primer3ParamsConfig(self.config_path)
 
     def test_params_are_set(self):
-        expected = {"PRIMER_TASK": "pick_cloning_primers"}
+        expected = {'PRIMER_TASK': 'pick_cloning_primers'}
 
         self.assertEqual(self.p3_params_config.params, expected)
 
     def test_read_config(self):
-        expected = {"PRIMER_TASK": "pick_cloning_primers"}
+        expected = {'PRIMER_TASK': 'pick_cloning_primers'}
 
         result = self.p3_params_config.read_config(
             default_config_file=self.default_config_path, config_file=self.config_path
@@ -80,7 +80,7 @@ class TestPrimer3ParamsClass(TestCase):
             config.read_config(incorrect_path)
 
     def test_use_default_config(self):
-        expected = {"PRIMER_TASK": "generic"}
+        expected = {'PRIMER_TASK': 'generic'}
 
         config = Primer3ParamsConfig()
         result = config.read_config(default_config_file=self.default_config_path)

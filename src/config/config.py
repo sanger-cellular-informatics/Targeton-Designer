@@ -19,7 +19,7 @@ class DesignerConfig(Config):
         self._default_config_file = 'config/designer.config.json'
 
         config = self.read_config(self._default_config_file, config_file)
-        self.stringency_vector = config['stringency_vector']
+        self.params = {'stringency_vector': config['stringency_vector']}
 
     @staticmethod
     def read_config(
@@ -59,8 +59,3 @@ class Primer3ParamsConfig(Config):
         config_data = parse_json(file)
 
         return config_data
-
-
-
-
-

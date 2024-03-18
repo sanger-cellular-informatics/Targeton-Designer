@@ -15,7 +15,7 @@ class TestPrimer3(TestCase):
         self.setUpPyfakefs()
 
         config = MagicMock(spec=DesignerConfig)
-        config.stringency_vector = [""]
+        config.params ={"stringency_vector": [""]}
         self.config = config
         
         self.p3_params = {
@@ -46,7 +46,6 @@ class TestPrimer3(TestCase):
             'CCTCCT'
         )]
 
-
         expected = [{
             'PRIMER_INTERNAL': [],
             'PRIMER_LEFT': [],
@@ -61,8 +60,14 @@ class TestPrimer3(TestCase):
             'PRIMER_PAIR_NUM_RETURNED': 0,
             'stringency': ''
         }]
+
         # act
-        actual = Primer3(self.config, self.p3_params)._primer3_run(input, "")[0].designs
+        actual = Primer3(
+            self.config.params, self.p3_params
+        )._primer3_run(
+            slices=input,
+            stringency=""
+        )[0].designs
 
         # assert
         self.assertEqual(actual, expected)
