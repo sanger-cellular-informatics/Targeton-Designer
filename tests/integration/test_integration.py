@@ -70,8 +70,8 @@ class TestPrimerIntegration(TestCase):
                 primer_result = primer_command(
                     fasta=args["fasta"],
                     prefix=args["dir"],
-                    config_file=args["conf"],
-                    p3_config=args["primer3_params"]
+                    designer_config_file=args["conf"],
+                    p3_config_file=args["primer3_params"]
                 )
 
                 path_primer_bed = Path(primer_result.bed)

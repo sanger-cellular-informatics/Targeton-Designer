@@ -1,6 +1,6 @@
 from pyfakefs.fake_filesystem_unittest import TestCase
 from parameterized import parameterized
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 from collections import defaultdict
 
@@ -54,10 +54,7 @@ class TestPrimerPairCapturePrimerDetails(TestCase):
 class TestPrimerPair(TestCase):
     primer3_output_json_data = primer3_output_data
 
-    @patch('config.config.Config')
-    def setUp(self, config):
-        config.stringency_vector = ["1.0", "0.1"]
-        self.primer = Primer3(config)
+    def setUp(self):
         self.setUpPyfakefs()
         self.input_slice_data = SliceData(
             'slice_name', 'slice_start', 'slice_end', '+', 'slice_chrom', 'bases'

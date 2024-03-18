@@ -20,23 +20,6 @@ class PrimerPair:
         return f'id:{self.id}, forward:{self.forward}, reverse: {self.reverse}'
 
 
-@dataclass
-class Primer:
-    name: str
-    bases: str
-    start: str
-    end: str
-    chromosome: str
-    penalty: str
-    stringency: str
-    tm: str
-    gc_percent: str
-    self_any_th: str
-    self_end_th: str
-    hairpin_th: str
-    end_stability: str
-
-
 def parse_designs_to_primer_pairs(slices: List[SliceData]) -> List[PrimerPair]:
     for slice_data in slices:
         slice_data.primer_pairs = {}

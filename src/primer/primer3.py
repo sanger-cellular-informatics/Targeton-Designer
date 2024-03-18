@@ -9,7 +9,7 @@ from utils.file_system import parse_json
 from primer.slice_data import SliceData
 from primer.primer3_prepare_config import prepare_config
 from primer.primer_pair import parse_designs_to_primer_pairs
-from config.config import Config
+from config.config import DesignerConfig, Primer3ParamsConfig
 
 
 DEFAULT_P3_CONFIG = './src/primer/primer3.config.json'
@@ -17,11 +17,11 @@ DEFAULT_P3_CONFIG = './src/primer/primer3.config.json'
 class Primer3:
     def __init__(
             self,
-            designer_config: Config,
-            user_p3_config: str = DEFAULT_P3_CONFIG
+            designer_config: DesignerConfig,
+            p3_params: dict
     ) -> None:
 
-        self._p3_config = user_p3_config
+        self._p3_params = p3_params
         self._stringency_vector = designer_config.stringency_vector
 
     def get_primers(self, fasta: str) -> List[dict]:
@@ -41,9 +41,8 @@ class Primer3:
         return primer_pairs
 
     def _primer3_run(self, slices: List[SliceData], stringency: str) -> List[SliceData]:
-        base_p3_config = self._get_config_data()
 
-        config_data = prepare_config(base_p3_config, stringency)
+        config_data = prepare_config(self._p3_params, stringency)
         result = self._primer3_design(slices, config_data, stringency)
 
         return result
@@ -61,12 +60,3 @@ class Primer3:
 
         return designs
 
-    def _get_config_data(self) -> dict:
-        try:
-            config_data = parse_json(self._p3_config)
-        except FileNotFoundError:
-            raise
-        except Exception:
-            raise InvalidConfigError('Primer3 config file is not a correct JSON')
-
-        return config_data
