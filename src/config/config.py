@@ -53,7 +53,7 @@ class Primer3ParamsConfig(Config):
     ) -> dict:
 
         file = default_config_file
-        if config_file is not None :
+        if config_file is not None:
             file = config_file
 
         config_data = parse_json(file)
