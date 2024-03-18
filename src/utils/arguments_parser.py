@@ -102,7 +102,6 @@ def add_input_args(parser):
     parser.add_argument('--conf',
         type=str,
         help='Path to custom configuration file',
-        default='',
     )
     parser.add_argument(
         '-f5', '--flank_5',

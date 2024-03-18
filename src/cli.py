@@ -52,13 +52,14 @@ def slicer_command(args) -> SlicerOutputData:
 
 
 def primer_command(
-    fasta='',
-    prefix='',
-    existing_dir='',
-    p3_config_file='',
-    designer_config_file=''
+    fasta: str ='',
+    prefix: str = '',
+    existing_dir: str = '',
+    p3_config_file: str = None,
+    designer_config_file: str = None
 ) -> PrimerOutputData:
 
+    print('!!!!! designer_config_file:', designer_config_file)
     validate_files(fasta=fasta)
     designer_config = DesignerConfig(designer_config_file)
     p3_config = Primer3ParamsConfig(p3_config_file)

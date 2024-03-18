@@ -67,18 +67,6 @@ class TestPrimer3(TestCase):
         # assert
         self.assertEqual(actual, expected)
 
- #   def test_primer3_initialisation_with_no_user_config_file_as_parameter(self):
- #       primer = Primer3(self.config)
-
- #       self.assertEqual(primer._p3_config, './src/primer/primer3.config.json')
-
-  #  def test_primer3_initialisation_with_user_config_file_as_parameter(self):
-  #      user_config_file = "config.json"
-
-  #      primer = Primer3(self.config, user_config_file)
-
-  #      self.assertEqual(primer._p3_config, user_config_file)
-
 
 if __name__ == '__main__':
     unittest.main()
