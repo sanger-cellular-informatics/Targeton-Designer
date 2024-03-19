@@ -13,9 +13,8 @@ from cli import (
 )
 from utils.arguments_parser import ParsedInputArguments
 from utils.write_output_files import write_targeton_csv
-from designer.output_data_classes import DesignOutputData, ScoringOutputData
+from designer.output_data_classes import DesignOutputData
 from primer.slice_data import SliceData
-from config.config import Config
 
 
 class TestSlicerIntegration(TestCase):

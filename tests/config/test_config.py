@@ -1,9 +1,6 @@
-import unittest
-from unittest.mock import patch
-from pyfakefs.fake_filesystem_unittest import TestCase
+from unittest import TestCase
 
 from config.config import DesignerConfig, Primer3ParamsConfig
-from utils.arguments_parser import ParsedInputArguments
 
 
 class TestDesignerConfigClass(TestCase):

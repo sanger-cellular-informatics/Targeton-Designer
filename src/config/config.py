@@ -1,8 +1,6 @@
-from pathlib import Path
 from abc import ABC, abstractmethod
 
 from utils.file_system import parse_json
-from utils.exceptions import InvalidConfigError
 
 
 class Config(ABC):

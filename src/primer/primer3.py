@@ -1,10 +1,6 @@
 import primer3
 
-from Bio.Seq import Seq
 from typing import List
-
-from utils.exceptions import InvalidConfigError
-from utils.file_system import parse_json
 
 from primer.slice_data import SliceData
 from primer.primer3_prepare_config import prepare_config

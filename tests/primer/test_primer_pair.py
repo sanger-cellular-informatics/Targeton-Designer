@@ -2,15 +2,10 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 from parameterized import parameterized
 from unittest.mock import patch
 
-from collections import defaultdict
-
 from tests.test_data.primer3_output_data import primer3_output_data
-from primer.primer3 import Primer3
 from primer.slice_data import SliceData
-from config.config import Config
 from primer.primer_pair import \
     PrimerPair, \
-    parse_designs_to_primer_pairs, \
     build_primer_pairs, \
     name_primers, \
     capture_primer_details, \
