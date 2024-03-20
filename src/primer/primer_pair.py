@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from typing import Tuple, List
 from collections import defaultdict
 from _collections_abc import dict_keys
@@ -28,35 +27,20 @@ class PrimerPair:
                 contain_variant(self.chromosome, reverse_start, reverse_end))
 
 
-@dataclass
-class Primer:
-    name: str
-    bases: str
-    start: str
-    end: str
-    chromosome: str
-    penalty: str
-    stringency: str
-    tm: str
-    gc_percent: str
-    self_any_th: str
-    self_end_th: str
-    hairpin_th: str
-    end_stability: str
-
-
 def parse_designs_to_primer_pairs(slices: List[SliceData]) -> List[PrimerPair]:
+    primer_pairs = []
     for slice_data in slices:
         slice_data.primer_pairs = {}
         for design in slice_data.designs:
             primer_keys = design.keys()
 
-            primer_pairs = build_primer_pairs(
+            pairs = build_primer_pairs(
                 design,
                 primer_keys,
                 slice_data,
                 design['stringency']
             )
+            primer_pairs.extend(pairs)
 
     return primer_pairs
 

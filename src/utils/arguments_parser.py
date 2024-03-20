@@ -3,7 +3,7 @@ import argparse
 
 class ParsedInputArguments:
     def __init__(self) -> None:
-        self.arguments = []
+        self.arguments = {}
         self.command = ''
 
         self.parse_arguments()
@@ -99,6 +99,10 @@ def add_input_args(parser):
     )
 
     # CONFIG
+    parser.add_argument('--conf',
+        type=str,
+        help='Path to custom configuration file',
+    )
     parser.add_argument(
         '-f5', '--flank_5',
         help='how far to extend region at 5\' end (default 50nt)',

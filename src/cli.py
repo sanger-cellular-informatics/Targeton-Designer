@@ -2,6 +2,7 @@
 import sys
 from os import path
 
+from config.config import DesignerConfig, Primer3ParamsConfig
 from primer.slice_data import SliceData
 from utils.arguments_parser import ParsedInputArguments
 from utils.validate_files import validate_files
@@ -51,13 +52,20 @@ def slicer_command(args) -> SlicerOutputData:
 
 
 def primer_command(
-    fasta='',
-    prefix='',
-    existing_dir='',
-    config='',
+    fasta: str ='',
+    prefix: str = '',
+    existing_dir: str = '',
+    p3_config_file: str = None,
+    designer_config_file: str = None
 ) -> PrimerOutputData:
+
     validate_files(fasta=fasta)
-    p3_class = Primer3(config)
+
+    p3_class = Primer3(
+        DesignerConfig(designer_config_file).params,
+        Primer3ParamsConfig(p3_config_file).params,
+    )
+
     primers = p3_class.get_primers(fasta)
 
     primer_result = write_primer_output(
@@ -138,7 +146,11 @@ def scoring_command(ipcress_output, mismatch, output_tsv, targeton_csv=None) -> 
 def design_command(args) -> DesignOutputData:
     validate_files(fasta=args['fasta'])
     
-    primer_result = primer_command(fasta=args['fasta'], prefix=args['dir'], config=args['primer3_params'])
+    primer_result = primer_command(
+        fasta=args['fasta'],
+        prefix=args['dir'],
+        p3_config_file=args['primer3_params']
+    )
     slices = SliceData.parse_fasta(args['fasta'])
     
     output_dir = primer_result.dir
@@ -197,7 +209,12 @@ def resolve_command(args):
             slicer_command(args)
 
         if command == 'primer':
-            primer_command(fasta=args['fasta'], prefix=args['dir'], config=args['primer3_params'])
+            primer_command(
+                fasta=args['fasta'],
+                prefix=args['dir'],
+                designer_config_file= args['conf'],
+                p3_config_file=args['primer3_params']
+            )
 
         if command == 'primer_for_ipcress':
             primer_for_ipcress(

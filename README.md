@@ -186,6 +186,20 @@ Example Command
 
 #### Primer3 Runner
 
+Primer runner uses 2 types of config:
+##### Primer3 parameters config: 
+Defines configuration for Primer3. 
+To set up user defined configuration for primer3, you can pass ``--primer3_params`` argument with file path to the ``primer`` command.
+You can use ``/config/primer3_example.config.json`` file as a template. 
+
+If there is no config file for primer3, it will run with the default configuration.
+
+##### Designer config
+Is used to specify parameters specific for the Primer Designer tool. 
+Designer tool config contains stringency vector to specify a set of stringencies to run Primer3.  
+To set up user defined configuration for primer3, you can pass ``--conf`` argument with file path to the ``primer`` command.
+
+
 To set up user defined configuration for primer3, you can create file named ``primer3.config.json`` inside of the ``/config`` folder. 
 You can use ``/config/primer3_example.config.json`` file as a template. 
 
@@ -193,7 +207,7 @@ If there is no config file for primer3, it will run with the default configurati
 
 Running Primer3:
 ```sh
-./designer.sh primer [--fasta SLICES_FASTA] [--dir OUTPUT_FOLDER] [--primer3_params PRIMER_CONFIG_JSON]
+./designer.sh primer [--fasta SLICES_FASTA] [--dir OUTPUT_FOLDER] [--primer3_params PRIMER_CONFIG_JSON] [--conf DESIGNER_CONFIG_JSON]
 ```
 The input fasta and BED files are intended to be sourced from the slicer tool. Examples of how these files are constructed can be found below.
 
