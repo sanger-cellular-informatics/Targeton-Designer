@@ -1,4 +1,4 @@
-from typing import Tuple, List
+from typing import Tuple, List, Optional
 from collections import defaultdict
 from _collections_abc import dict_keys
 from Bio.Seq import Seq
@@ -9,8 +9,8 @@ from primer.slice_data import SliceData
 
 
 class PrimerPair:
-    def __init__(self, id: str, chromosome: str):
-        self.id = id
+    def __init__(self, pair_id: str, chromosome: str):
+        self.id = pair_id
         self.chromosome = chromosome
         self.forward = {}
         self.reverse = {}
@@ -172,7 +172,7 @@ def revcom_reverse_primer(seq: str, strand: str) -> Seq:
 def build_primer_pairs(
         design,
         primer_keys: dict_keys,
-        slice_data: dict,
+        slice_data: SliceData,
         stringency: str = "",
 ) -> List[PrimerPair]:
     primer_pairs = []
@@ -202,7 +202,7 @@ def build_primer_pairs(
                 stringency,
             )
 
-            pair = find_pair_by_id(primer_pairs, primer_pair_id)
+            pair = _find_pair_by_id(primer_pairs, primer_pair_id)
             if pair is None:
                 pair = PrimerPair(primer_pair_id, slice_data.chrom)
                 primer_pairs.append(pair)
@@ -214,11 +214,8 @@ def build_primer_pairs(
     return primer_pairs
 
 
-def find_pair_by_id(list: List[PrimerPair], id: str) -> PrimerPair:
-    result = None
-
-    for pair in list:
-        if pair.id == id:
-            result = pair
-
-    return result
+def _find_pair_by_id(pairs: List[PrimerPair], pair_id: str) -> Optional[PrimerPair]:
+    for pair in pairs:
+        if pair.id == pair_id:
+            return pair
+    return None
