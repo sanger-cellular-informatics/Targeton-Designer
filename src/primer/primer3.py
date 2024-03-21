@@ -4,7 +4,7 @@ from typing import List
 
 from primer.slice_data import SliceData
 from primer.primer3_prepare_config import prepare_config
-from primer.primer_pair import parse_designs_to_primer_pairs
+from primer.primer_pair import parse_designs_to_primer_pairs, PrimerPair
 
 
 class Primer3:
@@ -17,7 +17,7 @@ class Primer3:
         self._p3_params = p3_params
         self._stringency_vector = designer_params['stringency_vector']
 
-    def get_primers(self, fasta: str) -> List[dict]:
+    def get_primers(self, fasta: str) -> List[PrimerPair]:
         primer_pairs = []
 
         print('Reading Fasta file')
