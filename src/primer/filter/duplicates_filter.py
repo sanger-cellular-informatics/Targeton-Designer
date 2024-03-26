@@ -38,8 +38,8 @@ def _get_max_stringency_pair(duplicate_group: List[PrimerPair]) -> PrimerPair:
     return max(duplicate_group, key=lambda pair: pair.forward.stringency)
 
 
-def _group_duplicates_pairs(players: List[PrimerPair]) -> List[List[PrimerPair]]:
+def _group_duplicates_pairs(pairs: List[PrimerPair]) -> List[List[PrimerPair]]:
     groups_duplicates = defaultdict(list)
-    for player in players:
-        groups_duplicates[player].append(player)
+    for pair in pairs:
+        groups_duplicates[pair].append(pair)
     return list(groups_duplicates.values())

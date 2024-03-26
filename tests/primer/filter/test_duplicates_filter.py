@@ -1,9 +1,12 @@
 from unittest import TestCase
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, Mock
 
-from primer.filter.duplicates_filter import DuplicatesFilter
+from primer.filter.designed_primer import DesignedPrimer
+from primer.filter.duplicates_filter import DuplicatesFilter, _get_max_stringency_pair, \
+    _take_pair_with_max_stringency_and_others, _group_duplicates_pairs
 from primer.filter.filter_response import PrimerPairDiscarded
 from primer.primer_pair import PrimerPair
+import pandas as pd
 
 
 class TestDuplicatesFilter(TestCase):
@@ -37,3 +40,29 @@ class TestDuplicatesFilter(TestCase):
 
         self.assertEqual(response.primer_pairs_to_keep, [])
         self.assertEqual(response.primer_pairs_to_discard, [])
+
+
+class TestDuplicatesFilterAuxFunctions(TestCase):
+
+    def test_get_max_stringency_pair(self):
+        max_stringency_pair = MagicMock(spec=PrimerPair, forward=Mock(stringency=0.75))
+        pair1 = MagicMock(spec=PrimerPair, forward=Mock(stringency=0.5))
+        pair2 = MagicMock(spec=PrimerPair, forward=Mock(stringency=0.25))
+
+        result = _get_max_stringency_pair([pair1, pair2, max_stringency_pair])
+
+        self.assertEqual(result, max_stringency_pair)
+
+    def test_take_pair_with_max_stringency_and_others(self):
+        max_stringency_pair = MagicMock(spec=PrimerPair, forward=Mock(stringency=0.75))
+        pair1 = MagicMock(spec=PrimerPair, forward=Mock(stringency=0.5))
+        pair2 = MagicMock(spec=PrimerPair, forward=Mock(stringency=0.25))
+
+        result_max_stringency_pair, other_pairs = _take_pair_with_max_stringency_and_others(
+            [pair1, pair2, max_stringency_pair])
+
+        self.assertEqual(result_max_stringency_pair, max_stringency_pair)
+        self.assertEqual(other_pairs, [pair1, pair2])
+
+    # TODO
+    # def test_group_duplicates_pairs(self):

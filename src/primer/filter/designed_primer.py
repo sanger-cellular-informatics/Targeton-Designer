@@ -7,7 +7,7 @@ import pandas as pd
 class DesignedPrimer:
     name: str
     penalty: float
-    stringency: str
+    stringency: float
     pair_id: str
     sequence: str
     coords: pd.Interval
@@ -63,7 +63,7 @@ def map_to_designed_primer(primer: dict):
     return DesignedPrimer(
         name=primer["primer"],
         penalty=primer["penalty"],
-        stringency=primer["stringency"],
+        stringency=float(primer["stringency"]),
         pair_id=primer["pair_id"],
         sequence=primer["sequence"],
         coords=pd.Interval(primer["coords"][0], primer["coords"][1]),

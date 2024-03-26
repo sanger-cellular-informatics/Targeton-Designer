@@ -31,7 +31,6 @@ class PrimerPair:
     def __hash__(self):
         return hash((self.chromosome, self.forward, self.reverse.items()))
 
-
     @property
     def contain_hap_one_variant(self) -> bool:
         forward_start, forward_end = self.forward['primer_start'], self.forward['primer_end']
