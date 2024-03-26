@@ -29,7 +29,7 @@ class PrimerPair:
         return False
 
     def __hash__(self):
-        return hash((self.chromosome, self.forward, self.reverse.items()))
+        return hash((self.chromosome, self.forward, self.reverse))
 
     @property
     def contain_hap_one_variant(self) -> bool:
