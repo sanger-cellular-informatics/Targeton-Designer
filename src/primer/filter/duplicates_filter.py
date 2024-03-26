@@ -1,4 +1,5 @@
-from typing import List
+from collections import defaultdict
+from typing import List, Tuple
 
 from primer.filter.filter import Filter
 from primer.filter.filter_response import FilterResponse, PrimerPairDiscarded
@@ -14,11 +15,31 @@ class DuplicatesFilter(Filter):
         pairs_to_keep = []
         pairs_to_discard = []
 
-        # TODO
-        # for pair in pairs:
-        #     if CONDITION:
-        #         pairs_to_discard.append(PrimerPairDiscarded(pair, DuplicatesFilter.reason_discarded))
-        #     else:
-        #         pairs_to_keep.append(pair)
+        pairs_duplicates_grouped = _group_duplicates_pairs(pairs)
+
+        for duplicate_group in pairs_duplicates_grouped:
+            pair_max_stringency, others = _take_pair_with_max_stringency_and_others(duplicate_group)
+            primer_pairs_to_discard = [PrimerPairDiscarded(pair, DuplicatesFilter.reason_discarded) for pair in others]
+
+            pairs_to_keep.append(pair_max_stringency)
+            pairs_to_discard.extend(primer_pairs_to_discard)
 
         return FilterResponse(pairs_to_keep, pairs_to_discard)
+
+
+def _take_pair_with_max_stringency_and_others(pairs: List[PrimerPair]) -> Tuple[PrimerPair, List[PrimerPair]]:
+    pair_max_stringency = _get_max_stringency_pair(pairs)
+    other_pairs = [pair for pair in pairs if pair != pair_max_stringency]
+
+    return pair_max_stringency, other_pairs
+
+
+def _get_max_stringency_pair(duplicate_group: List[PrimerPair]) -> PrimerPair:
+    return max(duplicate_group, key=lambda pair: pair.forward.stringency)
+
+
+def _group_duplicates_pairs(players: List[PrimerPair]) -> List[List[PrimerPair]]:
+    groups_duplicates = defaultdict(list)
+    for player in players:
+        groups_duplicates[player].append(player)
+    return list(groups_duplicates.values())

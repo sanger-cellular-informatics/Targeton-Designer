@@ -16,7 +16,8 @@ class PrimerPair:
         self.reverse = {}
 
     def __repr__(self):
-        return f"PrimerPair(pair_id='{self.id}', chromosome='{self.chromosome}', forward={self.forward}, reverse={self.reverse})"
+        return (f"PrimerPair(pair_id='{self.id}', chromosome='{self.chromosome}', "
+                f"forward={self.forward}, reverse={self.reverse})")
 
     def __eq__(self, other):
         if isinstance(other, PrimerPair):
@@ -30,12 +31,6 @@ class PrimerPair:
     def __hash__(self):
         return hash((self.chromosome, self.forward, self.reverse.items()))
 
-    @staticmethod
-    def group_pair_by_duplicates(players: List['PrimerPair']) -> List[List['PrimerPair']]:
-        groups_duplicates = defaultdict(list)
-        for player in players:
-            groups_duplicates[player].append(player)
-        return list(groups_duplicates.values())
 
     @property
     def contain_hap_one_variant(self) -> bool:
