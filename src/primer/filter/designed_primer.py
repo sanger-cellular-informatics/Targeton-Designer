@@ -42,6 +42,7 @@ class DesignedPrimer:
         return False
 
     def __hash__(self):
+        # Exclude the 'name' and 'stringency' attributes from the comparison
         return hash((
             self.penalty,
             self.pair_id,

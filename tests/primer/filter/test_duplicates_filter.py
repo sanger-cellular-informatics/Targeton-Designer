@@ -64,5 +64,44 @@ class TestDuplicatesFilterAuxFunctions(TestCase):
         self.assertEqual(result_max_stringency_pair, max_stringency_pair)
         self.assertEqual(other_pairs, [pair1, pair2])
 
-    # TODO
-    # def test_group_duplicates_pairs(self):
+    def test_group_duplicates_pairs(self):
+        # Note: The 'name' and 'stringency' attributes are excluded in the comparison in the DesignedPrimer
+        # The 'pair_id' attribute is excluded in the comparison of PrimerPair
+
+        # pair1_group1 and pair2_group1 belongs to the same group because they only differ in stringency and name
+        pair1_group1 = PrimerPair(pair_id="1", chromosome="chr1")
+        pair1_group1.forward = _designed_primer(name='forward', stringency=0.5, penalty=1)
+        pair1_group1.reverse = _designed_primer(name='reverse', stringency=0.5, penalty=1)
+        pair2_group1 = PrimerPair(pair_id="2", chromosome="chr1")
+        pair2_group1.forward = _designed_primer(name='forward', stringency=0.75, penalty=1)
+        pair2_group1.reverse = _designed_primer(name='reverse', stringency=0.75, penalty=1)
+
+        # pair_group2 is not part of group1 because it differs from the other pairs,
+        # having one primer with a different penalty and penalty is included in the comparison in PrimerPair
+        pair_group2 = PrimerPair(pair_id="3", chromosome="chr1")
+        pair_group2.forward = _designed_primer(name='forward', stringency=0.5, penalty=1)
+        pair_group2.reverse = _designed_primer(name='reverse', stringency=0.5, penalty=0.7)
+
+        result = _group_duplicates_pairs([pair1_group1, pair2_group1, pair_group2])
+
+        self.assertEqual(result, [[pair1_group1, pair2_group1], [pair_group2]])
+
+
+def _designed_primer(name: str, stringency: float, penalty: float):
+    return DesignedPrimer(
+        name=name,
+        penalty=penalty,
+        stringency=stringency,
+        pair_id="pair_id",
+        sequence="ATCGATCGATCG",
+        coords=pd.Interval(left=100, right=200),
+        primer_start=100,
+        primer_end=110,
+        strand="+",
+        tm=60.5,
+        gc_percent=50.0,
+        self_any_th=0.1,
+        self_end_th=0.2,
+        hairpin_th=0.3,
+        end_stability=0.4
+    )

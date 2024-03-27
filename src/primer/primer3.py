@@ -52,4 +52,3 @@ class Primer3:
             designs.append(slice)
 
         return designs
-
