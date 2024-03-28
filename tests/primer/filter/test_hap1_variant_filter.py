@@ -31,15 +31,7 @@ class TestHAP1VariantFilter(unittest.TestCase):
         self.assertEqual(response.primer_pairs_to_discard[1].filter_applied, HAP1VariantFilter.reason_discarded)
 
     def test_apply_test_when_no_primer_pairs(self):
-        pair_without_variant = MagicMock(spec=PrimerPair)
-        pair_without_variant.contain_hap_one_variant = False
+        response = self.test_instance.apply([])
 
-        response = self.test_instance.apply([pair_without_variant])
-
-        self.assertEqual(len(response.primer_pairs_to_keep), 1)
-        self.assertEqual(len(response.primer_pairs_to_discard), 0)
-        self.assertTrue(pair_without_variant in response.primer_pairs_to_keep)
-
-
-if __name__ == '__main__':
-    unittest.main()
+        self.assertEqual(response.primer_pairs_to_keep, [])
+        self.assertEqual(response.primer_pairs_to_discard, [])
