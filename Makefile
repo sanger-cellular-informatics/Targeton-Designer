@@ -47,9 +47,6 @@ install:
 	@if [ "$(shell which curl)" = "" ]; then
 		$(MAKE) install-curl;
 	fi
-	@if [ "$(shell which ipcress)" = "" ]; then
-		$(MAKE) install-ipcress;		
-	fi
 
 install-bedtools:
 	@echo "Installing bedtools..."
@@ -86,16 +83,6 @@ install-libglib2.0-dev:
 install-autoconf:
 	@echo "Installing autoconf..."
 	@apt-get -y install autoconf libtool
-
-install-ipcress:
-	@echo "Installing ipcress..."
-	@git clone https://github.com/nathanweeks/exonerate.git $(APP)/exonerate
-	@cd $(APP)/exonerate \
-		&& autoreconf -fi > /dev/null 2>&1\
-		&& ./configure -q > /dev/null 2>&1\
-		&& make -j 4 > /dev/null 2>&1\
-		&& make install > /dev/null 2>&1
-	@rm -rf $(APP)/exonerate
 
 install-sudo:
 	@echo "Installing sudo..."
