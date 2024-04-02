@@ -3,13 +3,10 @@ import sys
 from os import path
 
 from config.config import DesignerConfig, Primer3ParamsConfig
-from primer.slice_data import SliceData
 from utils.arguments_parser import ParsedInputArguments
 from utils.validate_files import validate_files
 from utils.write_output_files import (
     write_slicer_output,
-    write_ipcress_input,
-    write_ipcress_output,
     write_targeton_csv,
     write_scoring_output,
     write_primer_design_output,
@@ -18,7 +15,6 @@ from utils.write_output_files import (
 from designer.output_data_classes import (
     SlicerOutputData,
     PrimerOutputData,
-    IpcressOutputData,
     ScoringOutputData,
     PrimerDesignerOutputData,
     DesignOutputData,
@@ -26,8 +22,6 @@ from designer.output_data_classes import (
 from primer.write_primer_output import write_primer_output
 from slicer.slicer import Slicer
 from primer.primer3 import Primer3
-from ipcress.ipcress import Ipcress
-from adapters.primer3_to_ipcress import Primer3ToIpcressAdapter
 from primer_designer import PrimerDesigner
 from post_primer_pairs import post_primer_pairs
 
@@ -58,7 +52,6 @@ def primer_command(
     p3_config_file: str = None,
     designer_config_file: str = None
 ) -> PrimerOutputData:
-
     validate_files(fasta=fasta)
 
     p3_class = Primer3(
@@ -94,46 +87,6 @@ def collate_primer_designer_data_command(
     return primer_designer_result
 
 
-def primer_for_ipcress(fasta='', prefix='', min=0, max=0, config=''):
-    primer_result = primer_command(fasta=fasta, prefix=prefix, config=config)
-
-    adapter = Primer3ToIpcressAdapter()
-    adapter.prepare_input(primer_result.csv, min, max, primer_result.dir)
-
-    input_path = write_ipcress_input(primer_result.dir, adapter.formatted_primers)
-
-    result = adapter.formatted_primers
-
-    return result
-
-
-def ipcress_command(params, csv='', existing_dir='') -> IpcressOutputData:
-    ipcress_params = params.copy()
-
-    if csv:
-        ipcress_params['p3_csv'] = csv
-    if existing_dir:
-        ipcress_params['dir'] = existing_dir
-
-    validate_files(
-        fasta=ipcress_params['fasta'],
-        txt=ipcress_params['primers'],
-        p3_csv=ipcress_params['p3_csv']
-    )
-
-    ipcress = Ipcress(ipcress_params)
-    ipcress_result = ipcress.run()
-
-    result = write_ipcress_output(
-        stnd=ipcress_result.stnd,
-        err=ipcress_result.err,
-        existing_dir=ipcress_params['dir']
-    )
-    result.input_file = ipcress_result.input_file
-
-    return result
-
-
 def scoring_command(ipcress_output, mismatch, output_tsv, targeton_csv=None) -> ScoringOutputData:
     scoring = Scoring(ipcress_output, mismatch, targeton_csv)
     scoring.add_scores_to_df()
@@ -145,44 +98,20 @@ def scoring_command(ipcress_output, mismatch, output_tsv, targeton_csv=None) -> 
 
 def design_command(args) -> DesignOutputData:
     validate_files(fasta=args['fasta'])
-    
+
     primer_result = primer_command(
         fasta=args['fasta'],
         prefix=args['dir'],
         p3_config_file=args['primer3_params']
     )
-    slices = SliceData.parse_fasta(args['fasta'])
-    
+
     output_dir = primer_result.dir
-
-    ipcress_result = ipcress_command(args, csv=primer_result.csv, existing_dir=output_dir)
-
-    targeton_result = write_targeton_csv(
-        ipcress_input=ipcress_result.input_file,
-        slices=slices,
-        dirname=output_dir,
-        dir_timestamped=True,
-    )
-    scoring_output_path = path.join(output_dir, 'scoring_output.tsv')
-    scoring_result = scoring_command(
-        ipcress_result.stnd,
-        args['mismatch'],
-        scoring_output_path,
-        targeton_result.csv
-    )
 
     design_result = DesignOutputData(output_dir)
     # Primer
     design_result.p3_bed = primer_result.bed
     design_result.p3_csv = primer_result.csv
-    # iPCRess
-    design_result.ipcress_input = ipcress_result.input_file
-    design_result.ipcress_output = ipcress_result.stnd
-    design_result.ipcress_err = ipcress_result.err
-    # Targeton CSV
-    design_result.targeton_csv = targeton_result.csv
-    # Scoring
-    design_result.scoring_tsv = scoring_result.tsv
+
     # Primer Designer
     primer_designer_result = collate_primer_designer_data_command(
         design_result,
@@ -212,17 +141,8 @@ def resolve_command(args):
             primer_command(
                 fasta=args['fasta'],
                 prefix=args['dir'],
-                designer_config_file= args['conf'],
+                designer_config_file=args['conf'],
                 p3_config_file=args['primer3_params']
-            )
-
-        if command == 'primer_for_ipcress':
-            primer_for_ipcress(
-                fasta=args['fasta'],
-                prefix=args['dir'],
-                min=args['min'],
-                max=args['max'],
-                config=args['primer3_params'],
             )
 
         if command == 'collate_primer_data':
@@ -230,9 +150,6 @@ def resolve_command(args):
             design_output_data.p3_csv = args['p3_csv']
             design_output_data.scoring_tsv = args['score_tsv']
             collate_primer_designer_data_command(design_output_data, prefix=args['dir'])
-
-        if command == 'ipcress':
-            ipcress_command(args)
 
         if command == 'generate_targeton_csv':
             write_targeton_csv(args['primers'], args['bed'], args['dir'])
