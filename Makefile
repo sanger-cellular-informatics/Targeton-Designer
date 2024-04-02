@@ -38,9 +38,6 @@ install:
 	@if [ "$(shell which python3.8-dev)" = "" ]; then
 		$(MAKE) install-python3.8-dev;
 	fi
-	@if [ "$(shell which autoconf)" = "" ]; then
-		$(MAKE) install-autoconf;		
-	fi
 	@if [ "$(shell which curl)" = "" ]; then
 		$(MAKE) install-curl;
 	fi
@@ -72,10 +69,6 @@ install-python3.8-dev:
 		@update-alternatives --install ${PYTHONPATH} python ${PYTHONPATH38} 2 
 		@update-alternatives --config python 
 	fi
-
-install-autoconf:
-	@echo "Installing autoconf..."
-	@apt-get -y install autoconf libtool
 
 install-sudo:
 	@echo "Installing sudo..."
