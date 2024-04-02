@@ -38,9 +38,6 @@ install:
 	@if [ "$(shell which python3.8-dev)" = "" ]; then
 		$(MAKE) install-python3.8-dev;
 	fi
-	@if [ "$(shell which libglib2.0-dev)" = "" ]; then
-		$(MAKE) install-libglib2.0-dev;
-	fi
 	@if [ "$(shell which autoconf)" = "" ]; then
 		$(MAKE) install-autoconf;		
 	fi
@@ -75,10 +72,6 @@ install-python3.8-dev:
 		@update-alternatives --install ${PYTHONPATH} python ${PYTHONPATH38} 2 
 		@update-alternatives --config python 
 	fi
-
-install-libglib2.0-dev:
-	@echo "Installing libglib2.0-dev..."
-	@apt-get -y install libglib2.0-dev 
 
 install-autoconf:
 	@echo "Installing autoconf..."
