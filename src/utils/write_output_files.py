@@ -8,16 +8,14 @@ from os import path
 from pathlib import Path
 
 from pybedtools import BedTool
-from utils.file_system import write_to_text_file, FolderCreator
+from utils.file_system import FolderCreator
 from utils.exceptions import OutputError, FolderCreatorError, FileTypeError
 from primer.slice_data import SliceData
 from designer.output_data_classes import (
     SlicerOutputData,
-    IpcressOutputData,
     TargetonCSVData,
     ScoringOutputData,
     PrimerDesignerOutputData,
-    DesignOutputData,
 )
 
 if TYPE_CHECKING:  # For avoiding circular import dependencies, only import for type checking.
@@ -87,25 +85,6 @@ def export_to_csv(data: Union[list, dict], export_dir: str, filename: str,
             output_writer.writerows(data)
 
     return csv_path
-
-
-def write_ipcress_input(export_dir, formatted_primers) -> str:
-    INPUT_FILE_NAME = 'ipcress_primer_input'
-
-    file_path = write_to_text_file(export_dir, formatted_primers, INPUT_FILE_NAME)
-
-    return file_path
-
-
-def write_ipcress_output(stnd='', err='', existing_dir='') -> IpcressOutputData:
-    IPCRESS_OUTPUT_TXT = 'ipcress_output'
-
-    result = IpcressOutputData(existing_dir)
-
-    result.stnd = write_to_text_file(existing_dir, stnd, IPCRESS_OUTPUT_TXT)
-    result.err = write_to_text_file(existing_dir, err, IPCRESS_OUTPUT_TXT + "_err")
-
-    return result
 
 
 def write_targeton_csv(

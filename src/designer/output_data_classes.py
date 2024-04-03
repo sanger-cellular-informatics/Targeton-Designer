@@ -28,13 +28,6 @@ class PrimerDesignerOutputData(OutputFilesData):
 
 
 @dataclass
-class IpcressOutputData(OutputFilesData):
-    input_file: str = ''
-    stnd: str = ''
-    err: str = ''
-
-
-@dataclass
 class TargetonCSVData(OutputFilesData):
     csv: str = ''
 
