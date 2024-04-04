@@ -19,7 +19,9 @@ class ParsedInputArguments:
                 'version, slicer, primer, collate_primer_data, scoring, design, '
                 'generate_targeton_csv, post_primers'
             ),
-            type=str, default='design'
+            type=str,
+            choices=['version', 'slicer', 'primer', 'collate_primer_data', 'scoring', 'design', 'generate_targeton_csv',
+                     'post_primers'],
         )
 
         parser = add_input_args(parser)
@@ -99,7 +101,8 @@ def add_input_args(parser):
     )
 
     # CONFIG
-    parser.add_argument('--conf',
+    parser.add_argument(
+        '--conf',
         type=str,
         help='Path to custom configuration file',
     )
