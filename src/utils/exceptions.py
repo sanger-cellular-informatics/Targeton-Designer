@@ -31,9 +31,5 @@ class InvalidConfigError(Exception):
     pass
 
 
-class IpcressError(Exception):
-    pass
-
-
 class InputTypeError(Exception):
     pass

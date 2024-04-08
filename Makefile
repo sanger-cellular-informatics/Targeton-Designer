@@ -38,17 +38,8 @@ install:
 	@if [ "$(shell which python3.8-dev)" = "" ]; then
 		$(MAKE) install-python3.8-dev;
 	fi
-	@if [ "$(shell which libglib2.0-dev)" = "" ]; then
-		$(MAKE) install-libglib2.0-dev;
-	fi
-	@if [ "$(shell which autoconf)" = "" ]; then
-		$(MAKE) install-autoconf;		
-	fi
 	@if [ "$(shell which curl)" = "" ]; then
 		$(MAKE) install-curl;
-	fi
-	@if [ "$(shell which ipcress)" = "" ]; then
-		$(MAKE) install-ipcress;		
 	fi
 
 install-bedtools:
@@ -78,24 +69,6 @@ install-python3.8-dev:
 		@update-alternatives --install ${PYTHONPATH} python ${PYTHONPATH38} 2 
 		@update-alternatives --config python 
 	fi
-
-install-libglib2.0-dev:
-	@echo "Installing libglib2.0-dev..."
-	@apt-get -y install libglib2.0-dev 
-
-install-autoconf:
-	@echo "Installing autoconf..."
-	@apt-get -y install autoconf libtool
-
-install-ipcress:
-	@echo "Installing ipcress..."
-	@git clone https://github.com/nathanweeks/exonerate.git $(APP)/exonerate
-	@cd $(APP)/exonerate \
-		&& autoreconf -fi > /dev/null 2>&1\
-		&& ./configure -q > /dev/null 2>&1\
-		&& make -j 4 > /dev/null 2>&1\
-		&& make install > /dev/null 2>&1
-	@rm -rf $(APP)/exonerate
 
 install-sudo:
 	@echo "Installing sudo..."

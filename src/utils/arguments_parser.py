@@ -16,10 +16,12 @@ class ParsedInputArguments:
             'command',
             help=(
                 'Command to run in Designer CLI, available commands: '
-                'version, slicer, primer, collate_primer_data, ipcress, scoring, design, '
-                'primer_for_ipcress, generate_targeton_csv, post_primers'
+                'version, slicer, primer, collate_primer_data, scoring, design, '
+                'generate_targeton_csv, post_primers'
             ),
-            type=str, default='design'
+            type=str,
+            choices=['version', 'slicer', 'primer', 'collate_primer_data', 'scoring', 'design', 'generate_targeton_csv',
+                     'post_primers'],
         )
 
         parser = add_input_args(parser)
@@ -99,7 +101,8 @@ def add_input_args(parser):
     )
 
     # CONFIG
-    parser.add_argument('--conf',
+    parser.add_argument(
+        '--conf',
         type=str,
         help='Path to custom configuration file',
     )
@@ -147,11 +150,6 @@ def add_input_args(parser):
         help='Number of mismatches to check against',
         type=positive_int,
         default=5,
-    )
-    parser.add_argument(
-        '--pretty',
-        help='Specify to include graphs in the iPCRess output. Default: false',
-        action='store_true',
     )
     parser.add_argument(
         '-q',
