@@ -43,7 +43,6 @@ class DesignOutputData(OutputFilesData):
     p3_csv: str = ''
     pd_csv: str = ''
     pd_json: str = ''
-    ipcress_input: str = ''
     ipcress_output: str = ''
     ipcress_err: str = ''
     targeton_csv: str = ''
