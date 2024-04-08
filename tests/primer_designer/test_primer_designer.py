@@ -4,10 +4,11 @@ import json
 from os import linesep
 from pathlib import Path
 from unittest import TestCase
-from unittest.mock import patch
 from tempfile import TemporaryDirectory
+
+from designer.output_data_classes import DesignOutputData
 from primer_designer import PrimerDesigner, Primer, PrimerPair, translate_dict, iterate_design, map_primer_data
-from utils.write_output_files import DesignOutputData, export_primer_design_to_file, write_primer_design_output
+from utils.write_output_files import export_primer_design_to_file, write_primer_design_output
 from collections import defaultdict
 
 VERSION = '01'

@@ -7,16 +7,14 @@ Standalone primer designer tool.
 - [Installation](#installation)
   - [Clone Repository](#clone-repository)
   - [Python Virtual Environment](#python-virtual-environment)
-  - [Exonerate iPCRess](#exonerate-ipcress)
   - [Git Hooks (for devs)](#git-hooks-for-devs)
   - [Docker Images](#docker-images)
   - [Python debugger](#python-debugger)
 - [Usage](#usage)
     -  [Primer Designer Tool](#primer-designer-tool) 
-        -  [Designer Workflow (Primer3 -> Ipcress -> Scoring)](#designer-workflow-primer3---ipcress---scoring)
+        -  [Designer Workflow (Primer3)](#designer-workflow-primer3)
         -  [Primer3 Runner](#primer3-runner)
-        -  [Exonerate iPCRess](#exonerate-ipcress)
-        -  [Primer Scoring](#primer-scoring)
+    -  [Primer Scoring Tool](#primer-scoring-tool)
     -  [Slicer Tool](#slicer-tool)
     -  [Other Tools](#other-tools)
         - [Targeton CSV generation](#targeton-csv-generation) 
@@ -28,10 +26,9 @@ Standalone primer designer tool.
    - [Slicer BED output](#slicer-bed-output) 
    - [Primer3 and Designer Fasta Input File (Slicer Fasta output)](#primer3-and-designer-fasta-input-file-slicer-fasta-output) 
    - [Primer3 Output BED file](#primer3-output-bed-file) 
-   - [Primer3 Output CSV file (iPCRess Primer3 CSV Input file)](#primer3-output-csv-file-ipcress-primer3-csv-input-file) 
+   - [Primer3 Output CSV file](#primer3-output-csv-file) 
    - [Primer Designer Output example](#primer-designer-output-example) 
-   - [iPCRess Standard Input File](#ipcress-standard-input-file) 
-   - [iPCRess Output example](#ipcress-output-example) 
+   - [Scoring Tool Input iPCRess file example](#scoring-tool-input-ipcress-file-example) 
 
 
 ## Installation
@@ -101,35 +98,6 @@ python -m unittest
 deactivate
 ```
 
-### Exonerate iPCRess
-
-Nathan Weeks has placed Exonerate onto GitHub along with maintenance tweaks. The repo can be found here:
-https://github.com/nathanweeks/exonerate
-
-Install glib and autoconf
-```sh
-sudo apt-get install libglib2.0-dev
-sudo apt install autoconf
-```
-
-Installing exonerate on your VM.
-```sh
-git clone https://github.com/nathanweeks/exonerate.git
-cd exonerate /
-    && autoreconf -vfi /
-    && ./configure /
-    && make -j /
-    && make check /
-    && sudo make install
-```
-
-If you happen to get the error: no module found 'apt_pkg', create a symbolic link to your apt_pkg.so
-
-```sh
-cd /usr/lib/python3/dist-packages
-sudo ln -s apt_pkg.cpython-{version-number}-x86_64-linux-gnu.so apt_pkg.so
-```
-
 ### Git Hooks (for devs)
 
 Located in  .githooks/
@@ -172,7 +140,7 @@ Check Designer Version:
 
 ### Primer Designer Tool
 
-#### Designer Workflow (Primer3 -> Ipcress -> Scoring)
+#### Designer Workflow (Primer3)
 
 Running full Designer Workflow:
 ```sh
@@ -219,24 +187,8 @@ Example command:
 To use kmer lists for primer generation: 
 1. Set config parameters (example config/primer3_kmer.config.json)
 2. Provide 2 files with kmers: homo_sapiens_11.list and homo_sapiens_16.list
- 
 
-#### Exonerate iPCRess
-
-Running Exonerate iPCRess:
-```sh
-./designer.sh ipcress [--dir DIR] [--fasta REF_FASTA] [--primers IPCRESS_INPUT] [--p3_csv PRIMER3_OUTPUT_CSV] 
-```
-Supply either a standard iPCRess input file or point P3 CSV to the output csv of the Primer3 runner.
-
-Example command:
-```sh
-./designer.sh ipcress --dir example_dir --fasta example_genomic_ref.fa --primers example_ipcress_input.txt
-or
-./designer.sh ipcress --dir example_dir --fasta example_genomic_ref.fa --p3_csv example_p3_output.csv
-```
-
-#### Primer Scoring
+### Primer Scoring Tool
 
 Running primer scoring:
 ```sh
@@ -327,10 +279,10 @@ The chromosome column data must match your reference fasta file IDs. If your ref
 
 Note: BED effectively are applied tsv files so use tabs to separate the values. Headers are optional in BED file and can be a cause of issues if they aren't perfect. Strand is required for the slicer to ensure sequences are output in the correct orientation. Score isn't used but the field must be present for the file format to be read correctly.
 
-| chrom | chromStart | chromEnd | name | score | strand |
-| ----- | ---------- | -------- | ---- | ----- | ------ |
-| 1 | 42931046 | 42931206 | ENSE00003571441_HG6	| 0	| - |
-| 1	| 42929593 | 42929780 | ENSE00000769557_HG8 | 0 | - |
+| chrom | chromStart | chromEnd | name                 | score | strand |
+|-------|------------|----------|----------------------|-------|--------|
+| 1     | 42931046   | 42931206 | ENSE00003571441_HG6	 | 0	    | -      |
+| 1	    | 42929593   | 42929780 | ENSE00000769557_HG8  | 0     | -      |
 
 Raw file
 ```
@@ -384,12 +336,12 @@ TTGGGGGCATGATTGGCTCCTTCTCTGTGGGCCTTTTCGTTAACCGCTTTGGCCGGTAAGTAGGAGAGGTCCTGGCACTG
 ### Primer3 Output BED file
 Genomic locations of the primers and their names. Names are incremented from 0 and given F and R depending on whether they're 5' or 3'
 
-| chrom | chromStart | chromEnd | name | score | strand |
-| ----- | ---------- | -------- | ---- | ----- | ------ |
-| 1 | 42931021 | 42931039 | ENSE00003571441_HG6_6_LibAmpR_0 | 0 | - |
-| 1 | 42931210 | 42931230 | ENSE00003571441_HG6_6_LibAmpF_0 | 0 | - |
-| 1 | 42931021 | 42931039 | ENSE00003571441_HG6_6_LibAmpR_1 | 0 | - | 
-| 1 | 42931211 | 42931230 | ENSE00003571441_HG6_6_LibAmpF_1 | 0 | - |
+| chrom | chromStart | chromEnd | name                            | score | strand |
+|-------|------------|----------|---------------------------------|-------|--------|
+| 1     | 42931021   | 42931039 | ENSE00003571441_HG6_6_LibAmpR_0 | 0     | -      |
+| 1     | 42931210   | 42931230 | ENSE00003571441_HG6_6_LibAmpF_0 | 0     | -      |
+| 1     | 42931021   | 42931039 | ENSE00003571441_HG6_6_LibAmpR_1 | 0     | -      | 
+| 1     | 42931211   | 42931230 | ENSE00003571441_HG6_6_LibAmpF_1 | 0     | -      |
 
 Raw file
 ```
@@ -399,15 +351,15 @@ Raw file
 1	42931211	42931230	ENSE00003571441_HG6_6_LibAmpF_1	0	-
 ```
 
-### Primer3 Output CSV file (iPCRess Primer3 CSV Input file)
+### Primer3 Output CSV file
 It contains all the additional information from Primer3 for the individual primers
 
-| primer | sequence | chr | primer_start | primer_end | tm | gc_percent | penalty | self_any_th | self_end_th | hairpin_th | end_stability |
-| ------ | -------- | --- | ------------ | ---------- | -- | ---------- | ------- | ----------- | ----------- | ---------- | ------------- |
-| ENSE00003571441_HG6_6_LibAmpR_0 | ACCCAGGCTGCATCTCCC | 1 | 42931021 | 42931039 | 61.41508744063151 | 66.66666666666667 | 3.4150874406315097 | 9.564684449038168 | 0.0 | 0.0 | 4.3 |
-| ENSE00003571441_HG6_6_LibAmpF_0 | AGTGCCAGGACCTCTCCTAC | 1 | 42931210 | 42931230 | 60.32483047348552 | 60.0 | 0.32483047348551963 | 0.0 | 0.0 | 46.300612411542886 | 3.18 |
-| ENSE00003571441_HG6_6_LibAmpR_1 | ACCCAGGCTGCATCTCCC | 1 | 42931021 | 42931039 | 61.41508744063151 | 66.66666666666667 | 3.4150874406315097 | 9.564684449038168 | 0.0 | 0.0 | 4.3 | 
-| ENSE00003571441_HG6_6_LibAmpF_1 | AGTGCCAGGACCTCTCCTA | 1 | 42931211 | 42931230 | 58.90293358584404 | 57.89473684210526 | 2.097066414155961 | 0.0 | 0.0 | 46.300612411542886 | 2.94 | 
+| primer                          | sequence             | chr | primer_start | primer_end | tm                | gc_percent        | penalty             | self_any_th       | self_end_th | hairpin_th         | end_stability |
+|---------------------------------|----------------------|-----|--------------|------------|-------------------|-------------------|---------------------|-------------------|-------------|--------------------|---------------|
+| ENSE00003571441_HG6_6_LibAmpR_0 | ACCCAGGCTGCATCTCCC   | 1   | 42931021     | 42931039   | 61.41508744063151 | 66.66666666666667 | 3.4150874406315097  | 9.564684449038168 | 0.0         | 0.0                | 4.3           |
+| ENSE00003571441_HG6_6_LibAmpF_0 | AGTGCCAGGACCTCTCCTAC | 1   | 42931210     | 42931230   | 60.32483047348552 | 60.0              | 0.32483047348551963 | 0.0               | 0.0         | 46.300612411542886 | 3.18          |
+| ENSE00003571441_HG6_6_LibAmpR_1 | ACCCAGGCTGCATCTCCC   | 1   | 42931021     | 42931039   | 61.41508744063151 | 66.66666666666667 | 3.4150874406315097  | 9.564684449038168 | 0.0         | 0.0                | 4.3           | 
+| ENSE00003571441_HG6_6_LibAmpF_1 | AGTGCCAGGACCTCTCCTA  | 1   | 42931211     | 42931230   | 58.90293358584404 | 57.89473684210526 | 2.097066414155961   | 0.0               | 0.0         | 46.300612411542886 | 2.94          | 
 
 Raw File
 ```
@@ -534,21 +486,7 @@ version,pair,score,targeton,product_size,side,chromosome,chr_start,chr_end,seq,m
 01,exon1_2_LibAmp_3,0.0,exon1,210,right,chr1,243,265,AAGAATTTTCCCCAATGGTTGC,57.98020807087107,40.90909090909091
 ```
 
-### iPCRess Standard Input File
-Standard file format input for iPCRess. If you wish to use iPCRess as a standalone, use this file format.
-Otherwise, point iPCRess at the Primer3 output CSV.
-Space separated text file containing name, left & right primer, minimum & maximum amplicon lengths.
-
-| name | left | right | min_amplicon_len | max_amplicon_len |
-| ---- | ---- | ----- | ---------------- | ---------------- |
-| ENSE00003571441_HG6_6_LibAmp_0 | AGTGCCAGGACCTCTCCTAC | GGGAGATGCAGCCTGGGT | 200 | 300 |
-
-Raw file
-```
-ENSE00003571441_HG6_6_LibAmp_0 AGTGCCAGGACCTCTCCTAC GGGAGATGCAGCCTGGGT 200 300
-```
-
-### iPCRess Output example
+### Scoring Tool Input iPCRess file example
 Two files, stnd and err.
 stnd: Space separated text file. Sequence_id contains the chromosome and description can be 'forward', 'revcomp', 'single_A' or 'single_B'.
 | sequence_id | experiment_id | product_length | primer_5 | pos_5 | mismatch_5 | primer_3 | pos_3 | mismatch_3 | description |
@@ -575,8 +513,8 @@ err: is a .txt error output from ipcress or if it fails early system.run().
 #### Targeton CSV example
 A row for each primer pair and the region it originated from.
 
-| Primer pair       | Region |
-|-------------------|--------|
+| Primer pair      | Region |
+|------------------|--------|
 | exon1_2_LibAmp_0 | exon1  |
 
 Raw file
