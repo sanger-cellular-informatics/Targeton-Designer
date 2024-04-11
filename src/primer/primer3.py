@@ -50,7 +50,7 @@ class Primer3:
 
         for stringency in self._stringency_vector:
             designs = self._get_designs(slice_data.p3_input, stringency)
-            built_primer_pairs = _create_primer_pairs(slice_data, designs)
+            built_primer_pairs = _create_primer_pairs(slice_data, designs, stringency)
 
             primer_pairs.extend(built_primer_pairs)
 
@@ -78,6 +78,4 @@ class Primer3:
 
     def _get_designs(self, slice_info: dict, stringency) -> dict:
         config_data = prepare_config(self._p3_params, stringency)
-        design = primer3.bindings.design_primers(slice_info, config_data)
-        design['stringency'] = str(stringency)
-        return design
+        return primer3.bindings.design_primers(slice_info, config_data)
