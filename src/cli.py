@@ -60,6 +60,7 @@ def primer_command(
     )
 
     primers = p3_class.get_primers(fasta)
+    primers2 = p3_class.get_primers2(fasta)
 
     primer_result = write_primer_output(
         primers=primers,

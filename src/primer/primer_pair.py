@@ -58,6 +58,21 @@ def parse_designs_to_primer_pairs(slices: List[SliceData]) -> List[PrimerPair]:
     return primer_pairs
 
 
+def _create_primer_pairs(slice_data: SliceData, designs: dict) -> List[PrimerPair]:
+    primer_pairs = []
+    for design in designs:
+        primer_keys = design.keys()
+
+        pairs = build_primer_pairs(
+            design,
+            primer_keys,
+            slice_data,
+            design['stringency']
+        )
+        primer_pairs.extend(pairs)
+
+    return primer_pairs
+
 def build_primer_loci(
         primer,
         key,
