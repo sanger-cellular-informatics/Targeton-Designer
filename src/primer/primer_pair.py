@@ -39,16 +39,6 @@ class PrimerPair:
                 contain_variant(self.chromosome, reverse_start, reverse_end))
 
 
-def _create_primer_pairs(slice_data: SliceData, designs: dict, stringency: str) -> List[PrimerPair]:
-    primer_pairs = build_primer_pairs(
-        design=designs,
-        primer_keys=designs.keys(),
-        slice_data=slice_data,
-        stringency=str(stringency)
-    )
-
-    return primer_pairs
-
 
 def build_primer_loci(
         primer,
@@ -165,16 +155,15 @@ def determine_primer_strands(side: str, slice_strand: str) -> str:
     return strands[slice_strand][side]
 
 
-def build_primer_pairs(
+def create_primer_pairs(
         design,
-        primer_keys: dict_keys,
         slice_data: SliceData,
         stringency: str = "",
 ) -> List[PrimerPair]:
     primer_pairs = []
     primers = defaultdict(dict)
 
-    for key in primer_keys:
+    for key in design.keys():
         primer_details = capture_primer_details(key)
 
         if primer_details:
