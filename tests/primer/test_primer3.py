@@ -1,4 +1,3 @@
-import json
 import unittest
 from unittest.mock import MagicMock, patch
 from pyfakefs.fake_filesystem_unittest import TestCase
@@ -53,7 +52,7 @@ class TestPrimer3(TestCase):
 
     @patch('primer3.bindings.design_primers')
     def test_get_primer3_designs(self, design_primers):
-        expected = {'designs': ["design1", "design2"]}
+        expected = {"designs": ["design1", "design2"]}
         design_primers.return_value = expected
 
         result = self.primer3_test_instance._get_primer3_designs({}, {})
