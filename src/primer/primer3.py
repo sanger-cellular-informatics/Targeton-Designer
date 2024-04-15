@@ -33,13 +33,13 @@ class Primer3:
         primer_pairs = []
 
         for stringency in self._stringency_vector:
-            designs = self._get_designs(slice_data.p3_input, stringency)
+            designs = self._get_primer3_designs(slice_data.p3_input, stringency)
             built_primer_pairs = create_primer_pairs(designs, slice_data, str(stringency))
 
             primer_pairs.extend(built_primer_pairs)
 
         return primer_pairs
 
-    def _get_designs(self, slice_info: dict, stringency) -> dict:
+    def _get_primer3_designs(self, slice_info: dict, stringency) -> dict:
         config_data = prepare_p3_config(self._p3_config, stringency)
         return primer3.bindings.design_primers(slice_info, config_data)

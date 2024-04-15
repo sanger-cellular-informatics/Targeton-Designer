@@ -1,81 +1,14 @@
+import json
 import unittest
 from unittest.mock import MagicMock, patch
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from primer.primer_pair import PrimerPair
-from tests.test_data.primer3_output_data import primer3_output_data
 from primer.primer3 import Primer3
 from primer.slice_data import SliceData
 
 
-# class TestPrimer3(TestCase):
-#     primer3_output_json_data = primer3_output_data
-#
-#     def setUp(self):
-#         self.setUpPyfakefs()
-#
-#         config = MagicMock(spec=DesignerConfig)
-#         config.params = {"stringency_vector": [""]}
-#         self.config = config
-#
-#         self.p3_params = {
-#             "PRIMER_TASK": "pick_cloning_primers",
-#             "PRIMER_PICK_LEFT_PRIMER": 1,
-#             "PRIMER_PICK_RIGHT_PRIMER": 1,
-#             "PRIMER_OPT_SIZE": 20,
-#             "PRIMER_MIN_SIZE": 18,
-#             "PRIMER_MAX_SIZE": 23,
-#             "P3_FILE_FLAG": 1,
-#             "SEQUENCE_INCLUDED_REGION": [0, 200],
-#             "PRIMER_EXPLAIN_FLAG": 1
-#         }
-#
-#     def create_files(self):
-#         self.fs.create_file('/fwd_primer3_output.json', contents=self.primer3_output_json_data)
-#         self.fs.create_file('/rev_primer3_output.json', contents=self.primer3_output_json_data)
-#         self.fs.create_file('/fasta.fa',
-#                             contents='>region1_1::chr1:5-10(+)\nCTTTTTTCTCTTTCCTTCTGCTTTTGTTTAAAGCGACAAGATGTTGCTCTTTTCCCAGGCTGGAATACAGTGGCATGATCATAGCTCAAGCTCCTGGGCTCAAGTGATCCTCCCGCCTCAGCCTCTCAAGTAGCTAGGACTACAGGCATATCACCACACCAGCGTTTTCTTTGTAGAGGCAGAGTCTCACTCTGTTGCTCAGGCAGGTGTTGAACTCCTGCCTCAAGCAATCCTCCCACCTCAGCCTCCCAGAGCCCTCAAATTATAAGCCACTGTGCTCGGGGCATCCTTTTTGGGGGGTAATCAGCAAACTGAAAAACCTCTTCTTACAACTCCCTATACATTCTCATTCCCAGTATAGAGGAGACTTTTTGTTTTTAAACACTTCCAAAGAATGCAAATTTATAATCCAGAGTATATACATTCTCACTGAATTATTGTACTGTTTCAG')
-#
-#     def test_primer3_run_valid_success(self):
-#         # arrange
-#         self.create_files()
-#
-#         input = [SliceData('region1_1', '5', '10', '+', 'chr1',
-#                            'GTGATCGAGGAGTTCTACAACCAGACATGGGTCCACCGCTATGGGGAGAGCATCCTGCCCACCACGCT'
-#                            'CACCACGCTCTGGTCCCTCTCAGTGGCCATCTTTTCTGTTGGGGGCATGATTGGCTCCTTCTCTGTGG'
-#                            'GCCTTTTCGTTAACCGCTTTGGCCGGTAAGTAGGAGAGGTCCTGGCACTGCCCTTGGAGGGCCCATGC'
-#                            'CCTCCT'
-#                            )]
-#
-#         expected = [{
-#             'PRIMER_INTERNAL': [],
-#             'PRIMER_LEFT': [],
-#             'PRIMER_RIGHT': [],
-#             'PRIMER_PAIR': [],
-#             'PRIMER_LEFT_EXPLAIN': 'considered 6, low tm 4, ok 2',
-#             'PRIMER_RIGHT_EXPLAIN': 'considered 6, high tm 6, ok 0',
-#             'PRIMER_PAIR_EXPLAIN': 'considered 0, ok 0',
-#             'PRIMER_LEFT_NUM_RETURNED': 0,
-#             'PRIMER_RIGHT_NUM_RETURNED': 0,
-#             'PRIMER_INTERNAL_NUM_RETURNED': 0,
-#             'PRIMER_PAIR_NUM_RETURNED': 0,
-#             'stringency': ''
-#         }]
-#
-#         # act
-#         actual = Primer3(
-#             self.config.params, self.p3_params
-#         )._primer3_run(
-#             slices=input,
-#             stringency=""
-#         )[0].designs
-#
-#         # assert
-#         self.assertEqual(actual, expected)
-
-
-class TestPrimer32(TestCase):
-    primer3_output_json_data = primer3_output_data
+class TestPrimer3(TestCase):
 
     def setUp(self):
         self._stringency_vector = [1, 0.5, 0.1]
@@ -83,7 +16,7 @@ class TestPrimer32(TestCase):
         p3_config = {'p3_config': 'p3_config'}
         self.primer3_test_instance = Primer3(designer_config, p3_config)
 
-    @patch('primer.primer_3.Primer3._get_primer_pairs')
+    @patch('primer.primer3.Primer3._get_primer_pairs')
     @patch.object(SliceData, 'parse_fasta')
     def test_get_primers(self, parse_fasta_file, mock_get_primers):
         slice1 = MagicMock(spec=SliceData)
@@ -103,17 +36,39 @@ class TestPrimer32(TestCase):
 
         self.assertEqual(result_primer_pairs, expected_primer_pairs)
 
-    @patch('primer.primer_pair.create_primer_pairs')
-    @patch('primer.primer_3.Primer3._get_designs')
-    def test_get_primer_pairs(self, _get_designs, create_primer_pairs):
-        slice = MagicMock(spec=SliceData)
+    # @patch('primer.primer_pair.create_primer_pairs')
+    # @patch('primer.primer3.Primer3._get_primer3_designs')
+    # def test_get_primer_pairs(self, _get_primer3_designs, create_primer_pairs):
+    #     slice = MagicMock(spec=SliceData)
+    #
+    #     _get_primer3_designs.return_value = {"hola": "chao"}
+    #     create_primer_pairs.return_value = [MagicMock(spec=PrimerPair), MagicMock(spec=PrimerPair)]
+    #
+    #     result_primer_pairs = self.primer3_test_instance._get_primer_pairs(slice)
+    #
+    #     self.assertEqual(result_primer_pairs, 'expected_primer_pairs')
 
-        _get_designs.return_value = {"hola": "chao"}
-        create_primer_pairs.return_value = [MagicMock(spec=PrimerPair), MagicMock(spec=PrimerPair)]
+    def test_get_primer3_designs(self):
+        config_test = {'PRIMER_TASK': 'generic', 'PRIMER_PICK_LEFT_PRIMER': 1, 'PRIMER_PICK_RIGHT_PRIMER': 1,
+                       'PRIMER_OPT_SIZE': 20, 'PRIMER_MIN_SIZE': 18, 'PRIMER_MAX_SIZE': 30, 'P3_FILE_FLAG': 1,
+                       'SEQUENCE_INCLUDED_REGION': [0, 212], 'PRIMER_EXPLAIN_FLAG': 1, 'PRIMER_MASK_TEMPLATE': 1,
+                       'PRIMER_MASK_FAILURE_RATE': 1, 'PRIMER_MASK_5P_DIRECTION': 1, 'PRIMER_MASK_3P_DIRECTION': 0,
+                       'PRIMER_MASK_KMERLIST_PATH': 'kmer/', 'PRIMER_WT_MASK_FAILURE_RATE': 1.0,
+                       'PRIMER_NUM_RETURN': 20}
+        slice_info = {'SEQUENCE_ID': 'mask_mask_1',
+                      'SEQUENCE_TEMPLATE': 'CTTTTTTCTCTTTCCTTCTGCTTTTGTTTAAAGCGACAAGATGTTGCTCTTTTCCCAGGCTGGAATACAGTGGCATGATCATAGCTCAAGCTCCTGGGCTCAAGTGATCCTCCCGCCTCAGCCTCTCAAGTAGCTAGGACTACAGGCATATCACCACACCAGCGTTTTCTTTGTAGAGGCAGAGTCTCACTCTGTTGCTCAGGCAGGTGTTGAACTCCTGCCTCAAGCAATCCTCCCACCTCAGCCTCCCAGAGCCCTCAAATTATAAGCCACTGTGCTCGGGGCATCCTTTTTGGGGGGTAATCAGCAAACTGAAAAACCTCTTCTTACAACTCCCTATACATTCTCATTCCCAGTATAGAGGAGACTTTTTGTTTTTAAACACTTCCAAAGAATGCAAATTTATAATCCAGAGTATATACATTCTCACTGAATTATTGTACTGTTTCAG'}
 
-        result_primer_pairs = self.primer3_test_instance._get_primer_pairs(slice)
+        result = self.primer3_test_instance._get_primer3_designs(slice_info, config_test)
 
-        self.assertEqual(result_primer_pairs, 'expected_primer_pairs')
+        expected = _get_file_content('tests/primer/primer3_output.json')
+
+        self.assertEqual(result, json.loads(expected))
+
+
+def _get_file_content(filename: str) -> str:
+    with open(filename, 'r') as file:
+        content = file.read()
+    return content
 
 
 if __name__ == '__main__':

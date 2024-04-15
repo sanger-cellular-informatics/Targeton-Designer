@@ -39,7 +39,6 @@ class PrimerPair:
                 contain_variant(self.chromosome, reverse_start, reverse_end))
 
 
-
 def build_primer_loci(
         primer,
         key,
