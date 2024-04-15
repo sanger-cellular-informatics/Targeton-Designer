@@ -8,14 +8,20 @@ from primer.slice_data import SliceData
 
 
 class PrimerPair:
-    def __init__(self, pair_id: str, chromosome: str):
+    def __init__(self, pair_id: str, chromosome: str,
+                       pre_targeton_start: str,
+                       pre_targeton_end: str):
         self.id = pair_id
         self.chromosome = chromosome
+        self.pre_targeton_start = pre_targeton_start
+        self.pre_targeton_end = pre_targeton_end
         self.forward = {}
         self.reverse = {}
 
     def __repr__(self):
         return (f"PrimerPair(pair_id='{self.id}', chromosome='{self.chromosome}', "
+                f"pre_targeton_start='{self.pre_targeton_start}', "
+                f"pre_targeton_end='{self.pre_targeton_end}', "
                 f"forward={self.forward}, reverse={self.reverse})")
 
     def __eq__(self, other):
@@ -188,7 +194,8 @@ def create_primer_pairs(
 
             pair = _find_pair_by_id(primer_pairs, primer_pair_id)
             if pair is None:
-                pair = PrimerPair(primer_pair_id, slice_data.chrom)
+                pair = PrimerPair(primer_pair_id, slice_data.chrom,
+                                  slice_data.start, slice_data.end)
                 primer_pairs.append(pair)
 
             if libamp_name == "LibAmpF":
