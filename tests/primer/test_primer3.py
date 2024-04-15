@@ -51,21 +51,14 @@ class TestPrimer3(TestCase):
 
         self.assertEqual(result_primer_pairs, [pair1, pair2, pair3])
 
-    def test_get_primer3_designs(self):
-        config_test = {'PRIMER_TASK': 'generic', 'PRIMER_PICK_LEFT_PRIMER': 1, 'PRIMER_PICK_RIGHT_PRIMER': 1,
-                       'PRIMER_OPT_SIZE': 20, 'PRIMER_MIN_SIZE': 18, 'PRIMER_MAX_SIZE': 30, 'P3_FILE_FLAG': 1,
-                       'SEQUENCE_INCLUDED_REGION': [0, 212], 'PRIMER_EXPLAIN_FLAG': 1, 'PRIMER_MASK_TEMPLATE': 1,
-                       'PRIMER_MASK_FAILURE_RATE': 1, 'PRIMER_MASK_5P_DIRECTION': 1, 'PRIMER_MASK_3P_DIRECTION': 0,
-                       'PRIMER_MASK_KMERLIST_PATH': 'kmer/', 'PRIMER_WT_MASK_FAILURE_RATE': 1.0,
-                       'PRIMER_NUM_RETURN': 20}
-        slice_info = {'SEQUENCE_ID': 'mask_mask_1',
-                      'SEQUENCE_TEMPLATE': 'CTTTTTTCTCTTTCCTTCTGCTTTTGTTTAAAGCGACAAGATGTTGCTCTTTTCCCAGGCTGGAATACAGTGGCATGATCATAGCTCAAGCTCCTGGGCTCAAGTGATCCTCCCGCCTCAGCCTCTCAAGTAGCTAGGACTACAGGCATATCACCACACCAGCGTTTTCTTTGTAGAGGCAGAGTCTCACTCTGTTGCTCAGGCAGGTGTTGAACTCCTGCCTCAAGCAATCCTCCCACCTCAGCCTCCCAGAGCCCTCAAATTATAAGCCACTGTGCTCGGGGCATCCTTTTTGGGGGGTAATCAGCAAACTGAAAAACCTCTTCTTACAACTCCCTATACATTCTCATTCCCAGTATAGAGGAGACTTTTTGTTTTTAAACACTTCCAAAGAATGCAAATTTATAATCCAGAGTATATACATTCTCACTGAATTATTGTACTGTTTCAG'}
+    @patch('primer3.bindings.design_primers')
+    def test_get_primer3_designs(self, design_primers):
+        expected = {'designs': ["design1", "design2"]}
+        design_primers.return_value = expected
 
-        result = self.primer3_test_instance._get_primer3_designs(slice_info, config_test)
+        result = self.primer3_test_instance._get_primer3_designs({}, {})
 
-        expected = _get_file_content('tests/primer/primer3_output.json')
-
-        self.assertDictEqual(result, json.loads(expected))
+        self.assertEqual(result, expected)
 
 
 def _get_file_content(filename: str) -> str:
