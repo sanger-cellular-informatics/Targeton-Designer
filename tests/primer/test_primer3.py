@@ -61,11 +61,5 @@ class TestPrimer3(TestCase):
         self.assertEqual(result, expected)
 
 
-def _get_file_content(filename: str) -> str:
-    with open(filename, 'r') as file:
-        content = file.read()
-    return content
-
-
 if __name__ == '__main__':
     unittest.main()
