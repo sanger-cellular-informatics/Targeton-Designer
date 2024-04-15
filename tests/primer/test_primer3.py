@@ -36,17 +36,20 @@ class TestPrimer3(TestCase):
 
         self.assertEqual(result_primer_pairs, expected_primer_pairs)
 
-    # @patch('primer.primer_pair.create_primer_pairs')
-    # @patch('primer.primer3.Primer3._get_primer3_designs')
-    # def test_get_primer_pairs(self, _get_primer3_designs, create_primer_pairs):
-    #     slice = MagicMock(spec=SliceData)
-    #
-    #     _get_primer3_designs.return_value = {"hola": "chao"}
-    #     create_primer_pairs.return_value = [MagicMock(spec=PrimerPair), MagicMock(spec=PrimerPair)]
-    #
-    #     result_primer_pairs = self.primer3_test_instance._get_primer_pairs(slice)
-    #
-    #     self.assertEqual(result_primer_pairs, 'expected_primer_pairs')
+    @patch('primer.primer3.create_primer_pairs')
+    @patch('primer.primer3.Primer3._get_primer3_designs')
+    def test_get_primer_pairs(self, _get_primer3_designs, create_primer_pairs_mock):
+        pair1 = MagicMock(spec=PrimerPair)
+        pair2 = MagicMock(spec=PrimerPair)
+        pair3 = MagicMock(spec=PrimerPair)
+        create_primer_pairs_mock.side_effect = [[pair1], [pair2], [pair3]]
+
+        slice = MagicMock(spec=SliceData)
+        _get_primer3_designs.side_effect = [{"design1": "value"}, {"design2": "value"}, {"design2": "value"}]
+
+        result_primer_pairs = self.primer3_test_instance._get_primer_pairs(slice)
+
+        self.assertEqual(result_primer_pairs, [pair1, pair2, pair3])
 
     def test_get_primer3_designs(self):
         config_test = {'PRIMER_TASK': 'generic', 'PRIMER_PICK_LEFT_PRIMER': 1, 'PRIMER_PICK_RIGHT_PRIMER': 1,
