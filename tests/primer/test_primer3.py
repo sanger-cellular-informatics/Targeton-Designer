@@ -65,7 +65,7 @@ class TestPrimer3(TestCase):
 
         expected = _get_file_content('tests/primer/primer3_output.json')
 
-        self.assertEqual(result, json.loads(expected))
+        self.assertDictEqual(result, json.loads(expected))
 
 
 def _get_file_content(filename: str) -> str:
