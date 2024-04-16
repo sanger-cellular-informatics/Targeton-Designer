@@ -13,6 +13,7 @@ def write_primer_output(
     prefix='',
     primers=[],
     existing_dir='',
+    primer_type='LibAmp'
 ) -> PrimerOutputData:
 
     if existing_dir:
@@ -25,7 +26,7 @@ def write_primer_output(
     bed_rows = construct_bed_format_from_pairs(primers)
 
     result.bed = export_to_bed(bed_rows, export_dir)
-    result.csv = export_primers_to_csv(primers, export_dir)
+    result.csv = export_primers_to_csv(primers, export_dir, primer_type)
     result.dir = export_dir
 
     print('Primer files saved:', result.bed, result.csv)
@@ -33,11 +34,12 @@ def write_primer_output(
     return result
 
 
-def export_primers_to_csv(pairs: List[dict], export_dir: str) -> str:
+def export_primers_to_csv(pairs: List[dict], export_dir: str, primer_type: str) -> str:
     PRIMER3_OUTPUT_CSV = 'p3_output.csv'
 
     #rows = construct_csv_format(slices)
     rows = construct_csv_format_from_pairs(pairs)
+    rows.insert(0, 'primer_type', primer_type)
 
     full_path = path.join(export_dir, PRIMER3_OUTPUT_CSV)
     rows.to_csv(full_path, index=False)
