@@ -6,7 +6,7 @@ from tests.test_data.primer3_output_data import primer3_output_data
 from primer.slice_data import SliceData
 from primer.primer_pair import \
     PrimerPair, \
-    create_primer_pairs, \
+    build_primer_pairs, \
     name_primers, \
     capture_primer_details, \
     build_primer_loci
@@ -76,7 +76,7 @@ class TestPrimerPair(TestCase):
         }
 
         # act
-        actual = create_primer_pairs(input_design, self.input_slice_data)
+        actual = build_primer_pairs(input_design, self.input_slice_data)
 
         # assert
         self.assertEqual(expected.id, actual[0].id)
@@ -91,7 +91,7 @@ class TestPrimerPair(TestCase):
         input_design = {'key_1': 'value'}
 
         # act
-        actual = create_primer_pairs(input_design, self.input_slice_data)
+        actual = build_primer_pairs(input_design, self.input_slice_data)
 
         # assert
         self.assertEqual(expected, actual)
