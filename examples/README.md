@@ -19,7 +19,7 @@ Run only **slicer** with test input data:
 Run only **primer** with test input data: 
 
 `
-./designer.sh primer --fasta ./examples/test_slice_seqs.fa --dir ./td_output
+./designer.sh primer --fasta ./examples/test_example_slice.fa --dir ./td_output
 `
 
 Generate **targeton csv** for primer scoring with test input data:
