@@ -15,7 +15,7 @@ class Primer3:
     ) -> None:
 
         self._p3_config = p3_config
-        self._stringency_vector = designer_config['stringency_vector']
+        self._stringency_vector = designer_config.get('stringency_vector', [""])
 
     def get_primers(self, fasta: str) -> List[PrimerPair]:
         primer_pairs = []
