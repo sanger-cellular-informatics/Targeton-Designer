@@ -49,6 +49,7 @@ def primer_command(
     fasta: str ='',
     prefix: str = '',
     existing_dir: str = '',
+    primer_type: str = 'LibAmp',
     p3_config_file: str = None,
     designer_config_file: str = None
 ) -> PrimerOutputData:
@@ -65,6 +66,7 @@ def primer_command(
         primers=primers,
         prefix=prefix,
         existing_dir=existing_dir,
+        primer_type=primer_type
     )
 
     return primer_result
