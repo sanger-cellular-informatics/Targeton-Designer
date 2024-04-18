@@ -1,7 +1,5 @@
 from typing import Tuple, List, Optional
 from collections import defaultdict
-from _collections_abc import dict_keys
-from Bio.Seq import Seq
 import re
 
 from primer.filter.hap1 import contain_variant
@@ -44,24 +42,6 @@ class PrimerPair:
 
         return (contain_variant(self.chromosome, forward_start, forward_end) or
                 contain_variant(self.chromosome, reverse_start, reverse_end))
-
-
-def parse_designs_to_primer_pairs(slices: List[SliceData]) -> List[PrimerPair]:
-    primer_pairs = []
-    for slice_data in slices:
-        slice_data.primer_pairs = {}
-        for design in slice_data.designs:
-            primer_keys = design.keys()
-
-            pairs = build_primer_pairs(
-                design,
-                primer_keys,
-                slice_data,
-                design['stringency']
-            )
-            primer_pairs.extend(pairs)
-
-    return primer_pairs
 
 
 def build_primer_loci(
@@ -179,25 +159,15 @@ def determine_primer_strands(side: str, slice_strand: str) -> str:
     return strands[slice_strand][side]
 
 
-def revcom_reverse_primer(seq: str, strand: str) -> Seq:
-    seq_obj = Seq(seq)
-
-    if strand == '-':
-        seq_obj = seq_obj.reverse_complement()
-
-    return seq_obj
-
-
 def build_primer_pairs(
         design,
-        primer_keys: dict_keys,
         slice_data: SliceData,
         stringency: str = "",
 ) -> List[PrimerPair]:
     primer_pairs = []
     primers = defaultdict(dict)
 
-    for key in primer_keys:
+    for key in design.keys():
         primer_details = capture_primer_details(key)
 
         if primer_details:
