@@ -73,13 +73,10 @@ class TestPrimerPair(TestCase):
         input_design = {
             "PRIMER_LEFT_0_SEQUENCE":"CAGTGCCAGGACCTCTCCTA",
             "PRIMER_RIGHT_0_SEQUENCE":"TCCCTCTCAGTGGCCATCTT"
-        },
-        input_primer_keys = ["PRIMER_LEFT_0_SEQUENCE", "PRIMER_RIGHT_0_SEQUENCE"]
+        }
 
         # act
-        actual = build_primer_pairs(
-            input_design, input_primer_keys, self.input_slice_data
-        )
+        actual = build_primer_pairs(input_design, self.input_slice_data)
 
         # assert
         self.assertEqual(expected.id, actual[0].id)
@@ -91,16 +88,14 @@ class TestPrimerPair(TestCase):
         # arrange
         details_mock.return_value = {}
         expected = []
-        input_design = 'design'
-        input_primer_keys = {'key_1': 'value'}
+        input_design = {'key_1': 'value'}
 
         # act
-        actual = build_primer_pairs(input_design, input_primer_keys, self.input_slice_data)
+        actual = build_primer_pairs(input_design, self.input_slice_data)
 
         # assert
         self.assertEqual(expected, actual)
         self.assertEqual(f"{details_mock.call_args}", "call('key_1')")
-
 
     @patch('primer.primer_pair.determine_primer_strands')
     @patch('primer.primer_pair.calculate_primer_coords')

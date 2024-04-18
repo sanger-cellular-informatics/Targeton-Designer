@@ -1,6 +1,7 @@
 import copy
 
-def prepare_config(base_config: dict, stringency: str) -> dict:
+
+def prepare_p3_config(base_config: dict, stringency: str) -> dict:
     result_config = copy.deepcopy(base_config)
 
     if base_config.get('PRIMER_MASK_FAILURE_RATE') is not None:
