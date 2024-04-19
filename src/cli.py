@@ -62,7 +62,7 @@ def primer_command(
     primers = p3_class.get_primers(fasta)
 
     primer_result = write_primer_output(
-        primers=primers,
+        primer_pairs=primers,
         prefix=prefix,
         existing_dir=existing_dir,
     )

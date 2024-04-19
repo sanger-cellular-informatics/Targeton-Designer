@@ -4,13 +4,14 @@ import pandas as pd
 from os import path
 
 from designer.output_data_classes import PrimerOutputData
+from primer.filter.designed_primer import DesignedPrimer
 from primer.primer_pair import PrimerPair
 from utils.write_output_files import timestamped_dir, export_to_bed
 
 
 def write_primer_output(
     prefix='',
-    primers=[],
+    primer_pairs=[],
     existing_dir='',
 ) -> PrimerOutputData:
 
@@ -21,10 +22,10 @@ def write_primer_output(
 
     result = PrimerOutputData(export_dir)
 
-    # bed_rows = construct_bed_format_from_pairs(primers)
-    # result.bed = export_to_bed(bed_rows, export_dir)
+    primer_rows = construct_primer_rows_bed_format(primer_pairs)
+    result.bed = export_to_bed(primer_rows, export_dir)
 
-    result.csv = export_primers_to_csv(primers, export_dir)
+    result.csv = export_primers_to_csv(primer_pairs, export_dir)
     result.dir = export_dir
 
     print('Primer files saved:', result.bed, result.csv)
@@ -100,22 +101,23 @@ def _get_primers_dataframe(pairs: List[PrimerPair]) -> pd.DataFrame:
     return pd.DataFrame(all_primers_data)
 
 
-def construct_bed_format_from_pairs(pairs: List[PrimerPair]) -> list:
-    rows = []
+def construct_primer_rows_bed_format(pairs: List[PrimerPair]) -> list:
+    primer_rows = []
     for pair in pairs:
-        rows.append(create_bed_row_for_primer(pair.forward, pair.chromosome))
-        rows.append(create_bed_row_for_primer(pair.reverse, pair.chromosome))
+        primer_rows.append(create_bed_row_for_primer(primer=pair.forward, chromosome=pair.chromosome))
+        primer_rows.append(create_bed_row_for_primer(primer=pair.reverse, chromosome=pair.chromosome))
         
-    return rows
+    return primer_rows
 
-def create_bed_row_for_primer(primer_data: dict, chromosome: str) -> dict:
-    row = [
+
+def create_bed_row_for_primer(primer: DesignedPrimer, chromosome: str) -> list:
+    primer_row = [
         chromosome,
-        primer_data['primer_start'],
-        primer_data['primer_end'],
-        primer_data['primer'],
+        primer.primer_start,
+        primer.primer_end,
+        primer.name,
         '0',
-        primer_data['strand']
+        primer.strand
     ]
 
-    return row
+    return primer_row
