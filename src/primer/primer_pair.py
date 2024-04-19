@@ -2,7 +2,7 @@ from typing import Tuple, List, Optional
 from collections import defaultdict
 import re
 
-from primer.filter.designed_primer import map_to_designed_primer
+from primer.designed_primer import map_to_designed_primer
 from primer.filter.hap1 import contain_variant
 from primer.slice_data import SliceData
 

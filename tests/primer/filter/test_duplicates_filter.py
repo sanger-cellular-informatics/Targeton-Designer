@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import patch, MagicMock, Mock
 
-from primer.filter.designed_primer import DesignedPrimer
+from primer.designed_primer import DesignedPrimer
 from primer.filter.duplicates_filter import DuplicatesFilter, _get_max_stringency_pair, \
     _take_pair_with_max_stringency_and_others, _group_duplicates_pairs
 from primer.filter.filter_response import PrimerPairDiscarded
