@@ -2,6 +2,7 @@ from typing import Tuple, List, Optional
 from collections import defaultdict
 import re
 
+from primer.filter.designed_primer import map_to_designed_primer
 from primer.filter.hap1 import contain_variant
 from primer.slice_data import SliceData
 
@@ -201,7 +202,17 @@ def create_primer_pairs(
                 pair.forward = primer
             if libamp_name == "LibAmpR":
                 pair.reverse = primer
+
+    primer_pairs = _map_primers_into_designed_primers_objects(primer_pairs)
     return primer_pairs
+
+
+def _map_primers_into_designed_primers_objects(primers_pairs: List[PrimerPair]) -> List[PrimerPair]:
+    for pair in primers_pairs:
+        pair.forward = map_to_designed_primer(pair.forward)
+        pair.reverse = map_to_designed_primer(pair.reverse)
+
+    return primers_pairs
 
 
 def _find_pair_by_id(pairs: List[PrimerPair], pair_id: str) -> Optional[PrimerPair]:
