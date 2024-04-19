@@ -1,6 +1,5 @@
 from typing import Tuple, List, Optional
 from collections import defaultdict
-from _collections_abc import dict_keys
 import re
 
 from primer.filter.hap1 import contain_variant

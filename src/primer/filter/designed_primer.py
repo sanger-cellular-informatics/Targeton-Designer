@@ -67,7 +67,7 @@ def map_to_designed_primer(primer: dict):
         stringency=float(primer["stringency"]),
         pair_id=primer["pair_id"],
         sequence=primer["sequence"],
-        coords=pd.Interval(primer["coords"][0], primer["coords"][1]),
+        coords=Interval(primer["coords"][0], primer["coords"][1]),
         primer_start=primer["primer_start"],
         primer_end=primer["primer_end"],
         strand=primer["strand"],
@@ -78,3 +78,9 @@ def map_to_designed_primer(primer: dict):
         hairpin_th=primer["hairpin_th"],
         end_stability=primer["end_stability"]
     )
+
+
+@dataclass
+class Interval:
+    start: int
+    end: int
