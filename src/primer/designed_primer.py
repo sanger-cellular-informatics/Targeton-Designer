@@ -1,6 +1,10 @@
 from dataclasses import dataclass
 
-import pandas as pd
+
+@dataclass
+class Interval:
+    start: int
+    end: int
 
 
 @dataclass
@@ -10,7 +14,7 @@ class DesignedPrimer:
     stringency: float
     pair_id: str
     sequence: str
-    coords: pd.Interval
+    coords: Interval
     primer_start: int
     primer_end: int
     strand: str
@@ -78,9 +82,3 @@ def map_to_designed_primer(primer: dict):
         hairpin_th=primer["hairpin_th"],
         end_stability=primer["end_stability"]
     )
-
-
-@dataclass
-class Interval:
-    start: int
-    end: int

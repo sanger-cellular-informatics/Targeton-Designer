@@ -1,12 +1,11 @@
 from unittest import TestCase
 from unittest.mock import patch, MagicMock, Mock
 
-from primer.designed_primer import DesignedPrimer
+from primer.designed_primer import DesignedPrimer, Interval
 from primer.filter.duplicates_filter import DuplicatesFilter, _get_max_stringency_pair, \
     _take_pair_with_max_stringency_and_others, _group_duplicates_pairs
 from primer.filter.filter_response import PrimerPairDiscarded
 from primer.primer_pair import PrimerPair
-import pandas as pd
 
 
 class TestDuplicatesFilter(TestCase):
@@ -94,7 +93,7 @@ def _designed_primer(name: str, stringency: float, penalty: float):
         stringency=stringency,
         pair_id="pair_id",
         sequence="ATCGATCGATCG",
-        coords=pd.Interval(left=100, right=200),
+        coords=Interval(start=100, end=200),
         primer_start=100,
         primer_end=110,
         strand="+",
