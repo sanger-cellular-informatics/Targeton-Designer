@@ -51,7 +51,7 @@ class DesignedPrimer:
             self.penalty,
             self.pair_id,
             self.sequence,
-            (self.coords.left, self.coords.right),
+            (self.coords.start, self.coords.end),
             self.primer_start,
             self.primer_end,
             self.strand,

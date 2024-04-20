@@ -1,6 +1,8 @@
+import unittest
+
 from pyfakefs.fake_filesystem_unittest import TestCase
 from parameterized import parameterized
-from unittest.mock import patch
+from unittest.mock import patch, Mock, call
 
 from tests.test_data.primer3_output_data import primer3_output_data
 from primer.slice_data import SliceData
@@ -9,7 +11,7 @@ from primer.primer_pair import \
     create_primer_pairs, \
     name_primers, \
     capture_primer_details, \
-    build_primer_loci
+    build_primer_loci, _map_primers_into_designed_primers_objects
 
 
 class TestPrimerPairNamePrimers(TestCase):
@@ -55,20 +57,22 @@ class TestPrimerPair(TestCase):
             'slice_name', 'slice_start', 'slice_end', '+', 'slice_chrom', 'bases'
         )
 
+    @patch('primer.primer_pair.map_to_designed_primer')
     @patch('primer.primer_pair.build_primer_loci')
     @patch('primer.primer_pair.name_primers')
     @patch('primer.primer_pair.capture_primer_details')
     def test_build_primers_pairs_valid_success(
-            self, details_mock, name_mock, loci_mock
+            self, details_mock, name_mock, loci_mock, map_to_designed_primer
     ):
         # arrange
         details_mock.side_effect = [{'side': 'left', 'pair': '0'}, {'side': 'right', 'pair': '0'},]
         name_mock.return_value = 'libamp_name'
         loci_mock.side_effect = [{'id': 'primer_left_0', 'side': 'left'}, {'id': 'primer_right_0', 'side': 'right'}, ]
+        forward_primer = Mock()
+        reverse_primer = Mock()
+        map_to_designed_primer.side_effect = [forward_primer, reverse_primer]
 
         expected = PrimerPair(pair_id="slice_name_0_str", chromosome="", pre_targeton_start="", pre_targeton_end="")
-        expected.forward = {}
-        expected.reverse = {}
 
         input_design = {
             "PRIMER_LEFT_0_SEQUENCE":"CAGTGCCAGGACCTCTCCTA",
@@ -79,9 +83,10 @@ class TestPrimerPair(TestCase):
         actual = create_primer_pairs(input_design, self.input_slice_data)
 
         # assert
-        self.assertEqual(expected.id, actual[0].id)
-        self.assertEqual(expected.forward, actual[0].forward)
-        self.assertEqual(expected.reverse, actual[0].reverse)
+        map_to_designed_primer.assert_called_with({})
+        self.assertEqual(actual[0].id, expected.id)
+        self.assertEqual(actual[0].forward, forward_primer)
+        self.assertEqual(actual[0].reverse, reverse_primer)
 
     @patch('primer.primer_pair.capture_primer_details')
     def test_build_primer_pairs_no_details_empty_(self, details_mock):
@@ -177,6 +182,31 @@ class TestPrimerPair(TestCase):
 
         # assert
         self.assertEqual(expected, actual)
+
+    @patch('primer.primer_pair.map_to_designed_primer')
+    def test_map_primers_into_designed_primers_objects(self, map_to_designed_primer):
+        pair1 = Mock(type=PrimerPair, forward="forward1", reverse="reverse1")
+        designed_forward_pair1 = Mock()
+        designed_reverse_pair1 = Mock()
+
+        pair2 = Mock(type=PrimerPair, forward="forward2", reverse="reverse2")
+        designed_forward_pair2 = Mock()
+        designed_reverse_pair2 = Mock()
+
+        map_to_designed_primer.side_effect = \
+            [designed_forward_pair1, designed_reverse_pair1, designed_forward_pair2, designed_reverse_pair2]
+
+        # Act
+        result = _map_primers_into_designed_primers_objects([pair1, pair2])
+
+        # Assertions
+        map_to_designed_primer_calls = [call("forward1"), call("reverse1"), call("forward2"), call("reverse2")]
+        map_to_designed_primer.assert_has_calls(map_to_designed_primer_calls)
+
+        self.assertEqual(result[0].forward, designed_forward_pair1)
+        self.assertEqual(result[0].reverse, designed_reverse_pair1)
+        self.assertEqual(result[1].forward, designed_forward_pair2)
+        self.assertEqual(result[1].reverse, designed_reverse_pair2)
 
 
 if __name__ == '__main__':
