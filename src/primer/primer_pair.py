@@ -160,7 +160,7 @@ def determine_primer_strands(side: str, slice_strand: str) -> str:
     return strands[slice_strand][side]
 
 
-def create_primer_pairs(
+def build_primer_pairs(
         design,
         slice_data: SliceData,
         stringency: str = "",

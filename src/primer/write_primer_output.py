@@ -14,6 +14,7 @@ def write_primer_output(
     prefix='',
     primer_pairs=[],
     existing_dir='',
+    primer_type='LibAmp'
 ) -> PrimerOutputData:
     if existing_dir:
         export_dir = existing_dir
@@ -25,7 +26,7 @@ def write_primer_output(
     primer_rows = construct_primer_rows_bed_format(primer_pairs)
     result.bed = export_to_bed(primer_rows, export_dir)
 
-    result.csv = export_primers_to_csv(primer_pairs, export_dir)
+    result.csv = export_primers_to_csv(primer_pairs, export_dir, primer_type)
     result.dir = export_dir
 
     print('Primer files saved:', result.bed, result.csv)
@@ -33,22 +34,23 @@ def write_primer_output(
     return result
 
 
-def export_primers_to_csv(primer_pairs: List[PrimerPair], export_dir: str) -> str:
+def export_primers_to_csv(primer_pairs: List[PrimerPair], export_dir: str, primer_type: str) -> str:
     PRIMER3_OUTPUT_CSV = 'p3_output.csv'
     primers_csv_output_path = path.join(export_dir, PRIMER3_OUTPUT_CSV)
 
-    primers_dataframe = _get_primers_dataframe(primer_pairs)
+    primers_dataframe = _get_primers_dataframe(primer_pairs, primer_type)
     primers_dataframe.to_csv(primers_csv_output_path, index=False)
 
     return primers_csv_output_path
 
 
-def _get_primers_dataframe(pairs: List[PrimerPair]) -> pd.DataFrame:
+def _get_primers_dataframe(pairs: List[PrimerPair], primer_type: str) -> pd.DataFrame:
     primers_dict = defaultdict(list)
 
     for pair in pairs:
         for direction in ['forward', 'reverse']:
             primer = getattr(pair, direction)
+            primers_dict['primer_type'].append(primer_type)
             primers_dict['primer'].append(primer.name)
             primers_dict['penalty'].append(primer.penalty)
             primers_dict['stringency'].append(primer.stringency)
