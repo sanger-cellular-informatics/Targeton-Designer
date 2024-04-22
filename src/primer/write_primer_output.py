@@ -39,7 +39,8 @@ def export_primers_to_csv(pairs: List[dict], export_dir: str, primer_type: str) 
 
     #rows = construct_csv_format(slices)
     rows = construct_csv_format_from_pairs(pairs)
-    rows.insert(0, 'primer_type', primer_type)
+    if not rows.empty:
+        rows.insert(0, 'primer_type', primer_type)
 
     full_path = path.join(export_dir, PRIMER3_OUTPUT_CSV)
     rows.to_csv(full_path, index=False)
