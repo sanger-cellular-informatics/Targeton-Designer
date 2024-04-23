@@ -9,11 +9,13 @@ from primer.slice_data import SliceData
 class PrimerPair:
     def __init__(self, pair_id: str, chromosome: str,
                        pre_targeton_start: str,
-                       pre_targeton_end: str):
+                       pre_targeton_end: str,
+                       product_size: str):
         self.id = pair_id
         self.chromosome = chromosome
         self.pre_targeton_start = pre_targeton_start
         self.pre_targeton_end = pre_targeton_end
+        self.product_size = product_size
         self.forward = {}
         self.reverse = {}
 
@@ -21,6 +23,7 @@ class PrimerPair:
         return (f"PrimerPair(pair_id='{self.id}', chromosome='{self.chromosome}', "
                 f"pre_targeton_start='{self.pre_targeton_start}', "
                 f"pre_targeton_end='{self.pre_targeton_end}', "
+                f"product_size='{self.product_size}', "
                 f"forward={self.forward}, reverse={self.reverse})")
 
     def __eq__(self, other):
@@ -193,16 +196,19 @@ def build_primer_pairs(
 
             pair = _find_pair_by_id(primer_pairs, primer_pair_id)
             if pair is None:
+                primer_pair_number = re.search(r'\d+_(\d+)', primer_pair_id).group(1)
+                primer_pair_size = design['PRIMER_PAIR_' + primer_pair_number + '_PRODUCT_SIZE']
                 pair = PrimerPair(primer_pair_id, slice_data.chrom,
-                                  slice_data.start, slice_data.end)
+                                  slice_data.start, slice_data.end,
+                                  primer_pair_size)
                 primer_pairs.append(pair)
 
             if libamp_name == "LibAmpF":
                 pair.forward = primer
             if libamp_name == "LibAmpR":
                 pair.reverse = primer
-    return primer_pairs
 
+    return primer_pairs
 
 def _find_pair_by_id(pairs: List[PrimerPair], pair_id: str) -> Optional[PrimerPair]:
     for pair in pairs:
