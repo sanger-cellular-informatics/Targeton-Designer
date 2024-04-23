@@ -181,6 +181,8 @@ def build_primer_pairs(
                 ".", "_")
             primer_pair_id = slice_data.name + "_" + primer_details[
                 'pair'] + "_str" + stringency.replace(".", "_")
+            
+            primer_pair_product_size = design['PRIMER_PAIR_' + primer_details['pair'] + '_PRODUCT_SIZE']
 
             primer = build_primer_loci(
                 primers[primer_name_with_stringency],
@@ -195,18 +197,15 @@ def build_primer_pairs(
 
             pair = _find_pair_by_id(primer_pairs, primer_pair_id)
             if pair is None:
-                primer_pair_number = re.search(r'_(\d+)_str', primer_pair_id).group(1)
-                primer_pair_size = design['PRIMER_PAIR_' + primer_pair_number + '_PRODUCT_SIZE']
                 pair = PrimerPair(primer_pair_id, slice_data.chrom,
                                   slice_data.start, slice_data.end,
-                                  primer_pair_size)
+                                  primer_pair_product_size)
                 primer_pairs.append(pair)
 
             if libamp_name == "LibAmpF":
                 pair.forward = primer
             if libamp_name == "LibAmpR":
                 pair.reverse = primer
-    
     return primer_pairs
 
 def _find_pair_by_id(pairs: List[PrimerPair], pair_id: str) -> Optional[PrimerPair]:
