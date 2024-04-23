@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+from datetime import datetime
 import re
 
 from typing import TYPE_CHECKING, List, Union
@@ -169,3 +170,8 @@ def write_primer_design_output(
     print(f'Primer Designer files saved:{result.csv}, {result.json}')
 
     return result
+
+def get_formatted_timestamp() -> str:
+    current_time = datetime.now()
+    formatted_time = current_time.strftime("%Y%m%d%H%M%S%f")
+    return formatted_time

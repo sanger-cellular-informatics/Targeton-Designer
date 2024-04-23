@@ -6,7 +6,7 @@ from os import path
 from designer.output_data_classes import PrimerOutputData
 from primer.slice_data import SliceData
 from primer.primer_pair import PrimerPair
-from utils.write_output_files import timestamped_dir, export_to_bed
+from utils.write_output_files import get_formatted_timestamp, timestamped_dir, export_to_bed
 
 
 def write_primer_output(
@@ -64,13 +64,16 @@ def transform_primer_to_df(primer: dict, chromosome: str, pre_start: str, pre_en
     primer['chromosome'] = chromosome
     primer['pre_targeton_start'] = pre_start
     primer['pre_targeton_end'] = pre_end
+    primer['primer_id'] = "_".join([primer["primer"], get_formatted_timestamp()])
 
     primer.pop('coords', '')
     primer.pop('side', '')
     primer.pop('strand', '')
     primer.pop('pair_id', '')
 
-    return pd.DataFrame([primer], [primer["primer"]])
+    transformed_df = pd.DataFrame([primer], [primer["primer"]])   
+
+    return transformed_df
 
 def construct_bed_format_from_pairs(pairs: List[PrimerPair]) -> list:
     rows = []
