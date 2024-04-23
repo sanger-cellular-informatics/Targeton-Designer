@@ -51,18 +51,21 @@ def construct_csv_format_from_pairs(pairs: List[PrimerPair]) -> list:
 
     for pair in pairs:
         forward_df = transform_primer_to_df(pair.forward, pair.chromosome,
-                                            pair.pre_targeton_start, pair.pre_targeton_end)
+                                            pair.pre_targeton_start, pair.pre_targeton_end,
+                                            pair.product_size)
         reverse_df = transform_primer_to_df(pair.reverse, pair.chromosome,
-                                            pair.pre_targeton_start, pair.pre_targeton_end)
+                                            pair.pre_targeton_start, pair.pre_targeton_end,
+                                            pair.product_size)
 
         rows = pd.concat([rows, forward_df, reverse_df])
 
     return rows
 
-def transform_primer_to_df(primer: dict, chromosome: str, pre_start: str, pre_end: str) -> pd.DataFrame:
+def transform_primer_to_df(primer: dict, chromosome: str, pre_start: str, pre_end: str, prod_size: str) -> pd.DataFrame:
     primer['chromosome'] = chromosome
     primer['pre_targeton_start'] = pre_start
     primer['pre_targeton_end'] = pre_end
+    primer['product_size'] = prod_size
 
     primer.pop('coords', '')
     primer.pop('side', '')
