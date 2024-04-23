@@ -69,16 +69,16 @@ class TestDuplicatesFilterAuxFunctions(TestCase):
         # The 'pair_id' attribute is excluded in the comparison of PrimerPair
 
         # pair1_group1 and pair2_group1 belongs to the same group because they only differ in stringency and name
-        pair1_group1 = PrimerPair(pair_id="1", chromosome="chr1", pre_targeton_start=42930996, pre_targeton_end=42931206)
+        pair1_group1 = PrimerPair(pair_id="1", chromosome="chr1", pre_targeton_start=42930996, pre_targeton_end=42931206, product_size=131)
         pair1_group1.forward = _designed_primer(name='forward', stringency=0.5, penalty=1)
         pair1_group1.reverse = _designed_primer(name='reverse', stringency=0.5, penalty=1)
-        pair2_group1 = PrimerPair(pair_id="2", chromosome="chr1", pre_targeton_start=42930996, pre_targeton_end=42931206)
+        pair2_group1 = PrimerPair(pair_id="2", chromosome="chr1", pre_targeton_start=42930996, pre_targeton_end=42931206, product_size=131)
         pair2_group1.forward = _designed_primer(name='forward', stringency=0.75, penalty=1)
         pair2_group1.reverse = _designed_primer(name='reverse', stringency=0.75, penalty=1)
 
         # pair_group2 is not part of group1 because it differs from the other pairs,
         # having one primer with a different penalty and penalty is included in the comparison in PrimerPair
-        pair_group2 = PrimerPair(pair_id="3", chromosome="chr1", pre_targeton_start=42930996, pre_targeton_end=42931206)
+        pair_group2 = PrimerPair(pair_id="3", chromosome="chr1", pre_targeton_start=42930996, pre_targeton_end=42931206, product_size=131)
         pair_group2.forward = _designed_primer(name='forward', stringency=0.5, penalty=1)
         pair_group2.reverse = _designed_primer(name='reverse', stringency=0.5, penalty=0.7)
 

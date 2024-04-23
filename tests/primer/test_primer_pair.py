@@ -62,17 +62,18 @@ class TestPrimerPair(TestCase):
             self, details_mock, name_mock, loci_mock
     ):
         # arrange
-        details_mock.side_effect = [{'side': 'left', 'pair': '0'}, {'side': 'right', 'pair': '0'},]
+        details_mock.side_effect = [{'side': 'left', 'pair': '0'}, {'side': 'right', 'pair': '0'}, {}]
         name_mock.return_value = 'libamp_name'
-        loci_mock.side_effect = [{'id': 'primer_left_0', 'side': 'left'}, {'id': 'primer_right_0', 'side': 'right'}, ]
+        loci_mock.side_effect = [{'id': 'primer_left_0', 'side': 'left'}, {'id': 'primer_right_0', 'side': 'right'}, {}]
 
-        expected = PrimerPair(pair_id="slice_name_0_str", chromosome="", pre_targeton_start="", pre_targeton_end="")
+        expected = PrimerPair(pair_id="slice_name_0_str", chromosome="", pre_targeton_start="", pre_targeton_end="", product_size="")
         expected.forward = {}
         expected.reverse = {}
 
         input_design = {
             "PRIMER_LEFT_0_SEQUENCE":"CAGTGCCAGGACCTCTCCTA",
-            "PRIMER_RIGHT_0_SEQUENCE":"TCCCTCTCAGTGGCCATCTT"
+            "PRIMER_RIGHT_0_SEQUENCE":"TCCCTCTCAGTGGCCATCTT",
+            "PRIMER_PAIR_0_PRODUCT_SIZE":""
         }
 
         # act
