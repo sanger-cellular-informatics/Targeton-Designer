@@ -84,6 +84,7 @@ class TestPrimerPair(TestCase):
 
         # assert
         map_to_designed_primer.assert_called_with({})
+        self.assertEqual(len(actual), 1)
         self.assertEqual(actual[0].id, expected.id)
         self.assertEqual(actual[0].forward, forward_primer)
         self.assertEqual(actual[0].reverse, reverse_primer)
