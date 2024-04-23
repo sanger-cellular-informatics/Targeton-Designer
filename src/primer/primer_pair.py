@@ -207,12 +207,12 @@ def build_primer_pairs(
     return primer_pairs
 
 
-def _map_primers_into_designed_primers_objects(primers_pairs: List[PrimerPair]) -> List[PrimerPair]:
-    for pair in primers_pairs:
+def _map_primers_into_designed_primers_objects(primer_pairs: List[PrimerPair]) -> List[PrimerPair]:
+    for pair in primer_pairs:
         pair.forward = map_to_designed_primer(pair.forward)
         pair.reverse = map_to_designed_primer(pair.reverse)
 
-    return primers_pairs
+    return primer_pairs
 
 
 def _find_pair_by_id(pairs: List[PrimerPair], pair_id: str) -> Optional[PrimerPair]:

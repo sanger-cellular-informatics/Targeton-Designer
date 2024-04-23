@@ -61,7 +61,7 @@ class TestPrimerPair(TestCase):
     @patch('primer.primer_pair.build_primer_loci')
     @patch('primer.primer_pair.name_primers')
     @patch('primer.primer_pair.capture_primer_details')
-    def test_build_primers_pairs_valid_success(
+    def test_build_primer_pairs_valid_success(
             self, details_mock, name_mock, loci_mock, map_to_designed_primer
     ):
         # arrange
