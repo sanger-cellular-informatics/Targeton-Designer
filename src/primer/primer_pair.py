@@ -115,7 +115,6 @@ def capture_primer_details(primer_name: str) -> dict:
             'field': primer_field,
             'pair': pair_number
         }
-
     return result
 
 
@@ -196,7 +195,7 @@ def build_primer_pairs(
 
             pair = _find_pair_by_id(primer_pairs, primer_pair_id)
             if pair is None:
-                primer_pair_number = re.search(r'\d+_(\d+)', primer_pair_id).group(1)
+                primer_pair_number = re.search(r'_(\d+)_str', primer_pair_id).group(1)
                 primer_pair_size = design['PRIMER_PAIR_' + primer_pair_number + '_PRODUCT_SIZE']
                 pair = PrimerPair(primer_pair_id, slice_data.chrom,
                                   slice_data.start, slice_data.end,
@@ -207,7 +206,7 @@ def build_primer_pairs(
                 pair.forward = primer
             if libamp_name == "LibAmpR":
                 pair.reverse = primer
-
+    
     return primer_pairs
 
 def _find_pair_by_id(pairs: List[PrimerPair], pair_id: str) -> Optional[PrimerPair]:
