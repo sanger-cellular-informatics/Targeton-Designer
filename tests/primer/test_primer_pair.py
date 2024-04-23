@@ -73,7 +73,7 @@ class TestPrimerPair(TestCase):
         input_design = {
             "PRIMER_LEFT_0_SEQUENCE":"CAGTGCCAGGACCTCTCCTA",
             "PRIMER_RIGHT_0_SEQUENCE":"TCCCTCTCAGTGGCCATCTT",
-            'PRIMER_PAIR_0_PRODUCT_SIZE':""
+            "PRIMER_PAIR_0_PRODUCT_SIZE":""
         }
 
         # act
