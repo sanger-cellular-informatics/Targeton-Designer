@@ -72,7 +72,14 @@ class TestPrimerPair(TestCase):
         designed_reverse_primer = Mock()
         map_to_designed_primer.side_effect = [designed_forward_primer, designed_reverse_primer]
 
-        expected = PrimerPair(pair_id="slice_name_0_str", chromosome="", pre_targeton_start="", pre_targeton_end="", product_size="")
+        expected = PrimerPair(
+            pair_id="slice_name_0_str",
+            chromosome="",
+            pre_targeton_start="",
+            pre_targeton_end="",
+            product_size="",
+            stringency=0.1
+        )
 
         input_design = {
             "PRIMER_LEFT_0_SEQUENCE":"CAGTGCCAGGACCTCTCCTA",

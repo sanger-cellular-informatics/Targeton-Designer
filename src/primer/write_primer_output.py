@@ -53,7 +53,6 @@ def _get_primers_dataframe(pairs: List[PrimerPair], primer_type: str) -> pd.Data
             primers_dict['primer_type'].append(primer_type)
             primers_dict['primer'].append(primer.name)
             primers_dict['penalty'].append(primer.penalty)
-            primers_dict['stringency'].append(primer.stringency)
             primers_dict['sequence'].append(primer.sequence)
             primers_dict['primer_start'].append(primer.primer_start)
             primers_dict['primer_end'].append(primer.primer_end)
@@ -64,6 +63,7 @@ def _get_primers_dataframe(pairs: List[PrimerPair], primer_type: str) -> pd.Data
             primers_dict['hairpin_th'].append(primer.hairpin_th)
             primers_dict['end_stability'].append(primer.end_stability)
 
+        primers_dict['stringency'].extend([pair.stringency] * 2)
         primers_dict['chromosome'].extend([pair.chromosome] * 2)
         primers_dict['pre_targeton_start'].extend([pair.pre_targeton_start] * 2)
         primers_dict['pre_targeton_end'].extend([pair.pre_targeton_end] * 2)

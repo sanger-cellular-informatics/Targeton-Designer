@@ -11,13 +11,14 @@ class PrimerPair:
     def __init__(self, pair_id: str, chromosome: str,
                        pre_targeton_start: str,
                        pre_targeton_end: str,
-                       product_size: str):
+                       product_size: str, stringency: float):
         self.id = pair_id
         self.chromosome = chromosome
         self.pre_targeton_start = pre_targeton_start
         self.pre_targeton_end = pre_targeton_end
         self.product_size = product_size
         self.forward_primer_data = {}
+        self.stringency = stringency
         self.reverse_primer_data = {}
         self.reverse = None
         self.forward = None
@@ -59,7 +60,6 @@ def build_primer_loci(
         slice_data: SliceData,
         primer_name: str,
         primer_pair_id: str,
-        stringency: str = "",
 ) -> dict:
     primer_field = primer_details['field']
 
@@ -68,8 +68,6 @@ def build_primer_loci(
 
     primer['side'] = primer_details['side']
 
-    if stringency != "":
-        primer['stringency'] = stringency
     primer['pair_id'] = primer_pair_id
 
     if primer_field == 'coords':
@@ -197,14 +195,18 @@ def build_primer_pairs(
                 slice_data,
                 primer_name,
                 primer_pair_id,
-                stringency,
             )
 
             pair = _find_pair_by_id(primer_pairs, primer_pair_id)
             if pair is None:
-                pair = PrimerPair(primer_pair_id, slice_data.chrom,
-                                  slice_data.start, slice_data.end,
-                                  primer_pair_product_size)
+                pair = PrimerPair(
+                    primer_pair_id,
+                    slice_data.chrom,
+                    slice_data.start,
+                    slice_data.end,
+                    primer_pair_product_size,
+                    float(stringency)
+                )
                 primer_pairs.append(pair)
 
             if libamp_name == "LibAmpF":
