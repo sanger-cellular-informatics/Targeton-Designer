@@ -68,9 +68,9 @@ class TestPrimerPair(TestCase):
         details_mock.side_effect = [{'side': 'left', 'pair': '0'}, {'side': 'right', 'pair': '0'}, {}]
         name_mock.return_value = 'libamp_name'
         loci_mock.side_effect = [{'id': 'primer_left_0', 'side': 'left'}, {'id': 'primer_right_0', 'side': 'right'}, {}]
-        forward_primer = Mock()
-        reverse_primer = Mock()
-        map_to_designed_primer.side_effect = [forward_primer, reverse_primer]
+        designed_forward_primer = Mock()
+        designed_reverse_primer = Mock()
+        map_to_designed_primer.side_effect = [designed_forward_primer, designed_reverse_primer]
 
         expected = PrimerPair(pair_id="slice_name_0_str", chromosome="", pre_targeton_start="", pre_targeton_end="", product_size="")
 
@@ -87,8 +87,8 @@ class TestPrimerPair(TestCase):
         map_to_designed_primer.assert_called_with({})
         self.assertEqual(len(actual), 1)
         self.assertEqual(actual[0].id, expected.id)
-        self.assertEqual(actual[0].forward, forward_primer)
-        self.assertEqual(actual[0].reverse, reverse_primer)
+        self.assertEqual(actual[0].forward, designed_forward_primer)
+        self.assertEqual(actual[0].reverse, designed_reverse_primer)
 
     @patch('primer.primer_pair.capture_primer_details')
     def test_build_primer_pairs_no_details_empty_(self, details_mock):
