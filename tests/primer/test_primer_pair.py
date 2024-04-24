@@ -73,7 +73,7 @@ class TestPrimerPair(TestCase):
         map_to_designed_primer.side_effect = [designed_forward_primer, designed_reverse_primer]
 
         expected = PrimerPair(
-            pair_id="slice_name_0_str",
+            pair_id="slice_name_0_str0_1",
             chromosome="",
             pre_targeton_start="",
             pre_targeton_end="",
@@ -88,7 +88,7 @@ class TestPrimerPair(TestCase):
         }
 
         # act
-        actual = build_primer_pairs(input_design, self.input_slice_data)
+        actual = build_primer_pairs(input_design, self.input_slice_data, 0.1)
 
         # assert
         map_to_designed_primer.assert_called_with({})
@@ -105,7 +105,7 @@ class TestPrimerPair(TestCase):
         input_design = {'key_1': 'value'}
 
         # act
-        actual = build_primer_pairs(input_design, self.input_slice_data)
+        actual = build_primer_pairs(input_design, self.input_slice_data, 0.1)
 
         # assert
         self.assertEqual(expected, actual)
