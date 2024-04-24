@@ -45,7 +45,8 @@ class IntegrationTestPrimer3(TestCase):
             pair_id=f'{pre_targeton_name}_0_str1',
             chromosome=chromosome,
             pre_targeton_start=f'{pre_targeton_start}',
-            pre_targeton_end=f'{pre_targeton_end}'
+            pre_targeton_end=f'{pre_targeton_end}',
+            product_size=200
         )
 
         expected_forward = DesignedPrimer(
