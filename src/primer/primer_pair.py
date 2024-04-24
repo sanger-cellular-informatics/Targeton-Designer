@@ -17,8 +17,11 @@ class PrimerPair:
         self.pre_targeton_start = pre_targeton_start
         self.pre_targeton_end = pre_targeton_end
         self.product_size = product_size
-        self.forward = {}
-        self.reverse = {}
+        self.forward_primer_data = {}
+        self.reverse_primer_data = {}
+        self.reverse = None
+        self.forward = None
+
 
     def __repr__(self):
         return (f"PrimerPair(pair_id='{self.id}', chromosome='{self.chromosome}', "
@@ -205,9 +208,9 @@ def build_primer_pairs(
                 primer_pairs.append(pair)
 
             if libamp_name == "LibAmpF":
-                pair.forward = primer
+                pair.forward_primer_data = primer
             if libamp_name == "LibAmpR":
-                pair.reverse = primer
+                pair.reverse_primer_data = primer
 
     primer_pairs = _map_primers_into_designed_primers_objects(primer_pairs)
     return primer_pairs
@@ -215,8 +218,8 @@ def build_primer_pairs(
 
 def _map_primers_into_designed_primers_objects(primer_pairs: List[PrimerPair]) -> List[PrimerPair]:
     for pair in primer_pairs:
-        pair.forward = map_to_designed_primer(pair.forward)
-        pair.reverse = map_to_designed_primer(pair.reverse)
+        pair.forward = map_to_designed_primer(pair.forward_primer_data)
+        pair.reverse = map_to_designed_primer(pair.reverse_primer_data)
 
     return primer_pairs
 

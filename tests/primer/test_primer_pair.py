@@ -187,11 +187,11 @@ class TestPrimerPair(TestCase):
 
     @patch('primer.primer_pair.map_to_designed_primer')
     def test_map_primers_into_designed_primers_objects(self, map_to_designed_primer):
-        pair1 = Mock(type=PrimerPair, forward="forward1", reverse="reverse1")
+        pair1 = Mock(type=PrimerPair, forward_primer_data="forward1", reverse_primer_data="reverse1")
         designed_forward_pair1 = Mock()
         designed_reverse_pair1 = Mock()
 
-        pair2 = Mock(type=PrimerPair, forward="forward2", reverse="reverse2")
+        pair2 = Mock(type=PrimerPair, forward_primer_data="forward2", reverse_primer_data="reverse2")
         designed_forward_pair2 = Mock()
         designed_reverse_pair2 = Mock()
 
