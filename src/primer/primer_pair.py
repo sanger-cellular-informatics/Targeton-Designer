@@ -1,3 +1,4 @@
+import base64
 from typing import Tuple, List, Optional
 from collections import defaultdict
 import re
@@ -63,6 +64,7 @@ def build_primer_loci(
 
     if stringency != "":
         primer['stringency'] = stringency
+
     primer['pair_id'] = primer_pair_id
 
     if primer_field == 'coords':
@@ -177,8 +179,12 @@ def build_primer_pairs(
 
             primer_name_with_stringency = primer_name + "_str" + stringency.replace(
                 ".", "_")
-            primer_pair_id = slice_data.name + "_" + primer_details[
-                'pair'] + "_str" + stringency.replace(".", "_")
+
+            make_id = str(slice_data.name + "_" + primer_details['pair'] + "_str" + stringency.replace(".", "_"))
+
+            # Following line will generate unique id for each primer pair based on slice_data, primer_details, and stringency.
+            
+            primer_pair_id = base64.b64encode(make_id.encode('utf-8')).decode()
 
             primer = build_primer_loci(
                 primers[primer_name_with_stringency],
@@ -192,15 +198,19 @@ def build_primer_pairs(
             )
 
             pair = _find_pair_by_id(primer_pairs, primer_pair_id)
+
             if pair is None:
+
                 pair = PrimerPair(primer_pair_id, slice_data.chrom,
                                   slice_data.start, slice_data.end)
+                
                 primer_pairs.append(pair)
 
             if libamp_name == "LibAmpF":
                 pair.forward = primer
             if libamp_name == "LibAmpR":
                 pair.reverse = primer
+
     return primer_pairs
 
 

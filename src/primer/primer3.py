@@ -35,7 +35,6 @@ class Primer3:
         for stringency in self._stringency_vector:
             designs = self._get_primer3_designs(slice_data.p3_input, stringency)
             built_primer_pairs = build_primer_pairs(designs, slice_data, str(stringency))
-
             primer_pairs.extend(built_primer_pairs)
 
         return primer_pairs
