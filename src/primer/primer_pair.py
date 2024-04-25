@@ -10,12 +10,14 @@ class PrimerPair:
     def __init__(self, pair_id: str, chromosome: str,
                        pre_targeton_start: str,
                        pre_targeton_end: str,
-                       product_size: str):
+                       product_size: str,
+                       targeton_id: str):
         self.id = pair_id
         self.chromosome = chromosome
         self.pre_targeton_start = pre_targeton_start
         self.pre_targeton_end = pre_targeton_end
         self.product_size = product_size
+        self.targeton_id = targeton_id
         self.forward = {}
         self.reverse = {}
 
@@ -24,6 +26,7 @@ class PrimerPair:
                 f"pre_targeton_start='{self.pre_targeton_start}', "
                 f"pre_targeton_end='{self.pre_targeton_end}', "
                 f"product_size='{self.product_size}', "
+                f"targeton_id='{self.targeton_id}', "
                 f"forward={self.forward}, reverse={self.reverse})")
 
     def __eq__(self, other):
@@ -199,7 +202,8 @@ def build_primer_pairs(
             if pair is None:
                 pair = PrimerPair(primer_pair_id, slice_data.chrom,
                                   slice_data.start, slice_data.end,
-                                  primer_pair_product_size)
+                                  primer_pair_product_size,
+                                  slice_data.targeton_id)
                 primer_pairs.append(pair)
 
             if libamp_name == "LibAmpF":

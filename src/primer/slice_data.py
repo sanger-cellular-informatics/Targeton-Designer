@@ -13,10 +13,11 @@ class SliceData:
         self.strand = strand
         self.chrom = chrom
         self.bases = bases
+        self.targeton_id = name[0:4]
         self.designs = []
 
     def __repr__(self):
-        return f'SliceData({self.name}, {self.start}, {self.end}, {self.strand}, {self.chrom}, {self.bases})'
+        return f'SliceData({self.name}, {self.targeton_id}, {self.start}, {self.end}, {self.strand}, {self.chrom}, {self.bases})'
 
     @property
     def p3_input(self):

@@ -66,7 +66,8 @@ class TestPrimerPair(TestCase):
         name_mock.return_value = 'libamp_name'
         loci_mock.side_effect = [{'id': 'primer_left_0', 'side': 'left'}, {'id': 'primer_right_0', 'side': 'right'}, {}]
 
-        expected = PrimerPair(pair_id="slice_name_0_str", chromosome="", pre_targeton_start="", pre_targeton_end="", product_size="")
+        expected = PrimerPair(pair_id="slice_name_0_str", chromosome="", pre_targeton_start="", pre_targeton_end="", product_size="",
+                              targeton_id="")
         expected.forward = {}
         expected.reverse = {}
 
