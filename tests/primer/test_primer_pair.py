@@ -75,6 +75,8 @@ class TestPrimerPair(TestCase):
 
         expected = PrimerPair(pair_id="slice_name_0_str", chromosome="", pre_targeton_start="", pre_targeton_end="",
                               product_size="")
+        expected.forward = designed_forward_primer
+        expected.reverse = designed_reverse_primer
 
         input_design = {
             "PRIMER_LEFT_0_SEQUENCE": "CAGTGCCAGGACCTCTCCTA",
@@ -89,8 +91,8 @@ class TestPrimerPair(TestCase):
         map_to_designed_primer.assert_called_with({})
         self.assertEqual(len(actual), 1)
         self.assertEqual(actual[0].id, expected.id)
-        self.assertEqual(actual[0].forward, designed_forward_primer)
-        self.assertEqual(actual[0].reverse, designed_reverse_primer)
+        self.assertEqual(actual[0].forward, expected.forward)
+        self.assertEqual(actual[0].reverse, expected.reverse)
 
     @patch('primer.primer_pair.capture_primer_details')
     def test_build_primer_pairs_no_details_empty_(self, details_mock):
@@ -227,7 +229,7 @@ class TestPrimerPair(TestCase):
             'end_stability': 25.0
         }
 
-        designed_forward = DesignedPrimer(
+        expected_designed_forward = DesignedPrimer(
             name="forward",
             penalty=0.5,
             stringency=0.8,
@@ -244,7 +246,7 @@ class TestPrimerPair(TestCase):
             hairpin_th=20.0,
             end_stability=25.0
         )
-        designed_reverse = DesignedPrimer(
+        expected_designed_reverse = DesignedPrimer(
             name="reverse",
             penalty=0.5,
             stringency=0.8,
@@ -265,8 +267,8 @@ class TestPrimerPair(TestCase):
         # Act
         result = _map_primers_into_designed_primers_objects([pair])
 
-        self.assertEqual(result[0].forward, designed_forward)
-        self.assertEqual(result[0].reverse, designed_reverse)
+        self.assertEqual(result[0].forward, expected_designed_forward)
+        self.assertEqual(result[0].reverse, expected_designed_reverse)
 
 
 if __name__ == '__main__':
