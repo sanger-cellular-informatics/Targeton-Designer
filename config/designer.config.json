@@ -1,3 +1,20 @@
 {
-  "stringency_vector": [1, 0.5, 0.1]
+  "stringency_vector": [1, 0.5, 0.1],
+  "csv_column_order": ["primer_type",
+                       "primer", 
+                       "penalty", 
+                       "stringency", 
+                       "sequence", 
+                       "primer_start", 
+                       "primer_end", 
+                       "tm", 
+                       "gc_percent", 
+                       "self_any_th", 
+                       "self_end_th", 
+                       "hairpin_th", 
+                       "end_stability", 
+                       "chromosome", 
+                       "pre_targeton_start", 
+                       "pre_targeton_end", 
+                       "product_size"]
 }
