@@ -2,7 +2,7 @@ import unittest
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 from parameterized import parameterized
-from unittest.mock import patch, Mock, call
+from unittest.mock import patch, Mock
 
 from primer.designed_primer import DesignedPrimer, Interval
 from tests.test_data.primer3_output_data import primer3_output_data
@@ -73,8 +73,14 @@ class TestPrimerPair(TestCase):
         designed_reverse_primer = Mock()
         map_to_designed_primer.side_effect = [designed_forward_primer, designed_reverse_primer]
 
-        expected = PrimerPair(pair_id="slice_name_0_str", chromosome="", pre_targeton_start="", pre_targeton_end="",
-                              product_size="")
+        expected = PrimerPair(
+            pair_id="slice_name_0_str0_1",
+            chromosome="",
+            pre_targeton_start="",
+            pre_targeton_end="",
+            product_size="",
+            stringency=0.1
+        )
         expected.forward = designed_forward_primer
         expected.reverse = designed_reverse_primer
 
@@ -85,7 +91,7 @@ class TestPrimerPair(TestCase):
         }
 
         # act
-        actual = build_primer_pairs(input_design, self.input_slice_data)
+        actual = build_primer_pairs(input_design, self.input_slice_data, 0.1)
 
         # assert
         self.assertEqual(len(actual), 1)
@@ -101,7 +107,7 @@ class TestPrimerPair(TestCase):
         input_design = {'key_1': 'value'}
 
         # act
-        actual = build_primer_pairs(input_design, self.input_slice_data)
+        actual = build_primer_pairs(input_design, self.input_slice_data, 0.1)
 
         # assert
         self.assertEqual(expected, actual)
@@ -190,12 +196,11 @@ class TestPrimerPair(TestCase):
 
     def test_map_primers_into_designed_primers_objects(self):
         pair = PrimerPair(pair_id="pair_id", chromosome="1", pre_targeton_start="100", pre_targeton_end="200",
-                          product_size="200")
+                          product_size="200", stringency=0.8)
         pair.forward_primer_data = {
             'primer': 'forward',
             'penalty': 0.5,
             'side': 'right',
-            'stringency': '0.8',
             'pair_id': 'Pair1',
             'sequence': 'ATCGATCG',
             'coords': [199, 18],
@@ -213,7 +218,6 @@ class TestPrimerPair(TestCase):
             'primer': 'reverse',
             'penalty': 0.5,
             'side': 'right',
-            'stringency': '0.8',
             'pair_id': 'Pair1',
             'sequence': 'ATCGATCG',
             'coords': [199, 18],
@@ -231,7 +235,6 @@ class TestPrimerPair(TestCase):
         expected_designed_forward = DesignedPrimer(
             name="forward",
             penalty=0.5,
-            stringency=0.8,
             pair_id="Pair1",
             sequence="ATCGATCG",
             coords=Interval(start=199, end=18),
@@ -248,7 +251,6 @@ class TestPrimerPair(TestCase):
         expected_designed_reverse = DesignedPrimer(
             name="reverse",
             penalty=0.5,
-            stringency=0.8,
             pair_id="Pair1",
             sequence="ATCGATCG",
             coords=Interval(start=199, end=18),
