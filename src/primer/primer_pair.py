@@ -2,6 +2,7 @@ from typing import Tuple, List, Optional
 from collections import defaultdict
 import re
 
+from primer.designed_primer import map_to_designed_primer
 from primer.filter.hap1 import contain_variant
 from primer.slice_data import SliceData
 
@@ -11,21 +12,27 @@ class PrimerPair:
                        pre_targeton_start: str,
                        pre_targeton_end: str,
                        product_size: str,
+                       stringency: float,
                        targeton_id: str):
         self.id = pair_id
         self.chromosome = chromosome
         self.pre_targeton_start = pre_targeton_start
         self.pre_targeton_end = pre_targeton_end
         self.product_size = product_size
+        self.stringency = stringency
         self.targeton_id = targeton_id
-        self.forward = {}
-        self.reverse = {}
+        self.forward_primer_data = {}
+        self.reverse_primer_data = {}
+        self.reverse = None
+        self.forward = None
+
 
     def __repr__(self):
         return (f"PrimerPair(pair_id='{self.id}', chromosome='{self.chromosome}', "
                 f"pre_targeton_start='{self.pre_targeton_start}', "
                 f"pre_targeton_end='{self.pre_targeton_end}', "
                 f"product_size='{self.product_size}', "
+                f"stringency='{self.chromosome}',"
                 f"targeton_id='{self.targeton_id}', "
                 f"forward={self.forward}, reverse={self.reverse})")
 
@@ -58,7 +65,6 @@ def build_primer_loci(
         slice_data: SliceData,
         primer_name: str,
         primer_pair_id: str,
-        stringency: str = "",
 ) -> dict:
     primer_field = primer_details['field']
 
@@ -67,8 +73,6 @@ def build_primer_loci(
 
     primer['side'] = primer_details['side']
 
-    if stringency != "":
-        primer['stringency'] = stringency
     primer['pair_id'] = primer_pair_id
 
     if primer_field == 'coords':
@@ -118,6 +122,7 @@ def capture_primer_details(primer_name: str) -> dict:
             'field': primer_field,
             'pair': pair_number
         }
+
     return result
 
 
@@ -167,7 +172,7 @@ def determine_primer_strands(side: str, slice_strand: str) -> str:
 def build_primer_pairs(
         design,
         slice_data: SliceData,
-        stringency: str = "",
+        stringency: float,
 ) -> List[PrimerPair]:
     primer_pairs = []
     primers = defaultdict(dict)
@@ -180,10 +185,10 @@ def build_primer_pairs(
             primer_name = slice_data.name + "_" + libamp_name + "_" + \
                           primer_details['pair']
 
-            primer_name_with_stringency = primer_name + "_str" + stringency.replace(
-                ".", "_")
-            primer_pair_id = slice_data.name + "_" + primer_details[
-                'pair'] + "_str" + stringency.replace(".", "_")
+            stringency_string = "_str" + str(stringency).replace(".", "_")
+
+            primer_name_with_stringency = primer_name + stringency_string
+            primer_pair_id = slice_data.name + "_" + primer_details['pair'] + stringency_string
             
             primer_pair_product_size = design['PRIMER_PAIR_' + primer_details['pair'] + '_PRODUCT_SIZE']
 
@@ -195,22 +200,37 @@ def build_primer_pairs(
                 slice_data,
                 primer_name,
                 primer_pair_id,
-                stringency,
             )
 
             pair = _find_pair_by_id(primer_pairs, primer_pair_id)
             if pair is None:
-                pair = PrimerPair(primer_pair_id, slice_data.chrom,
-                                  slice_data.start, slice_data.end,
-                                  primer_pair_product_size,
-                                  slice_data.targeton_id)
+                pair = PrimerPair(
+                    primer_pair_id,
+                    slice_data.chrom,
+                    slice_data.start,
+                    slice_data.end,
+                    primer_pair_product_size,
+                    stringency,
+                    slice_data.targeton_id,
+                )
                 primer_pairs.append(pair)
 
             if libamp_name == "LibAmpF":
-                pair.forward = primer
+                pair.forward_primer_data = primer
             if libamp_name == "LibAmpR":
-                pair.reverse = primer
+                pair.reverse_primer_data = primer
+
+    primer_pairs = _map_primers_into_designed_primers_objects(primer_pairs)
     return primer_pairs
+
+
+def _map_primers_into_designed_primers_objects(primer_pairs: List[PrimerPair]) -> List[PrimerPair]:
+    for pair in primer_pairs:
+        pair.forward = map_to_designed_primer(pair.forward_primer_data)
+        pair.reverse = map_to_designed_primer(pair.reverse_primer_data)
+
+    return primer_pairs
+
 
 def _find_pair_by_id(pairs: List[PrimerPair], pair_id: str) -> Optional[PrimerPair]:
     for pair in pairs:

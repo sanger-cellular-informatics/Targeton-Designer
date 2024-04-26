@@ -1,21 +1,21 @@
+from collections import defaultdict
 from typing import List
 
 import pandas as pd
 from os import path
 
 from designer.output_data_classes import PrimerOutputData
-from primer.slice_data import SliceData
+from primer.designed_primer import DesignedPrimer
 from primer.primer_pair import PrimerPair
 from utils.write_output_files import timestamped_dir, export_to_bed
 
 
 def write_primer_output(
     prefix='',
-    primers=[],
+    primer_pairs=[],
     existing_dir='',
     primer_type='LibAmp'
 ) -> PrimerOutputData:
-
     if existing_dir:
         export_dir = existing_dir
     else:
@@ -23,10 +23,10 @@ def write_primer_output(
 
     result = PrimerOutputData(export_dir)
 
-    bed_rows = construct_bed_format_from_pairs(primers)
+    primer_rows = construct_primer_rows_bed_format(primer_pairs)
+    result.bed = export_to_bed(primer_rows, export_dir)
 
-    result.bed = export_to_bed(bed_rows, export_dir)
-    result.csv = export_primers_to_csv(primers, export_dir, primer_type)
+    result.csv = export_primers_to_csv(primer_pairs, export_dir, primer_type)
     result.dir = export_dir
 
     print('Primer files saved:', result.bed, result.csv)
@@ -34,65 +34,62 @@ def write_primer_output(
     return result
 
 
-def export_primers_to_csv(pairs: List[dict], export_dir: str, primer_type: str) -> str:
+def export_primers_to_csv(primer_pairs: List[PrimerPair], export_dir: str, primer_type: str) -> str:
     PRIMER3_OUTPUT_CSV = 'p3_output.csv'
+    primers_csv_output_path = path.join(export_dir, PRIMER3_OUTPUT_CSV)
 
-    #rows = construct_csv_format(slices)
-    rows = construct_csv_format_from_pairs(pairs)
-    if not rows.empty:
-        rows.insert(0, 'primer_type', primer_type)
+    primers_dataframe = _get_primers_dataframe(primer_pairs, primer_type)
+    primers_dataframe.to_csv(primers_csv_output_path, index=False)
 
-    full_path = path.join(export_dir, PRIMER3_OUTPUT_CSV)
-    rows.to_csv(full_path, index=False)
+    return primers_csv_output_path
 
-    return full_path
 
-def construct_csv_format_from_pairs(pairs: List[PrimerPair]) -> list:
-    rows = pd.DataFrame()
+def _get_primers_dataframe(pairs: List[PrimerPair], primer_type: str) -> pd.DataFrame:
+    primers_dict = defaultdict(list)
 
     for pair in pairs:
-        forward_df = transform_primer_to_df(pair.forward, pair.chromosome,
-                                            pair.pre_targeton_start, pair.pre_targeton_end,
-                                            pair.product_size, pair.targeton_id)
-        reverse_df = transform_primer_to_df(pair.reverse, pair.chromosome,
-                                            pair.pre_targeton_start, pair.pre_targeton_end,
-                                            pair.product_size, pair.targeton_id)
+        for direction in ['forward', 'reverse']:
+            primer = getattr(pair, direction)
+            primers_dict['primer_type'].append(primer_type)
+            primers_dict['primer'].append(primer.name)
+            primers_dict['penalty'].append(primer.penalty)
+            primers_dict['sequence'].append(primer.sequence)
+            primers_dict['primer_start'].append(primer.primer_start)
+            primers_dict['primer_end'].append(primer.primer_end)
+            primers_dict['tm'].append(primer.tm)
+            primers_dict['gc_percent'].append(primer.gc_percent)
+            primers_dict['self_any_th'].append(primer.self_any_th)
+            primers_dict['self_end_th'].append(primer.self_end_th)
+            primers_dict['hairpin_th'].append(primer.hairpin_th)
+            primers_dict['end_stability'].append(primer.end_stability)
 
-        rows = pd.concat([rows, forward_df, reverse_df])
+        primers_dict['stringency'].extend([pair.stringency] * 2)
+        primers_dict['chromosome'].extend([pair.chromosome] * 2)
+        primers_dict['pre_targeton_start'].extend([pair.pre_targeton_start] * 2)
+        primers_dict['pre_targeton_end'].extend([pair.pre_targeton_end] * 2)
+        primers_dict['product_size'].extend([pair.product_size] * 2)
+        primers_dict['targeton_id'].extend([pair.targeton_id] * 2)
 
-    return rows
+    return pd.DataFrame(primers_dict)
 
-def transform_primer_to_df(primer: dict, chromosome: str, pre_start: str, pre_end: str, prod_size: str,
-                           targeton_id: str) -> pd.DataFrame:
-    primer['chromosome'] = chromosome
-    primer['pre_targeton_start'] = pre_start
-    primer['pre_targeton_end'] = pre_end
-    primer['product_size'] = prod_size
-    primer['targeton_id'] = targeton_id
 
-    primer.pop('coords', '')
-    primer.pop('side', '')
-    primer.pop('strand', '')
-    primer.pop('pair_id', '')
-
-    return pd.DataFrame([primer], [primer["primer"]])
-
-def construct_bed_format_from_pairs(pairs: List[PrimerPair]) -> list:
-    rows = []
+def construct_primer_rows_bed_format(pairs: List[PrimerPair]) -> list:
+    primer_rows = []
     for pair in pairs:
-        rows.append(create_bed_row_for_primer(pair.forward, pair.chromosome))
-        rows.append(create_bed_row_for_primer(pair.reverse, pair.chromosome))
-        
-    return rows
+        primer_rows.append(create_bed_row_for_primer(primer=pair.forward, chromosome=pair.chromosome))
+        primer_rows.append(create_bed_row_for_primer(primer=pair.reverse, chromosome=pair.chromosome))
 
-def create_bed_row_for_primer(primer_data: dict, chromosome: str) -> dict:
-    row = [
+    return primer_rows
+
+
+def create_bed_row_for_primer(primer: DesignedPrimer, chromosome: str) -> list:
+    primer_row = [
         chromosome,
-        primer_data['primer_start'],
-        primer_data['primer_end'],
-        primer_data['primer'],
+        primer.primer_start,
+        primer.primer_end,
+        primer.name,
         '0',
-        primer_data['strand']
+        primer.strand
     ]
 
-    return row
+    return primer_row
