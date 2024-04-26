@@ -1,16 +1,19 @@
 from dataclasses import dataclass
 
-import pandas as pd
+
+@dataclass
+class Interval:
+    start: int
+    end: int
 
 
 @dataclass
 class DesignedPrimer:
     name: str
     penalty: float
-    stringency: float
     pair_id: str
     sequence: str
-    coords: pd.Interval
+    coords: Interval
     primer_start: int
     primer_end: int
     strand: str
@@ -23,7 +26,7 @@ class DesignedPrimer:
 
     def __eq__(self, other):
         if isinstance(other, DesignedPrimer):
-            # Exclude the 'name' and 'stringency' attributes from the comparison
+            # Exclude the 'name' attribute from the comparison
             return (
                     self.penalty == other.penalty and
                     self.pair_id == other.pair_id and
@@ -42,12 +45,12 @@ class DesignedPrimer:
         return False
 
     def __hash__(self):
-        # Exclude the 'name' and 'stringency' attributes from the comparison
+        # Exclude the 'name' attribute from the comparison
         return hash((
             self.penalty,
             self.pair_id,
             self.sequence,
-            (self.coords.left, self.coords.right),
+            (self.coords.start, self.coords.end),
             self.primer_start,
             self.primer_end,
             self.strand,
@@ -64,10 +67,9 @@ def map_to_designed_primer(primer: dict):
     return DesignedPrimer(
         name=primer["primer"],
         penalty=primer["penalty"],
-        stringency=float(primer["stringency"]),
         pair_id=primer["pair_id"],
         sequence=primer["sequence"],
-        coords=pd.Interval(primer["coords"][0], primer["coords"][1]),
+        coords=Interval(primer["coords"][0], primer["coords"][1]),
         primer_start=primer["primer_start"],
         primer_end=primer["primer_end"],
         strand=primer["strand"],

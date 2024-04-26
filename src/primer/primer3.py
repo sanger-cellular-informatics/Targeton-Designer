@@ -40,6 +40,7 @@ class Primer3:
 
         return primer_pairs
 
+
     def _get_primer3_designs(self, slice_info: dict, stringency) -> dict:
         config_data = prepare_p3_config(self._p3_config, stringency)
         return primer3.bindings.design_primers(slice_info, config_data)
