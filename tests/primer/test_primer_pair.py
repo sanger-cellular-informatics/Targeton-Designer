@@ -2,8 +2,9 @@ import unittest
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 from parameterized import parameterized
-from unittest.mock import patch, Mock, call
+from unittest.mock import patch, Mock
 
+from primer.designed_primer import DesignedPrimer, Interval
 from tests.test_data.primer3_output_data import primer3_output_data
 from primer.slice_data import SliceData
 from primer.primer_pair import \
@@ -32,9 +33,9 @@ class TestPrimerPairNamePrimers(TestCase):
 class TestPrimerPairCapturePrimerDetails(TestCase):
     @parameterized.expand(
         [('primer_left_1_assembly', 'side', 'left'),
-        ('primer_right_3_start', 'side', 'right'),
-        ('primer_left_1_assembly', 'pair', '1'),
-        ('primer_left_1_assembly', 'id', 'primer_left_1'), ])
+         ('primer_right_3_start', 'side', 'right'),
+         ('primer_left_1_assembly', 'pair', '1'),
+         ('primer_left_1_assembly', 'id', 'primer_left_1'), ])
     def test_capture_primer_details(
             self,
             test_input,
@@ -80,22 +81,23 @@ class TestPrimerPair(TestCase):
             product_size="",
             stringency=0.1
         )
+        expected.forward = designed_forward_primer
+        expected.reverse = designed_reverse_primer
 
         input_design = {
-            "PRIMER_LEFT_0_SEQUENCE":"CAGTGCCAGGACCTCTCCTA",
-            "PRIMER_RIGHT_0_SEQUENCE":"TCCCTCTCAGTGGCCATCTT",
-            "PRIMER_PAIR_0_PRODUCT_SIZE":""
+            "PRIMER_LEFT_0_SEQUENCE": "CAGTGCCAGGACCTCTCCTA",
+            "PRIMER_RIGHT_0_SEQUENCE": "TCCCTCTCAGTGGCCATCTT",
+            "PRIMER_PAIR_0_PRODUCT_SIZE": ""
         }
 
         # act
         actual = build_primer_pairs(input_design, self.input_slice_data, 0.1)
 
         # assert
-        map_to_designed_primer.assert_called_with({})
         self.assertEqual(len(actual), 1)
         self.assertEqual(actual[0].id, expected.id)
-        self.assertEqual(actual[0].forward, designed_forward_primer)
-        self.assertEqual(actual[0].reverse, designed_reverse_primer)
+        self.assertEqual(actual[0].forward, expected.forward)
+        self.assertEqual(actual[0].reverse, expected.reverse)
 
     @patch('primer.primer_pair.capture_primer_details')
     def test_build_primer_pairs_no_details_empty_(self, details_mock):
@@ -126,15 +128,15 @@ class TestPrimerPair(TestCase):
         input_id = 'id'
 
         expected = {'coords': 'design_value',
-            'primer': 'name',
-            'pair_id': 'id',
-            'penalty': 1,
-            'primer_end': '250',
-            'primer_start': '100',
-            'sequence': 'primer_seq',
-            'side': 'primer_side',
-            'strand': 'primer_side_+',
-        }
+                    'primer': 'name',
+                    'pair_id': 'id',
+                    'penalty': 1,
+                    'primer_end': '250',
+                    'primer_start': '100',
+                    'sequence': 'primer_seq',
+                    'side': 'primer_side',
+                    'strand': 'primer_side_+',
+                    }
 
         coords_mock.return_value = ['100', '250']
         strands_mock.return_value = 'primer_side_+'
@@ -192,30 +194,82 @@ class TestPrimerPair(TestCase):
         # assert
         self.assertEqual(expected, actual)
 
-    @patch('primer.primer_pair.map_to_designed_primer')
-    def test_map_primers_into_designed_primers_objects(self, map_to_designed_primer):
-        pair1 = Mock(type=PrimerPair, forward_primer_data="forward1", reverse_primer_data="reverse1")
-        designed_forward_pair1 = Mock()
-        designed_reverse_pair1 = Mock()
+    def test_map_primers_into_designed_primers_objects(self):
+        pair = PrimerPair(pair_id="pair_id", chromosome="1", pre_targeton_start="100", pre_targeton_end="200",
+                          product_size="200", stringency=0.8)
+        pair.forward_primer_data = {
+            'primer': 'forward',
+            'penalty': 0.5,
+            'side': 'right',
+            'pair_id': 'Pair1',
+            'sequence': 'ATCGATCG',
+            'coords': [199, 18],
+            'primer_start': 119,
+            'primer_end': 18,
+            'strand': '+',
+            'tm': 60.0,
+            'gc_percent': 50.0,
+            'self_any_th': 30.0,
+            'self_end_th': 10.0,
+            'hairpin_th': 20.0,
+            'end_stability': 25.0
+        }
+        pair.reverse_primer_data = {
+            'primer': 'reverse',
+            'penalty': 0.5,
+            'side': 'right',
+            'pair_id': 'Pair1',
+            'sequence': 'ATCGATCG',
+            'coords': [199, 18],
+            'primer_start': 119,
+            'primer_end': 18,
+            'strand': '+',
+            'tm': 60.0,
+            'gc_percent': 50.0,
+            'self_any_th': 30.0,
+            'self_end_th': 10.0,
+            'hairpin_th': 20.0,
+            'end_stability': 25.0
+        }
 
-        pair2 = Mock(type=PrimerPair, forward_primer_data="forward2", reverse_primer_data="reverse2")
-        designed_forward_pair2 = Mock()
-        designed_reverse_pair2 = Mock()
-
-        map_to_designed_primer.side_effect = \
-            [designed_forward_pair1, designed_reverse_pair1, designed_forward_pair2, designed_reverse_pair2]
+        expected_designed_forward = DesignedPrimer(
+            name="forward",
+            penalty=0.5,
+            pair_id="Pair1",
+            sequence="ATCGATCG",
+            coords=Interval(start=199, end=18),
+            primer_start=119,
+            primer_end=18,
+            strand="+",
+            tm=60.0,
+            gc_percent=50.0,
+            self_any_th=30.0,
+            self_end_th=10.0,
+            hairpin_th=20.0,
+            end_stability=25.0
+        )
+        expected_designed_reverse = DesignedPrimer(
+            name="reverse",
+            penalty=0.5,
+            pair_id="Pair1",
+            sequence="ATCGATCG",
+            coords=Interval(start=199, end=18),
+            primer_start=119,
+            primer_end=18,
+            strand="+",
+            tm=60.0,
+            gc_percent=50.0,
+            self_any_th=30.0,
+            self_end_th=10.0,
+            hairpin_th=20.0,
+            end_stability=25.0
+        )
 
         # Act
-        result = _map_primers_into_designed_primers_objects([pair1, pair2])
+        result = _map_primers_into_designed_primers_objects([pair])
 
-        # Assertions
-        map_to_designed_primer_calls = [call("forward1"), call("reverse1"), call("forward2"), call("reverse2")]
-        map_to_designed_primer.assert_has_calls(map_to_designed_primer_calls)
-
-        self.assertEqual(result[0].forward, designed_forward_pair1)
-        self.assertEqual(result[0].reverse, designed_reverse_pair1)
-        self.assertEqual(result[1].forward, designed_forward_pair2)
-        self.assertEqual(result[1].reverse, designed_reverse_pair2)
+        self.assertEqual(result[0].forward, expected_designed_forward)
+        self.assertEqual(result[0].reverse, expected_designed_reverse)
 
 
 if __name__ == '__main__':
