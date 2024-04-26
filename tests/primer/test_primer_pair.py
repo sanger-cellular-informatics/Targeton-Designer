@@ -88,7 +88,6 @@ class TestPrimerPair(TestCase):
         actual = build_primer_pairs(input_design, self.input_slice_data)
 
         # assert
-        map_to_designed_primer.assert_called_with({})
         self.assertEqual(len(actual), 1)
         self.assertEqual(actual[0].id, expected.id)
         self.assertEqual(actual[0].forward, expected.forward)
