@@ -196,7 +196,7 @@ class TestPrimerPair(TestCase):
 
     def test_map_primers_into_designed_primers_objects(self):
         pair = PrimerPair(pair_id="pair_id", chromosome="1", pre_targeton_start="100", pre_targeton_end="200",
-                          product_size="200", stringency=0.8)
+                          product_size="200", stringency=0.8, targeton_id="ENSE")
         pair.forward_primer_data = {
             'primer': 'forward',
             'penalty': 0.5,
