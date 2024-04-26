@@ -11,7 +11,6 @@ class Interval:
 class DesignedPrimer:
     name: str
     penalty: float
-    stringency: float
     pair_id: str
     sequence: str
     coords: Interval
@@ -27,7 +26,7 @@ class DesignedPrimer:
 
     def __eq__(self, other):
         if isinstance(other, DesignedPrimer):
-            # Exclude the 'name' and 'stringency' attributes from the comparison
+            # Exclude the 'name' attribute from the comparison
             return (
                     self.penalty == other.penalty and
                     self.pair_id == other.pair_id and
@@ -46,7 +45,7 @@ class DesignedPrimer:
         return False
 
     def __hash__(self):
-        # Exclude the 'name' and 'stringency' attributes from the comparison
+        # Exclude the 'name' attribute from the comparison
         return hash((
             self.penalty,
             self.pair_id,
@@ -68,7 +67,6 @@ def map_to_designed_primer(primer: dict):
     return DesignedPrimer(
         name=primer["primer"],
         penalty=primer["penalty"],
-        stringency=float(primer["stringency"]),
         pair_id=primer["pair_id"],
         sequence=primer["sequence"],
         coords=Interval(primer["coords"][0], primer["coords"][1]),

@@ -5,12 +5,11 @@ from primer.designed_primer import DesignedPrimer, Interval, map_to_designed_pri
 
 class TestDesignedPrimers(TestCase):
 
-    def test_designed_primers_only_with_different_name_and_stringency_are_equal(self):
-        # ONLY the 'name' and 'stringency' attributes are EXCLUDED in the comparison of DesignedPrimer
+    def test_designed_primers_only_with_different_name_are_equal(self):
+        # ONLY the 'name' attribute is EXCLUDED from the comparison of DesignedPrimer
         primer = DesignedPrimer(
             name="Primer1",
             penalty=0.5,
-            stringency=0.8,
             pair_id="Pair1",
             sequence="ATCGATCG",
             coords=Interval(start=100, end=200),
@@ -25,10 +24,9 @@ class TestDesignedPrimers(TestCase):
             end_stability=25.0
         )
 
-        primer_with_different_name_and_stringency = DesignedPrimer(
+        primer_with_different_name = DesignedPrimer(
             name="Primer2",
             penalty=0.5,
-            stringency=1.0,
             pair_id="Pair1",
             sequence="ATCGATCG",
             coords=Interval(start=100, end=200),
@@ -43,14 +41,13 @@ class TestDesignedPrimers(TestCase):
             end_stability=25.0
         )
 
-        self.assertEqual(primer, primer_with_different_name_and_stringency)
+        self.assertEqual(primer, primer_with_different_name)
 
     def test_compare_different_designed_primers(self):
-        # ONLY the 'name' and 'stringency' attributes are EXCLUDED in the comparison of DesignedPrimer
+        # ONLY the 'name' attribute is EXCLUDED from the comparison of DesignedPrimer
         primer = DesignedPrimer(
             name="Primer1",
             penalty=0.5,
-            stringency=0.8,
             pair_id="Pair1",
             sequence="ATCGATCG",
             coords=Interval(start=100, end=200),
@@ -68,7 +65,6 @@ class TestDesignedPrimers(TestCase):
         primer_with_different_penalty = DesignedPrimer(
             name="Primer1",
             penalty=1.5,
-            stringency=0.8,
             pair_id="Pair1",
             sequence="ATCGATCG",
             coords=Interval(start=100, end=200),
@@ -90,7 +86,6 @@ class TestDesignedPrimers(TestCase):
             'primer': 'Primer1',
             'penalty': 0.5,
             'side': 'right',
-            'stringency': '0.8',
             'pair_id': 'Pair1',
             'sequence': 'ATCGATCG',
             'coords': [199, 18],
@@ -110,7 +105,6 @@ class TestDesignedPrimers(TestCase):
         expected = DesignedPrimer(
             name="Primer1",
             penalty=0.5,
-            stringency=0.8,
             pair_id="Pair1",
             sequence="ATCGATCG",
             coords=Interval(start=199, end=18),

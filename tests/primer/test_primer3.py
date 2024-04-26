@@ -46,13 +46,13 @@ class IntegrationTestPrimer3(TestCase):
             chromosome=chromosome,
             pre_targeton_start=f'{pre_targeton_start}',
             pre_targeton_end=f'{pre_targeton_end}',
-            product_size=200
+            product_size=200,
+            stringency=1
         )
 
         expected_forward = DesignedPrimer(
             name='ENSE00000769557_HG8_11_LibAmpF_0',
             penalty=2.7456977357412597,
-            stringency=1.0,
             pair_id='ENSE00000769557_HG8_11_0_str1',
             sequence='CAGACAGCTGCTGGGACA',
             coords=Interval(start=199, end=18),
@@ -70,7 +70,6 @@ class IntegrationTestPrimer3(TestCase):
         expected_reverse = DesignedPrimer(
             name='ENSE00000769557_HG8_11_LibAmpR_0',
             penalty=3.400054355094312,
-            stringency=1.0,
             pair_id='ENSE00000769557_HG8_11_0_str1',
             sequence='CACCTTCCCTCCGGTCCC',
             coords=Interval(start=0, end=18),
