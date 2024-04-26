@@ -1,3 +1,4 @@
+import base64
 from pyfakefs.fake_filesystem_unittest import TestCase
 from parameterized import parameterized
 from unittest.mock import patch
@@ -66,7 +67,9 @@ class TestPrimerPair(TestCase):
         name_mock.return_value = 'libamp_name'
         loci_mock.side_effect = [{'id': 'primer_left_0', 'side': 'left'}, {'id': 'primer_right_0', 'side': 'right'}, ]
 
-        expected = PrimerPair(pair_id="slice_name_0_str", chromosome="", pre_targeton_start="", pre_targeton_end="")
+        pair_id = base64.b64encode("slice_name_0_str".encode('utf-8')).decode()
+
+        expected = PrimerPair(pair_id=pair_id, chromosome="", pre_targeton_start="", pre_targeton_end="")
         expected.forward = {}
         expected.reverse = {}
 
