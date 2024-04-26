@@ -68,18 +68,33 @@ class TestDuplicatesFilterAuxFunctions(TestCase):
         # The 'pair_id' and 'stringency' attributes are excluded from the comparison of PrimerPair
 
         # pair1_group1 and pair2_group1 belongs to the same group because they only differ in stringency and name
-        pair1_group1 = PrimerPair(pair_id="1", chromosome="chr1", pre_targeton_start=42930996, pre_targeton_end=42931206, product_size=131, stringency=0.5,
+        pair1_group1 = PrimerPair(pair_id="1",
+                                  chromosome="chr1",
+                                  pre_targeton_start=42930996,
+                                  pre_targeton_end=42931206,
+                                  product_size=131,
+                                  stringency=0.5,
                                   targeton_id="ENSE")
         pair1_group1.forward = _designed_primer(name='forward', penalty=1)
         pair1_group1.reverse = _designed_primer(name='reverse', penalty=1)
-        pair2_group1 = PrimerPair(pair_id="2", chromosome="chr1", pre_targeton_start=42930996, pre_targeton_end=42931206, product_size=131, stringency=0.75,
+        pair2_group1 = PrimerPair(pair_id="2",
+                                  chromosome="chr1",
+                                  pre_targeton_start=42930996,
+                                  pre_targeton_end=42931206,
+                                  product_size=131,
+                                  stringency=0.75,
                                   targeton_id="ENSE")
         pair2_group1.forward = _designed_primer(name='forward', penalty=1)
         pair2_group1.reverse = _designed_primer(name='reverse', penalty=1)
 
         # pair_group2 is not part of group1 because it differs from the other pairs,
         # having one primer with a different penalty and penalty is included in the comparison in PrimerPair
-        pair_group2 = PrimerPair(pair_id="3", chromosome="chr1", pre_targeton_start=42930996, pre_targeton_end=42931206, product_size=131, stringency=0.5,
+        pair_group2 = PrimerPair(pair_id="3",
+                                 chromosome="chr1",
+                                 pre_targeton_start=42930996,
+                                 pre_targeton_end=42931206,
+                                 product_size=131,
+                                 stringency=0.5,
                                  targeton_id="ENSE")
         pair_group2.forward = _designed_primer(name='forward', penalty=1)
         pair_group2.reverse = _designed_primer(name='reverse', penalty=0.7)
