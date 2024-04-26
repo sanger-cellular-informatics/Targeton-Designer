@@ -164,7 +164,7 @@ If there is no config file for primer3, it will run with the default configurati
 
 ##### Designer config
 Is used to specify parameters specific for the Primer Designer tool. 
-Designer tool config contains stringency vector to specify a set of stringencies to run Primer3.  
+Designer tool config contains a stringency vector to specify a set of stringencies to run Primer3, and a vector to specify the column order of the csv output file.  
 To set up user defined configuration for primer3, you can pass ``--conf`` argument with file path to the ``primer`` command.
 
 
