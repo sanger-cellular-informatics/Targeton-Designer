@@ -11,13 +11,16 @@ class PrimerPair:
     def __init__(self, pair_id: str, chromosome: str,
                        pre_targeton_start: str,
                        pre_targeton_end: str,
-                       product_size: str, stringency: float):
+                       product_size: str,
+                       stringency: float,
+                       targeton_id: str):
         self.id = pair_id
         self.chromosome = chromosome
         self.pre_targeton_start = pre_targeton_start
         self.pre_targeton_end = pre_targeton_end
         self.product_size = product_size
         self.stringency = stringency
+        self.targeton_id = targeton_id
         self.forward_primer_data = {}
         self.reverse_primer_data = {}
         self.reverse = None
@@ -30,6 +33,7 @@ class PrimerPair:
                 f"pre_targeton_end='{self.pre_targeton_end}', "
                 f"product_size='{self.product_size}', "
                 f"stringency='{self.chromosome}',"
+                f"targeton_id='{self.targeton_id}', "
                 f"forward={self.forward}, reverse={self.reverse})")
 
     def __eq__(self, other):
@@ -207,6 +211,7 @@ def build_primer_pairs(
                     slice_data.end,
                     primer_pair_product_size,
                     stringency,
+                    slice_data.targeton_id,
                 )
                 primer_pairs.append(pair)
 

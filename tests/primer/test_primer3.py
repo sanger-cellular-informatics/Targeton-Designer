@@ -17,6 +17,7 @@ class IntegrationTestPrimer3(TestCase):
         pre_targeton_name = "ENSE00000769557_HG8_11"
         pre_targeton_start = 42929593
         pre_targeton_end = 42929803
+        targeton_id = "ENSE"
 
         # arrange
         slices_fasta_file = self.fs.create_file(
@@ -47,7 +48,8 @@ class IntegrationTestPrimer3(TestCase):
             pre_targeton_start=f'{pre_targeton_start}',
             pre_targeton_end=f'{pre_targeton_end}',
             product_size=200,
-            stringency=1
+            stringency=1,
+            targeton_id="ENSE"
         )
 
         expected_forward = DesignedPrimer(
