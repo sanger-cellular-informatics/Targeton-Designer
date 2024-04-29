@@ -10,14 +10,15 @@ class Config(ABC):
     @abstractmethod
     def read_config(self):
         pass
-        
+
 
 class DesignerConfig(Config):
     def __init__(self, config_file: str = None):
         self._default_config_file = 'config/designer.config.json'
 
         config = self.read_config(self._default_config_file, config_file)
-        self.params = {'stringency_vector': config['stringency_vector']}
+        self.params = {'stringency_vector': config['stringency_vector'],
+                       'csv_column_order': config['csv_column_order']}
 
     @staticmethod
     def read_config(
@@ -40,8 +41,7 @@ class DesignerConfig(Config):
 
 class Primer3ParamsConfig(Config):
     def __init__(self, config_file: str = None):
-        self._default_config_file =  'src/primer/primer3.config.json'
-
+        self._default_config_file = 'src/primer/primer3.config.json'
         self.params = self.read_config(self._default_config_file, config_file)
 
     @staticmethod
