@@ -164,7 +164,7 @@ If there is no config file for primer3, it will run with the default configurati
 
 ##### Designer config
 Is used to specify parameters specific for the Primer Designer tool. 
-Designer tool config contains a stringency vector to specify a set of stringencies to run Primer3, and a vector to specify the column order of the csv output file.  
+ Designer tool config contains a stringency vector to specify a set of stringencies to run Primer3, and a vector to specify the column order of the csv output file.  Available columns are: 'primer_type', 'primer', 'penalty', 'stringency', 'sequence', 'primer_start', 'primer_end', 'tm', 'gc_percent', 'self_any_th', 'self_end_th', 'hairpin_th', 'end_stability', 'chromosome', 'pre_targeton_start', 'pre_targeton_end' and 'product_size'.
 To set up user defined configuration for primer3, you can pass ``--conf`` argument with file path to the ``primer`` command.
 
 
