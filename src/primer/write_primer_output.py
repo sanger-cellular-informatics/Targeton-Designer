@@ -78,26 +78,29 @@ def _get_primers_dataframe(pairs: List[PrimerPair], primer_type: str) -> pd.Data
 
 
 def _reorder_columns(col_order: List[str],
-                     dataframe: pd.DataFrame):
-    final_col_order = list(dict.fromkeys(col_order))
+                     csv_dataframe: pd.DataFrame):
+    
+    col_order_unique = list(dict.fromkeys(col_order))
 
-    if not final_col_order:
-        return dataframe
+    if not col_order_unique:
+        print("Warning: empty csv_column_order list provided in config file, returning default column order")
+        return csv_dataframe
 
     final_order = []
-    for column in final_col_order:
-        if column not in dataframe.columns:
-            print(f"{column} not in dataframe column name")
+    for column in col_order_unique:
+        if column not in csv_dataframe.columns:
+            print(f"Warning: '{column}' specified in config file not is not a possible column name")
         else:
             final_order.append(column)
+    
     if not final_order:
-        raise ValueError("All column names are wrong")
+        raise ValueError("All column names in config file are wrong")
 
-    for column in dataframe.columns:
+    for column in csv_dataframe.columns:
         if column not in final_order:
-            print(f"{column} not in col_order")
+            print(f"'{column}' column discarded as it is missing in config file")
 
-    return dataframe[final_order]
+    return csv_dataframe[final_order]
 
 
 def construct_primer_rows_bed_format(pairs: List[PrimerPair]) -> list:
