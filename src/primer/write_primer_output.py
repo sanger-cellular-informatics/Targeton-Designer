@@ -64,13 +64,27 @@ def _get_primers_dataframe(pairs: List[PrimerPair], primer_type: str) -> pd.Data
             primers_dict['end_stability'].append(primer.end_stability)
 
         primers_dict['stringency'].extend([pair.stringency] * 2)
-        primers_dict['chromosome'].extend([pair.chromosome] * 2)
+        primers_dict['chromosome'].extend([int(pair.chromosome)] * 2)
         primers_dict['pre_targeton_start'].extend([pair.pre_targeton_start] * 2)
         primers_dict['pre_targeton_end'].extend([pair.pre_targeton_end] * 2)
         primers_dict['product_size'].extend([pair.product_size] * 2)
         primers_dict['targeton_id'].extend([pair.targeton_id] * 2)
 
-    return pd.DataFrame(primers_dict)
+    return pd.DataFrame(primers_dict).applymap(_add_double_quotes_to_str).applymap(round_to_three_decimals)
+
+
+def _add_double_quotes_to_str(string: str) -> str:
+    if isinstance(string, str):
+        return f"\"{string}\""
+    else:
+        return string
+
+
+def round_to_three_decimals(number: float) -> float:
+    if isinstance(number, float) and len(str(number).split('.')[1]) > 3:
+        return round(number, 3)
+    else:
+        return number
 
 
 def construct_primer_rows_bed_format(pairs: List[PrimerPair]) -> list:

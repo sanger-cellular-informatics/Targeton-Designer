@@ -55,7 +55,7 @@ class TestPrimerPair(TestCase):
     def setUp(self):
         self.setUpPyfakefs()
         self.input_slice_data = SliceData(
-            'slice_name', 'slice_start', 'slice_end', '+', 'slice_chrom', 'bases'
+            name='slice_name', start='100', end='200', strand='+', chrom='slice_chrom', bases='bases'
         )
 
     @patch('primer.primer_pair.map_to_designed_primer')
@@ -156,7 +156,7 @@ class TestPrimerPair(TestCase):
         self.assertEqual(expected, actual)
         self.assertEqual(
             f"{coords_mock.call_args}",
-            "call('primer_side', 'design_value', 'slice_start')"
+            "call('primer_side', 'design_value', '100')"
         )
 
         self.assertEqual(
