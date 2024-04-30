@@ -11,7 +11,6 @@ from utils.file_system import check_file_exists, parse_json
 import coloredlogs
 import logging 
 
-
 # Initialize logger
 logger = CustomLogger(__name__)
 format = logger.logs_to_log()
@@ -87,16 +86,11 @@ def validate_p3_csv(p3_csv: str):
 
 
 def validate_score_tsv(tsv: str):
-    try:
-
-        with open(tsv, newline='') as tsv_file:
-            data = csv.DictReader(tsv_file, delimiter='\t')
-            expected_cols = ['Targeton', 'Primer pair', 'A/B/Total', 'WGE format', 'Score']
-            if check_if_missing_fields(data, expected_cols):
-                raise FileFormatError(f'Missing columns in Scoring TSV')
-    except Exception as ex:
-        logging.exception(f"Error occured while reading file: {ex}")
-        sys.exit()
+    with open(tsv, newline='') as tsv_file:
+        data = csv.DictReader(tsv_file, delimiter='\t')
+        expected_cols = ['Targeton', 'Primer pair', 'A/B/Total', 'WGE format', 'Score']
+        if check_if_missing_fields(data, expected_cols):
+            raise FileFormatError(f'Missing columns in Scoring TSV')
 
 
 
