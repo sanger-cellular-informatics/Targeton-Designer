@@ -8,7 +8,7 @@ from primer.slice_data import SliceData
 
 
 class PrimerPair:
-    def __init__(self, pair_id: str, chromosome: str,
+    def __init__(self, pair_id: str, chromosome: int,
                        pre_targeton_start: int,
                        pre_targeton_end: int,
                        product_size: str,
@@ -206,7 +206,7 @@ def build_primer_pairs(
             if pair is None:
                 pair = PrimerPair(
                     primer_pair_id,
-                    slice_data.chrom,
+                    int(slice_data.chrom),
                     int(slice_data.start),
                     int(slice_data.end),
                     primer_pair_product_size,

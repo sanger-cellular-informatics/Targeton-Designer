@@ -13,7 +13,7 @@ class IntegrationTestPrimer3(TestCase):
 
     def test_get_primer_pairs_from_fasta_file(self):
         stringency = 1
-        chromosome = "1"
+        chromosome = 1
         pre_targeton_name = "ENSE00000769557_HG8_11"
         pre_targeton_start = 42929593
         pre_targeton_end = 42929803

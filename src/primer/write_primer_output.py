@@ -64,7 +64,7 @@ def _get_primers_dataframe(pairs: List[PrimerPair], primer_type: str) -> pd.Data
             primers_dict['end_stability'].append(primer.end_stability)
 
         primers_dict['stringency'].extend([pair.stringency] * 2)
-        primers_dict['chromosome'].extend([int(pair.chromosome)] * 2)
+        primers_dict['chromosome'].extend([pair.chromosome] * 2)
         primers_dict['pre_targeton_start'].extend([pair.pre_targeton_start] * 2)
         primers_dict['pre_targeton_end'].extend([pair.pre_targeton_end] * 2)
         primers_dict['product_size'].extend([pair.product_size] * 2)
@@ -96,7 +96,7 @@ def construct_primer_rows_bed_format(pairs: List[PrimerPair]) -> list:
     return primer_rows
 
 
-def create_bed_row_for_primer(primer: DesignedPrimer, chromosome: str) -> list:
+def create_bed_row_for_primer(primer: DesignedPrimer, chromosome: int) -> list:
     primer_row = [
         chromosome,
         primer.primer_start,
