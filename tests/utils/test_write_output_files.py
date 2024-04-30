@@ -3,10 +3,12 @@ from os import path
 from pathlib import Path
 import csv
 
+import pandas as pd
 from pyfakefs.fake_filesystem_unittest import TestCase
 from unittest.mock import patch, Mock
 from freezegun import freeze_time
 
+from primer.write_primer_output import _add_double_quotes_to_str, _round_to_three_decimals
 from src.utils.write_output_files import write_scoring_output, write_targeton_csv
 from src.utils import write_output_files
 from primer.slice_data import SliceData
@@ -131,6 +133,46 @@ class TestWriteOutputFiles(TestCase):
         self.assertEqual(test_delimiter, expected_delimiter)
         self.assertTrue(expected_file_path.exists())
         self.assertEqual(test_data, expected_read_data)
+
+
+class TestFunctions(unittest.TestCase):
+
+    def test_add_double_quotes_df(self):
+        df = pd.DataFrame({'strings': ['hello', 'world'], 'numbers': [3.141592653589793, 1.23456789]})
+
+        # Apply _add_double_quotes_to_str to the 'strings' column of DataFrame
+        result = df.applymap(_add_double_quotes_to_str)
+
+        # Check if the function correctly adds double quotes to strings
+        self.assertEqual(result['strings'][0], "\"hello\"")
+        self.assertEqual(result['strings'][1], "\"world\"")
+
+    def test_round_to_three_decimals_df(self):
+        df = pd.DataFrame({'strings': ['hello', 'world'], 'numbers': [3.141592653589793, 1.23456789]})
+
+        # Apply round_to_three_decimals to the 'numbers' column of DataFrame
+        result = df.applymap(_round_to_three_decimals)
+
+        # Check if the function correctly rounds floats to three decimal places
+        self.assertAlmostEqual(result['numbers'][0], 3.142)
+        self.assertAlmostEqual(result['numbers'][1], 1.235)
+
+    def test_add_double_quotes_to_str(self):
+        # Test adding double quotes to a string
+        self.assertEqual(_add_double_quotes_to_str("hello"), "\"hello\"")
+        self.assertEqual(_add_double_quotes_to_str("world"), "\"world\"")
+
+        # Test when input is not a string
+        self.assertEqual(_add_double_quotes_to_str(123), 123)
+
+    def test_round_to_three_decimals(self):
+        # Test rounding a float to three decimal places
+        self.assertAlmostEqual(_round_to_three_decimals(3.141592653589793), 3.142)
+        self.assertAlmostEqual(_round_to_three_decimals(1.23456789), 1.235)
+
+        # Test when input is not a float
+        self.assertEqual(_round_to_three_decimals("3.1415"), "3.1415")
+        self.assertEqual(_round_to_three_decimals(123), 123)
 
 
 if __name__ == '__main__':
