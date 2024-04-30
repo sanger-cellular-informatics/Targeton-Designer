@@ -34,6 +34,7 @@ def write_primer_output(
 
     return result
 
+
 def export_primers_to_csv(primer_pairs: List[PrimerPair], export_dir: str, primer_type: str) -> str:
     PRIMER3_OUTPUT_CSV = 'p3_output.csv'
     primers_csv_output_path = path.join(export_dir, PRIMER3_OUTPUT_CSV)
@@ -75,22 +76,29 @@ def _get_primers_dataframe(pairs: List[PrimerPair], primer_type: str) -> pd.Data
 
     return pd.DataFrame(primers_dict)
 
+
 def _reorder_columns(col_order: List[str],
                      dataframe: pd.DataFrame):
-    if not col_order:
+    final_col_order = list(dict.fromkeys(col_order))
+
+    if not final_col_order:
         return dataframe
+
     final_order = []
-    for column in col_order:
-        if not column in dataframe.columns:
-            print(f"{column} not in dataframe")
+    for column in final_col_order:
+        if column not in dataframe.columns:
+            print(f"{column} not in dataframe column name")
         else:
             final_order.append(column)
     if not final_order:
         raise ValueError("All column names are wrong")
+
     for column in dataframe.columns:
-        if not column in final_order:
+        if column not in final_order:
             print(f"{column} not in col_order")
+
     return dataframe[final_order]
+
 
 def construct_primer_rows_bed_format(pairs: List[PrimerPair]) -> list:
     primer_rows = []

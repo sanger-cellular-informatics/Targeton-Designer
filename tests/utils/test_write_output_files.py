@@ -1,12 +1,15 @@
 import unittest
+from io import StringIO
 from os import path
 from pathlib import Path
 import csv
 
+import pandas as pd
 from pyfakefs.fake_filesystem_unittest import TestCase
 from unittest.mock import patch, Mock
 from freezegun import freeze_time
 
+from primer.write_primer_output import _reorder_columns
 from src.utils.write_output_files import write_scoring_output, write_targeton_csv
 from src.utils import write_output_files
 from primer.slice_data import SliceData
@@ -131,6 +134,44 @@ class TestWriteOutputFiles(TestCase):
         self.assertEqual(test_delimiter, expected_delimiter)
         self.assertTrue(expected_file_path.exists())
         self.assertEqual(test_data, expected_read_data)
+
+    def test_reorder_columns_when_empty_column_list(self):
+        # Arrange
+        column_list = []
+        data = {
+            'Name': ['Juan', 'María', 'Pedro'],
+            'Age': [25, 30, 35]
+        }
+        df = pd.DataFrame(data)
+
+        # Act
+        ordered_df = _reorder_columns(column_list, df)
+
+        # Assertion
+        pd.testing.assert_frame_equal(ordered_df, df)
+
+    def test_reorder_columns_when_all_column_names_wrong(self):
+        expected_stdout = StringIO()
+        import sys
+        sys.stdout = expected_stdout
+
+        # Arrange
+        column_list = ["WRONG"]
+        data = {
+            'Name': ['Juan', 'María', 'Pedro'],
+            'Age': [25, 30, 35]
+        }
+        df = pd.DataFrame(data)
+
+        # Act
+        with self.assertRaises(ValueError) as value_error:
+            _reorder_columns(column_list, df)
+
+        # Assertion
+        std_result = expected_stdout.getvalue().strip()
+
+        self.assertEqual(str(value_error.exception), "All column names are wrong")
+        self.assertEqual(std_result, "WRONG not in dataframe column name")
 
 
 if __name__ == '__main__':
