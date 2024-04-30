@@ -48,6 +48,10 @@ def _get_primers_dataframe(pairs: List[PrimerPair], primer_type: str) -> pd.Data
     primers_dict = defaultdict(list)
 
     for pair in pairs:
+        
+        # Add unique ID from primer pair as a first column in csv file. 
+        primers_dict['primer_uid'].extend([pair.pair_uid] * 2)
+
         for direction in ['forward', 'reverse']:
             primer = getattr(pair, direction)
             primers_dict['primer_type'].append(primer_type)

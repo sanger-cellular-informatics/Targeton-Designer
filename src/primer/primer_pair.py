@@ -1,6 +1,7 @@
 from typing import Tuple, List, Optional
 from collections import defaultdict
 import re
+import uuid
 
 from primer.designed_primer import map_to_designed_primer
 from primer.filter.hap1 import contain_variant
@@ -13,8 +14,10 @@ class PrimerPair:
                        pre_targeton_end: str,
                        product_size: str,
                        stringency: float,
-                       targeton_id: str):
+                       targeton_id: str,
+                       pair_uid: str):
         self.id = pair_id
+        self.pair_uid = pair_uid
         self.chromosome = chromosome
         self.pre_targeton_start = pre_targeton_start
         self.pre_targeton_end = pre_targeton_end
@@ -28,7 +31,7 @@ class PrimerPair:
 
 
     def __repr__(self):
-        return (f"PrimerPair(pair_id='{self.id}', chromosome='{self.chromosome}', "
+        return (f"PrimerPair(pair_id='{self.id}', pair_uid='{self.pair_uid}', chromosome='{self.chromosome}', "
                 f"pre_targeton_start='{self.pre_targeton_start}', "
                 f"pre_targeton_end='{self.pre_targeton_end}', "
                 f"product_size='{self.product_size}', "
@@ -212,6 +215,7 @@ def build_primer_pairs(
                     primer_pair_product_size,
                     stringency,
                     slice_data.targeton_id,
+                    str(uuid.uuid1())
                 )
                 primer_pairs.append(pair)
 
