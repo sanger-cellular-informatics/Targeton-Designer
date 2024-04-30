@@ -4,7 +4,7 @@ from typing import List
 import pandas as pd
 from os import path
 
-from custom_logger.custom_logger import logs_to_log
+from custom_logger.custom_logger import CustomLogger
 from designer.output_data_classes import PrimerOutputData
 from primer.designed_primer import DesignedPrimer
 from primer.primer_pair import PrimerPair
@@ -15,8 +15,9 @@ import coloredlogs
 import logging 
 
 # Initialize logger
-coloredlogs.install()
-logs_to_log(__name__)
+logger = CustomLogger(__name__)
+format = logger.logs_to_log()
+coloredlogs.install(fmt=format)
 
 
 def write_primer_output(
@@ -39,6 +40,7 @@ def write_primer_output(
     result.dir = export_dir
 
     logging.info(f"Primer files saved: {result.bed}, {result.csv}")
+
     return result
 
 

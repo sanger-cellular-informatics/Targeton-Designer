@@ -1,5 +1,6 @@
 from unittest import TestCase
 from unittest.mock import patch, MagicMock, Mock
+import uuid
 
 from primer.designed_primer import DesignedPrimer, Interval
 from primer.filter.duplicates_filter import DuplicatesFilter, _get_max_stringency_pair, \
@@ -68,13 +69,15 @@ class TestDuplicatesFilterAuxFunctions(TestCase):
         # The 'pair_id' and 'stringency' attributes are excluded from the comparison of PrimerPair
 
         # pair1_group1 and pair2_group1 belongs to the same group because they only differ in stringency and name
+        pair_uid = str(uuid.uuid1())
         pair1_group1 = PrimerPair(pair_id="1",
                                   chromosome="chr1",
                                   pre_targeton_start=42930996,
                                   pre_targeton_end=42931206,
                                   product_size=131,
                                   stringency=0.5,
-                                  targeton_id="ENSE")
+                                  targeton_id="ENSE",
+                                  pair_uid=pair_uid)
         pair1_group1.forward = _designed_primer(name='forward', penalty=1)
         pair1_group1.reverse = _designed_primer(name='reverse', penalty=1)
         pair2_group1 = PrimerPair(pair_id="2",
@@ -83,7 +86,8 @@ class TestDuplicatesFilterAuxFunctions(TestCase):
                                   pre_targeton_end=42931206,
                                   product_size=131,
                                   stringency=0.75,
-                                  targeton_id="ENSE")
+                                  targeton_id="ENSE",
+                                  pair_uid=pair_uid)
         pair2_group1.forward = _designed_primer(name='forward', penalty=1)
         pair2_group1.reverse = _designed_primer(name='reverse', penalty=1)
 
@@ -95,7 +99,8 @@ class TestDuplicatesFilterAuxFunctions(TestCase):
                                  pre_targeton_end=42931206,
                                  product_size=131,
                                  stringency=0.5,
-                                 targeton_id="ENSE")
+                                 targeton_id="ENSE",
+                                 pair_uid=pair_uid)
         pair_group2.forward = _designed_primer(name='forward', penalty=1)
         pair_group2.reverse = _designed_primer(name='reverse', penalty=0.7)
 

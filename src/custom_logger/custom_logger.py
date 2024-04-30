@@ -1,46 +1,52 @@
 import logging
+from logging import Logger
 import sys, os
 
 
-def logs_to_log(module_name: str) -> None:
+class CustomLogger(Logger):
 
-    """
-    Function logs_to_log() will log out all of current logging output to a log file,
-    which sits under "/src/logs" directory. It will grab the logs outputted from a file
-    in which it's instantiated is added.
-
-    This function take one argument module_name and returns None.  
-    For example: "ParentModule.Module". 
-
-    Here, default logger level is DEBUG. 
-    This means you can log INFO, ERROR, WARNING and EXCEPTION.
-    """
+    def __init__(self, name: str) -> None:
+        super().__init__(name)
+        self.name = name
+    
 
 
-    # Get directory for logs
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    parent_dir = os.path.dirname(dir_path)
-    log_dir = os.path.join(parent_dir, 'logs/')
-    module_name = module_name.split('.')[1]
+    def logs_to_log(self) -> None:
+
+        """
+        Function logs_to_log() will log out all of current logging output to a log file,
+        which sits under "/src/logs" directory. It will grab the logs outputted from a file
+        in which it's instantiated is added.
+
+        This function take one argument module_name and returns None.  
+        For example: "ParentModule.Module". 
+
+        Here, default logger level is DEBUG. 
+        This means you can log INFO, ERROR, WARNING and EXCEPTION.
+        """
 
 
-    # Create log instance and get logger
-    log = logging.getLogger()
-    log.setLevel(logging.INFO)
+        module_name = self.name.split('.')[1]
+        
+        # Get directory for logs
+        log_directory = os.path.join(os.getcwd(),"src/logs/")
 
-    # Format logging output
-    formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(message)s')
+        if not os.path.exists(log_directory):
+            os.makedirs(log_directory)
+        log_file_path = os.path.join(log_directory, f"{module_name}_log.log")
+    
+        # Create log instance and get logger
+        log = logging.getLogger()
+        log.setLevel(logging.INFO)
 
+        # Format logging output
+        logging.basicConfig(
+                            filename=log_file_path, 
+                            filemode='a', 
+                            level=logging.DEBUG,
+                            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                            force=True
+        )
 
-    stdout_handler = logging.StreamHandler(sys.stdout)
-    stdout_handler.setLevel(logging.DEBUG)
-    stdout_handler.setFormatter(formatter)
-
-    # Set log directory in which all the logs will sit under.
-    file_handler = logging.FileHandler(f"{log_dir}{module_name}_log.log")
-    file_handler.setLevel(logging.DEBUG)
-    file_handler.setFormatter(formatter)
-
-    log.addHandler(file_handler)
-    log.addHandler(stdout_handler)
+        return '%(asctime)s | %(name)s | %(levelname)s | %(message)s'
 
