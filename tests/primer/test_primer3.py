@@ -1,9 +1,11 @@
 import unittest
+import uuid
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from primer.designed_primer import DesignedPrimer, Interval
 from primer.primer_pair import PrimerPair
 from primer.primer3 import Primer3
+from src import primer
 
 
 class IntegrationTestPrimer3(TestCase):
@@ -41,8 +43,10 @@ class IntegrationTestPrimer3(TestCase):
         # act
         result = Primer3(designer_config, p3_config).get_primers(slices_fasta_file.name)
 
+        pair_uid = str(uuid.uuid1())
         # assert
         expected_primer_pair = PrimerPair(
+            pair_uid={pair_uid},
             pair_id=f'{pre_targeton_name}_0_str1',
             chromosome=chromosome,
             pre_targeton_start=f'{pre_targeton_start}',

@@ -1,10 +1,19 @@
 import csv
+import sys
 from Bio import SeqIO
 import re
 import json
 
+from src.custom_logger.custom_logger import logs_to_log
 from utils.exceptions import FileFormatError, FileValidationError
 from utils.file_system import check_file_exists, parse_json
+
+import coloredlogs
+import logging 
+
+# Intilize logger
+coloredlogs.install()
+logs_to_log(__name__)
 
 
 def validate_bed_format(bed: str):
@@ -76,11 +85,17 @@ def validate_p3_csv(p3_csv: str):
 
 
 def validate_score_tsv(tsv: str):
-    with open(tsv, newline='') as tsv_file:
-        data = csv.DictReader(tsv_file, delimiter='\t')
-        expected_cols = ['Targeton', 'Primer pair', 'A/B/Total', 'WGE format', 'Score']
-        if check_if_missing_fields(data, expected_cols):
-            raise FileFormatError(f'Missing columns in Scoring TSV')
+    try:
+
+        with open(tsv, newline='') as tsv_file:
+            data = csv.DictReader(tsv_file, delimiter='\t')
+            expected_cols = ['Targeton', 'Primer pair', 'A/B/Total', 'WGE format', 'Score']
+            if check_if_missing_fields(data, expected_cols):
+                raise FileFormatError(f'Missing columns in Scoring TSV')
+    except Exception as ex:
+        logging.exception(f"Error occured while reading file: {ex}")
+        sys.exit()
+
 
 
 def validate_primer_json(json: str) -> None:

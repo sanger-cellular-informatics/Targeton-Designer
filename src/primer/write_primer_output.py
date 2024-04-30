@@ -1,13 +1,23 @@
 from collections import defaultdict
+import logging
 from typing import List
 
 import pandas as pd
 from os import path
 
+from custom_logger.custom_logger import logs_to_log
 from designer.output_data_classes import PrimerOutputData
 from primer.designed_primer import DesignedPrimer
 from primer.primer_pair import PrimerPair
 from utils.write_output_files import timestamped_dir, export_to_bed
+
+# Import logger and coloredlogs
+import coloredlogs
+import logging 
+
+# Initialize logger
+coloredlogs.install()
+logs_to_log(__name__)
 
 
 def write_primer_output(
@@ -29,8 +39,7 @@ def write_primer_output(
     result.csv = export_primers_to_csv(primer_pairs, export_dir, primer_type)
     result.dir = export_dir
 
-    print('Primer files saved:', result.bed, result.csv)
-
+    logging.info(f"Primer files saved: {result.bed}, {result.csv}")
     return result
 
 
