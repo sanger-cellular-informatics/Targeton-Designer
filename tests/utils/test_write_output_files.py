@@ -135,7 +135,7 @@ class TestWriteOutputFiles(TestCase):
         self.assertEqual(test_data, expected_read_data)
 
 
-class TestFunctions(unittest.TestCase):
+class TestDataframeMapperFunctions(unittest.TestCase):
 
     def test_add_double_quotes_df(self):
         df = pd.DataFrame({'strings': ['hello', 'world'], 'numbers': [3.141592653589793, 1.23456789]})
