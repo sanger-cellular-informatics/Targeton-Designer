@@ -1,5 +1,6 @@
 import unittest
 import sys
+import pandas as pd
 
 from unittest.mock import patch
 from unittest import TestCase
@@ -15,6 +16,7 @@ from utils.arguments_parser import ParsedInputArguments
 from utils.write_output_files import write_targeton_csv
 from designer.output_data_classes import DesignOutputData
 from primer.slice_data import SliceData
+from config.config import DesignerConfig
 
 
 class TestSlicerIntegration(TestCase):
@@ -82,6 +84,9 @@ class TestPrimerIntegration(TestCase):
                 self.assertGreater(path_primer_bed.stat().st_size, 0)
                 self.assertGreater(path_primer_csv.stat().st_size, 0)
 
+                expected_csv_headers = DesignerConfig(args["conf"]).params['csv_column_order']
+                csv_headers = list(pd.read_csv(path_primer_csv).columns)
+                self.assertEqual(set(csv_headers), set(expected_csv_headers))
 
 class TestTargetonCSVIntegration(TestCase):
     def setUp(self):
