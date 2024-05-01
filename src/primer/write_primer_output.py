@@ -74,7 +74,7 @@ def _get_primers_dataframe(pairs: List[PrimerPair], primer_type: str) -> pd.Data
 
 
 def _round_to_three_decimals(number: float) -> float:
-    if isinstance(number, float) and len(str(number).split('.')[1]) > 3:
+    if isinstance(number, float):
         return round(number, 3)
     else:
         return number
