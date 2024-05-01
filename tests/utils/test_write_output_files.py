@@ -8,7 +8,6 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 from unittest.mock import patch, Mock
 from freezegun import freeze_time
 
-from primer.write_primer_output import _round_to_three_decimals
 from src.utils.write_output_files import write_scoring_output, write_targeton_csv
 from src.utils import write_output_files
 from primer.slice_data import SliceData
@@ -133,29 +132,6 @@ class TestWriteOutputFiles(TestCase):
         self.assertEqual(test_delimiter, expected_delimiter)
         self.assertTrue(expected_file_path.exists())
         self.assertEqual(test_data, expected_read_data)
-
-
-class TestDataframeMapperFunctions(unittest.TestCase):
-
-    def test_round_to_three_decimals_df(self):
-        df = pd.DataFrame({'strings': ['hello', 'world'], 'numbers': [3.141592653589793, 1.23456789]})
-
-        # Apply round_to_three_decimals to the 'numbers' column of DataFrame
-        result = df.applymap(_round_to_three_decimals)
-
-        # Check if the function correctly rounds floats to three decimal places
-        self.assertAlmostEqual(result['numbers'][0], 3.142)
-        self.assertAlmostEqual(result['numbers'][1], 1.235)
-
-
-    def test_round_to_three_decimals(self):
-        # Test rounding a float to three decimal places
-        self.assertAlmostEqual(_round_to_three_decimals(3.141592653589793), 3.142)
-        self.assertAlmostEqual(_round_to_three_decimals(1.23456789), 1.235)
-
-        # Test when input is not a float
-        self.assertEqual(_round_to_three_decimals("3.1415"), "3.1415")
-        self.assertEqual(_round_to_three_decimals(123), 123)
 
 
 if __name__ == '__main__':

@@ -70,14 +70,7 @@ def _get_primers_dataframe(pairs: List[PrimerPair], primer_type: str) -> pd.Data
         primers_dict['product_size'].extend([pair.product_size] * 2)
         primers_dict['targeton_id'].extend([pair.targeton_id] * 2)
 
-    return pd.DataFrame(primers_dict).applymap(_round_to_three_decimals)
-
-
-def _round_to_three_decimals(number: float) -> float:
-    if isinstance(number, float):
-        return round(number, 3)
-    else:
-        return number
+    return pd.DataFrame(primers_dict).round(decimals=3)
 
 
 def construct_primer_rows_bed_format(pairs: List[PrimerPair]) -> list:
