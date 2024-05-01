@@ -173,8 +173,8 @@ class TestWriteOutputFiles(TestCase):
         std_result = expected_stdout.getvalue().strip()
 
         pd.testing.assert_frame_equal(ordered_df, df)
-        self.assertEqual(std_result,
-                          "Warning: empty csv_column_order list provided in config file, returning default column order")
+        self.assertEqual(std_result, 
+                         "Warning: empty csv_column_order list provided in config file, returning dataframe with default column order")
 
 
     def test_reorder_columns_when_all_column_names_wrong(self):
@@ -196,10 +196,8 @@ class TestWriteOutputFiles(TestCase):
         # Assertion
         std_result = expected_stdout.getvalue().strip()
 
-        self.assertEqual(str(value_error.exception),
-                          "All column names in config file are wrong")
-        self.assertEqual(std_result,
-                          "Warning: 'WRONG' specified in config file not is not a possible column name")
+        self.assertEqual(str(value_error.exception), "All column names in config file are wrong")
+        self.assertEqual(std_result, "Warning: 'WRONG' specified in config file not is not a column name")
     
 
     def test_reorder_columns_when_some_column_names_wrong(self):
@@ -221,8 +219,7 @@ class TestWriteOutputFiles(TestCase):
         std_result = expected_stdout.getvalue().strip()
 
         pd.testing.assert_frame_equal(ordered_df, df[['Name', 'Age']])
-        self.assertEqual(std_result,
-                          "Warning: 'WRONG' specified in config file not is not a possible column name")
+        self.assertEqual(std_result, "Warning: 'WRONG' specified in config file not is not a column name")
 
 
     def test_reorder_columns_when_some_column_names_missing(self):
@@ -244,8 +241,7 @@ class TestWriteOutputFiles(TestCase):
         std_result = expected_stdout.getvalue().strip()
 
         pd.testing.assert_frame_equal(ordered_df, df[['Name']])
-        self.assertEqual(std_result,
-                          "'Age' column discarded as it is missing in config file")
+        self.assertEqual(std_result, "'Age' column discarded as it is not in config file")
 
 
     def test_reorder_columns_success(self):

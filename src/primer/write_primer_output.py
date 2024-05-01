@@ -77,30 +77,30 @@ def _get_primers_dataframe(pairs: List[PrimerPair], primer_type: str) -> pd.Data
     return pd.DataFrame(primers_dict)
 
 
-def _reorder_columns(col_order: List[str],
-                     csv_dataframe: pd.DataFrame):
+def _reorder_columns(csv_col_order: List[str],
+                     dataframe: pd.DataFrame):
     
-    col_order_unique = list(dict.fromkeys(col_order))
+    col_order_unique = list(dict.fromkeys(csv_col_order))
 
     if not col_order_unique:
-        print("Warning: empty csv_column_order list provided in config file, returning default column order")
-        return csv_dataframe
+        print("Warning: empty csv_column_order list provided in config file, returning dataframe with default column order")
+        return dataframe
 
     final_order = []
     for column in col_order_unique:
-        if column not in csv_dataframe.columns:
-            print(f"Warning: '{column}' specified in config file not is not a possible column name")
+        if column not in dataframe.columns:
+            print(f"Warning: '{column}' specified in config file not is not a column name")
         else:
             final_order.append(column)
     
     if not final_order:
         raise ValueError("All column names in config file are wrong")
 
-    for column in csv_dataframe.columns:
+    for column in dataframe.columns:
         if column not in final_order:
-            print(f"'{column}' column discarded as it is missing in config file")
+            print(f"'{column}' column discarded as it is not in config file")
 
-    return csv_dataframe[final_order]
+    return dataframe[final_order]
 
 
 def construct_primer_rows_bed_format(pairs: List[PrimerPair]) -> list:
