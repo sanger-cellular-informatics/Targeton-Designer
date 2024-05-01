@@ -64,9 +64,8 @@ def _get_primers_dataframe(pairs: List[PrimerPair], primer_type: str) -> pd.Data
             primers_dict['hairpin_th'].append(primer.hairpin_th)
             primers_dict['end_stability'].append(primer.end_stability)
         
-        # Add unique ID from primer pair as a first column in csv file. 
 
-        primers_dict['uid'].extend([pair.uid] * 2)
+        primers_dict['pair_uid'].extend([pair.uid] * 2)
         primers_dict['stringency'].extend([pair.stringency] * 2)
         primers_dict['chromosome'].extend([pair.chromosome] * 2)
         primers_dict['pre_targeton_start'].extend([pair.pre_targeton_start] * 2)

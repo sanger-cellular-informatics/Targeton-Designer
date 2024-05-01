@@ -82,7 +82,6 @@ def validate_score_tsv(tsv: str):
         if check_if_missing_fields(data, expected_cols):
             raise FileFormatError(f'Missing columns in Scoring TSV')
         
-
 def validate_primer_json(json: str) -> None:
     data = parse_json(json)
     if not data:
