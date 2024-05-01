@@ -6,6 +6,11 @@ import json
 from utils.exceptions import FileFormatError, FileValidationError
 from utils.file_system import check_file_exists, parse_json
 
+from custom_logger.custom_logger import setup_logger
+
+# Initialize logger
+logger = setup_logger(__name__)
+
 
 def validate_bed_format(bed: str):
     with open(bed, newline='') as file:
@@ -14,6 +19,7 @@ def validate_bed_format(bed: str):
         line_num = 1
         for line in tsv_file:
             if len(line) < 6:
+                logger.error("Unable to read in BED file correctly. Check file format on line {line_num}.")
                 raise FileFormatError(f'Unable to read in BED file correctly. Check file format on line {line_num}.')
 
             line_num = line_num + 1

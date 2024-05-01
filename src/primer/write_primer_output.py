@@ -33,7 +33,6 @@ def write_primer_output(
     result.dir = export_dir
 
     logger.info(f"Primer files saved: {result.bed} {result.csv}")
-    # print('Primer files sadasdsaved:', result.bed, result.csv)
 
     return result
 

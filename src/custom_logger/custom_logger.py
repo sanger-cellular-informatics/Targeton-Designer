@@ -1,6 +1,3 @@
-# import logging
-# from logging import Logger
-# import os
 import coloredlogs
 import logging
 import os
@@ -8,22 +5,32 @@ import os
 
 def setup_logger(module_name: str) -> logging.Logger:
     """
-        Function setup_logger() will log out all of current logging output to a log file, \n
-        which sits under "/src/logs" directory. 
-        It will grab the logs outputted from a file in which it's instantiated is added.
+    
+        Function setup_logger() will log out all of current logging output to a log file,
+        which sits under "/src/logs/logs.log" directory. It will grab the logs outputted from a 
+        file in which it's instantiated is added.
 
         This function take one argument module_name and returns Logger instance.  
-        For example: (ParentModule.Module: str) -> logging.Logger
+        For example: setup_logger(ParentModule.Module: str) -> logging.Logger
 
         Here, default logger level is DEBUG. 
-        This means you can log INFO, ERROR, WARNING and EXCEPTION.
+        This means you can log INFO, WARNING, ERROR, and EXCEPTION.
+
+        Example of use cases:
+
+        import setup_logger
+
+        logger = setup_logger(__name__)
+        
+        logger.info("Info")
+        logger.warn("Warning!")
+        logger.error("Error")
+        logger.exception("Exception")
+
     """
-    
+
     # Create a logger object.
     logger = logging.getLogger(module_name)
-
-    # Determine the base module name if used as a package, otherwise just use the name
-    module_name = module_name.split('.')[1] if '.' in module_name else module_name
         
     # Get directory for logs
     log_directory = os.path.join(os.getcwd(), "src/logs/")
@@ -31,7 +38,7 @@ def setup_logger(module_name: str) -> logging.Logger:
     # Ensure the log directory exists
     if not os.path.exists(log_directory):
         os.makedirs(log_directory)
-    log_file_path = os.path.join(log_directory, f"{module_name}_log.log")
+    log_file_path = os.path.join(log_directory, f"logs.log")
 
     # Set up logging to file and format
     logging.basicConfig(
@@ -45,5 +52,6 @@ def setup_logger(module_name: str) -> logging.Logger:
     # Install colored logs for console output
     coloredlogs.install(level='DEBUG', logger=logger)
 
+    # Return configured logging instance
     return logger
 
