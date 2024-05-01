@@ -9,6 +9,9 @@ from primer.designed_primer import DesignedPrimer
 from primer.primer_pair import PrimerPair
 from utils.write_output_files import timestamped_dir, export_to_bed
 
+from custom_logger.custom_logger import setup_logger
+
+logger = setup_logger(__name__)
 
 def write_primer_output(
     prefix='',
@@ -29,7 +32,8 @@ def write_primer_output(
     result.csv = export_primers_to_csv(primer_pairs, export_dir, primer_type)
     result.dir = export_dir
 
-    print('Primer files saved:', result.bed, result.csv)
+    logger.info(f"Primer files saved: {result.bed} {result.csv}")
+    # print('Primer files sadasdsaved:', result.bed, result.csv)
 
     return result
 
