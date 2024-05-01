@@ -4,17 +4,8 @@ from Bio import SeqIO
 import re
 import json
 
-from custom_logger.custom_logger import CustomLogger
 from utils.exceptions import FileFormatError, FileValidationError
 from utils.file_system import check_file_exists, parse_json
-
-import coloredlogs
-import logging 
-
-# Initialize logger
-logger = CustomLogger(__name__)
-format = logger.logs_to_log()
-coloredlogs.install(fmt=format)
 
 
 def validate_bed_format(bed: str):

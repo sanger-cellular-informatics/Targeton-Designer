@@ -69,7 +69,7 @@ class TestDuplicatesFilterAuxFunctions(TestCase):
         # The 'pair_id' and 'stringency' attributes are excluded from the comparison of PrimerPair
 
         # pair1_group1 and pair2_group1 belongs to the same group because they only differ in stringency and name
-        pair_uid = str(uuid.uuid1())
+        primer_uid = 'bc09fcac-07c0-11ef-b244-fa163e9abfe1'
         pair1_group1 = PrimerPair(pair_id="1",
                                   chromosome="chr1",
                                   pre_targeton_start=42930996,
@@ -77,7 +77,7 @@ class TestDuplicatesFilterAuxFunctions(TestCase):
                                   product_size=131,
                                   stringency=0.5,
                                   targeton_id="ENSE",
-                                  pair_uid=pair_uid)
+                                  primer_uid=primer_uid)
         pair1_group1.forward = _designed_primer(name='forward', penalty=1)
         pair1_group1.reverse = _designed_primer(name='reverse', penalty=1)
         pair2_group1 = PrimerPair(pair_id="2",
@@ -87,7 +87,7 @@ class TestDuplicatesFilterAuxFunctions(TestCase):
                                   product_size=131,
                                   stringency=0.75,
                                   targeton_id="ENSE",
-                                  pair_uid=pair_uid)
+                                  primer_uid=primer_uid)
         pair2_group1.forward = _designed_primer(name='forward', penalty=1)
         pair2_group1.reverse = _designed_primer(name='reverse', penalty=1)
 
@@ -100,7 +100,7 @@ class TestDuplicatesFilterAuxFunctions(TestCase):
                                  product_size=131,
                                  stringency=0.5,
                                  targeton_id="ENSE",
-                                 pair_uid=pair_uid)
+                                 primer_uid=primer_uid)
         pair_group2.forward = _designed_primer(name='forward', penalty=1)
         pair_group2.reverse = _designed_primer(name='reverse', penalty=0.7)
 

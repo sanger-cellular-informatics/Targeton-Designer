@@ -4,20 +4,10 @@ from typing import List
 import pandas as pd
 from os import path
 
-from custom_logger.custom_logger import CustomLogger
 from designer.output_data_classes import PrimerOutputData
 from primer.designed_primer import DesignedPrimer
 from primer.primer_pair import PrimerPair
 from utils.write_output_files import timestamped_dir, export_to_bed
-
-# Import logger and coloredlogs
-import coloredlogs
-import logging 
-
-# Initialize logger
-logger = CustomLogger(__name__)
-format = logger.logs_to_log()
-coloredlogs.install(fmt=format)
 
 
 def write_primer_output(
@@ -39,7 +29,7 @@ def write_primer_output(
     result.csv = export_primers_to_csv(primer_pairs, export_dir, primer_type)
     result.dir = export_dir
 
-    logging.info(f"Primer files saved: {result.bed}, {result.csv}")
+    print(f"Primer files saved: {result.bed}, {result.csv}")
 
     return result
 
@@ -58,9 +48,6 @@ def _get_primers_dataframe(pairs: List[PrimerPair], primer_type: str) -> pd.Data
     primers_dict = defaultdict(list)
 
     for pair in pairs:
-        
-        # Add unique ID from primer pair as a first column in csv file. 
-        primers_dict['primer_uid'].extend([pair.pair_uid] * 2)
 
         for direction in ['forward', 'reverse']:
             primer = getattr(pair, direction)
@@ -76,7 +63,10 @@ def _get_primers_dataframe(pairs: List[PrimerPair], primer_type: str) -> pd.Data
             primers_dict['self_end_th'].append(primer.self_end_th)
             primers_dict['hairpin_th'].append(primer.hairpin_th)
             primers_dict['end_stability'].append(primer.end_stability)
+        
+        # Add unique ID from primer pair as a first column in csv file. 
 
+        primers_dict['primer_uid'].extend([pair.primer_uid] * 2)
         primers_dict['stringency'].extend([pair.stringency] * 2)
         primers_dict['chromosome'].extend([pair.chromosome] * 2)
         primers_dict['pre_targeton_start'].extend([pair.pre_targeton_start] * 2)

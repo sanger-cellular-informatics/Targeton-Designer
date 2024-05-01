@@ -15,9 +15,9 @@ class PrimerPair:
                        product_size: str,
                        stringency: float,
                        targeton_id: str,
-                       pair_uid: str):
+                       primer_uid: str):
         self.id = pair_id
-        self.pair_uid = pair_uid
+        self.primer_uid = primer_uid
         self.chromosome = chromosome
         self.pre_targeton_start = pre_targeton_start
         self.pre_targeton_end = pre_targeton_end
@@ -31,7 +31,7 @@ class PrimerPair:
 
 
     def __repr__(self):
-        return (f"PrimerPair(pair_id='{self.id}', pair_uid='{self.pair_uid}', chromosome='{self.chromosome}', "
+        return (f"PrimerPair(pair_id='{self.id}', primer_uid='{self.primer_uid}', chromosome='{self.chromosome}', "
                 f"pre_targeton_start='{self.pre_targeton_start}', "
                 f"pre_targeton_end='{self.pre_targeton_end}', "
                 f"product_size='{self.product_size}', "
@@ -207,6 +207,7 @@ def build_primer_pairs(
 
             pair = _find_pair_by_id(primer_pairs, primer_pair_id)
             if pair is None:
+                primer_uid = str(uuid.uuid1())
                 pair = PrimerPair(
                     primer_pair_id,
                     slice_data.chrom,
@@ -215,7 +216,7 @@ def build_primer_pairs(
                     primer_pair_product_size,
                     stringency,
                     slice_data.targeton_id,
-                    str(uuid.uuid1())
+                    primer_uid
                 )
                 primer_pairs.append(pair)
 

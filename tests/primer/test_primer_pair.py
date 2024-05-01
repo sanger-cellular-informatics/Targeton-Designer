@@ -74,7 +74,8 @@ class TestPrimerPair(TestCase):
         designed_reverse_primer = Mock()
         map_to_designed_primer.side_effect = [designed_forward_primer, designed_reverse_primer]
 
-        pair_uid = str(uuid.uuid1())
+        primer_uid = 'bc09fcac-07c0-11ef-b244-fa163e9abfe1'
+
         expected = PrimerPair(
             pair_id="slice_name_0_str0_1",
             chromosome="",
@@ -83,7 +84,7 @@ class TestPrimerPair(TestCase):
             product_size="",
             stringency=0.1,
             targeton_id="",
-            pair_uid=pair_uid)
+            primer_uid=primer_uid)
         expected.forward = designed_forward_primer
         expected.reverse = designed_reverse_primer
 
@@ -199,10 +200,10 @@ class TestPrimerPair(TestCase):
 
     def test_map_primers_into_designed_primers_objects(self):
 
-        pair_uid = str(uuid.uuid1())
+        primer_uid = 'bc09fcac-07c0-11ef-b244-fa163e9abfe1'
 
         pair = PrimerPair(pair_id="pair_id", chromosome="1", pre_targeton_start="100", pre_targeton_end="200",
-                          product_size="200", stringency=0.8, targeton_id="ENSE", pair_uid=pair_uid)
+                          product_size="200", stringency=0.8, targeton_id="ENSE", primer_uid=primer_uid)
         pair.forward_primer_data = {
             'primer': 'forward',
             'penalty': 0.5,
