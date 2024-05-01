@@ -70,14 +70,7 @@ def _get_primers_dataframe(pairs: List[PrimerPair], primer_type: str) -> pd.Data
         primers_dict['product_size'].extend([pair.product_size] * 2)
         primers_dict['targeton_id'].extend([pair.targeton_id] * 2)
 
-    return pd.DataFrame(primers_dict).applymap(_add_double_quotes_to_str).applymap(_round_to_three_decimals)
-
-
-def _add_double_quotes_to_str(string: str) -> str:
-    if isinstance(string, str):
-        return f"\"{string}\""
-    else:
-        return string
+    return pd.DataFrame(primers_dict).applymap(_round_to_three_decimals)
 
 
 def _round_to_three_decimals(number: float) -> float:
