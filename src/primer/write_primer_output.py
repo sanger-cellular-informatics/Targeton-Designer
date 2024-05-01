@@ -89,7 +89,7 @@ def construct_primer_rows_bed_format(pairs: List[PrimerPair]) -> list:
     return primer_rows
 
 
-def create_bed_row_for_primer(primer: DesignedPrimer, chromosome: int) -> list:
+def create_bed_row_for_primer(primer: DesignedPrimer, chromosome: str) -> list:
     primer_row = [
         chromosome,
         primer.primer_start,
