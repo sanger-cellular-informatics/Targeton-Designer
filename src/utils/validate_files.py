@@ -1,5 +1,4 @@
 import csv
-import sys
 from Bio import SeqIO
 import re
 import json
@@ -82,8 +81,7 @@ def validate_score_tsv(tsv: str):
         expected_cols = ['Targeton', 'Primer pair', 'A/B/Total', 'WGE format', 'Score']
         if check_if_missing_fields(data, expected_cols):
             raise FileFormatError(f'Missing columns in Scoring TSV')
-
-
+        
 
 def validate_primer_json(json: str) -> None:
     data = parse_json(json)

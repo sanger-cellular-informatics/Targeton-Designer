@@ -66,7 +66,7 @@ def _get_primers_dataframe(pairs: List[PrimerPair], primer_type: str) -> pd.Data
         
         # Add unique ID from primer pair as a first column in csv file. 
 
-        primers_dict['primer_uid'].extend([pair.primer_uid] * 2)
+        primers_dict['uid'].extend([pair.uid] * 2)
         primers_dict['stringency'].extend([pair.stringency] * 2)
         primers_dict['chromosome'].extend([pair.chromosome] * 2)
         primers_dict['pre_targeton_start'].extend([pair.pre_targeton_start] * 2)
