@@ -46,7 +46,7 @@ def setup_logger(module_name: str) -> logging.Logger:
         filemode='a', 
         level=logging.DEBUG,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        force=True
+        force=True,
     )
 
     # Install colored logs for console output
