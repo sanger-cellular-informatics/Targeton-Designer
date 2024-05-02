@@ -29,7 +29,7 @@ def write_primer_output(
     result.csv = export_primers_to_csv(primer_pairs, export_dir, primer_type)
     result.dir = export_dir
 
-    print('Primer files saved:', result.bed, result.csv)
+    print(f"Primer files saved: {result.bed}, {result.csv}")
 
     return result
 
@@ -48,6 +48,7 @@ def _get_primers_dataframe(pairs: List[PrimerPair], primer_type: str) -> pd.Data
     primers_dict = defaultdict(list)
 
     for pair in pairs:
+
         for direction in ['forward', 'reverse']:
             primer = getattr(pair, direction)
             primers_dict['primer_type'].append(primer_type)
@@ -62,7 +63,9 @@ def _get_primers_dataframe(pairs: List[PrimerPair], primer_type: str) -> pd.Data
             primers_dict['self_end_th'].append(primer.self_end_th)
             primers_dict['hairpin_th'].append(primer.hairpin_th)
             primers_dict['end_stability'].append(primer.end_stability)
+        
 
+        primers_dict['pair_uid'].extend([pair.uid] * 2)
         primers_dict['stringency'].extend([pair.stringency] * 2)
         primers_dict['chromosome'].extend([pair.chromosome] * 2)
         primers_dict['pre_targeton_start'].extend([pair.pre_targeton_start] * 2)
