@@ -7,6 +7,7 @@ from os import path
 from designer.output_data_classes import PrimerOutputData
 from primer.designed_primer import DesignedPrimer
 from primer.primer_pair import PrimerPair
+from config.config import DesignerConfig
 from utils.write_output_files import timestamped_dir, export_to_bed
 
 
@@ -39,7 +40,10 @@ def export_primers_to_csv(primer_pairs: List[PrimerPair], export_dir: str, prime
     primers_csv_output_path = path.join(export_dir, PRIMER3_OUTPUT_CSV)
 
     primers_dataframe = _get_primers_dataframe(primer_pairs, primer_type)
-    primers_dataframe.to_csv(primers_csv_output_path, index=False)
+
+    col_order = DesignerConfig().params['csv_column_order']
+    primers_dataframe_ordered = _reorder_columns(col_order, primers_dataframe)
+    primers_dataframe_ordered.to_csv(primers_csv_output_path, index=False)
 
     return primers_csv_output_path
 
@@ -74,6 +78,32 @@ def _get_primers_dataframe(pairs: List[PrimerPair], primer_type: str) -> pd.Data
         primers_dict['targeton_id'].extend([pair.targeton_id] * 2)
 
     return pd.DataFrame(primers_dict)
+
+
+def _reorder_columns(csv_col_order: List[str],
+                     dataframe: pd.DataFrame):
+    
+    col_order_unique = list(dict.fromkeys(csv_col_order))
+
+    if not col_order_unique:
+        print("Warning: empty csv_column_order list provided in config file, returning dataframe with default column order")
+        return dataframe
+
+    final_order = []
+    for column in col_order_unique:
+        if column not in dataframe.columns:
+            print(f"Warning: '{column}' specified in config file not is not a column name")
+        else:
+            final_order.append(column)
+    
+    if not final_order:
+        raise ValueError("All column names in config file are wrong")
+
+    for column in dataframe.columns:
+        if column not in final_order:
+            print(f"'{column}' column discarded as it is not in config file")
+
+    return dataframe[final_order]
 
 
 def construct_primer_rows_bed_format(pairs: List[PrimerPair]) -> list:
