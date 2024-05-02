@@ -352,7 +352,7 @@ Raw file
 ```
 
 ### Primer3 Output CSV file
-It contains all the additional information from Primer3 for the individual primers
+It contains all the additional information from Primer3 for the individual primers. Column order can be specified through the Designer tool config. 
 
 | primer_type |  primer                         | penalty              | stringency | sequence             | primer_start | primer_end | tm                | gc_percent        | self_any_th       | self_end_th | hairpin_th         | end_stability | chromosome | pre_targeton_start | pre_targeton_end | product_size | targeton_id |
 |-------------|---------------------------------|----------------------|------------|----------------------|--------------|------------|-------------------|-------------------|-------------------|-------------|--------------------|---------------|------------|--------------------|------------------|--------------|-------------|
