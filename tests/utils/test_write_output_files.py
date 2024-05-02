@@ -3,7 +3,6 @@ from os import path
 from pathlib import Path
 import csv
 
-import pandas as pd
 from pyfakefs.fake_filesystem_unittest import TestCase
 from unittest.mock import patch, Mock
 from freezegun import freeze_time
