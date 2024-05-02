@@ -76,8 +76,8 @@ class TestPrimerPair(TestCase):
         expected = PrimerPair(
             pair_id="slice_name_0_str0_1",
             chromosome="",
-            pre_targeton_start="",
-            pre_targeton_end="",
+            pre_targeton_start=100,
+            pre_targeton_end=200,
             product_size="",
             stringency=0.1,
             targeton_id="")
@@ -195,7 +195,7 @@ class TestPrimerPair(TestCase):
         self.assertEqual(expected, actual)
 
     def test_map_primers_into_designed_primers_objects(self):
-        pair = PrimerPair(pair_id="pair_id", chromosome="1", pre_targeton_start="100", pre_targeton_end="200",
+        pair = PrimerPair(pair_id="pair_id", chromosome="1", pre_targeton_start=100, pre_targeton_end=200,
                           product_size="200", stringency=0.8, targeton_id="ENSE")
         pair.forward_primer_data = {
             'primer': 'forward',
