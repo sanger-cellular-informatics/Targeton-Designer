@@ -16,5 +16,6 @@
                        "chromosome", 
                        "pre_targeton_start", 
                        "pre_targeton_end", 
-                       "product_size"]
+                       "product_size",
+                       "targeton_id"]
 }
