@@ -55,7 +55,7 @@ class TestPrimerPair(TestCase):
     def setUp(self):
         self.setUpPyfakefs()
         self.input_slice_data = SliceData(
-            'slice_name', 'slice_start', 'slice_end', '+', 'slice_chrom', 'bases'
+            name='slice_name', start='100', end='200', strand='+', chrom='1', bases='bases'
         )
 
     @patch('primer.primer_pair.map_to_designed_primer')
@@ -78,8 +78,8 @@ class TestPrimerPair(TestCase):
         expected = PrimerPair(
             pair_id="slice_name_0_str0_1",
             chromosome="",
-            pre_targeton_start="",
-            pre_targeton_end="",
+            pre_targeton_start=100,
+            pre_targeton_end=200,
             product_size="",
             stringency=0.1,
             targeton_id="",
@@ -159,7 +159,7 @@ class TestPrimerPair(TestCase):
         self.assertEqual(expected, actual)
         self.assertEqual(
             f"{coords_mock.call_args}",
-            "call('primer_side', 'design_value', 'slice_start')"
+            "call('primer_side', 'design_value', '100')"
         )
 
         self.assertEqual(
@@ -201,7 +201,7 @@ class TestPrimerPair(TestCase):
 
         uid = 'bc09fcac-07c0-11ef-b244-fa163e9abfe1'
 
-        pair = PrimerPair(pair_id="pair_id", chromosome="1", pre_targeton_start="100", pre_targeton_end="200",
+        pair = PrimerPair(pair_id="pair_id", chromosome="1", pre_targeton_start=100, pre_targeton_end=200,
                           product_size="200", stringency=0.8, targeton_id="ENSE", uid=uid)
         pair.forward_primer_data = {
             'primer': 'forward',
