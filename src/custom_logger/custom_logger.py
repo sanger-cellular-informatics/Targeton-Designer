@@ -7,7 +7,7 @@ def setup_logger(module_name: str) -> logging.Logger:
     """
     
         Function setup_logger() will log out all of current logging output to a log file,
-        which sits under "/src/logs/logs.log" directory. It will grab the logs outputted from a 
+        which sits under "logs/logs.log" directory. It will grab the logs outputted from a 
         file in which it's instantiated is added.
 
         This function take one argument module_name and returns Logger instance.  
@@ -33,7 +33,7 @@ def setup_logger(module_name: str) -> logging.Logger:
     logger = logging.getLogger(module_name)
         
     # Get directory for logs
-    log_directory = os.path.join(os.getcwd(), "src/logs/")
+    log_directory = os.path.join(os.getcwd(), "logs/")
 
     # Ensure the log directory exists
     if not os.path.exists(log_directory):
