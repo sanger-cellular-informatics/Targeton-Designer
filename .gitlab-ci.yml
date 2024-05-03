@@ -38,13 +38,17 @@ test:
   # Reuse built container.
   image: $DOCKER_IMAGE_NAME
   stage: test
+  cache:
+    paths:
+      - kmer/
+  script:
+    - chmod +x ./download_kmer_lists.sh
+    - ./download_kmer_lists.sh
   tags:
     - openstack-autoscale
     - autoscale-docker-in-docker
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
-  before_script:
-    - make download-kmers
   script:
     - make test
   dependencies:
