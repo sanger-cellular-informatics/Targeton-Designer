@@ -9,7 +9,7 @@ from primer.write_primer_output import _reorder_columns
 class TestWritePrimerOutputFiles(TestCase):
         def test_reorder_columns_when_duplicate_column_names(self):
 
-            # Arrange
+            # Arrange list indicating column order (contains duplicates) and dataframe for reordering
             column_names = ['Name', 'Age', 'Name']
             data = {
                 'Name': ['Juan', 'Maria', 'Pedro'],
@@ -17,7 +17,7 @@ class TestWritePrimerOutputFiles(TestCase):
             }
             df = pd.DataFrame(data)
 
-            # Act
+            # Act (reorder dataframe according to list)
             ordered_df = _reorder_columns(column_names, df)
 
             # Assertion
@@ -28,7 +28,7 @@ class TestWritePrimerOutputFiles(TestCase):
             expected_stdout = StringIO()
             sys.stdout = expected_stdout
 
-            # Arrange
+            # Arrange list indicating column order (empty list) and dataframe for reordering
             column_names = []
             data = {
                 'Name': ['Juan', 'Maria', 'Pedro'],
@@ -36,7 +36,7 @@ class TestWritePrimerOutputFiles(TestCase):
             }
             df = pd.DataFrame(data)
 
-            # Act
+            # Act (reorder dataframe according to list)
             ordered_df = _reorder_columns(column_names, df)
 
             # Assertion
@@ -51,7 +51,7 @@ class TestWritePrimerOutputFiles(TestCase):
             expected_stdout = StringIO()
             sys.stdout = expected_stdout
 
-            # Arrange
+            # Arrange list indicating column order (only wrong names inputed) and dataframe for reordering
             column_names = ['WRONG']
             data = {
                 'Name': ['Juan', 'Maria', 'Pedro'],
@@ -59,7 +59,7 @@ class TestWritePrimerOutputFiles(TestCase):
             }
             df = pd.DataFrame(data)
 
-            # Act
+            # Act (reorder dataframe according to list)
             with self.assertRaises(ValueError) as value_error:
                 _reorder_columns(column_names, df)
 
@@ -74,7 +74,7 @@ class TestWritePrimerOutputFiles(TestCase):
             expected_stdout = StringIO()
             sys.stdout = expected_stdout
 
-            # Arrange
+            # Arrange list indicating column order (some wrong names inputed) and dataframe for reordering
             column_names = ['WRONG', 'Name', 'Age']
             data = {
                 'Name': ['Juan', 'Maria', 'Pedro'],
@@ -82,7 +82,7 @@ class TestWritePrimerOutputFiles(TestCase):
             }
             df = pd.DataFrame(data)
 
-            # Act
+            # Act (reorder dataframe according to list)
             ordered_df = _reorder_columns(column_names, df)
 
             # Assertion
@@ -96,7 +96,7 @@ class TestWritePrimerOutputFiles(TestCase):
             expected_stdout = StringIO()
             sys.stdout = expected_stdout
 
-            # Arrange
+            # Arrange list indicating column order (columns missing) and dataframe for reordering
             column_names = ['Name']
             data = {
                 'Name': ['Juan', 'Maria', 'Pedro'],
@@ -104,7 +104,7 @@ class TestWritePrimerOutputFiles(TestCase):
             }
             df = pd.DataFrame(data)
 
-            # Act
+            # Act (reorder dataframe according to list)
             ordered_df = _reorder_columns(column_names, df)
 
             # Assertion
@@ -116,7 +116,7 @@ class TestWritePrimerOutputFiles(TestCase):
 
         def test_reorder_columns_success(self):
 
-            # Arrange
+            # Arrange list indicating column order and dataframe for reordering
             column_names = ['Age', 'Name']
             data = {
                 'Name': ['Juan', 'Maria', 'Pedro'],
@@ -124,7 +124,7 @@ class TestWritePrimerOutputFiles(TestCase):
             }
             df = pd.DataFrame(data)
 
-            # Act
+            # Act (reorder dataframe according to list)
             ordered_df = _reorder_columns(column_names, df)
 
             # Assertion
