@@ -354,20 +354,20 @@ Raw file
 ### Primer3 Output CSV file
 It contains all the additional information from Primer3 for the individual primers. Column order can be specified through the Designer tool config. 
 
-| primer_type |  primer                         | penalty              | stringency | sequence             | primer_start | primer_end | tm                | gc_percent        | self_any_th       | self_end_th | hairpin_th         | end_stability | chromosome | pre_targeton_start | pre_targeton_end | product_size | targeton_id |
-|-------------|---------------------------------|----------------------|------------|----------------------|--------------|------------|-------------------|-------------------|-------------------|-------------|--------------------|---------------|------------|--------------------|------------------|--------------|-------------|
-| LibAmp      | ENSE00003571441_HG6_6_LibAmpR_0 | 3.4150874406315097   | 1          | ACCCAGGCTGCATCTCCC   | 42931021     | 42931039   | 61.41508744063151 | 66.66666666666667 | 9.564684449038168 | 0.0         | 0.0                | 4.3           | 1          | 42931021           | 42931231         | 170          | ENSE        |
-| LibAmp      | ENSE00003571441_HG6_6_LibAmpF_0 | 0.32483047348551963  | 1          | AGTGCCAGGACCTCTCCTAC | 42931210     | 42931230   | 60.32483047348552 | 60.0              | 0.0               | 0.0         | 46.300612411542886 | 3.18          | 1          | 42931021           | 42931231         | 170          | ENSE        |
-| LibAmp      | ENSE00003571441_HG6_6_LibAmpR_1 | 3.4150874406315097   | 1          | ACCCAGGCTGCATCTCCC   | 42931021     | 42931039   | 61.41508744063151 | 66.66666666666667 | 9.564684449038168 | 0.0         | 0.0                | 4.3           | 1          | 42931021           | 42931231         | 171          | ENSE        |
-| LibAmp      | ENSE00003571441_HG6_6_LibAmpF_1 | 2.097066414155961    | 1          | AGTGCCAGGACCTCTCCTA  | 42931211     | 42931230   | 58.90293358584404 | 57.89473684210526 | 0.0               | 0.0         | 46.300612411542886 | 2.94          | 1          | 42931021           | 42931231         | 171          | ENSE        |
+| primer_type | primer                          | penalty | stringency | sequence             | primer_start | primer_end | tm     | gc_percent | self_any_th | self_end_th | hairpin_th | end_stability | chromosome | pre_targeton_start | pre_targeton_end | product_size | targeton_id |
+|-------------|---------------------------------|---------|------------|----------------------|--------------|------------|--------|------------|-------------|-------------|------------|---------------|------------|--------------------|------------------|--------------|-------------|
+| LibAmp      | ENSE00003571441_HG6_6_LibAmpR_0 | 3.415   | 1          | ACCCAGGCTGCATCTCCC   | 42931021     | 42931039   | 61.415 | 66.667     | 9.565       | 0.0         | 0.0        | 4.3           | 1          | 42931021           | 42931231         | 170          | ENSE        |
+| LibAmp      | ENSE00003571441_HG6_6_LibAmpF_0 | 0.324   | 1          | AGTGCCAGGACCTCTCCTAC | 42931210     | 42931230   | 60.324 | 60.0       | 0.0         | 0.0         | 46.301     | 3.18          | 1          | 42931021           | 42931231         | 170          | ENSE        |
+| LibAmp      | ENSE00003571441_HG6_6_LibAmpR_1 | 3.415   | 1          | ACCCAGGCTGCATCTCCC   | 42931021     | 42931039   | 61.415 | 66.667     | 9.565       | 0.0         | 0.0        | 4.3           | 1          | 42931021           | 42931231         | 171          | ENSE        |
+| LibAmp      | ENSE00003571441_HG6_6_LibAmpF_1 | 2.097   | 1          | AGTGCCAGGACCTCTCCTA  | 42931211     | 42931230   | 58.902 | 57.895     | 0.0         | 0.0         | 46.301     | 2.94          | 1          | 42931021           | 42931231         | 171          | ENSE        |
 
 Raw File
 ```
 primer_type,primer,penalty,stringency,sequence,primer_start,primer_end,tm,gc_percent,self_any_th,self_end_th,hairpin_th,end_stability,chromosome,pre_targeton_start,pre_targeton_end,product_size,targeton_id
-LibAmp,ENSE00003571441_HG6_6_LibAmpR_0,3.4150874406315097,1,ACCCAGGCTGCATCTCCC,42931021,42931039,61.41508744063151,66.66666666666667,9.564684449038168,0.0,0.0,4.3,1,42931021,42931231,170,ENSE
-LibAmp,ENSE00003571441_HG6_6_LibAmpF_0,0.32483047348551963,1,AGTGCCAGGACCTCTCCTAC,42931210,42931230,60.32483047348552,60.0,0.0,0.0,46.300612411542886,3.18,1,42931021,42931231,170,ENSE
-LibAmp,ENSE00003571441_HG6_6_LibAmpR_1,3.4150874406315097,1,ACCCAGGCTGCATCTCCC,42931021,42931039,61.41508744063151,66.66666666666667,9.564684449038168,0.0,0.0,4.3,1,42931021,42931231,171,ENSE
-LibAmp,ENSE00003571441_HG6_6_LibAmpF_1,2.097066414155961,1,AGTGCCAGGACCTCTCCTA,42931211,42931230,58.90293358584404,57.89473684210526,0.0,0.0,46.300612411542886,2.94,1,42931021,42931231,171,ENSE
+LibAmp,ENSE00003571441_HG6_6_LibAmpR_0,3.415,1,ACCCAGGCTGCATCTCCC,42931021,42931039,61.415,66.667,9.565,0.0,0.0,4.3,1,42931021,42931231,170,ENSE
+LibAmp,ENSE00003571441_HG6_6_LibAmpF_0,0.324,1,AGTGCCAGGACCTCTCCTAC,42931210,42931230,60.324,60.0,0.0,0.0,46.301,3.18,1,42931021,42931231,170,ENSE
+LibAmp,ENSE00003571441_HG6_6_LibAmpR_1,3.415,1,ACCCAGGCTGCATCTCCC,42931021,42931039,61.415,66.667,9.565,0.0,0.0,4.3,1,42931021,42931231,171,ENSE
+LibAmp,ENSE00003571441_HG6_6_LibAmpF_1,2.097,1,AGTGCCAGGACCTCTCCTA,42931211,42931230,58.902,57.895,0.0,0.0,46.301,2.94,1,42931021,42931231,171,ENSE
 ```
 
 ### Primer Designer Output example
