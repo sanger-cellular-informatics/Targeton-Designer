@@ -68,13 +68,15 @@ class TestDuplicatesFilterAuxFunctions(TestCase):
         # The 'pair_id' and 'stringency' attributes are excluded from the comparison of PrimerPair
 
         # pair1_group1 and pair2_group1 belongs to the same group because they only differ in stringency and name
+        uid = 'bc09fcac-07c0-11ef-b244-fa163e9abfe1'
         pair1_group1 = PrimerPair(pair_id="1",
                                   chromosome="chr1",
                                   pre_targeton_start=42930996,
                                   pre_targeton_end=42931206,
                                   product_size=131,
                                   stringency=0.5,
-                                  targeton_id="ENSE")
+                                  targeton_id="ENSE",
+                                  uid=uid)
         pair1_group1.forward = _designed_primer(name='forward', penalty=1)
         pair1_group1.reverse = _designed_primer(name='reverse', penalty=1)
         pair2_group1 = PrimerPair(pair_id="2",
@@ -83,7 +85,8 @@ class TestDuplicatesFilterAuxFunctions(TestCase):
                                   pre_targeton_end=42931206,
                                   product_size=131,
                                   stringency=0.75,
-                                  targeton_id="ENSE")
+                                  targeton_id="ENSE",
+                                  uid=uid)
         pair2_group1.forward = _designed_primer(name='forward', penalty=1)
         pair2_group1.reverse = _designed_primer(name='reverse', penalty=1)
 
@@ -95,7 +98,8 @@ class TestDuplicatesFilterAuxFunctions(TestCase):
                                  pre_targeton_end=42931206,
                                  product_size=131,
                                  stringency=0.5,
-                                 targeton_id="ENSE")
+                                 targeton_id="ENSE",
+                                 uid=uid)
         pair_group2.forward = _designed_primer(name='forward', penalty=1)
         pair_group2.reverse = _designed_primer(name='reverse', penalty=0.7)
 
