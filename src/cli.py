@@ -22,6 +22,7 @@ from designer.output_data_classes import (
 from primer.write_primer_output import write_primer_output
 from slicer.slicer import Slicer
 from primer.primer3 import Primer3
+from primer.primer3 import Primer3Error
 from primer_designer import PrimerDesigner
 from post_primer_pairs import post_primer_pairs
 

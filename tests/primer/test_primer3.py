@@ -4,6 +4,7 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 from primer.designed_primer import DesignedPrimer, Interval
 from primer.primer_pair import PrimerPair
 from primer.primer3 import Primer3
+from primer.primer3 import Primer3Error
 from src import primer
 
 
@@ -93,6 +94,40 @@ class IntegrationTestPrimer3(TestCase):
         expected_primer_pair.reverse = expected_reverse
 
         self.assertEqual(result, [expected_primer_pair])
+
+    def test_get_primer_pairs_when_primer3_error(self):
+        stringency = 1
+        chromosome = "1"
+        pre_targeton_name = "ARTY"
+        pre_targeton_start = 42958479
+        pre_targeton_end = 42958806
+
+        # arrange
+        slices_fasta_file = self.fs.create_file(
+            'fasta.fa',
+            contents=f'>{pre_targeton_name}::{chromosome}:{pre_targeton_start}-{pre_targeton_end}(+)\nGCTCGGGACCCGCACCGAGCCAGGCTCGGAGAGGCGCGCGGCCCGCCCCGGGCGCACAGCGCAGCGGGGCGGCGGGGGAGGCCCTGGCCGGCGTAAGGCGGGCAGGAGTCTGCGCCTTTGTTCCTGGCGGGAGGGCCCGCGGGCGCGCGACTCACCTTGCTGCTGGGCTCCATGGCAGCGCTGCGCTGGTGGCTCTGGCTGCGCCGGGTACGCGGGTGGCGACGGGCGTGCGAGCGGCGCTCTCCCGCTCAGGCTCGTGCTCCGGTCCGGGGACTCCCACTGCGACTCTGACTCCGACCCCCGTCGTTTGGTCTCCTGCTCCCTGGCG')
+
+        designer_config = {"stringency_vector": [stringency]}
+
+        p3_config = {
+            "PRIMER_TASK": "generic",
+            "PRIMER_PICK_LEFT_PRIMER": 1,
+            "PRIMER_PICK_RIGHT_PRIMER": 1,
+            "PRIMER_OPT_SIZE": 20,
+            "PRIMER_MIN_SIZE": 18,
+            "PRIMER_MAX_SIZE": 30,
+            "P3_FILE_FLAG": 1,
+            "SEQUENCE_INCLUDED_REGION": [0, 212],
+            "PRIMER_EXPLAIN_FLAG": 1
+        }
+
+        # act
+        with self.assertRaises(Primer3Error) as primer_error:
+                Primer3(designer_config, p3_config).get_primers(slices_fasta_file.name)
+
+        # assert
+        self.assertEqual(str(primer_error.exception), 
+                         "PRIMER_PAIR_EXPLAIN: considered 2960, unacceptable product size 2960, ok 0")
 
 
 if __name__ == '__main__':
