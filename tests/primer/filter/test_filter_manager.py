@@ -95,9 +95,39 @@ class TestFilterManager(TestCase):
         pair_with_no_variant.forward = self.primer_with_no_variant
         pair_with_no_variant.reverse = self.primer_with_no_variant
 
-        pairs_to_filter = [pair_with_variant, pair_with_no_variant]
-        result = FilterManager(filter_names=["HAP1_variant"]).apply_filters(pairs_to_filter)
+        pair_max_stringency = PrimerPair(
+            pair_id="pair_max_stringency",
+            chromosome="2",
+            pre_targeton_start=11540,
+            pre_targeton_end=11545,
+            product_size="200",
+            stringency=1,
+            targeton_id="targeton_id",
+            uid="uid")
+        pair_max_stringency.forward = self.primer_with_no_variant
+        pair_max_stringency.reverse = self.primer_with_no_variant
 
-        self.assertEqual(result.primer_pairs_to_keep, [pair_with_no_variant])
-        self.assertEqual(result.primer_pairs_to_discard,
-                         [PrimerPairDiscarded(pair_with_variant, reason_discarded=HAP1VariantFilter.reason_discarded)])
+        pair_min_stringency = PrimerPair(
+            pair_id="pair_min_stringency",
+            chromosome="2",
+            pre_targeton_start=11540,
+            pre_targeton_end=11545,
+            product_size="200",
+            stringency=0.1,
+            targeton_id="targeton_id",
+            uid="uid")
+        pair_min_stringency.forward = self.primer_with_no_variant
+        pair_min_stringency.reverse = self.primer_with_no_variant
+
+        pairs_to_filter = [pair_with_variant, pair_with_no_variant, pair_max_stringency, pair_min_stringency]
+        filter_response = FilterManager(filter_names=["HAP1_variant", "duplicates"]).apply_filters(pairs_to_filter)
+
+        self.assertEqual(len(filter_response.primer_pairs_to_keep), 2)
+        self.assertIn(pair_with_no_variant, filter_response.primer_pairs_to_keep)
+        self.assertTrue(pair_max_stringency, filter_response.primer_pairs_to_keep)
+
+        self.assertEqual(len(filter_response.primer_pairs_to_discard), 2)
+        self.assertIn(PrimerPairDiscarded(pair_with_variant, reason_discarded=HAP1VariantFilter.reason_discarded),
+                      filter_response.primer_pairs_to_discard)
+        self.assertIn(PrimerPairDiscarded(pair_min_stringency, reason_discarded=DuplicatesFilter.reason_discarded),
+                      filter_response.primer_pairs_to_discard)

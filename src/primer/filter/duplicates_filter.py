@@ -29,7 +29,7 @@ class DuplicatesFilter(Filter):
 
 def _take_pair_with_max_stringency_and_others(pairs: List[PrimerPair]) -> Tuple[PrimerPair, List[PrimerPair]]:
     pair_max_stringency = _get_max_stringency_pair(pairs)
-    other_pairs = [pair for pair in pairs if pair != pair_max_stringency]
+    other_pairs = [pair for pair in pairs if pair.stringency != pair_max_stringency.stringency]
 
     return pair_max_stringency, other_pairs
 
