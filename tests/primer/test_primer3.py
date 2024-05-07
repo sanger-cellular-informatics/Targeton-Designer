@@ -4,7 +4,7 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 from primer.designed_primer import DesignedPrimer, Interval
 from primer.primer_pair import PrimerPair
 from primer.primer3 import Primer3
-from primer.primer3 import Primer3Error
+from utils.exceptions import Primer3Error
 from src import primer
 
 

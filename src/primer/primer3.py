@@ -5,10 +5,7 @@ from typing import List
 from primer.slice_data import SliceData
 from primer.primer3_prepare_config import prepare_p3_config
 from primer.primer_pair import PrimerPair, build_primer_pairs
-
-
-class Primer3Error(Exception):
-    pass
+from utils.exceptions import Primer3Error
 
 
 class Primer3:
@@ -41,6 +38,8 @@ class Primer3:
             built_primer_pairs = build_primer_pairs(designs, slice_data, stringency)
 
             if not built_primer_pairs:
+                # Only keep Primer3 message that indicates the step where no primers/primer
+                # pairs could be generated
                 p3_error_key = [key for key, value in designs.items()
                                 if isinstance(value, str) and 'ok 0' in value]
                 message = {}
