@@ -53,8 +53,8 @@ class PrimerPair:
 
     @property
     def contain_hap_one_variant(self) -> bool:
-        forward_start, forward_end = self.forward['primer_start'], self.forward['primer_end']
-        reverse_start, reverse_end = self.reverse['primer_start'], self.reverse['primer_end']
+        forward_start, forward_end = self.forward.primer_start, self.forward.primer_end
+        reverse_start, reverse_end = self.reverse.primer_start, self.reverse.primer_end
 
         return (contain_variant(self.chromosome, forward_start, forward_end) or
                 contain_variant(self.chromosome, reverse_start, reverse_end))

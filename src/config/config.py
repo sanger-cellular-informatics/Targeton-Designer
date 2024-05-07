@@ -18,7 +18,9 @@ class DesignerConfig(Config):
 
         config = self.read_config(self._default_config_file, config_file)
         self.params = {'stringency_vector': config['stringency_vector'],
-                       'csv_column_order': config['csv_column_order']}
+                       'csv_column_order': config['csv_column_order'],
+                       'filters': config['filters']
+                       }
 
     @staticmethod
     def read_config(
