@@ -29,16 +29,16 @@ class IntegrationTestPrimer3(TestCase):
         designer_config = {"stringency_vector": [stringency]}
 
         p3_config = {
-            "PRIMER_TASK": "pick_cloning_primers",
-            "PRIMER_PICK_LEFT_PRIMER": 1,
-            "PRIMER_PICK_RIGHT_PRIMER": 1,
-            "PRIMER_OPT_SIZE": 20,
-            "PRIMER_MIN_SIZE": 18,
-            "PRIMER_MAX_SIZE": 23,
-            "P3_FILE_FLAG": 1,
-            "SEQUENCE_INCLUDED_REGION": [0, 200],
-            "PRIMER_EXPLAIN_FLAG": 1
-        }
+             "PRIMER_TASK": "pick_cloning_primers",
+             "PRIMER_PICK_LEFT_PRIMER": 1,
+             "PRIMER_PICK_RIGHT_PRIMER": 1,
+             "PRIMER_OPT_SIZE": 20,
+             "PRIMER_MIN_SIZE": 18,
+             "PRIMER_MAX_SIZE": 23,
+             "P3_FILE_FLAG": 1,
+             "SEQUENCE_INCLUDED_REGION": [0, 200],
+             "PRIMER_EXPLAIN_FLAG": 1
+             }
 
         # act
         result = Primer3(designer_config, p3_config).get_primers(slices_fasta_file.name)
@@ -110,23 +110,23 @@ class IntegrationTestPrimer3(TestCase):
         designer_config = {"stringency_vector": [stringency]}
 
         p3_config = {
-            "PRIMER_TASK": "generic",
-            "PRIMER_PICK_LEFT_PRIMER": 1,
-            "PRIMER_PICK_RIGHT_PRIMER": 1,
-            "PRIMER_OPT_SIZE": 20,
-            "PRIMER_MIN_SIZE": 18,
-            "PRIMER_MAX_SIZE": 30,
-            "P3_FILE_FLAG": 1,
-            "SEQUENCE_INCLUDED_REGION": [0, 212],
-            "PRIMER_EXPLAIN_FLAG": 1
-        }
+             "PRIMER_TASK": "generic",
+             "PRIMER_PICK_LEFT_PRIMER": 1,
+             "PRIMER_PICK_RIGHT_PRIMER": 1,
+             "PRIMER_OPT_SIZE": 20,
+             "PRIMER_MIN_SIZE": 18,
+             "PRIMER_MAX_SIZE": 30,
+             "P3_FILE_FLAG": 1,
+             "SEQUENCE_INCLUDED_REGION": [0, 212],
+             "PRIMER_EXPLAIN_FLAG": 1
+             }
 
         # act
         with self.assertRaises(Primer3Error) as primer_error:
-                Primer3(designer_config, p3_config).get_primers(slices_fasta_file.name)
+            Primer3(designer_config, p3_config).get_primers(slices_fasta_file.name)
 
         # assert
-        self.assertEqual(str(primer_error.exception), 
+        self.assertEqual(str(primer_error.exception),
                          "PRIMER_PAIR_EXPLAIN: considered 2960, unacceptable product size 2960, ok 0")
 
 
