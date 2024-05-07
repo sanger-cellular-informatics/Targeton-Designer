@@ -9,6 +9,7 @@ from primer.primer_pair import PrimerPair
 
 class TestFilterManager(TestCase):
     def setUp(self) -> None:
+        # There is a HAP1 Variant at 11542 in chromosome 1
         self.primer_with_variant = DesignedPrimer(
             name="primer_with_variant",
             penalty=0.5,
@@ -71,6 +72,7 @@ class TestFilterManager(TestCase):
         self.assertEqual(test_instance._filters_to_apply, [])
 
     def test_apply_filters(self):
+        # Arrange
         pair_with_variant = PrimerPair(
             pair_id="pair_with_hap1_variant",
             chromosome="1",
@@ -119,9 +121,11 @@ class TestFilterManager(TestCase):
         pair_min_stringency.forward = self.primer_with_no_variant
         pair_min_stringency.reverse = self.primer_with_no_variant
 
+        # Act
         pairs_to_filter = [pair_with_variant, pair_with_no_variant, pair_max_stringency, pair_min_stringency]
         filter_response = FilterManager(filter_names=["HAP1_variant", "duplicates"]).apply_filters(pairs_to_filter)
 
+        # Assertion
         self.assertEqual(len(filter_response.primer_pairs_to_keep), 2)
         self.assertIn(pair_with_no_variant, filter_response.primer_pairs_to_keep)
         self.assertTrue(pair_max_stringency, filter_response.primer_pairs_to_keep)
