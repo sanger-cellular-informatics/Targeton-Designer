@@ -30,7 +30,7 @@ class FilterManager:
         filters = {cls.key: cls for _, cls in classes if issubclass(cls, Filter)}
 
         loaded_filters = []
-        for name in filter_names:
+        for name in set(filter_names):
             filter_cls = filters.get(name)
             if filter_cls:
                 loaded_filters.append(filter_cls())

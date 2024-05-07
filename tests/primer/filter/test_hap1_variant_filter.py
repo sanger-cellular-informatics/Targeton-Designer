@@ -25,10 +25,10 @@ class TestHAP1VariantFilter(unittest.TestCase):
         self.assertTrue(pair_without_variant in response.primer_pairs_to_keep)
         self.assertTrue(
             pair1_with_variant in [pair_discarded.primer_pair for pair_discarded in response.primer_pairs_to_discard])
-        self.assertEqual(response.primer_pairs_to_discard[0].filter_applied, HAP1VariantFilter.reason_discarded)
+        self.assertEqual(response.primer_pairs_to_discard[0].reason_discarded, HAP1VariantFilter.reason_discarded)
         self.assertTrue(
             pair2_with_variant in [pair_discarded.primer_pair for pair_discarded in response.primer_pairs_to_discard])
-        self.assertEqual(response.primer_pairs_to_discard[1].filter_applied, HAP1VariantFilter.reason_discarded)
+        self.assertEqual(response.primer_pairs_to_discard[1].reason_discarded, HAP1VariantFilter.reason_discarded)
 
     def test_apply_test_when_no_primer_pairs(self):
         response = self.test_instance.apply([])

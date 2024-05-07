@@ -7,7 +7,7 @@ from primer.primer_pair import PrimerPair
 @dataclass
 class PrimerPairDiscarded:
     primer_pair: PrimerPair
-    filter_applied: str
+    reason_discarded: str
 
 
 @dataclass
