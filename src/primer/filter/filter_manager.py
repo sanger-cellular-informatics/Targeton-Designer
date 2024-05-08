@@ -3,9 +3,7 @@ from inspect import getmembers, isclass, isabstract
 from typing import List
 
 import primer
-from primer.filter.filter import Filter
-from primer.filter.duplicates_filter import DuplicatesFilter
-from primer.filter.hap1_variant_filter import HAP1VariantFilter
+from primer.filter import Filter
 from primer.filter.filter_response import FilterResponse
 from primer_designer import PrimerPair
 

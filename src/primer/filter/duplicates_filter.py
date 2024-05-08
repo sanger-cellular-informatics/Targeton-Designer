@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import List, Tuple
 
-from primer.filter.filter import Filter
+from primer.filter import Filter
 from primer.filter.filter_response import FilterResponse, PrimerPairDiscarded
 from primer.primer_pair import PrimerPair
 
