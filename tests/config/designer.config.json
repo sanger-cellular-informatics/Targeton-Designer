@@ -17,6 +17,7 @@
                        "pre_targeton_start", 
                        "pre_targeton_end", 
                        "product_size",
-                       "targeton_id"],
+                       "targeton_id",
+                       "pair_uid"],
   "filters" : [ "HAP1_variant" , "duplicates"]
 }
