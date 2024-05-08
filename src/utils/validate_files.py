@@ -6,10 +6,10 @@ import json
 from utils.exceptions import FileFormatError, FileValidationError
 from utils.file_system import check_file_exists, parse_json
 
-from custom_logger.custom_logger import setup_logger
+from custom_logger.custom_logger import CustomLogger
 
 # Initialize logger
-logger = setup_logger(__name__)
+logger = CustomLogger(__name__)
 
 
 def validate_bed_format(bed: str):
@@ -19,7 +19,6 @@ def validate_bed_format(bed: str):
         line_num = 1
         for line in tsv_file:
             if len(line) < 6:
-                logger.error("Unable to read in BED file correctly. Check file format on line {line_num}.")
                 raise FileFormatError(f'Unable to read in BED file correctly. Check file format on line {line_num}.')
 
             line_num = line_num + 1
@@ -130,13 +129,13 @@ def validate_files(bed='', fasta='', txt='', p3_csv='', score_tsv='', primer_jso
             validate_primer_json(primer_json)
 
     except ValueError as valErr:
-        print('Error occurred while checking file content: {0}'.format(valErr))
+        logger.error('Error occurred while checking file content: {0}'.format(valErr))
     except FileFormatError as fileErr:
-        print('Error occurred while checking file format: {0}'.format(fileErr))
+        logger.error('Error occurred while checking file format: {0}'.format(fileErr))
     except FileNotFoundError as fileErr:
-        print('Input file not found: {0}'.format(fileErr))
+        logger.error('Input file not found: {0}'.format(fileErr))
     except Exception as err:
-        print('Unexpected error occurred: {0}'.format(err))
+        logger.error('Unexpected error occurred: {0}'.format(err))
 
     return
 
