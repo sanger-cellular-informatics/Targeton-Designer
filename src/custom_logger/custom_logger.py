@@ -38,6 +38,7 @@ class CustomLogger:
         logging.basicConfig(
             filename=log_file_path, 
             filemode='a', 
+            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
             level=logging.DEBUG,
             force=True,
         )
@@ -52,7 +53,7 @@ class CustomLogger:
         # Create custom formatters for different levels
 
         self.info_formatter = logging.Formatter("%(message)s")
-        self.debug_formatter = logging.Formatter("%(asctime)s - DEBUG: %(message)s")
+        self.debug_formatter = logging.Formatter("DEBUG: %(message)s")
         self.warning_formatter = logging.Formatter("WARNING: %(message)s")
         self.error_formatter = logging.Formatter("%(asctime)s - ERROR - %(name)s - %(levelname)s - %(message)s")
         self.exception_formatter = logging.Formatter("%(asctime)s - EXCEPTION - %(name)s - %(levelname)s - %(message)s") 
