@@ -81,7 +81,7 @@ def _get_primers_dataframe(pairs: List[PrimerPair], primer_type: str) -> pd.Data
         primers_dict['product_size'].extend([pair.product_size] * 2)
         primers_dict['targeton_id'].extend([pair.targeton_id] * 2)
 
-    return pd.DataFrame(primers_dict)
+    return pd.DataFrame(primers_dict).round(decimals=3)
 
 
 def _reorder_columns(csv_col_order: List[str],
