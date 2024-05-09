@@ -1,3 +1,4 @@
+import logging
 import unittest
 from io import StringIO
 from os import path
@@ -189,15 +190,13 @@ class TestWriteOutputFiles(TestCase):
         }
         df = pd.DataFrame(data)
 
-        # Act
-        with self.assertRaises(ValueError) as value_error:
-            _reorder_columns(column_names, df)
+        # Add our logging output with following context manager , subsequently capture
+        with patch.object(logging, 'warning') as mock_warning:
+            with self.assertRaises(ValueError) as value_error:
+                _reorder_columns(column_names, df)
 
-        # Assertion
-        std_result = expected_stdout.getvalue().strip()
-
-        self.assertEqual(str(value_error.exception), "All column names in config file are wrong")
-        self.assertEqual(std_result, "Warning: 'WRONG' specified in config file not is not a column name")
+                mock_warning.assert_called_once_with("Warning: 'WRONG' specified in config file not is not a column name")
+                self.assertEqual(str(value_error.exception), "All column names in config file are wrong")
     
 
     def test_reorder_columns_when_some_column_names_wrong(self):
