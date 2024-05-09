@@ -1,7 +1,8 @@
 from unittest import TestCase
 
 from primer.designed_primer import DesignedPrimer, Interval
-from primer.filter import HAP1VariantFilter, DuplicatesFilter
+from primer.filter.duplicates_filter import DuplicatesFilter
+from primer.filter.hap1_variant_filter import HAP1VariantFilter
 from primer.filter.filter_manager import FilterManager
 from primer.filter.filter_response import PrimerPairDiscarded
 from primer.primer_pair import PrimerPair
@@ -43,33 +44,6 @@ class TestFilterManager(TestCase):
             hairpin_th=20.0,
             end_stability=25.0
         )
-
-    def test_filter_manager_init_when_valid_filter_names(self):
-        test_instance = FilterManager(filter_names=["HAP1_variant", "duplicates"])
-
-        self.assertEqual(len(test_instance._filters_to_apply), 2)
-
-        has_hap1_variant_filter = any(isinstance(f, HAP1VariantFilter) for f in test_instance._filters_to_apply)
-        has_duplicates_filter = any(isinstance(f, DuplicatesFilter) for f in test_instance._filters_to_apply)
-        self.assertTrue(has_hap1_variant_filter)
-        self.assertTrue(has_duplicates_filter)
-
-    def test_filter_manager_init_when_wrong_filter_name(self):
-        with self.assertRaises(ValueError) as exception_context:
-            FilterManager(filter_names=["NON_EXISTING_FILTER"])
-
-        self.assertEqual(str(exception_context.exception), "Filter name 'NON_EXISTING_FILTER' does not exist")
-
-    def test_filter_manager_init_when_repeated_filter_name(self):
-        test_instance = FilterManager(filter_names=["HAP1_variant", "HAP1_variant"])
-
-        self.assertEqual(len(test_instance._filters_to_apply), 1)
-        self.assertIsInstance(test_instance._filters_to_apply[0], HAP1VariantFilter)
-
-    def test_filter_manager_init_when_no_filter_names(self):
-        test_instance = FilterManager(filter_names=[])
-
-        self.assertEqual(test_instance._filters_to_apply, [])
 
     def test_apply_filters(self):
         # Arrange
@@ -123,7 +97,7 @@ class TestFilterManager(TestCase):
 
         # Act
         pairs_to_filter = [pair_with_variant, pair_with_no_variant, pair_max_stringency, pair_min_stringency]
-        filter_response = FilterManager(filter_names=["HAP1_variant", "duplicates"]).apply_filters(pairs_to_filter)
+        filter_response = FilterManager().apply_filters(pairs_to_filter)
 
         # Assertion
         self.assertEqual(len(filter_response.primer_pairs_to_keep), 2)

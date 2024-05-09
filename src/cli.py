@@ -64,7 +64,7 @@ def primer_command(
 
     primers = p3_class.get_primers(fasta)
 
-    filters_response = FilterManager(filter_names=designer_config.params["filters"]).apply_filters(primers)
+    filters_response = FilterManager().apply_filters(primers)
 
     primer_result = write_primer_output(
         primer_pairs=filters_response.primer_pairs_to_keep,
