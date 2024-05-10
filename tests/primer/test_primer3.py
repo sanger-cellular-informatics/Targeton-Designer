@@ -6,6 +6,8 @@ from primer.primer_pair import PrimerPair
 from primer.primer3 import Primer3
 from utils.exceptions import Primer3Error
 from src import primer
+from io import StringIO
+import sys
 
 
 class IntegrationTestPrimer3(TestCase):
@@ -126,8 +128,19 @@ class IntegrationTestPrimer3(TestCase):
             Primer3(designer_config, p3_config).get_primers(slices_fasta_file.name)
 
         # assert
-        self.assertEqual(str(primer_error.exception),
-                         "PRIMER_PAIR_EXPLAIN: considered 2960, unacceptable product size 2960, ok 0")
+        expected_msg = """\
+            NO PRIMER PAIRS BUILT BY PRIMER3: \
+            Stringency level 1 -- PRIMER_LEFT_EXPLAIN: considered 1469, GC content failed 769, low tm 1, \
+            high tm 657, high hairpin stability 2, ok 40; PRIMER_RIGHT_EXPLAIN: considered 1469, GC \
+            content failed 235, low tm 1, high tm 1159, ok 74; PRIMER_PAIR_EXPLAIN: considered 2960, \
+            unacceptable product size 2960, ok 0"""
+        expected_msg = ''.join(expected_msg.strip().split())
+            
+        error_msg = str(primer_error.exception)
+        error_msg = ''.join(error_msg.strip().split())
+        
+        self.assertEqual(error_msg, expected_msg)
+
 
 
 if __name__ == '__main__':

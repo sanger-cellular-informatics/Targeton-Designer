@@ -32,26 +32,46 @@ class Primer3:
 
     def _get_primer_pairs(self, slice_data: SliceData) -> List[PrimerPair]:
         primer_pairs = []
+        primer_explain = {}
 
         for stringency in self._stringency_vector:
             designs = self._get_primer3_designs(slice_data.p3_input, stringency)
-            built_primer_pairs = build_primer_pairs(designs, slice_data, stringency)
 
-            if not built_primer_pairs:
-                # Only keep Primer3 message that indicates the step where no primers/primer
-                # pairs could be generated
-                p3_error_key = [key for key, value in designs.items()
-                                if isinstance(value, str) and 'ok 0' in value]
-                message = {}
-                for key in p3_error_key:
-                    message[key] = designs[key]
-                message_formatted = '\n'.join([f"{key}: {value}" for key, value in message.items()])
-                raise Primer3Error(message_formatted)
+            number_pairs = designs['PRIMER_PAIR_NUM_RETURNED']
+            print('pairs: ' + str(number_pairs))
+            primer_explain_flag = self._p3_config['PRIMER_EXPLAIN_FLAG']
 
-            primer_pairs.extend(built_primer_pairs)
-
+            if not number_pairs:
+                # Can only print message if PRIMER_EXPLAIN_FLAG == 1
+                if primer_explain_flag:
+                    msg = self._get_primer3_explain(designs, stringency)
+                    primer_explain['Stringency level ' + str(stringency)] = msg
+            
+            else:
+                built_primer_pairs = build_primer_pairs(designs, slice_data, stringency)
+                primer_pairs.extend(built_primer_pairs)
+            
+        if primer_explain:
+            message = '\n'.join([f"{key} -- {value}" for key, value in primer_explain.items()])
+            
+            if len(primer_explain) == len(self._stringency_vector):
+                message = 'NO PRIMER PAIRS BUILT BY PRIMER3: \n ' + message
+                raise Primer3Error(message)
+                
+            else:
+                message = 'Warning: No primer pairs built by Primer3 with the following stringencies: \n ' + message
+                print(message)
+    
         return primer_pairs
 
     def _get_primer3_designs(self, slice_info: dict, stringency) -> dict:
         config_data = prepare_p3_config(self._p3_config, stringency)
         return primer3.bindings.design_primers(slice_info, config_data)
+    
+    def _get_primer3_explain(self, designs, stringency) -> dict:
+        keys = ["PRIMER_LEFT_EXPLAIN",
+                "PRIMER_RIGHT_EXPLAIN",
+                "PRIMER_PAIR_EXPLAIN"]
+        msg = dict((key, designs[key]) for key in keys)
+        msg_formatted = '; '.join([f"{key}: {value}" for key, value in msg.items()])
+        return msg_formatted
