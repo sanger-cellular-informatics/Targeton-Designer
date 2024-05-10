@@ -6,7 +6,6 @@ from mock import patch
 import pandas as pd
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-from testfixtures import log_capture
 
 from primer.write_primer_output import _reorder_columns
 
