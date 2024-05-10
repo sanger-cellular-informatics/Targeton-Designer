@@ -4,7 +4,7 @@ from primer.filter.filter import Filter
 from primer.filter.hap1_variant_filter import HAP1VariantFilter
 from primer.filter.duplicates_filter import DuplicatesFilter
 from primer.filter.filter_response import FilterResponse
-from primer_designer import PrimerPair
+from primer.primer_pair import PrimerPair
 
 
 class FilterManager:
