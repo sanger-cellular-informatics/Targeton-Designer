@@ -91,9 +91,9 @@ Run the tests:
 ```sh
 source venv/bin/activate
 
-python -m unittest
+python -m unittest discover --start-directory ./tests --top-level-directory .
 cd sge-primer-scoring
-python -m unittest
+python -m unittest discover --start-directory ./tests --top-level-directory .
 
 deactivate
 ```
