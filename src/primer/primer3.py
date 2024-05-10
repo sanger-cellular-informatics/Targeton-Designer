@@ -46,28 +46,28 @@ class Primer3:
                 if primer_explain_flag:
                     msg = self._get_primer3_explain(designs, stringency)
                     primer_explain['Stringency level ' + str(stringency)] = msg
-            
+
             else:
                 built_primer_pairs = build_primer_pairs(designs, slice_data, stringency)
                 primer_pairs.extend(built_primer_pairs)
-            
+
         if primer_explain:
             message = '\n'.join([f"{key} -- {value}" for key, value in primer_explain.items()])
-            
+
             if len(primer_explain) == len(self._stringency_vector):
                 message = 'NO PRIMER PAIRS BUILT BY PRIMER3: \n ' + message
                 raise Primer3Error(message)
-                
+
             else:
                 message = 'Warning: No primer pairs built by Primer3 with the following stringencies: \n ' + message
                 print(message)
-    
+
         return primer_pairs
 
     def _get_primer3_designs(self, slice_info: dict, stringency) -> dict:
         config_data = prepare_p3_config(self._p3_config, stringency)
         return primer3.bindings.design_primers(slice_info, config_data)
-    
+
     def _get_primer3_explain(self, designs, stringency) -> dict:
         keys = ["PRIMER_LEFT_EXPLAIN",
                 "PRIMER_RIGHT_EXPLAIN",
