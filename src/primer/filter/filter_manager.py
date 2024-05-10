@@ -9,7 +9,7 @@ from primer.primer_pair import PrimerPair
 
 class FilterManager:
     def __init__(self):
-        self._filters_to_apply: List[Filter] = [HAP1VariantFilter(), DuplicatesFilter()]
+        self._filters_to_apply: List[Filter] = [DuplicatesFilter(), HAP1VariantFilter()]
 
     def apply_filters(self, data: List[PrimerPair]) -> FilterResponse:
         pairs_to_keep = data
