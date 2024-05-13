@@ -6,8 +6,6 @@ from primer.primer_pair import PrimerPair
 from primer.primer3 import Primer3
 from utils.exceptions import Primer3Error
 from src import primer
-from io import StringIO
-import sys
 
 
 class IntegrationTestPrimer3(TestCase):
@@ -140,7 +138,6 @@ class IntegrationTestPrimer3(TestCase):
         error_msg = ''.join(error_msg.strip().split())
         
         self.assertEqual(error_msg, expected_msg)
-
 
 
 if __name__ == '__main__':

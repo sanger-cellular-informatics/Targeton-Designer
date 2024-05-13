@@ -38,28 +38,31 @@ class Primer3:
             designs = self._get_primer3_designs(slice_data.p3_input, stringency)
 
             number_pairs = designs['PRIMER_PAIR_NUM_RETURNED']
-            print('pairs: ' + str(number_pairs))
             primer_explain_flag = self._p3_config['PRIMER_EXPLAIN_FLAG']
-
+             
+            # If Primer3 does not return any primer pairs for this stringency
             if not number_pairs:
-                # Can only print message if PRIMER_EXPLAIN_FLAG == 1
                 if primer_explain_flag:
                     msg = self._get_primer3_explain(designs, stringency)
-                    primer_explain['Stringency level ' + str(stringency)] = msg
+                else:
+                    msg = 'No primer pairs returned; add PRIMER_EXPLAIN_FLAG == 1 to config file for more details'
+                
+                primer_explain['Stringency level ' + str(stringency)] = msg
 
             else:
                 built_primer_pairs = build_primer_pairs(designs, slice_data, stringency)
                 primer_pairs.extend(built_primer_pairs)
 
+        # If Primer3 did not return any primer pairs for at least one stringency
         if primer_explain:
             message = '\n'.join([f"{key} -- {value}" for key, value in primer_explain.items()])
 
             if len(primer_explain) == len(self._stringency_vector):
-                message = 'NO PRIMER PAIRS BUILT BY PRIMER3: \n ' + message
+                message = 'NO PRIMER PAIRS BUILT BY PRIMER3: \n' + message
                 raise Primer3Error(message)
 
             else:
-                message = 'Warning: No primer pairs built by Primer3 with the following stringencies: \n ' + message
+                message = 'Warning: No primer pairs built by Primer3 with the following stringencies: \n' + message
                 print(message)
 
         return primer_pairs
