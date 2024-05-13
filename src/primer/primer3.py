@@ -73,7 +73,7 @@ class Primer3:
         config_data = prepare_p3_config(self._p3_config, stringency)
         return primer3.bindings.design_primers(slice_info, config_data)
 
-    def _get_primer3_explain(self, designs, stringency) -> dict:
+    def _get_primer3_explain(self, designs: dict, stringency: int) -> str:
         keys = ["PRIMER_LEFT_EXPLAIN",
                 "PRIMER_RIGHT_EXPLAIN",
                 "PRIMER_PAIR_EXPLAIN"]
