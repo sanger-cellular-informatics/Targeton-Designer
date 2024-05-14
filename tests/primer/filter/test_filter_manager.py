@@ -4,8 +4,8 @@ from primer.designed_primer import DesignedPrimer, Interval
 from primer.filter.duplicates_filter import DuplicatesFilter
 from primer.filter.hap1_variant_filter import HAP1VariantFilter
 from primer.filter.filter_manager import FilterManager
-from primer.filter.filter_response import PrimerPairDiscarded
 from primer.primer_pair import PrimerPair
+from primer.primer_pair_discarded import PrimerPairDiscarded
 
 
 class TestFilterManager(TestCase):
