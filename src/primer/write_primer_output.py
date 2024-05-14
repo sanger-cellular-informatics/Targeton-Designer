@@ -10,6 +10,10 @@ from primer.primer_pair import PrimerPair
 from config.config import DesignerConfig
 from utils.write_output_files import timestamped_dir, export_to_bed
 
+from custom_logger.custom_logger import CustomLogger
+
+# Initialize logger
+logger = CustomLogger(__name__)
 
 def write_primer_output(
     prefix='',
@@ -30,7 +34,7 @@ def write_primer_output(
     result.csv = export_primers_to_csv(primer_pairs, export_dir, primer_type)
     result.dir = export_dir
 
-    print(f"Primer files saved: {result.bed}, {result.csv}")
+    logger.info(f"Primer files saved: {result.bed} {result.csv}")
 
     return result
 
@@ -85,14 +89,16 @@ def _reorder_columns(csv_col_order: List[str],
     
     col_order_unique = list(dict.fromkeys(csv_col_order))
 
+    # raise Exception(col_order_unique)
+
     if not col_order_unique:
-        print("Warning: empty csv_column_order list provided in config file, returning dataframe with default column order")
+        logger.warning("Warning: empty csv_column_order list provided in config file, returning dataframe with default column order")
         return dataframe
 
     final_order = []
     for column in col_order_unique:
         if column not in dataframe.columns:
-            print(f"Warning: '{column}' specified in config file not is not a column name")
+            logger.warning(f"Warning: '{column}' specified in config file not is not a column name")
         else:
             final_order.append(column)
     
@@ -101,7 +107,7 @@ def _reorder_columns(csv_col_order: List[str],
 
     for column in dataframe.columns:
         if column not in final_order:
-            print(f"'{column}' column discarded as it is not in config file")
+            logger.info(f"'{column}' column discarded as it is not in config file")
 
     return dataframe[final_order]
 
