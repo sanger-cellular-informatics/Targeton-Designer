@@ -26,7 +26,7 @@ class DesignedPrimer:
 
     def __eq__(self, other):
         if isinstance(other, DesignedPrimer):
-            # Exclude the 'name' attribute from the comparison
+            # Exclude the 'name' and 'pair_id' attributes from the comparison
             return (
                     self.penalty == other.penalty and
                     self.sequence == other.sequence and
@@ -44,10 +44,9 @@ class DesignedPrimer:
         return False
 
     def __hash__(self):
-        # Exclude the 'name' attribute from the comparison
+        # Exclude the 'name' and 'pair_id' attributes from the comparison
         return hash((
             self.penalty,
-            self.pair_id,
             self.sequence,
             (self.coords.start, self.coords.end),
             self.primer_start,

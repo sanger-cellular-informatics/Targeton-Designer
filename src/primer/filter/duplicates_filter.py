@@ -17,14 +17,13 @@ class DuplicatesFilter(Filter):
 
         pair_duplicates_grouped = _group_duplicate_pairs(pairs)
 
-        print(pair_duplicates_grouped)
-
         for duplicate_group in pair_duplicates_grouped:
             pair_max_stringency, others = _take_pair_with_max_stringency_and_others(duplicate_group)
-            primer_pairs_to_discard = [PrimerPairDiscarded(pair, DuplicatesFilter.reason_discarded) for pair in others]
+
+            pairs_from_group_to_discard = [PrimerPairDiscarded(pair, DuplicatesFilter.reason_discarded) for pair in others]
 
             pairs_to_keep.append(pair_max_stringency)
-            pairs_to_discard.extend(primer_pairs_to_discard)
+            pairs_to_discard.extend(pairs_from_group_to_discard)
 
         return FilterResponse(pairs_to_keep, pairs_to_discard)
 
