@@ -79,7 +79,7 @@ class TestDesignedPrimers(TestCase):
             end_stability=25.0
         )
 
-        self.assertNotEquals(primer, primer_with_different_penalty)
+        self.assertNotEqual(primer, primer_with_different_penalty)
 
     def test_map_to_designed_primer(self):
         primer_dict = {

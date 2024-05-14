@@ -2,12 +2,7 @@ from dataclasses import dataclass
 from typing import List
 
 from primer.primer_pair import PrimerPair
-
-
-@dataclass
-class PrimerPairDiscarded:
-    primer_pair: PrimerPair
-    reason_discarded: str
+from primer.primer_pair_discarded import PrimerPairDiscarded
 
 
 @dataclass
