@@ -46,7 +46,7 @@ class Primer3:
             primer_explain_flag = self._p3_config['PRIMER_EXPLAIN_FLAG']
              
             # If Primer3 does not return any primer pairs for this stringency
-            number_pairs = 1
+
             if not number_pairs:
                 msg = 'Stringency level ' + str(stringency) + " -- "
                 if primer_explain_flag:
@@ -71,7 +71,7 @@ class Primer3:
             else:
                 message = 'Warning: No primer pairs built by Primer3 with the following stringencies: \n' + message
                 print(message)
-                
+
         elif not primer_pairs:
             raise ValueError("No primer pairs returned")
 
