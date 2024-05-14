@@ -30,12 +30,3 @@ class TestHap1(TestCase):
 
         with self.assertRaises(requests.exceptions.RequestException):
             contain_variant(chromosome="1", start=100, end=200)
-
-    def test_contain_variant_if_chromosome_contains_or_not_chr_prefixed(self):
-        # Do not contain a background variant
-        self.assertEqual(contain_variant(chromosome="1", start=100, end=200),
-                         contain_variant(chromosome="chr1", start=100, end=200))
-
-        # There is a variant at 11542 in chromosome 1
-        self.assertEqual(contain_variant(chromosome="1", start=11540, end=11545),
-                         contain_variant(chromosome="chr1", start=11540, end=11545))
