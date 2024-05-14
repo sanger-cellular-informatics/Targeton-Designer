@@ -4,7 +4,7 @@ import re
 import uuid
 
 from primer.designed_primer import map_to_designed_primer
-from primer.filter.hap1 import contain_variant
+from utils.get_data.hap1 import contain_variant
 from primer.slice_data import SliceData
 
 

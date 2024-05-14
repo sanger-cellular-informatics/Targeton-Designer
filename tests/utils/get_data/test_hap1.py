@@ -3,7 +3,7 @@ from unittest.mock import patch, Mock
 
 import requests
 
-from primer.filter.hap1 import contain_variant
+from utils.get_data.hap1 import contain_variant
 
 
 class TestHap1(TestCase):
