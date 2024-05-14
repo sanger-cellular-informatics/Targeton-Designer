@@ -7,6 +7,11 @@ from primer.primer3_prepare_config import prepare_p3_config
 from primer.primer_pair import PrimerPair, build_primer_pairs
 from utils.exceptions import Primer3Error
 
+from custom_logger.custom_logger import CustomLogger
+
+# Initialize logger
+logger = CustomLogger(__name__)
+
 
 class Primer3:
     def __init__(
@@ -21,7 +26,7 @@ class Primer3:
     def get_primers(self, fasta: str) -> List[PrimerPair]:
         primer_pairs = []
 
-        print('Reading Fasta file')
+        logger.debug('Reading Fasta file')
         slices = SliceData.parse_fasta(fasta)
 
         for slice in slices:
