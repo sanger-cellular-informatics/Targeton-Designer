@@ -47,12 +47,7 @@ class Primer3:
 
             # If Primer3 does not return any primer pairs for this stringency
             if not number_pairs:
-                msg = 'Stringency level ' + str(stringency) + " -- "
-                if primer_explain_flag:
-                    msg += self._get_primer3_explain(designs, stringency)
-                else:
-                    msg += 'No primer pairs returned; add PRIMER_EXPLAIN_FLAG == 1 to config file for more details'
-
+                msg = self._format_no_primer_pairs_message(stringency, primer_explain_flag, designs)
                 primer_explain.append(msg)
 
             else:
@@ -61,16 +56,7 @@ class Primer3:
 
         # If Primer3 did not return any primer pairs for at least one stringency
         if primer_explain:
-            message = '\n'.join([msg for msg in primer_explain])
-
-            if len(primer_explain) == len(self._stringency_vector):
-                message = 'NO PRIMER PAIRS BUILT BY PRIMER3: \n' + message
-                raise Primer3Error(message)
-
-            else:
-                message = 'Warning: No primer pairs built by Primer3 with the following stringencies: \n' + message
-                print(message)
-
+            self._handle_primer3_errors(primer_explain)
         elif not primer_pairs:
             raise ValueError("No primer pairs returned")
 
@@ -79,6 +65,17 @@ class Primer3:
     def _get_primer3_designs(self, slice_info: dict, stringency) -> dict:
         config_data = prepare_p3_config(self._p3_config, stringency)
         return primer3.bindings.design_primers(slice_info, config_data)
+    
+    def _format_no_primer_pairs_message(self,
+                                        stringency: int,
+                                        primer_explain_flag: int,
+                                        designs: dict) -> str:
+        msg = 'Stringency level ' + str(stringency) + " -- "
+        if primer_explain_flag:
+            msg += self._get_primer3_explain(designs, stringency)
+        else:
+            msg += 'No primer pairs returned; add PRIMER_EXPLAIN_FLAG == 1 to config file for more details'
+        return msg
 
     def _get_primer3_explain(self, designs: dict, stringency: int) -> str:
         keys = ["PRIMER_LEFT_EXPLAIN",
@@ -87,3 +84,14 @@ class Primer3:
         msg = dict((key, designs[key]) for key in keys)
         msg_formatted = '; '.join([f"{key}: {value}" for key, value in msg.items()])
         return msg_formatted
+    
+    def _handle_primer3_errors(self, primer_explain: List[str]):
+        message = '\n'.join([msg for msg in primer_explain])
+
+        if len(primer_explain) == len(self._stringency_vector):
+            message = 'NO PRIMER PAIRS BUILT BY PRIMER3: \n' + message
+            raise Primer3Error(message)
+
+        else:
+            message = 'Warning: No primer pairs built by Primer3 with the following stringencies: \n' + message
+            print(message)
