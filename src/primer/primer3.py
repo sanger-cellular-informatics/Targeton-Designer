@@ -44,16 +44,15 @@ class Primer3:
 
             number_pairs = designs['PRIMER_PAIR_NUM_RETURNED']
             primer_explain_flag = self._p3_config['PRIMER_EXPLAIN_FLAG']
-             
-            # If Primer3 does not return any primer pairs for this stringency
 
+            # If Primer3 does not return any primer pairs for this stringency
             if not number_pairs:
                 msg = 'Stringency level ' + str(stringency) + " -- "
                 if primer_explain_flag:
                     msg += self._get_primer3_explain(designs, stringency)
                 else:
                     msg += 'No primer pairs returned; add PRIMER_EXPLAIN_FLAG == 1 to config file for more details'
-                
+
                 primer_explain.append(msg)
 
             else:
