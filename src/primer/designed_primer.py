@@ -29,7 +29,6 @@ class DesignedPrimer:
             # Exclude the 'name' attribute from the comparison
             return (
                     self.penalty == other.penalty and
-                    self.pair_id == other.pair_id and
                     self.sequence == other.sequence and
                     self.coords == other.coords and
                     self.primer_start == other.primer_start and
