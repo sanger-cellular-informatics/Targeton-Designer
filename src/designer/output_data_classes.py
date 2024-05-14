@@ -19,6 +19,7 @@ class SlicerOutputData(OutputFilesData):
 class PrimerOutputData(OutputFilesData):
     bed: str = ''
     csv: str = ''
+    discarded_csv: str = ''
 
 
 @dataclass
