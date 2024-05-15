@@ -21,10 +21,10 @@ def format_no_primer_pairs_message(stringency: int,
     return msg
 
 
-def handle_primer3_errors(primer_explain: List[str], primer_pairs: List[PrimerPair]) -> None:
+def handle_primer3_errors(primer_explain: List[str], primer_pairs_any) -> None:
     message = '\n'.join([msg for msg in primer_explain])
 
-    if not primer_pairs:
+    if not primer_pairs_any:
         message = 'NO PRIMER PAIRS BUILT BY PRIMER3:\n' + message
         logger.exception(Primer3Error(message))
         raise Primer3Error(message)

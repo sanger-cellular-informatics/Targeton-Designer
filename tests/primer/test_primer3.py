@@ -145,7 +145,7 @@ class IntegrationTestPrimer3(TestCase):
         self.assertEqual(error_msg, expected_msg)
 
     @patch('primer.primer3.build_primer_pairs')
-    def test_get_primer_pairs_emty_list(self, mock_build_primer_pairs):
+    def test_get_primer_pairs_empty_list(self, mock_build_primer_pairs):
         stringency = 1
         chromosome = "1"
         pre_targeton_name = "ENSE00000769557_HG8_11"

@@ -56,7 +56,7 @@ class Primer3:
 
         # If Primer3 did not return any primer pairs for at least one stringency
         if primer_explain:
-            handle_primer3_errors(primer_explain, primer_pairs)
+            handle_primer3_errors(primer_explain, any(primer_pairs))
         # If Primer3 returns pairs but built_primer_pairs does not
         elif not primer_pairs:
             raise ValueError("No primer pairs returned")

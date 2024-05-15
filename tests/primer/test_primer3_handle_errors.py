@@ -69,11 +69,11 @@ class TestPrimer3ErrorHandling(TestCase):
     def test_handle_primer3_errors_error(self):
         # arrange
         primer_explain = ['Stringency level 1 -- PRIMER_LEFT_EXPLAIN: considered 1469, GC content failed 769, low tm 1, high tm 657, high hairpin stability 2, ok 40; PRIMER_RIGHT_EXPLAIN: considered 1469, GC content failed 235, low tm 1, high tm 1159, ok 74; PRIMER_PAIR_EXPLAIN: considered 2960, unacceptable product size 2960, ok 0']
-        primer_pairs = []
+        primer_pairs_any = 0
 
         # act
         with self.assertRaises(Primer3Error) as primer_error:
-            handle_primer3_errors(primer_explain, primer_pairs)
+            handle_primer3_errors(primer_explain, primer_pairs_any)
 
         # assert
         expected_result = dedent("""\
@@ -87,17 +87,10 @@ class TestPrimer3ErrorHandling(TestCase):
 
         # arrange
         primer_explain = ['Stringency level 1 -- PRIMER_LEFT_EXPLAIN: considered 1469, GC content failed 769, low tm 1, high tm 657, high hairpin stability 2, ok 40; PRIMER_RIGHT_EXPLAIN: considered 1469, GC content failed 235, low tm 1, high tm 1159, ok 74; PRIMER_PAIR_EXPLAIN: considered 2960, unacceptable product size 2960, ok 0']
-        primer_pairs = [PrimerPair(pair_id='mask_mask_1_0_str1',
-                                   uid='3d9b28a6-12a5-11ef-91cc-fa163e1eb62c',
-                                   chromosome='1',
-                                   pre_targeton_start='42930996',
-                                   pre_targeton_end='42931206',
-                                   product_size='129',
-                                   stringency='1',
-                                   targeton_id='mask')]
+        primer_pairs_any = 1
 
         # act
-        handle_primer3_errors(primer_explain, primer_pairs)
+        handle_primer3_errors(primer_explain, primer_pairs_any)
 
         # assert
         expected_result = dedent("""\
