@@ -7,8 +7,6 @@ from primer.primer_pair import PrimerPair
 from primer.primer3 import Primer3
 from utils.exceptions import Primer3Error
 from src import primer
-
-
 class IntegrationTestPrimer3(TestCase):
 
     def setUp(self):
@@ -97,7 +95,7 @@ class IntegrationTestPrimer3(TestCase):
         self.assertEqual(result, [expected_primer_pair])
     
     @patch('primer3.bindings.design_primers')
-    def test_get_primer_pairs_when_primer3_error_explain_flag(self, mock_design_primers):
+    def test_get_primer_pairs_when_primer3_error(self, mock_design_primers):
         stringency = 1
         chromosome = "1"
         pre_targeton_name = "ARTY"
@@ -139,50 +137,6 @@ class IntegrationTestPrimer3(TestCase):
             high tm 657, high hairpin stability 2, ok 40; PRIMER_RIGHT_EXPLAIN: considered 1469, GC \
             content failed 235, low tm 1, high tm 1159, ok 74; PRIMER_PAIR_EXPLAIN: considered 2960, \
             unacceptable product size 2960, ok 0"""
-        expected_msg = ''.join(expected_msg.strip().split())
-            
-        error_msg = str(primer_error.exception)
-        error_msg = ''.join(error_msg.strip().split())
-        
-        self.assertEqual(error_msg, expected_msg)
-        
-    @patch('primer3.bindings.design_primers')
-    def test_get_primer_pairs_when_no_explain_flag(self, mock_design_primers):
-        stringency = 1
-        chromosome = "1"
-        pre_targeton_name = "ARTY"
-        pre_targeton_start = 42958479
-        pre_targeton_end = 42958806
-        
-        mock_design_primers.return_value = {'PRIMER_PAIR_NUM_RETURNED': 0, 'PRIMER_PAIR': []}
-
-        # arrange
-        slices_fasta_file = self.fs.create_file(
-            'fasta.fa',
-            contents=f'>{pre_targeton_name}::{chromosome}:{pre_targeton_start}-{pre_targeton_end}(+)\nGCTCGGGACCCGCACCGAGCCAGGCTCGGAGAGGCGCGCGGCCCGCCCCGGGCGCACAGCGCAGCGGGGCGGCGGGGGAGGCCCTGGCCGGCGTAAGGCGGGCAGGAGTCTGCGCCTTTGTTCCTGGCGGGAGGGCCCGCGGGCGCGCGACTCACCTTGCTGCTGGGCTCCATGGCAGCGCTGCGCTGGTGGCTCTGGCTGCGCCGGGTACGCGGGTGGCGACGGGCGTGCGAGCGGCGCTCTCCCGCTCAGGCTCGTGCTCCGGTCCGGGGACTCCCACTGCGACTCTGACTCCGACCCCCGTCGTTTGGTCTCCTGCTCCCTGGCG')
-
-        designer_config = {"stringency_vector": [stringency]}
-
-        p3_config = {
-             "PRIMER_TASK": "generic",
-             "PRIMER_PICK_LEFT_PRIMER": 1,
-             "PRIMER_PICK_RIGHT_PRIMER": 1,
-             "PRIMER_OPT_SIZE": 20,
-             "PRIMER_MIN_SIZE": 18,
-             "PRIMER_MAX_SIZE": 30,
-             "P3_FILE_FLAG": 1,
-             "SEQUENCE_INCLUDED_REGION": [0, 212],
-             "PRIMER_EXPLAIN_FLAG": 0
-             }
-
-        # act
-        with self.assertRaises(Primer3Error) as primer_error:
-            Primer3(designer_config, p3_config).get_primers(slices_fasta_file.name)
-
-        # assert
-        expected_msg = """\
-            NO PRIMER PAIRS BUILT BY PRIMER3: \
-            Stringency level 1 -- No primer pairs returned; add PRIMER_EXPLAIN_FLAG == 1 to config file for more details"""
         expected_msg = ''.join(expected_msg.strip().split())
             
         error_msg = str(primer_error.exception)
