@@ -57,8 +57,7 @@ def export_primers_to_csv(primer_pairs: List[PrimerPair], export_dir: str, prime
     primers_dataframe = _get_primers_dataframe(primer_pairs, primer_type)
 
     col_order = DesignerConfig().params['csv_column_order']
-    primers_dataframe_ordered = _reorder_columns(col_order, primers_dataframe)
-    primers_dataframe_ordered.to_csv(primers_csv_output_path, index=False)
+    write_dataframe_to_csv(primers_dataframe, col_order, primers_csv_output_path)
 
     return primers_csv_output_path
 
@@ -71,9 +70,14 @@ def export_discarded_primers_to_csv(discarded_pairs: List[PrimerPairDiscarded],
     discarded_df = _get_discarded_primer_dataframe(discarded_pairs, primer_type)
     col_order = DesignerConfig().params['csv_column_order']
     col_order.append('discard_reason')
-    df_ordered = _reorder_columns(col_order, discarded_df)
-    df_ordered.to_csv(output_path, index=False)
+    write_dataframe_to_csv(discarded_df, col_order, output_path)
+
     return output_path
+
+def write_dataframe_to_csv(df: pd.DataFrame, cols: List[str], output_path: str) -> None:
+    df_ordered = _reorder_columns(cols, df)
+    df_ordered.to_csv(output_path, index=False)
+    return None
 
 def _get_primers_dataframe(pairs: List[PrimerPair], primer_type: str) -> pd.DataFrame:
     primers_dict = defaultdict(list)
