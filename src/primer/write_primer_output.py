@@ -83,30 +83,7 @@ def _get_primers_dataframe(pairs: List[PrimerPair], primer_type: str) -> pd.Data
     primers_dict = defaultdict(list)
 
     for pair in pairs:
-
-        for direction in ['forward', 'reverse']:
-            primer = getattr(pair, direction)
-            primers_dict['primer_type'].append(primer_type)
-            primers_dict['primer'].append(primer.name)
-            primers_dict['penalty'].append(primer.penalty)
-            primers_dict['sequence'].append(primer.sequence)
-            primers_dict['primer_start'].append(primer.primer_start)
-            primers_dict['primer_end'].append(primer.primer_end)
-            primers_dict['tm'].append(primer.tm)
-            primers_dict['gc_percent'].append(primer.gc_percent)
-            primers_dict['self_any_th'].append(primer.self_any_th)
-            primers_dict['self_end_th'].append(primer.self_end_th)
-            primers_dict['hairpin_th'].append(primer.hairpin_th)
-            primers_dict['end_stability'].append(primer.end_stability)
-        
-
-        primers_dict['pair_uid'].extend([pair.uid] * 2)
-        primers_dict['stringency'].extend([pair.stringency] * 2)
-        primers_dict['chromosome'].extend([pair.chromosome] * 2)
-        primers_dict['pre_targeton_start'].extend([pair.pre_targeton_start] * 2)
-        primers_dict['pre_targeton_end'].extend([pair.pre_targeton_end] * 2)
-        primers_dict['product_size'].extend([pair.product_size] * 2)
-        primers_dict['targeton_id'].extend([pair.targeton_id] * 2)
+        _add_primer_pair(primers_dict, pair, primer_type)
 
     return pd.DataFrame(primers_dict).round(decimals=3)
 
