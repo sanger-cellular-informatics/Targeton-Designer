@@ -1,8 +1,7 @@
 import logging
+import subprocess
 import unittest
 from io import StringIO
-import sys
-from mock import patch
 import pandas as pd
 from pyfakefs.fake_filesystem_unittest import TestCase
 
@@ -25,7 +24,7 @@ class TestWritePrimerOutputFiles(TestCase):
             self.handler = CapturingStreamHandler()
             # Get the logger and set the level to capture warnings (adjust if needed)
             logger = logging.getLogger()
-            logger.setLevel(logging.WARNING)  # Capture warnings by default
+            logger.setLevel(logging.DEBUG)
             logger.addHandler(self.handler)
 
         def tearDown(self):
