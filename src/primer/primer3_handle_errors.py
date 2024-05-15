@@ -8,10 +8,11 @@ from custom_logger.custom_logger import CustomLogger
 
 # Initialize logger
 logger = CustomLogger(__name__)
-    
+
+
 def format_no_primer_pairs_message(stringency: int,
-                                    primer_explain_flag: int,
-                                    designs: dict) -> str:
+                                   primer_explain_flag: int,
+                                   designs: dict) -> str:
     msg = 'Stringency level ' + str(stringency) + " -- "
     if primer_explain_flag:
         msg += _get_primer3_explain(designs)
@@ -19,17 +20,20 @@ def format_no_primer_pairs_message(stringency: int,
         msg += 'No primer pairs returned; add PRIMER_EXPLAIN_FLAG == 1 to config file for more details'
     return msg
 
+
 def handle_primer3_errors(primer_explain: List[str], primer_pairs: List[PrimerPair]) -> None:
     message = '\n'.join([msg for msg in primer_explain])
 
     if not primer_pairs:
         message = 'NO PRIMER PAIRS BUILT BY PRIMER3:\n' + message
+        logger.exception(Primer3Error(message))
         raise Primer3Error(message)
 
     else:
         message = 'Warning: No primer pairs built by Primer3 with the following stringencies:\n' + message
         logger.warning(message)
-        
+
+
 def _get_primer3_explain(designs: dict) -> str:
     keys = ["PRIMER_LEFT_EXPLAIN",
             "PRIMER_RIGHT_EXPLAIN",

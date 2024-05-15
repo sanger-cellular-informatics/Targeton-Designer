@@ -57,7 +57,7 @@ class Primer3:
         # If Primer3 did not return any primer pairs for at least one stringency
         if primer_explain:
             handle_primer3_errors(primer_explain, primer_pairs)
-         # If Primer3 returns pairs but built_primer_pairs does not
+        # If Primer3 returns pairs but built_primer_pairs does not
         elif not primer_pairs:
             raise ValueError("No primer pairs returned")
         return primer_pairs
@@ -65,4 +65,3 @@ class Primer3:
     def _get_primer3_designs(self, slice_info: dict, stringency: int) -> dict:
         config_data = prepare_p3_config(self._p3_config, stringency)
         return primer3.bindings.design_primers(slice_info, config_data)
-

@@ -9,12 +9,14 @@ from utils.exceptions import Primer3Error
 from primer.primer_pair import PrimerPair
 from primer.primer3_handle_errors import format_no_primer_pairs_message, handle_primer3_errors, _get_primer3_explain
 
+
 class CapturingStreamHandler(logging.StreamHandler):
   """Custom StreamHandler to capture logs in memory."""
   def __init__(self):
     super().__init__()
     self.buffer = StringIO()
     self.stream = self.buffer
+
 
 class TestPrimer3ErrorHandling(TestCase):
     
@@ -62,14 +64,13 @@ class TestPrimer3ErrorHandling(TestCase):
 
         # assert
         expected_result = 'Stringency level 1 -- No primer pairs returned; add PRIMER_EXPLAIN_FLAG == 1 to config file for more details'
-
         self.assertEqual(result, expected_result)
 
     def test_handle_primer3_errors_error(self):
         # arrange
         primer_explain = ['Stringency level 1 -- PRIMER_LEFT_EXPLAIN: considered 1469, GC content failed 769, low tm 1, high tm 657, high hairpin stability 2, ok 40; PRIMER_RIGHT_EXPLAIN: considered 1469, GC content failed 235, low tm 1, high tm 1159, ok 74; PRIMER_PAIR_EXPLAIN: considered 2960, unacceptable product size 2960, ok 0']
         primer_pairs = []
-        
+
         # act
         with self.assertRaises(Primer3Error) as primer_error:
             handle_primer3_errors(primer_explain, primer_pairs)
