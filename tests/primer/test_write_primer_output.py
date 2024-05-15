@@ -1,5 +1,4 @@
 import logging
-import subprocess
 import unittest
 from io import StringIO
 import pandas as pd
@@ -22,6 +21,7 @@ class TestWritePrimerOutputFiles(TestCase):
             self.handler = CapturingStreamHandler()
             # Get the logger and set the level to capture warnings (adjust if needed)
             logger = logging.getLogger()
+            # Set logger level to defualt to capture all the level logs
             logger.setLevel(logging.DEBUG)
             logger.addHandler(self.handler)
 
