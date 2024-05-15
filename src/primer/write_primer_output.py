@@ -43,9 +43,9 @@ def write_primer_output(
                                   discarded_primer_pairs,
                                   export_dir,
                                   primer_type)
-        print(f"Discarded primer file saved: {result.discarded_csv}")
+        logger.info(f"Discarded primer file saved: {result.discarded_csv}")
     else:
-        print("No discarded primers")
+        logger.info("No discarded primers")
 
     return result
 
