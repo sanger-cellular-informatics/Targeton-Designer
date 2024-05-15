@@ -192,7 +192,7 @@ These kmer lists can be downloaded using the following commands:
 
 ```sh
 chmod +x ./download_kmer_lists.sh
-download_kmer_lists.sh
+./download_kmer_lists.sh
 ```
 
 ### Primer Scoring Tool
