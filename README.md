@@ -188,6 +188,13 @@ To use kmer lists for primer generation:
 1. Set config parameters (example config/primer3_kmer.config.json)
 2. Provide 2 files with kmers: homo_sapiens_11.list and homo_sapiens_16.list
 
+These kmer lists can be downloaded using the following commands:
+
+```sh
+chmod +x ./download_kmer_lists.sh
+download_kmer_lists.sh
+```
+
 ### Primer Scoring Tool
 
 Running primer scoring:
