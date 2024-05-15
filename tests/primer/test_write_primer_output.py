@@ -24,7 +24,6 @@ class TestWritePrimerOutputFiles(TestCase):
             logger = logging.getLogger()
             logger.setLevel(logging.DEBUG)
             logger.addHandler(self.handler)
-            subprocess.call(['rm', '-rf', 'logs/*'])
 
         def tearDown(self):
             # Remove the handler after each test to reset logging
