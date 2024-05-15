@@ -136,7 +136,7 @@ def calculate_primer_coords(side: str, coords: list, slice_start: str) -> Tuple[
     slice_start = int(slice_start)
     left_flank = {
         'start': slice_start + int(coords[0]),
-        'end': slice_start + + int(coords[0]) + int(coords[1]) - 1
+        'end': slice_start + int(coords[0]) + int(coords[1]) - 1
     }
 
     slice_end = slice_start + int(coords[0])
