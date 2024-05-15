@@ -5,7 +5,7 @@ from typing import List
 from primer.slice_data import SliceData
 from primer.primer3_prepare_config import prepare_p3_config
 from primer.primer_pair import PrimerPair, build_primer_pairs
-from utils.exceptions import Primer3Error
+from primer.primer3_handle_errors import format_no_primer_pairs_message, handle_primer3_errors
 
 from custom_logger.custom_logger import CustomLogger
 
@@ -26,7 +26,7 @@ class Primer3:
     def get_primers(self, fasta: str) -> List[PrimerPair]:
         primer_pairs = []
 
-        logger.debug('Reading Fasta file')
+        logger.info('Reading Fasta file')
         slices = SliceData.parse_fasta(fasta)
 
         for slice in slices:
@@ -47,7 +47,7 @@ class Primer3:
 
             # If Primer3 does not return any primer pairs for this stringency
             if not number_pairs:
-                msg = self._format_no_primer_pairs_message(stringency, primer_explain_flag, designs)
+                msg = format_no_primer_pairs_message(stringency, primer_explain_flag, designs)
                 primer_explain.append(msg)
 
             else:
@@ -56,42 +56,13 @@ class Primer3:
 
         # If Primer3 did not return any primer pairs for at least one stringency
         if primer_explain:
-            self._handle_primer3_errors(primer_explain)
+            handle_primer3_errors(primer_explain, primer_pairs)
+         # If Primer3 returns pairs but built_primer_pairs does not
         elif not primer_pairs:
             raise ValueError("No primer pairs returned")
-
         return primer_pairs
 
-    def _get_primer3_designs(self, slice_info: dict, stringency) -> dict:
+    def _get_primer3_designs(self, slice_info: dict, stringency: int) -> dict:
         config_data = prepare_p3_config(self._p3_config, stringency)
         return primer3.bindings.design_primers(slice_info, config_data)
-    
-    def _format_no_primer_pairs_message(self,
-                                        stringency: int,
-                                        primer_explain_flag: int,
-                                        designs: dict) -> str:
-        msg = 'Stringency level ' + str(stringency) + " -- "
-        if primer_explain_flag:
-            msg += self._get_primer3_explain(designs, stringency)
-        else:
-            msg += 'No primer pairs returned; add PRIMER_EXPLAIN_FLAG == 1 to config file for more details'
-        return msg
 
-    def _get_primer3_explain(self, designs: dict, stringency: int) -> str:
-        keys = ["PRIMER_LEFT_EXPLAIN",
-                "PRIMER_RIGHT_EXPLAIN",
-                "PRIMER_PAIR_EXPLAIN"]
-        msg = dict((key, designs[key]) for key in keys)
-        msg_formatted = '; '.join([f"{key}: {value}" for key, value in msg.items()])
-        return msg_formatted
-    
-    def _handle_primer3_errors(self, primer_explain: List[str]):
-        message = '\n'.join([msg for msg in primer_explain])
-
-        if len(primer_explain) == len(self._stringency_vector):
-            message = 'NO PRIMER PAIRS BUILT BY PRIMER3: \n' + message
-            raise Primer3Error(message)
-
-        else:
-            message = 'Warning: No primer pairs built by Primer3 with the following stringencies: \n' + message
-            print(message)
