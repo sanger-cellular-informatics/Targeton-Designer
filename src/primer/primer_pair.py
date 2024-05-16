@@ -138,14 +138,14 @@ def capture_primer_details(primer_name: str) -> dict:
 def calculate_primer_coords(side: str, coords: list, slice_start: str) -> Tuple[int, int]:
     slice_start = int(slice_start)
     left_flank = {
-        'start': slice_start,
-        'end': slice_start + int(coords[1])
+        'start': slice_start + int(coords[0]),
+        'end': slice_start + int(coords[0]) + int(coords[1]) - 1
     }
 
     slice_end = slice_start + int(coords[0])
     right_flank = {
         'start': 1 + slice_end - int(coords[1]),
-        'end': 1 + slice_end,
+        'end': slice_end,
     }
 
     slice_coords = {

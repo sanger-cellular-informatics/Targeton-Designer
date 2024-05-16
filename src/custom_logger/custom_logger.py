@@ -34,6 +34,7 @@ class CustomLogger:
             os.makedirs(log_directory)
         log_file_path = os.path.join(log_directory, f"logs.log")
 
+
         # Set up logging to file and format
         logging.basicConfig(
             filename=log_file_path, 
@@ -60,47 +61,51 @@ class CustomLogger:
         self.critical_formatter = logging.Formatter("%(asctime)s - CRITICAL - %(name)s - %(levelname)s - %(message)s")
 
 
+        # Check if there no additional logger is being handled
+        
+        if not self.logger.handlers:
+            self.handler = logging.StreamHandler()
+            self.handler.setLevel(logging.DEBUG)
+            self.logger.addHandler(self.handler)
 
-    def setup_formatter(self, level, formatter) -> None:
+
+
+    def setup_formatter(self, formatter) -> None:
         """
         
             Function setup_formatter() will format logs according to log level and given log format.
 
-            This function takes two arguments level and formatter and returns None.  
-            For example: self.setup_logger(logging.DEBUG, self.debug_formatter) -> None
+            This function takes one arguments formatter and returns None.  
+            For example: self.setup_logger(self.debug_formatter) -> None
 
         """
-
-        handler = logging.StreamHandler()
-        handler.setFormatter(formatter)
-        self.logger.addHandler(handler)
-        self.logger.setLevel(level)
+        self.handler.setFormatter(formatter)
 
     
     # Customize and override log level methods
 
     def info(self, message: str) -> None:
-        self.setup_formatter(logging.DEBUG, self.info_formatter)
+        self.setup_formatter(self.info_formatter)
         self.logger.info(message)
     
     def debug(self, message: str) -> None:
-        self.setup_formatter(logging.DEBUG, self.debug_formatter)
+        self.setup_formatter(self.debug_formatter)
         self.logger.debug(message)
 
     def warning(self, message: str) -> None:
-        self.setup_formatter(logging.WARNING, self.warning_formatter)
+        self.setup_formatter(self.warning_formatter)
         self.logger.warning(message)
     
     def error(self, message: str) -> None:
-        self.setup_formatter(logging.ERROR, self.error_formatter)
+        self.setup_formatter(self.error_formatter)
         self.logger.error(message)
 
     def exception(self, message: str) -> None:
-        self.setup_formatter(logging.ERROR, self.exception_formatter)
+        self.setup_formatter(self.exception_formatter)
         self.logger.exception(message)
 
     def critical(self, message: str) -> None:
-        self.setup_formatter(logging.CRITICAL, self.critical_formatter)
+        self.setup_formatter(self.critical_formatter)
         self.logger.critical(message)
 
 
