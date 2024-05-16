@@ -5,6 +5,7 @@ from typing import List
 from primer.slice_data import SliceData
 from primer.primer3_prepare_config import prepare_p3_config
 from primer.primer_pair import PrimerPair, build_primer_pairs
+from primer.primer3_handle_errors import format_no_primer_pairs_message, handle_primer3_errors
 
 from custom_logger.custom_logger import CustomLogger
 
@@ -25,7 +26,7 @@ class Primer3:
     def get_primers(self, fasta: str) -> List[PrimerPair]:
         primer_pairs = []
 
-        logger.debug('Reading Fasta file')
+        logger.info('Reading Fasta file')
         slices = SliceData.parse_fasta(fasta)
 
         for slice in slices:
@@ -36,16 +37,31 @@ class Primer3:
 
     def _get_primer_pairs(self, slice_data: SliceData) -> List[PrimerPair]:
         primer_pairs = []
+        primer_explain = []
 
         for stringency in self._stringency_vector:
             designs = self._get_primer3_designs(slice_data.p3_input, stringency)
-            built_primer_pairs = build_primer_pairs(designs, slice_data, stringency)
 
-            primer_pairs.extend(built_primer_pairs)
+            number_pairs = designs['PRIMER_PAIR_NUM_RETURNED']
+            primer_explain_flag = self._p3_config['PRIMER_EXPLAIN_FLAG']
 
+            # If Primer3 does not return any primer pairs for this stringency
+            if not number_pairs:
+                msg = format_no_primer_pairs_message(stringency, primer_explain_flag, designs)
+                primer_explain.append(msg)
+
+            else:
+                built_primer_pairs = build_primer_pairs(designs, slice_data, stringency)
+                primer_pairs.extend(built_primer_pairs)
+
+        # If Primer3 did not return any primer pairs for at least one stringency
+        if primer_explain:
+            handle_primer3_errors(primer_explain, any(primer_pairs))
+        # If Primer3 returns pairs but built_primer_pairs does not
+        elif not primer_pairs:
+            raise ValueError("No primer pairs returned")
         return primer_pairs
 
-
-    def _get_primer3_designs(self, slice_info: dict, stringency) -> dict:
+    def _get_primer3_designs(self, slice_info: dict, stringency: int) -> dict:
         config_data = prepare_p3_config(self._p3_config, stringency)
         return primer3.bindings.design_primers(slice_info, config_data)
