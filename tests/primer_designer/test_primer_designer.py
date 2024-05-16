@@ -15,6 +15,7 @@ VERSION = '01'
 
 # Test classes
 # PrimerDesigner
+# Test CI
 
 
 class TestPrimerDesignerClass(TestCase):
