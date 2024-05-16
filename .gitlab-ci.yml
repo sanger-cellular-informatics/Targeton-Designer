@@ -4,8 +4,8 @@ stages:
 
 cache:
   paths:
-      - "${CI_BUILD_DIR}/kmer/homo_sapiens_11.list
-      - "${CI_BUILD_DIR}/kmer/homo_sapiens_16.list
+      - "${CI_BUILD_DIR}/kmer/homo_sapiens_11.list"
+      - "${CI_BUILD_DIR}/kmer/homo_sapiens_16.list"
 
 docker-build:
   # Use the official docker image.
