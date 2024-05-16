@@ -82,8 +82,6 @@ class TestWritePrimerOutputFiles(TestCase):
             
             logs = self.handler.buffer.getvalue().strip()
             self.assertEqual(logs, "Warning: 'WRONG' specified in config file not is not a column name")
-                
-
 
 
         def test_reorder_columns_when_some_column_names_wrong(self):
