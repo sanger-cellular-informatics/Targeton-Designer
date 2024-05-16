@@ -53,8 +53,8 @@ test:
   cache:
     key: ${{ path }}
     paths:
-      - "kmer/homo_sapiens_11.list
-      - "kmer/homo_sapiens_16.list
+      - "kmer/homo_sapiens_11.list"
+      - "kmer/homo_sapiens_16.list"
   script:
     - make test
   dependencies:
