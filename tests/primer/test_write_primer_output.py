@@ -45,6 +45,8 @@ class TestWritePrimerOutputFiles(TestCase):
 
             # Assertion
             pd.testing.assert_frame_equal(ordered_df, df)
+            logs = self.handler.buffer.getvalue().strip()
+            self.assertEqual(logs, "Warning: 'Name' duplicated in config file, only first instance retained")
         
     
         def test_reorder_columns_when_empty_column_names(self):

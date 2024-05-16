@@ -86,10 +86,15 @@ def _get_primers_dataframe(pairs: List[PrimerPair], primer_type: str) -> pd.Data
 
 def _reorder_columns(csv_col_order: List[str],
                      dataframe: pd.DataFrame):
-    
-    col_order_unique = list(dict.fromkeys(csv_col_order))
 
-    # raise Exception(col_order_unique)
+    col_order_unique = list(dict.fromkeys(csv_col_order))
+    if len(col_order_unique) != len(csv_col_order):
+        # discarded = list(set([x for x in csv_col_order if csv_col_order.count(x) > 1]))
+        discarded = []
+        for column in csv_col_order:
+            if csv_col_order.count(column) > 1 and column not in discarded:
+                discarded.append(column)
+                logger.warning(f"Warning: '{column}' duplicated in config file, only first instance retained")
 
     if not col_order_unique:
         logger.warning("Warning: empty csv_column_order list provided in config file, returning dataframe with default column order")
