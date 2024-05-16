@@ -12,7 +12,9 @@ from primer.primer_pair import \
     build_primer_pairs, \
     name_primers, \
     capture_primer_details, \
-    build_primer_loci, _map_primers_into_designed_primers_objects
+    build_primer_loci, \
+    calculate_primer_coords, \
+    _map_primers_into_designed_primers_objects
 
 
 class TestPrimerPairNamePrimers(TestCase):
@@ -276,6 +278,27 @@ class TestPrimerPair(TestCase):
 
         self.assertEqual(result[0].forward, expected_designed_forward)
         self.assertEqual(result[0].reverse, expected_designed_reverse)
+
+
+class TestCalculatePrimerCoords(unittest.TestCase):
+
+    @parameterized.expand(
+        [
+            ('left', [55, 20], 44490254, (44490309, 44490328)),
+            ('right', [168, 19], 44490254, (44490404, 44490422)),
+            ('left', [39, 20], 44490254, (44490293, 44490312)),
+            ('right', [167, 19], 44490254, (44490403, 44490421)),
+        ])
+    def test_calculate_primer_coords(
+            self,
+            side,
+            coords,
+            slice_start,
+            expected_result
+    ):
+        result = calculate_primer_coords(side, coords, slice_start)
+
+        self.assertEqual(result, expected_result)
 
 
 if __name__ == '__main__':

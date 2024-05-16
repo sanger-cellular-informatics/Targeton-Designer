@@ -35,7 +35,7 @@ class PrimerPair:
                 f"pre_targeton_start='{self.pre_targeton_start}', "
                 f"pre_targeton_end='{self.pre_targeton_end}', "
                 f"product_size='{self.product_size}', "
-                f"stringency='{self.chromosome}',"
+                f"stringency='{self.stringency}',"
                 f"targeton_id='{self.targeton_id}', "
                 f"forward={self.forward}, reverse={self.reverse})")
 
@@ -79,8 +79,11 @@ def build_primer_loci(
     primer['pair_id'] = primer_pair_id
 
     if primer_field == 'coords':
-        primer_coords = calculate_primer_coords(primer_details['side'],
-                                                design[key], slice_data.start)
+        primer_coords = calculate_primer_coords(
+            primer_details['side'],
+            design[key],
+            slice_data.start
+        )
 
         primer['primer_start'] = primer_coords[0]
         primer['primer_end'] = primer_coords[1]
@@ -132,14 +135,14 @@ def capture_primer_details(primer_name: str) -> dict:
 def calculate_primer_coords(side: str, coords: list, slice_start: str) -> Tuple[int, int]:
     slice_start = int(slice_start)
     left_flank = {
-        'start': slice_start,
-        'end': slice_start + int(coords[1])
+        'start': slice_start + int(coords[0]),
+        'end': slice_start + int(coords[0]) + int(coords[1]) - 1
     }
 
     slice_end = slice_start + int(coords[0])
     right_flank = {
         'start': 1 + slice_end - int(coords[1]),
-        'end': 1 + slice_end,
+        'end': slice_end,
     }
 
     slice_coords = {
