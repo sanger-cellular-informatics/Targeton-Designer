@@ -2,6 +2,11 @@ stages:
   - .pre
   - test
 
+cache:
+  paths:
+      - "kmer/homo_sapiens_11.list"
+      - "kmer/homo_sapiens_16.list"
+
 docker-build:
   # Use the official docker image.
   image: docker:23.0.6
@@ -45,6 +50,11 @@ test:
     GIT_SUBMODULE_STRATEGY: recursive
   before_script:
     - make download-kmers
+  cache:
+    key: ${{ path }}
+    paths:
+      - "kmer/homo_sapiens_11.list"
+      - "kmer/homo_sapiens_16.list"
   script:
     - make test
   dependencies:
