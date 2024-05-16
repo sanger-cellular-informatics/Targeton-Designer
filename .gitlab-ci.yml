@@ -2,8 +2,10 @@ stages:
   - .pre
   - test
 
-
-
+cache:
+  paths:
+      - "${CI_BUILD_DIR}/kmer/homo_sapiens_11.list
+      - "${CI_BUILD_DIR}/kmer/homo_sapiens_16.list
 
 docker-build:
   # Use the official docker image.
@@ -46,12 +48,13 @@ test:
     - autoscale-docker-in-docker
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
-  cache:
-    paths:
-      - kmer/homo_sapiens_11.list
-      - kmer/homo_sapiens_16.list
   before_script:
     - make download-kmers
+  cache:
+    key: ${{ path }}
+    paths:
+      - "kmer/homo_sapiens_11.list
+      - "kmer/homo_sapiens_16.list
   script:
     - make test
   dependencies:
