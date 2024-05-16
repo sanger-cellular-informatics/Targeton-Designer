@@ -10,5 +10,8 @@ class PrimerPairDiscarded(PrimerPair):
                          product_size=primer_pair.product_size,
                          stringency=primer_pair.stringency,
                          targeton_id=primer_pair.targeton_id,
-                         uid=primer_pair.uid)
+                         uid=primer_pair.uid,
+                         )
+        self.forward = primer_pair.forward
+        self.reverse = primer_pair.reverse
         self.reason_discarded = reason_discarded
