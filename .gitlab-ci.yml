@@ -51,7 +51,7 @@ test:
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   before_script:
-    - ls -la
+    - ls -la ~
     - mkdir -p kmer
     - if [ ! -f kmer/homo_sapiens_16.list ]; then curl -o kmer/homo_sapiens_16.list https://primer3.ut.ee/lists/homo_sapiens_16.list; fi
     - if [ ! -f kmer/homo_sapiens_11.list ]; then curl -o kmer/homo_sapiens_11.list https://primer3.ut.ee/lists/homo_sapiens_11.list; fi
