@@ -15,8 +15,7 @@ VERSION = '01'
 
 # Test classes
 # PrimerDesigner
-
-
+# Test Caches works
 class TestPrimerDesignerClass(TestCase):
     def setUp(self):
         self.scoring_output_tsv_path = r"scoring_output.tsv"
