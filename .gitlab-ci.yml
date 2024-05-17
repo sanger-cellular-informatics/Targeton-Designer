@@ -1,11 +1,22 @@
 stages:
   - .pre
+  - prepare
   - test
 
 cache:
+  key: ${CI_COMMIT_REF_SLUG}
   paths:
-      - "kmer/homo_sapiens_11.list"
-      - "kmer/homo_sapiens_16.list"
+    - kmer/
+
+prepare:
+  stage: prepare
+  script:
+    - mkdir -p kmer
+    - curl -o kmer/homo_sapiens_16.list https://primer3.ut.ee/lists/homo_sapiens_16.list
+    - curl -o kmer/homo_sapiens_11.list https://primer3.ut.ee/lists/homo_sapiens_11.list
+  artifacts:
+    paths:
+      - kmer/
 
 docker-build:
   # Use the official docker image.
@@ -48,13 +59,12 @@ test:
     - autoscale-docker-in-docker
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
-  before_script:
-    - make download-kmers
+  dependencies:
+    - prepare
   cache:
-    key: ${{ path }}
+    key: ${CI_COMMIT_REF_SLUG}
     paths:
-      - "kmer/homo_sapiens_11.list"
-      - "kmer/homo_sapiens_16.list"
+      - kmer
   script:
     - make test
   dependencies:
