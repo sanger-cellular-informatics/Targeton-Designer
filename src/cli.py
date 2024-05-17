@@ -68,6 +68,7 @@ def primer_command(
 
     primer_result = write_primer_output(
         primer_pairs=filters_response.primer_pairs_to_keep,
+        discarded_primer_pairs=filters_response.primer_pairs_to_discard,
         prefix=prefix,
         existing_dir=existing_dir,
         primer_type=primer_type
