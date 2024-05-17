@@ -15,7 +15,7 @@ VERSION = '01'
 
 # Test classes
 # PrimerDesigner
-
+# Test cache works 
 
 class TestPrimerDesignerClass(TestCase):
     def setUp(self):
