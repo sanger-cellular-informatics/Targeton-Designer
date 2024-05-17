@@ -3,7 +3,7 @@ from unittest.mock import patch, Mock
 
 import requests
 
-from primer.filter.hap1 import contain_variant
+from utils.get_data.hap1 import contain_variant
 
 
 class TestHap1(TestCase):
@@ -14,7 +14,7 @@ class TestHap1(TestCase):
 
         request_get.return_value = http_response
 
-        self.assertTrue(contain_variant(chromosome="chr1", start=100, end=200))
+        self.assertTrue(contain_variant(chromosome="1", start=100, end=200))
 
     @patch('requests.get')
     def test_contain_variant_without_variants(self, request_get):
@@ -22,11 +22,11 @@ class TestHap1(TestCase):
 
         request_get.return_value = http_response
 
-        self.assertFalse(contain_variant(chromosome="chr1", start=100, end=200))
+        self.assertFalse(contain_variant(chromosome="1", start=100, end=200))
 
     @patch('requests.get')
     def test_contain_variant_request_exception(self, mock_get):
         mock_get.side_effect = requests.exceptions.RequestException
 
         with self.assertRaises(requests.exceptions.RequestException):
-            contain_variant(chromosome="chr1", start=100, end=200)
+            contain_variant(chromosome="1", start=100, end=200)
