@@ -89,7 +89,6 @@ def _reorder_columns(csv_col_order: List[str],
 
     col_order_unique = list(dict.fromkeys(csv_col_order))
     if len(col_order_unique) != len(csv_col_order):
-        # discarded = list(set([x for x in csv_col_order if csv_col_order.count(x) > 1]))
         discarded = []
         for column in csv_col_order:
             if csv_col_order.count(column) > 1 and column not in discarded:
