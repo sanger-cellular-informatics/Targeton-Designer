@@ -2,6 +2,13 @@ stages:
   - .pre
   - test
 
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+      - kmer/homo_sapiens_16.list
+      - kmer/homo_sapiens_11.list
+
 docker-build:
   # Use the official docker image.
   image: docker:23.0.6
@@ -45,9 +52,10 @@ test:
     GIT_SUBMODULE_STRATEGY: recursive
   before_script:
     - mkdir -p kmer
-    - curl -o kmer/homo_sapiens_16.list https://primer3.ut.ee/lists/homo_sapiens_16.list
-    - curl -o kmer/homo_sapiens_11.list https://primer3.ut.ee/lists/homo_sapiens_11.list
+    - if [ ! -f kmer/homo_sapiens_16.list ]; then curl -o kmer/homo_sapiens_16.list https://primer3.ut.ee/lists/homo_sapiens_16.list; fi
+    - if [ ! -f kmer/homo_sapiens_11.list ]; then curl -o kmer/homo_sapiens_11.list https://primer3.ut.ee/lists/homo_sapiens_11.list; fi
   cache:
+    key: ${CI_COMMIT_REF_SLUG}
     paths:
       - kmer/homo_sapiens_16.list
       - kmer/homo_sapiens_11.list
