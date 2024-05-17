@@ -1,37 +1,83 @@
 import unittest
-from unittest.mock import MagicMock
+
+from primer.designed_primer import DesignedPrimer, Interval
 from primer.primer_pair import PrimerPair
 from primer.filter.hap1_variant_filter import HAP1VariantFilter
+from primer.primer_pair_discarded import PrimerPairDiscarded
 
 
 class TestHAP1VariantFilter(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.test_instance = HAP1VariantFilter()
+        # There is a HAP1 Variant at 11542 in chromosome 1
+        self.primer_with_variant = DesignedPrimer(
+            name="primer_with_variant",
+            penalty=0.5,
+            pair_id="pair_id",
+            sequence="ATCGATCG",
+            coords=Interval(start=199, end=18),
+            primer_start=11540,
+            primer_end=11545,
+            strand="+",
+            tm=60.0,
+            gc_percent=50.0,
+            self_any_th=30.0,
+            self_end_th=10.0,
+            hairpin_th=20.0,
+            end_stability=25.0
+        )
 
-    def test_apply_hap_one_filter(self):
-        pair1_with_variant = MagicMock(spec=PrimerPair)
-        pair1_with_variant.contain_hap_one_variant = True
-        pair2_with_variant = MagicMock(spec=PrimerPair)
-        pair2_with_variant.contain_hap_one_variant = True
+        self.primer_with_no_variant = DesignedPrimer(
+            name="primer_with_no_variant",
+            penalty=0.5,
+            pair_id="pair_id",
+            sequence="ATCGATCG",
+            coords=Interval(start=199, end=18),
+            primer_start=10,
+            primer_end=20,
+            strand="+",
+            tm=60.0,
+            gc_percent=50.0,
+            self_any_th=30.0,
+            self_end_th=10.0,
+            hairpin_th=20.0,
+            end_stability=25.0
+        )
 
-        pair_without_variant = MagicMock(spec=PrimerPair)
-        pair_without_variant.contain_hap_one_variant = False
+    def test_apply_filters(self):
+        # Arrange
+        pair_with_variant = PrimerPair(
+            pair_id="pair_with_hap1_variant",
+            chromosome="1",
+            pre_targeton_start=11540,
+            pre_targeton_end=11545,
+            product_size="200",
+            stringency=0.1,
+            targeton_id="targeton_id",
+            uid="uid")
+        pair_with_variant.forward = self.primer_with_variant
+        pair_with_variant.reverse = self.primer_with_no_variant
 
-        response = self.test_instance.apply([pair1_with_variant, pair_without_variant, pair2_with_variant])
+        pair_with_no_variant = PrimerPair(
+            pair_id="pair_with_no_variant",
+            chromosome="1",
+            pre_targeton_start=11540,
+            pre_targeton_end=11545,
+            product_size="200",
+            stringency=1,
+            targeton_id="targeton_id",
+            uid="uid")
+        pair_with_no_variant.forward = self.primer_with_no_variant
+        pair_with_no_variant.reverse = self.primer_with_no_variant
 
-        self.assertEqual(len(response.primer_pairs_to_discard), 2)
-        self.assertEqual(len(response.primer_pairs_to_keep), 1)
-        self.assertTrue(pair_without_variant in response.primer_pairs_to_keep)
-        self.assertTrue(
-            pair1_with_variant in [pair_discarded.primer_pair for pair_discarded in response.primer_pairs_to_discard])
-        self.assertEqual(response.primer_pairs_to_discard[0].filter_applied, HAP1VariantFilter.reason_discarded)
-        self.assertTrue(
-            pair2_with_variant in [pair_discarded.primer_pair for pair_discarded in response.primer_pairs_to_discard])
-        self.assertEqual(response.primer_pairs_to_discard[1].filter_applied, HAP1VariantFilter.reason_discarded)
+        # Act
+        pairs_to_filter = [pair_with_variant, pair_with_no_variant]
+        filter_response = HAP1VariantFilter().apply(pairs_to_filter)
 
-    def test_apply_test_when_no_primer_pairs(self):
-        response = self.test_instance.apply([])
+        # Assertion
+        self.assertEqual(len(filter_response.primer_pairs_to_keep), 1)
+        self.assertIn(pair_with_no_variant, filter_response.primer_pairs_to_keep)
 
-        self.assertEqual(response.primer_pairs_to_keep, [])
-        self.assertEqual(response.primer_pairs_to_discard, [])
+        self.assertEqual(len(filter_response.primer_pairs_to_discard), 1)
+        self.assertIn(PrimerPairDiscarded(pair_with_variant, reason_discarded=HAP1VariantFilter.reason_discarded),
+                      filter_response.primer_pairs_to_discard)

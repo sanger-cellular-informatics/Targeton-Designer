@@ -91,9 +91,8 @@ def _get_discarded_primer_dataframe(discarded_pairs: List[PrimerPairDiscarded],
                                     primer_type: str) -> pd.DataFrame:
     discarded_primers_dict = defaultdict(list)
     for discarded_pair in discarded_pairs:
-        primer_pair = discarded_pair.primer_pair
-        _add_primer_pair(discarded_primers_dict, primer_pair, primer_type)
-        discarded_primers_dict['discard_reason'].extend([discarded_pair.filter_applied]*2)
+        _add_primer_pair(discarded_primers_dict, discarded_pair, primer_type)
+        discarded_primers_dict['discard_reason'].extend([discarded_pair.reason_discarded]*2)
 
     return pd.DataFrame(discarded_primers_dict).round(decimals=3)
 

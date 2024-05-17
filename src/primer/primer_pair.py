@@ -4,7 +4,7 @@ import re
 import uuid
 
 from primer.designed_primer import map_to_designed_primer
-from primer.filter.hap1 import contain_variant
+from utils.get_data.hap1 import contain_variant
 from primer.slice_data import SliceData
 
 
@@ -31,13 +31,17 @@ class PrimerPair:
 
 
     def __repr__(self):
-        return (f"PrimerPair(pair_id='{self.id}', uid='{self.uid}', chromosome='{self.chromosome}', "
+        return (f"PrimerPair(pair_id='{self.id}', "
+                f"uid='{self.uid}', "
+                f"chromosome='{self.chromosome}', "
                 f"pre_targeton_start='{self.pre_targeton_start}', "
                 f"pre_targeton_end='{self.pre_targeton_end}', "
                 f"product_size='{self.product_size}', "
                 f"stringency='{self.stringency}',"
                 f"targeton_id='{self.targeton_id}', "
-                f"forward={self.forward}, reverse={self.reverse})")
+                f"forward={self.forward}, "
+                f"reverse={self.reverse})"
+                )
 
     def __eq__(self, other):
         if isinstance(other, PrimerPair):
@@ -53,8 +57,8 @@ class PrimerPair:
 
     @property
     def contain_hap_one_variant(self) -> bool:
-        forward_start, forward_end = self.forward['primer_start'], self.forward['primer_end']
-        reverse_start, reverse_end = self.reverse['primer_start'], self.reverse['primer_end']
+        forward_start, forward_end = self.forward.primer_start, self.forward.primer_end
+        reverse_start, reverse_end = self.reverse.primer_start, self.reverse.primer_end
 
         return (contain_variant(self.chromosome, forward_start, forward_end) or
                 contain_variant(self.chromosome, reverse_start, reverse_end))
@@ -75,7 +79,6 @@ def build_primer_loci(
     primer[primer_field] = design[key]
 
     primer['side'] = primer_details['side']
-
     primer['pair_id'] = primer_pair_id
 
     if primer_field == 'coords':
@@ -212,14 +215,14 @@ def build_primer_pairs(
             if pair is None:
                 uid = str(uuid.uuid1())
                 pair = PrimerPair(
-                    primer_pair_id,
-                    slice_data.chrom,
-                    int(slice_data.start),
-                    int(slice_data.end),
-                    primer_pair_product_size,
-                    stringency,
-                    slice_data.targeton_id,
-                    uid
+                    pair_id=primer_pair_id,
+                    chromosome=slice_data.chrom,
+                    pre_targeton_start=int(slice_data.start),
+                    pre_targeton_end=int(slice_data.end),
+                    product_size=primer_pair_product_size,
+                    stringency=stringency,
+                    targeton_id=slice_data.targeton_id,
+                    uid=uid
                 )
                 primer_pairs.append(pair)
 

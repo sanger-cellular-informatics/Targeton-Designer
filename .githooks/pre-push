@@ -7,7 +7,7 @@ echo "Running pycodestyle for src/"
 pycodestyle --statistics -qq src
 echo "Running pycodestyle for tests/"
 pycodestyle --statistics -qq tests
-python -m unittest 
+python -m unittest discover --start-directory ./tests --top-level-directory .
 if [ $? -ne 0 ]
 then
 	echo "Unit tests failed"

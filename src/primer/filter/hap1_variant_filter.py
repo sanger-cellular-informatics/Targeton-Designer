@@ -1,8 +1,9 @@
 from typing import List
 
 from primer.filter.filter import Filter
-from primer.filter.filter_response import FilterResponse, PrimerPairDiscarded
+from primer.filter.filter_response import FilterResponse
 from primer.primer_pair import PrimerPair
+from primer.primer_pair_discarded import PrimerPairDiscarded
 
 
 class HAP1VariantFilter(Filter):

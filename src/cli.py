@@ -3,6 +3,7 @@ import sys
 from os import path
 
 from config.config import DesignerConfig, Primer3ParamsConfig
+from primer.filter.filter_manager import FilterManager
 from utils.arguments_parser import ParsedInputArguments
 from utils.validate_files import validate_files
 from utils.write_output_files import (
@@ -54,16 +55,20 @@ def primer_command(
     designer_config_file: str = None
 ) -> PrimerOutputData:
     validate_files(fasta=fasta)
+    designer_config = DesignerConfig(designer_config_file)
 
     p3_class = Primer3(
-        DesignerConfig(designer_config_file).params,
+        designer_config.params,
         Primer3ParamsConfig(p3_config_file).params,
     )
 
     primers = p3_class.get_primers(fasta)
 
+    filters_response = FilterManager().apply_filters(primers)
+
     primer_result = write_primer_output(
-        primer_pairs=primers,
+        primer_pairs=filters_response.primer_pairs_to_keep,
+        discarded_primer_pairs=filters_response.primer_pairs_to_discard,
         prefix=prefix,
         existing_dir=existing_dir,
         primer_type=primer_type
