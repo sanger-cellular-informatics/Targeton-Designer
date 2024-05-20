@@ -106,7 +106,7 @@ def _reorder_columns(csv_col_order: List[str],
 
     for column in dataframe.columns:
         if column not in final_order:
-            logger.info(f"'{column}' column discarded as it is not in config file")
+            logger.warning(f"'{column}' column discarded as it is not in config file")
 
     return dataframe[final_order]
 
