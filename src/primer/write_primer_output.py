@@ -88,7 +88,7 @@ def _reorder_columns(csv_col_order: List[str],
                      dataframe: pd.DataFrame):
 
     col_order_unique = list(dict.fromkeys(csv_col_order))
-    _check_uniq_columns(col_order_unique, csv_col_order)
+    _check_unique_columns(col_order_unique, csv_col_order)
 
     if not col_order_unique:
         logger.warning("Empty csv_column_order list provided in config file, returning dataframe with default column order")
