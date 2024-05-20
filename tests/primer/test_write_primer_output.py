@@ -47,6 +47,8 @@ class TestWritePrimerOutputFiles(TestCase):
 
             # Assertion
             pd.testing.assert_frame_equal(ordered_df, df)
+            logs = self.handler.buffer.getvalue().strip()
+            self.assertEqual(logs, "'Name' duplicated in config file, only first instance retained")
         
     
         def test_reorder_columns_when_empty_column_names(self):
@@ -63,7 +65,7 @@ class TestWritePrimerOutputFiles(TestCase):
 
             pd.testing.assert_frame_equal(ordered_df, df)
             logs = self.handler.buffer.getvalue().strip()
-            self.assertEqual(logs, "Warning: empty csv_column_order list provided in config file, returning dataframe with default column order")
+            self.assertEqual(logs, "Empty csv_column_order list provided in config file, returning dataframe with default column order")
 
 
         def test_reorder_columns_when_all_column_names_wrong(self):
@@ -81,9 +83,7 @@ class TestWritePrimerOutputFiles(TestCase):
                 self.assertEqual(str(value_error.exception), "All column names in config file are wrong")
             
             logs = self.handler.buffer.getvalue().strip()
-            self.assertEqual(logs, "Warning: 'WRONG' specified in config file not is not a column name")
-                
-
+            self.assertEqual(logs, "'WRONG' specified in config file not is not a column name")
 
 
         def test_reorder_columns_when_some_column_names_wrong(self):
@@ -101,7 +101,7 @@ class TestWritePrimerOutputFiles(TestCase):
 
             pd.testing.assert_frame_equal(ordered_df, df[['Name', 'Age']])
             logs = self.handler.buffer.getvalue().strip()
-            self.assertEqual(logs, "Warning: 'WRONG' specified in config file not is not a column name")
+            self.assertEqual(logs, "'WRONG' specified in config file not is not a column name")
 
 
         def test_reorder_columns_when_some_column_names_missing(self):
