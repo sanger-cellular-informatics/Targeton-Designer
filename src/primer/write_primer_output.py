@@ -125,19 +125,18 @@ def _add_primer_pair(primers_dict: defaultdict(list),
 
 def _reorder_columns(csv_col_order: List[str],
                      dataframe: pd.DataFrame):
-    
-    col_order_unique = list(dict.fromkeys(csv_col_order))
 
-    # raise Exception(col_order_unique)
+    col_order_unique = list(dict.fromkeys(csv_col_order))
+    _check_unique_columns(col_order_unique, csv_col_order)
 
     if not col_order_unique:
-        logger.warning("Warning: empty csv_column_order list provided in config file, returning dataframe with default column order")
+        logger.warning("Empty csv_column_order list provided in config file, returning dataframe with default column order")
         return dataframe
 
     final_order = []
     for column in col_order_unique:
         if column not in dataframe.columns:
-            logger.warning(f"Warning: '{column}' specified in config file not is not a column name")
+            logger.warning(f"'{column}' specified in config file not is not a column name")
         else:
             final_order.append(column)
     
@@ -146,9 +145,18 @@ def _reorder_columns(csv_col_order: List[str],
 
     for column in dataframe.columns:
         if column not in final_order:
-            logger.info(f"'{column}' column discarded as it is not in config file")
+            logger.warning(f"'{column}' column discarded as it is not in config file")
 
     return dataframe[final_order]
+
+
+def _check_unique_columns(col_order_unique, csv_col_order):
+    if len(col_order_unique) != len(csv_col_order):
+        discarded = []
+    for column in csv_col_order:
+        if csv_col_order.count(column) > 1 and column not in discarded:
+            discarded.append(column)
+            logger.warning(f"'{column}' duplicated in config file, only first instance retained")
 
 
 def construct_primer_rows_bed_format(pairs: List[PrimerPair]) -> list:
