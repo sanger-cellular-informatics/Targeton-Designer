@@ -67,22 +67,22 @@ class Primer3:
         self._find_kmer_lists()
         config_data = prepare_p3_config(self._p3_config, stringency)
         return primer3.bindings.design_primers(slice_info, config_data)
-    
+
     def _find_kmer_lists(self):
         if self._p3_config['PRIMER_MASK_TEMPLATE']:
             kmer_path = self._p3_config['PRIMER_MASK_KMERLIST_PATH']
-            
+
             if not os.path.isdir(kmer_path):
                 msg = f"Missing directory with kmer lists required for masking. Expected path: '{kmer_path}'"
                 logger.exception(ValueError(msg))
                 raise ValueError(msg)
-            
+
             else:
                 kmer_lists_required = ['homo_sapiens_11.list', 'homo_sapiens_16.list']
                 kmer_lists_present = os.listdir(kmer_path)
-                
+
                 kmer_lists_all_expected_present = set(kmer_lists_required).issubset(kmer_lists_present)
-                
+
                 if not kmer_lists_all_expected_present:
                     msg = f"Missing kmer list files required for masking. Expected files: '{kmer_path}homo_sapiens_11.list' and '{kmer_path}homo_sapiens_16.list'"
                     logger.exception(ValueError(msg))
