@@ -17,6 +17,7 @@ from utils.write_output_files import write_targeton_csv
 from designer.output_data_classes import DesignOutputData
 from primer.slice_data import SliceData
 from config.config import DesignerConfig
+from primer.filter.filter_manager import FilterManager
 
 
 class TestSlicerIntegration(TestCase):
@@ -87,6 +88,72 @@ class TestPrimerIntegration(TestCase):
                 expected_csv_headers = DesignerConfig(args["conf"]).params['csv_column_order']
                 csv_headers = list(pd.read_csv(path_primer_csv).columns)
                 self.assertEqual(set(csv_headers), set(expected_csv_headers))
+
+
+class TestPrimerFilterIntegration(TestCase):
+    '''Tests that filters have been applied and written to file'''
+    def setUp(self):
+        self.fasta_file_path = r"./tests/integration/fixtures/test_mask.fa"
+        self.config_file_path = r"./tests/primer3_test_config.json"
+        self.designer_config = r"./tests/config/designer.config.json"
+
+    def test_primer_output(self):
+        # Filter are currently applied by default
+        with TemporaryDirectory() as tmpdir:
+            # Arrange
+            # Use unittest patch to mock sys.argv as if given the commands listed via CLI.
+            with patch.object(
+                sys, 'argv',
+                [
+                    "./designer.sh", "primer",
+                    "--fasta", self.fasta_file_path,
+                    "--dir", tmpdir,
+                    "--conf", self.designer_config,
+                    "--primer3_params", self.config_file_path
+                ]
+            ):
+                parsed_input = ParsedInputArguments()
+                args = parsed_input.get_args()
+
+                # Act
+                primer_result = primer_command(
+                    fasta=args["fasta"],
+                    prefix=args["dir"],
+                    designer_config_file=args["conf"],
+                    p3_config_file=args["primer3_params"]
+                )
+
+                path_primer_bed = Path(primer_result.bed)
+                path_primer_csv = Path(primer_result.csv)
+                path_discarded_csv = Path(primer_result.discarded_csv)
+
+                # Assert
+                self.assertTrue(path_primer_bed.is_file())
+                self.assertTrue(path_primer_csv.is_file())
+                self.assertTrue(path_discarded_csv.is_file())
+                self.assertGreater(path_primer_bed.stat().st_size, 0)
+                self.assertGreater(path_primer_csv.stat().st_size, 0)
+                self.assertGreater(path_discarded_csv.stat().st_size, 0)
+
+                df_discarded = pd.read_csv(path_discarded_csv)
+                expected_discarded_headers = DesignerConfig(args["conf"]).params["csv_column_order"]
+                expected_discarded_headers.append("discard_reason")
+                discarded_headers = list(df_discarded.columns)
+
+                self.assertEqual(set(discarded_headers), set(expected_discarded_headers))
+
+                expected_num_pre_filter = 120
+                num_primers = pd.read_csv(path_primer_csv).shape[0]
+                num_discarded = df_discarded.shape[0]
+
+                self.assertGreater(num_primers, 0)
+                self.assertGreater(num_discarded,0)
+                self.assertEqual(num_primers + num_discarded, expected_num_pre_filter)
+
+                expected_discard_reasons = [filter.reason_discarded for filter in FilterManager()._filters_to_apply]
+                discard_reasons = df_discarded["discard_reason"].unique().tolist()
+                self.assertTrue(set(discard_reasons).issubset(set(expected_discard_reasons)))
+
 
 class TestTargetonCSVIntegration(TestCase):
     def setUp(self):
