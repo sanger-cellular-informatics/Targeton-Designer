@@ -24,8 +24,8 @@ class IntegrationTestPrimer3(TestCase):
 
         # arrange
         slices_fasta_file = self.fs.create_file(
-            'fasta.fa',
-            contents=f'>{pre_targeton_name}::{chromosome}:{pre_targeton_start}-{pre_targeton_end}(-)\nCACCTTCCCTCCGGTCCCCCCAGTGCTAAAGAAGCTGCGCGGGACAGCTGACGTGACCCATGACCTGCAGGAGATGAAGGAAGAGAGTCGGCAGATGATGCGGGAGAAGAAGGTCACCATCCTGGAGCTGTTCCGCTCCCCCGCCTACCGCCAGCCCATCCTCATCGCTGTGGTGCTGCAGCTGTCCCAGCAGCTGTCTGGCATCAACGC')
+            "fasta.fa",
+            contents=f">{pre_targeton_name}::{chromosome}:{pre_targeton_start}-{pre_targeton_end}(-)\nCACCTTCCCTCCGGTCCCCCCAGTGCTAAAGAAGCTGCGCGGGACAGCTGACGTGACCCATGACCTGCAGGAGATGAAGGAAGAGAGTCGGCAGATGATGCGGGAGAAGAAGGTCACCATCCTGGAGCTGTTCCGCTCCCCCGCCTACCGCCAGCCCATCCTCATCGCTGTGGTGCTGCAGCTGTCCCAGCAGCTGTCTGGCATCAACGC")
 
         designer_config = {"stringency_vector": [stringency]}
 
@@ -45,28 +45,28 @@ class IntegrationTestPrimer3(TestCase):
         # act
         result = Primer3(designer_config, p3_config).get_primers(slices_fasta_file.name)
 
-        uid = 'bc09fcac-07c0-11ef-b244-fa163e9abfe1'
+        uid = "bc09fcac-07c0-11ef-b244-fa163e9abfe1"
         # assert
         expected_primer_pair = PrimerPair(
             uid={uid},
-            pair_id=f'{pre_targeton_name}_0_str1',
+            pair_id=f"{pre_targeton_name}_0_str1",
             chromosome=chromosome,
-            pre_targeton_start=f'{pre_targeton_start}',
-            pre_targeton_end=f'{pre_targeton_end}',
+            pre_targeton_start=f"{pre_targeton_start}",
+            pre_targeton_end=f"{pre_targeton_end}",
             product_size=200,
             stringency=1,
             targeton_id="ENSE"
         )
 
         expected_forward = DesignedPrimer(
-            name='ENSE00000769557_HG8_11_LibAmpF_0',
+            name="ENSE00000769557_HG8_11_LibAmpF_0",
             penalty=2.7456977357412597,
-            pair_id='ENSE00000769557_HG8_11_0_str1',
-            sequence='CAGACAGCTGCTGGGACA',
+            pair_id="ENSE00000769557_HG8_11_0_str1",
+            sequence="CAGACAGCTGCTGGGACA",
             coords=Interval(start=199, end=18),
             primer_start=42929775,
             primer_end=42929792,
-            strand='+',
+            strand="+",
             tm=59.25430226425874,
             gc_percent=61.111111111111114,
             self_any_th=30.996860910464648,
@@ -76,14 +76,14 @@ class IntegrationTestPrimer3(TestCase):
         )
 
         expected_reverse = DesignedPrimer(
-            name='ENSE00000769557_HG8_11_LibAmpR_0',
+            name="ENSE00000769557_HG8_11_LibAmpR_0",
             penalty=3.400054355094312,
-            pair_id='ENSE00000769557_HG8_11_0_str1',
-            sequence='CACCTTCCCTCCGGTCCC',
+            pair_id="ENSE00000769557_HG8_11_0_str1",
+            sequence="CACCTTCCCTCCGGTCCC",
             coords=Interval(start=0, end=18),
             primer_start=42929593,
             primer_end=42929610,
-            strand='-',
+            strand="-",
             tm=61.40005435509431,
             gc_percent=72.22222222222223,
             self_any_th=0.0,
@@ -96,24 +96,25 @@ class IntegrationTestPrimer3(TestCase):
         expected_primer_pair.reverse = expected_reverse
 
         self.assertEqual(result, [expected_primer_pair])
-    
-    @patch('primer3.bindings.design_primers')
+
+    @patch("primer3.bindings.design_primers")
     def test_get_primer_pairs_when_primer3_error(self, mock_design_primers):
         stringency = 1
         chromosome = "1"
         pre_targeton_name = "ARTY"
         pre_targeton_start = 42958479
         pre_targeton_end = 42958806
-        
-        mock_design_primers.return_value = {'PRIMER_LEFT_EXPLAIN': 'considered 1469, GC content failed 769, low tm 1, high tm 657, high hairpin stability 2, ok 40',
-                                            'PRIMER_RIGHT_EXPLAIN': 'considered 1469, GC content failed 235, low tm 1, high tm 1159, ok 74',
-                                            'PRIMER_PAIR_EXPLAIN': 'considered 2960, unacceptable product size 2960, ok 0', 
-                                            'PRIMER_PAIR_NUM_RETURNED': 0, 'PRIMER_PAIR': []}
+
+        mock_design_primers.return_value = {
+            "PRIMER_LEFT_EXPLAIN": "considered 1469, GC content failed 769, low tm 1, high tm 657, high hairpin stability 2, ok 40",
+            "PRIMER_RIGHT_EXPLAIN": "considered 1469, GC content failed 235, low tm 1, high tm 1159, ok 74",
+            "PRIMER_PAIR_EXPLAIN": "considered 2960, unacceptable product size 2960, ok 0",
+            "PRIMER_PAIR_NUM_RETURNED": 0, "PRIMER_PAIR": []}
 
         # arrange
         slices_fasta_file = self.fs.create_file(
-            'fasta.fa',
-            contents=f'>{pre_targeton_name}::{chromosome}:{pre_targeton_start}-{pre_targeton_end}(+)\nGCTCGGGACCCGCACCGAGCCAGGCTCGGAGAGGCGCGCGGCCCGCCCCGGGCGCACAGCGCAGCGGGGCGGCGGGGGAGGCCCTGGCCGGCGTAAGGCGGGCAGGAGTCTGCGCCTTTGTTCCTGGCGGGAGGGCCCGCGGGCGCGCGACTCACCTTGCTGCTGGGCTCCATGGCAGCGCTGCGCTGGTGGCTCTGGCTGCGCCGGGTACGCGGGTGGCGACGGGCGTGCGAGCGGCGCTCTCCCGCTCAGGCTCGTGCTCCGGTCCGGGGACTCCCACTGCGACTCTGACTCCGACCCCCGTCGTTTGGTCTCCTGCTCCCTGGCG')
+            "fasta.fa",
+            contents=f">{pre_targeton_name}::{chromosome}:{pre_targeton_start}-{pre_targeton_end}(+)\nGCTCGGGACCCGCACCGAGCCAGGCTCGGAGAGGCGCGCGGCCCGCCCCGGGCGCACAGCGCAGCGGGGCGGCGGGGGAGGCCCTGGCCGGCGTAAGGCGGGCAGGAGTCTGCGCCTTTGTTCCTGGCGGGAGGGCCCGCGGGCGCGCGACTCACCTTGCTGCTGGGCTCCATGGCAGCGCTGCGCTGGTGGCTCTGGCTGCGCCGGGTACGCGGGTGGCGACGGGCGTGCGAGCGGCGCTCTCCCGCTCAGGCTCGTGCTCCGGTCCGGGGACTCCCACTGCGACTCTGACTCCGACCCCCGTCGTTTGGTCTCCTGCTCCCTGGCG")
 
         designer_config = {"stringency_vector": [stringency]}
 
@@ -142,13 +143,13 @@ class IntegrationTestPrimer3(TestCase):
             content failed 235, low tm 1, high tm 1159, ok 74; PRIMER_PAIR_EXPLAIN: considered 2960, \
             unacceptable product size 2960, ok 0"""
         expected_msg = ''.join(expected_msg.strip().split())
-            
+
         error_msg = str(primer_error.exception)
         error_msg = ''.join(error_msg.strip().split())
-        
+
         self.assertEqual(error_msg, expected_msg)
 
-    @patch('primer.primer3.build_primer_pairs')
+    @patch("primer.primer3.build_primer_pairs")
     def test_get_primer_pairs_empty_list(self, mock_build_primer_pairs):
         stringency = 1
         chromosome = "1"
@@ -156,13 +157,13 @@ class IntegrationTestPrimer3(TestCase):
         pre_targeton_start = 42929593
         pre_targeton_end = 42929803
         targeton_id = "ENSE"
-        
+
         mock_build_primer_pairs.return_value = []
 
         # arrange
         slices_fasta_file = self.fs.create_file(
-            'fasta.fa',
-            contents=f'>{pre_targeton_name}::{chromosome}:{pre_targeton_start}-{pre_targeton_end}(-)\nCACCTTCCCTCCGGTCCCCCCAGTGCTAAAGAAGCTGCGCGGGACAGCTGACGTGACCCATGACCTGCAGGAGATGAAGGAAGAGAGTCGGCAGATGATGCGGGAGAAGAAGGTCACCATCCTGGAGCTGTTCCGCTCCCCCGCCTACCGCCAGCCCATCCTCATCGCTGTGGTGCTGCAGCTGTCCCAGCAGCTGTCTGGCATCAACGC')
+            "fasta.fa",
+            contents=f">{pre_targeton_name}::{chromosome}:{pre_targeton_start}-{pre_targeton_end}(-)\nCACCTTCCCTCCGGTCCCCCCAGTGCTAAAGAAGCTGCGCGGGACAGCTGACGTGACCCATGACCTGCAGGAGATGAAGGAAGAGAGTCGGCAGATGATGCGGGAGAAGAAGGTCACCATCCTGGAGCTGTTCCGCTCCCCCGCCTACCGCCAGCCCATCCTCATCGCTGTGGTGCTGCAGCTGTCCCAGCAGCTGTCTGGCATCAACGC")
 
         designer_config = {"stringency_vector": [stringency]}
 
@@ -182,14 +183,14 @@ class IntegrationTestPrimer3(TestCase):
         # act
         with self.assertRaises(ValueError) as value_error:
             Primer3(designer_config, p3_config).get_primers(slices_fasta_file.name)
-        
+
         # assert
         error_msg = str(value_error.exception)
         expected_msg = "No primer pairs returned"
-        
+
         self.assertEqual(error_msg, expected_msg)
-        
-    def test_find_kmer_lists_success(self):  
+
+    def test_kmer_lists_exist_success(self):
         # arrange
         p3_config = {
             "PRIMER_MASK_TEMPLATE": 1,
@@ -198,14 +199,17 @@ class IntegrationTestPrimer3(TestCase):
         designer_config = {"stringency_vector": [1]}
 
         self.fs.create_dir("kmers/")
-        self.fs.create_file("kmers/homo_sapiens_11.list", contents = "list of 11-mers")
-        self.fs.create_file("kmers/homo_sapiens_16.list", contents = "list of 16-mers")
+        self.fs.create_file("kmers/homo_sapiens_11.list", contents="list of 11-mers")
+        self.fs.create_file("kmers/homo_sapiens_16.list", contents="list of 16-mers")
 
-        # act (and assert)
-        Primer3(designer_config, p3_config)._find_kmer_lists()
+        # act
+        result = Primer3(designer_config, p3_config)._kmer_lists_exist()
+
+        # assert
+        self.assertEqual(result, None)
 
 
-    def test_find_kmer_lists_no_path(self):
+    def test_kmer_lists_exist_no_path(self):
         # arrange
         p3_config = {
             "PRIMER_MASK_TEMPLATE": 1,
@@ -215,7 +219,7 @@ class IntegrationTestPrimer3(TestCase):
 
         # act
         with self.assertRaises(ValueError) as kmer_dir_error:
-            Primer3(designer_config, p3_config)._find_kmer_lists()
+            Primer3(designer_config, p3_config)._kmer_lists_exist()
 
         # assert
         expected_result = "Missing directory with kmer lists required for masking. Expected path: 'kmers/'"
@@ -223,24 +227,24 @@ class IntegrationTestPrimer3(TestCase):
         self.assertEqual(result, expected_result)
 
 
-    def test_find_kmer_lists_no_lists(self):
+    def test_kmer_lists_exist_no_lists(self):
         # arrange
         p3_config = {
             "PRIMER_MASK_TEMPLATE": 1,
             "PRIMER_MASK_KMERLIST_PATH": "kmers/",
             }
         designer_config = {"stringency_vector": [1]}
-        
+
         self.fs.create_dir("kmers/")
 
         # act
         with self.assertRaises(ValueError) as kmer_lists_error:
-            Primer3(designer_config, p3_config)._find_kmer_lists()
+            Primer3(designer_config, p3_config)._kmer_lists_exist()
 
         # assert
-        expected_result = "Missing kmer list files required for masking. Expected files: 'kmers/homo_sapiens_11.list' and 'kmers/homo_sapiens_16.list'"
+        expected_result = "Missing kmer list files required for masking. Expected file(s): 'kmers/homo_sapiens_11.list', 'kmers/homo_sapiens_16.list'"
         result = str(kmer_lists_error.exception)
-        self.assertEqual(result, expected_result)        
+        self.assertEqual(result, expected_result)
 
 
 if __name__ == '__main__':
