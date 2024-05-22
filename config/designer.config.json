@@ -1,5 +1,8 @@
 {
   "stringency_vector": [1, 0.5, 0.1],
+  "filters": {
+    "hap1": false
+  },
   "csv_column_order": ["primer_type",
                        "primer", 
                        "penalty", 

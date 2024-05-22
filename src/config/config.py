@@ -1,4 +1,8 @@
 from abc import ABC, abstractmethod
+from custom_logger.custom_logger import CustomLogger
+
+# Initialize logger
+logger = CustomLogger(__name__)
 
 from utils.file_system import parse_json
 
@@ -13,12 +17,22 @@ class Config(ABC):
 
 
 class DesignerConfig(Config):
-    def __init__(self, config_file: str = None):
+    def __init__(self, config_file: str = None, filter: str = ''):
         self._default_config_file = 'config/designer.config.json'
 
         config = self.read_config(self._default_config_file, config_file)
+
+        if filter and filter != "hap1":
+            logger.info(f"Please check if you have used correct filter name. Eg.- use hap1 not {filter}")
+
+        if filter == "hap1":
+            config['filters']['hap1'] = True
+
         self.params = {'stringency_vector': config['stringency_vector'],
-                       'csv_column_order': config['csv_column_order']}
+                       'csv_column_order': config['csv_column_order'],
+                       'filters': config['filters']}
+    
+        
 
     @staticmethod
     def read_config(

@@ -45,6 +45,14 @@ class TestFilterManager(TestCase):
             end_stability=25.0
         )
 
+        self.mock_config = {
+            "stringency_vector": [1, 2, 3],
+            "csv_column_order": ["col1", "col2", "col3"],
+            "filters":{
+                "hap1": True
+            }
+        }
+
     def test_apply_filters(self):
         # Arrange
         pair_with_variant = PrimerPair(
@@ -97,7 +105,7 @@ class TestFilterManager(TestCase):
 
         # Act
         pairs_to_filter = [pair_with_variant, pair_with_no_variant, pair_max_stringency, pair_min_stringency]
-        filter_response = FilterManager().apply_filters(pairs_to_filter)
+        filter_response = FilterManager(self.mock_config["filters"]).apply_filters(pairs_to_filter)
 
         # Assertion
         self.assertEqual(len(filter_response.primer_pairs_to_keep), 2)
@@ -138,7 +146,7 @@ class TestFilterManager(TestCase):
 
         # Act
         pairs_to_filter = [pair_with_no_duplicates_nor_variant1, pair_with_no_duplicates_nor_variant2]
-        filter_response = FilterManager().apply_filters(pairs_to_filter)
+        filter_response = FilterManager(self.mock_config["filters"]).apply_filters(pairs_to_filter)
 
         # Assertion
         self.assertEqual(len(filter_response.primer_pairs_to_keep), 2)
@@ -175,7 +183,7 @@ class TestFilterManager(TestCase):
 
         # Act
         pairs_to_filter = [pair_with_variant, pair_duplicate]
-        filter_response = FilterManager().apply_filters(pairs_to_filter)
+        filter_response = FilterManager(self.mock_config["filters"]).apply_filters(pairs_to_filter)
 
         # Assertion
         self.assertEqual(len(filter_response.primer_pairs_to_keep), 0)
@@ -188,7 +196,7 @@ class TestFilterManager(TestCase):
 
     def test_apply_filters_when_no_primer_pairs(self):
         # Act
-        filter_response = FilterManager().apply_filters([])
+        filter_response = FilterManager(self.mock_config["filters"]).apply_filters([])
 
         # Assertion
         self.assertEqual(len(filter_response.primer_pairs_to_keep), 0)

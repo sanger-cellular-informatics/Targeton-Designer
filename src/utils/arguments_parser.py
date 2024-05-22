@@ -100,6 +100,14 @@ def add_input_args(parser):
         ),
     )
 
+    # APPLY FILTER
+    parser.add_argument(
+        '--filters',
+        help=(
+            'Apply filters'
+        ),
+    )
+
     # CONFIG
     parser.add_argument(
         '--conf',

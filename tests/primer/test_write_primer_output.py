@@ -1,5 +1,4 @@
 import logging
-import subprocess
 import unittest
 from io import StringIO
 import pandas as pd
