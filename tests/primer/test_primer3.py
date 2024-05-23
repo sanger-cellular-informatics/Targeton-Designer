@@ -242,7 +242,7 @@ class IntegrationTestPrimer3(TestCase):
             Primer3(designer_config, p3_config)._kmer_lists_exist()
 
         # assert
-        expected_result = "Missing kmer list files required for masking. Expected file(s): 'kmers/homo_sapiens_11.list', 'kmers/homo_sapiens_16.list'"
+        expected_result = "Missing kmer list file(s) required for masking: 'kmers/homo_sapiens_11.list', 'kmers/homo_sapiens_16.list'"
         result = str(kmer_lists_error.exception)
         self.assertEqual(result, expected_result)
 

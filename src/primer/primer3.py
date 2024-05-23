@@ -22,6 +22,7 @@ class Primer3:
     ) -> None:
 
         self._p3_config = p3_config
+        self._kmer_lists_exist()
         self._stringency_vector = designer_config.get('stringency_vector', [""])
 
     def get_primers(self, fasta: str) -> List[PrimerPair]:
@@ -64,7 +65,6 @@ class Primer3:
         return primer_pairs
 
     def _get_primer3_designs(self, slice_info: dict, stringency: int) -> dict:
-        self._kmer_lists_exist()
         config_data = prepare_p3_config(self._p3_config, stringency)
         return primer3.bindings.design_primers(slice_info, config_data)
 
@@ -86,7 +86,7 @@ class Primer3:
                         kmer_lists_missing.append(f"{kmer_path}{klist}")
 
                 if kmer_lists_missing:
-                    kmer_lists_missing_str = ', '.join(["'{}'".format(value) for value in kmer_lists_missing])
-                    msg = f"Missing kmer list files required for masking. Expected file(s): {kmer_lists_missing_str}"
+                    kmer_lists_missing_str = ', '.join(["'{}'".format(klist) for klist in kmer_lists_missing])
+                    msg = f"Missing kmer list file(s) required for masking: {kmer_lists_missing_str}"
                     logger.exception(ValueError(msg))
                     raise ValueError(msg)
