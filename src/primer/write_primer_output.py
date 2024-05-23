@@ -56,6 +56,11 @@ def export_primers_to_csv(primer_pairs: List[PrimerPair], export_dir: str, prime
 
     primers_dataframe = _get_primers_dataframe(primer_pairs, primer_type)
 
+    primers_dataframe["ranking"] = primers_dataframe[['stringency', 'product_size']].apply(tuple,axis=1)\
+             .rank(method='max',ascending=False).astype(int)
+    
+    # print(primers_dataframe.head(10))
+
     col_order = DesignerConfig().params['csv_column_order']
     write_dataframe_to_csv(primers_dataframe, col_order, primers_csv_output_path)
 
@@ -125,7 +130,9 @@ def _add_primer_pair(primers_dict: defaultdict(list),
 
 def _reorder_columns(csv_col_order: List[str],
                      dataframe: pd.DataFrame):
+    
 
+    print(csv_col_order)
     col_order_unique = list(dict.fromkeys(csv_col_order))
     _check_unique_columns(col_order_unique, csv_col_order)
 
