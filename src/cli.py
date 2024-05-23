@@ -79,6 +79,7 @@ def primer_command(
 
     return primer_result
 
+
 def collate_primer_designer_data_command(
     design_output_data : DesignOutputData,
     primer_designer=PrimerDesigner(),

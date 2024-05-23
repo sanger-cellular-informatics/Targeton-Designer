@@ -7,8 +7,7 @@ from primer.primer_pair import PrimerPair
 from primer.primer3 import Primer3
 from primer.slice_data import SliceData
 from utils.exceptions import Primer3Error
-
-
+from src import primer
 class IntegrationTestPrimer3(TestCase):
 
     def setUp(self):
