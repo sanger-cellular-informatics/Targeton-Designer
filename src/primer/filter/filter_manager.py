@@ -18,11 +18,11 @@ class FilterManager:
         self._filters_to_apply: List[Filter] = [DuplicatesFilter()]
 
         if not filters["hap1"]:
-            logger.info("HAP1 filter is not applied. Use --filters hap1 in command arguments to apply HAP1.")
+            logger.info("HAP1 filter is not applied. Set hap1 filter to true in configuration file.")
 
         if filters["hap1"]:
             logger.info("HAP1 filter is applied")
-            self._filters_to_apply: List[Filter] = [DuplicatesFilter(), HAP1VariantFilter()]
+            self._filters_to_apply.append(HAP1VariantFilter())
 
     def apply_filters(self, data: List[PrimerPair]) -> FilterResponse:
         pairs_to_keep = data

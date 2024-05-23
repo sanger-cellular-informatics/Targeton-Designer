@@ -53,11 +53,11 @@ def primer_command(
     primer_type: str = 'LibAmp',
     p3_config_file: str = None,
     designer_config_file: str = None,
-    filters: str = None
 ) -> PrimerOutputData:
 
     validate_files(fasta=fasta)
-    designer_config = DesignerConfig(designer_config_file, filters)
+    
+    designer_config = DesignerConfig(designer_config_file)
 
     p3_class = Primer3(
         designer_config.params,
@@ -143,8 +143,7 @@ def resolve_command(args):
                 fasta = args['fasta'],
                 prefix = args['dir'],
                 designer_config_file = args['conf'],
-                p3_config_file = args['primer3_params'],
-                filters = args['filters']
+                p3_config_file = args['primer3_params']
             )
 
         if command == 'collate_primer_data':

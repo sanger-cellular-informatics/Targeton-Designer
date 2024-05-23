@@ -17,20 +17,24 @@ class Config(ABC):
 
 
 class DesignerConfig(Config):
-    def __init__(self, config_file: str = None, filter: str = ''):
+    def __init__(self, config_file: str = None):
         self._default_config_file = 'config/designer.config.json'
 
         config = self.read_config(self._default_config_file, config_file)
 
-        if filter and filter != "hap1":
-            logger.info(f"Please check if you have used correct filter name. Eg.- use hap1 not {filter}")
+        if not config.get("filters", ""):
+            config["filters"] = {"hap1": False}
+            logger.warning("No filters present in configuration file.")
+        else:
 
-        if filter == "hap1":
-            config['filters']['hap1'] = True
-
+            if not "hap1" in config["filters"]:
+                config["hap1"] = False
+                logger.info("Please check if you have used the correct filter name. Eg.- Use hap1")
+                
+     
         self.params = {'stringency_vector': config['stringency_vector'],
                        'csv_column_order': config['csv_column_order'],
-                       'filters': config['filters']}
+                       'filters': config["filters"]}
     
         
 
