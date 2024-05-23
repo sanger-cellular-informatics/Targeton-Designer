@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from primer.slice_data import SliceData
@@ -17,7 +19,7 @@ class TestSliceData(TestCase):
         self.assertEqual(result, expected_p3_input)
 
     def test_get_first_slice(self):
-        slices_fasta_file = '/fasta.fa'
+        slices_fasta_file = 'one_slice.fa'
         self.fs.create_file(slices_fasta_file, contents='>region1_1::chr1:5-10(+)\nGTGATCGAGGAGTTCTA')
 
         expected = SliceData(name='region1_1', start='5', end='10', strand='+', chrom='chr1', bases='GTGATCGAGGAGTTCTA')
@@ -30,8 +32,9 @@ class TestSliceData(TestCase):
         self.assertEqual(result.strand, expected.strand)
         self.assertEqual(result.bases, expected.bases)
 
-    def test_get_first_slice_when_fasta_file_has_more_than_one_slice(self):
-        slices_fasta_file = '/fasta.fa'
+    @patch('custom_logger.custom_logger.CustomLogger.warning')
+    def test_get_first_slice_when_more_than_one_slice(self, logger_warning):
+        slices_fasta_file = 'two_slices.fa'
         self.fs.create_file(slices_fasta_file,
                             contents='>region1_1::chr1:5-10(+)\nGTGATCGAGGAGTTCTA\n'
                                      '>region2_1::chr1:5-10(+)\nAAAAGGGCCCTTTAAAA')
@@ -45,3 +48,5 @@ class TestSliceData(TestCase):
         self.assertEqual(result.end, expected.end)
         self.assertEqual(result.strand, expected.strand)
         self.assertEqual(result.bases, expected.bases)
+        logger_warning.assert_called_once_with("The FASTA file 'two_slices.fa' contains more than one pre-targeton. "
+                                               "Only the first pre-targeton is taken.")
