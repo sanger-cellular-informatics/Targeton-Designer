@@ -103,23 +103,23 @@ class IntegrationTestPrimer3(TestCase):
 
     @patch('primer3.bindings.design_primers')
     def test_get_primer_pairs_when_primer3_error(self, mock_design_primers):
-        stringency = 1
-        chromosome = "1"
-        pre_targeton_name = "ARTY"
-        pre_targeton_start = 42958479
-        pre_targeton_end = 42958806
-        
         mock_design_primers.return_value = {'PRIMER_LEFT_EXPLAIN': 'considered 1469, GC content failed 769, low tm 1, high tm 657, high hairpin stability 2, ok 40',
                                             'PRIMER_RIGHT_EXPLAIN': 'considered 1469, GC content failed 235, low tm 1, high tm 1159, ok 74',
                                             'PRIMER_PAIR_EXPLAIN': 'considered 2960, unacceptable product size 2960, ok 0', 
                                             'PRIMER_PAIR_NUM_RETURNED': 0, 'PRIMER_PAIR': []}
 
         # arrange
-        slices_fasta_file = self.fs.create_file(
-            'fasta.fa',
-            contents=f'>{pre_targeton_name}::{chromosome}:{pre_targeton_start}-{pre_targeton_end}(+)\nGCTCGGGACCCGCACCGAGCCAGGCTCGGAGAGGCGCGCGGCCCGCCCCGGGCGCACAGCGCAGCGGGGCGGCGGGGGAGGCCCTGGCCGGCGTAAGGCGGGCAGGAGTCTGCGCCTTTGTTCCTGGCGGGAGGGCCCGCGGGCGCGCGACTCACCTTGCTGCTGGGCTCCATGGCAGCGCTGCGCTGGTGGCTCTGGCTGCGCCGGGTACGCGGGTGGCGACGGGCGTGCGAGCGGCGCTCTCCCGCTCAGGCTCGTGCTCCGGTCCGGGGACTCCCACTGCGACTCTGACTCCGACCCCCGTCGTTTGGTCTCCTGCTCCCTGGCG')
+        bases = "GCTCGGGACCCGCACCGAGCCAGGCTCGGAGAGGCGCGCGGCCCGCCCCGGGCGCACAGCGCAGCGGGGCGGCGGGGGAGGCCCTGGCCGGCGTAAGGCGGGCAGGAGTCTGCGCCTTTGTTCCTGGCGGGAGGGCCCGCGGGCGCGCGACTCACCTTGCTGCTGGGCTCCATGGCAGCGCTGCGCTGGTGGCTCTGGCTGCGCCGGGTACGCGGGTGGCGACGGGCGTGCGAGCGGCGCTCTCCCGCTCAGGCTCGTGCTCCGGTCCGGGGACTCCCACTGCGACTCTGACTCCGACCCCCGTCGTTTGGTCTCCTGCTCCCTGGCG"
+        slice = SliceData(
+            name="ARTY",
+            chrom="1",
+            start="42958479",
+            end="42958806",
+            bases=bases,
+            strand="+"
+        )
 
-        designer_config = {"stringency_vector": [stringency]}
+        designer_config = {"stringency_vector": [1]}
 
         p3_config = {
              "PRIMER_TASK": "generic",
@@ -135,7 +135,7 @@ class IntegrationTestPrimer3(TestCase):
 
         # act
         with self.assertRaises(Primer3Error) as primer_error:
-            Primer3(designer_config, p3_config).get_primers(slices_fasta_file.name)
+            Primer3(designer_config, p3_config).get_primers(slice)
 
         # assert
         expected_msg = """\
