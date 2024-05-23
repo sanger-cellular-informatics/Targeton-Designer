@@ -1,5 +1,3 @@
-from unittest.mock import patch
-
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from primer.slice_data import SliceData
@@ -31,3 +29,13 @@ class TestSliceData(TestCase):
         self.assertEqual(result[0].end, expected[0].end)
         self.assertEqual(result[0].strand, expected[0].strand)
         self.assertEqual(result[0].bases, expected[0].bases)
+
+    def test_get_first_slice(self):
+        slices_fasta_file = '/fasta.fa'
+        self.fs.create_file(slices_fasta_file, contents='>region1_1::chr1:5-10(+)\nGTGATCGAGGAGTTCTA')
+
+        expected = SliceData(name='region1_1', start='5', end='10', strand='+', chrom='chr1', bases='GTGATCGAGGAGTTCTA')
+
+        result = SliceData.get_first_pre_targeton(slices_fasta_file)
+
+        self.assertEqual(result, expected)

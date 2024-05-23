@@ -35,6 +35,17 @@ class Primer3:
 
         return primer_pairs
 
+    def get_primers2(self, slice_data: SliceData) -> List[PrimerPair]:
+        logger.info('The pre-targeton used to generate primer pairs is:\n'
+                    f'Id: {slice_data.targeton_id}\n'
+                    f'Chromosome: {slice_data.chrom}\n'
+                    f'Start: {slice_data.start}\n'
+                    f'End: {slice_data.end}')
+
+        slice_primer_pairs = self._get_primer_pairs(slice_data)
+
+        return slice_primer_pairs
+
     def _get_primer_pairs(self, slice_data: SliceData) -> List[PrimerPair]:
         primer_pairs = []
         primer_explain = []

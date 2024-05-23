@@ -17,7 +17,8 @@ class SliceData:
         self.designs = []
 
     def __repr__(self):
-        return f'SliceData({self.name}, {self.targeton_id}, {self.start}, {self.end}, {self.strand}, {self.chrom}, {self.bases})'
+        return (f'SliceData({self.name}, {self.targeton_id}, {self.start}, {self.end}, {self.strand}, {self.chrom},'
+                f' {self.bases})')
 
     @property
     def p3_input(self):
@@ -63,6 +64,29 @@ class SliceData:
                     slices.append(slice)
 
         return slices
+
+    @staticmethod
+    def get_first_pre_targeton(fasta: str) -> 'SliceData':
+        with open(fasta) as fasta_data:
+            rows = SeqIO.parse(fasta_data, 'fasta')
+
+            first_row = next(rows)
+
+            # Name::Chr:Start-End(Strand)
+            # ENSE00000769557_HG8_1::1:42929543-42929753
+            match = re.search(r'^(\w+)::((chr)?\d+):(\d+)\-(\d+)\(([+-\.]{1})\)$', first_row.id)
+
+            if match:
+                return SliceData(
+                    name=match.group(1),
+                    start=match.group(4),
+                    end=match.group(5),
+                    strand=match.group(6),
+                    chrom=match.group(2),
+                    bases=str(first_row.seq),
+                )
+            else:
+                raise ValueError(f"The sequence ID '{first_row.id}' does not match the expected format.")
 
 
 def _parse_slice(match) -> dict:
