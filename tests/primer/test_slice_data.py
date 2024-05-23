@@ -60,3 +60,13 @@ class TestSliceData(TestCase):
 
         self.assertEqual(str(error.exception),
                          f"The FASTA file '{wrong_fasta_file}' is empty and no contains expected sequence pattern.")
+
+    def test_get_first_slice_when_empty_fasta_file(self):
+        empty_fasta = "empty.fa"
+        self.fs.create_file(empty_fasta, contents='')
+
+        with self.assertRaises(ValueError) as error:
+            SliceData.get_first_slice_data(empty_fasta)
+
+        self.assertEqual(str(error.exception),
+                         f"The FASTA file '{empty_fasta}' is empty and no contains expected sequence pattern.")
