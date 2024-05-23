@@ -24,7 +24,7 @@ class TestSliceData(TestCase):
 
         expected = SliceData(name='region1_1', start='5', end='10', strand='+', chrom='chr1', bases='GTGATCGAGGAGTTCTA')
 
-        result = SliceData.get_first_pre_targeton(slices_fasta_file)
+        result = SliceData.get_first_slice_data(slices_fasta_file)
 
         self.assertEqual(result.name, expected.name)
         self.assertEqual(result.start, expected.start)
@@ -41,7 +41,7 @@ class TestSliceData(TestCase):
 
         expected = SliceData(name='region1_1', start='5', end='10', strand='+', chrom='chr1', bases='GTGATCGAGGAGTTCTA')
 
-        result = SliceData.get_first_pre_targeton(slices_fasta_file)
+        result = SliceData.get_first_slice_data(slices_fasta_file)
 
         self.assertEqual(result.name, expected.name)
         self.assertEqual(result.start, expected.start)
@@ -50,3 +50,13 @@ class TestSliceData(TestCase):
         self.assertEqual(result.bases, expected.bases)
         logger_warning.assert_called_once_with("The FASTA file 'two_slices.fa' contains more than one pre-targeton. "
                                                "Only the first pre-targeton is taken.")
+
+    def test_get_first_slice_when_wrong_sequence_format(self):
+        wrong_fasta_file = "wrong.fa"
+        self.fs.create_file(wrong_fasta_file, contents='WRONG_SEQUENCE_PATTERN\nGTGATCGAGGAGTTCTA')
+
+        with self.assertRaises(ValueError) as error:
+            SliceData.get_first_slice_data(wrong_fasta_file)
+
+        self.assertEqual(str(error.exception),
+                         f"The FASTA file '{wrong_fasta_file}' is empty and no contains expected sequence pattern.")

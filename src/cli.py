@@ -63,7 +63,7 @@ def primer_command(
         Primer3ParamsConfig(p3_config_file).params,
     )
 
-    slice_data = SliceData.get_first_pre_targeton(fasta)
+    slice_data = SliceData.get_first_slice_data(fasta)
 
     primers = p3_class.get_primers(slice_data)
 
