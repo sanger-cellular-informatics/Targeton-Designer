@@ -1,4 +1,8 @@
+import logging
 from unittest import TestCase
+
+from tests.utils.utils import CapturingStreamHandler
+
 
 from primer.designed_primer import DesignedPrimer, Interval
 from primer.filter.duplicates_filter import DuplicatesFilter
@@ -10,6 +14,12 @@ from primer.primer_pair_discarded import PrimerPairDiscarded
 
 class TestFilterManager(TestCase):
     def setUp(self) -> None:
+        # Create a custom stream handler to capture logs
+        self.handler = CapturingStreamHandler()
+        # Get the logger and set the level to capture warnings (adjust if needed)
+        logger = logging.getLogger()
+        logger.setLevel(logging.DEBUG)
+        logger.addHandler(self.handler)
         # There is a HAP1 Variant at 11542 in chromosome 1
         self.primer_with_variant = DesignedPrimer(
             name="primer_with_variant",
@@ -52,6 +62,11 @@ class TestFilterManager(TestCase):
                 "hap1": True
             }
         }
+    
+    def tearDown(self):
+        # Remove the handler after each test to reset logging
+        logger = logging.getLogger()
+        logger.removeHandler(self.handler)
 
     def test_apply_filters(self):
         # Arrange
@@ -107,6 +122,11 @@ class TestFilterManager(TestCase):
         pairs_to_filter = [pair_with_variant, pair_with_no_variant, pair_max_stringency, pair_min_stringency]
         filter_response = FilterManager(self.mock_config["filters"]).apply_filters(pairs_to_filter)
 
+        logs = self.handler.buffer.getvalue().strip()
+
+        self.assertTrue("HAP1 filter is applied" in logs)
+
+        
         # Assertion
         self.assertEqual(len(filter_response.primer_pairs_to_keep), 2)
         self.assertIn(pair_with_no_variant, filter_response.primer_pairs_to_keep)
