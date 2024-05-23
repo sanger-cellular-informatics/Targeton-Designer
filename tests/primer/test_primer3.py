@@ -32,7 +32,7 @@ class IntegrationTestPrimer3(TestCase):
             strand="-"
         )
 
-        designer_config = {"stringency_vector": [1]}
+        designer_config = {"stringency_vector": [stringency]}
 
         p3_config = {
              "PRIMER_TASK": "pick_cloning_primers",
@@ -63,9 +63,9 @@ class IntegrationTestPrimer3(TestCase):
         )
 
         expected_forward = DesignedPrimer(
-            name='ENSE00000769557_HG8_11_LibAmpF_0',
+            name=f'{pre_targeton_name}_LibAmpF_0',
             penalty=2.7456977357412597,
-            pair_id='ENSE00000769557_HG8_11_0_str1',
+            pair_id=f'{pre_targeton_name}_0_str1',
             sequence='CAGACAGCTGCTGGGACA',
             coords=Interval(start=199, end=18),
             primer_start=42929775,
@@ -80,9 +80,9 @@ class IntegrationTestPrimer3(TestCase):
         )
 
         expected_reverse = DesignedPrimer(
-            name='ENSE00000769557_HG8_11_LibAmpR_0',
+            name=f'{pre_targeton_name}_LibAmpR_0',
             penalty=3.400054355094312,
-            pair_id='ENSE00000769557_HG8_11_0_str1',
+            pair_id=f'{pre_targeton_name}_0_str1',
             sequence='CACCTTCCCTCCGGTCCC',
             coords=Interval(start=0, end=18),
             primer_start=42929593,
@@ -153,6 +153,7 @@ class IntegrationTestPrimer3(TestCase):
 
     @patch('primer.primer3.build_primer_pairs')
     def test_get_primer_pairs_empty_list(self, mock_build_primer_pairs):
+        # arrange
         bases = "CACCTTCCCTCCGGTCCCCCCAGTGCTAAAGAAGCTGCGCGGGACAGCTGACGTGACCCATGACCTGCAGGAGATGAAGGAAGAGAGTCGGCAGATGATGCGGGAGAAGAAGGTCACCATCCTGGAGCTGTTCCGCTCCCCCGCCTACCGCCAGCCCATCCTCATCGCTGTGGTGCTGCAGCTGTCCCAGCAGCTGTCTGGCATCAACGC"
         slice = SliceData(
             name="ENSE00000769557_HG8_11",
