@@ -23,24 +23,12 @@ class Primer3:
         self._p3_config = p3_config
         self._stringency_vector = designer_config.get('stringency_vector', [""])
 
-    def get_primers(self, fasta: str) -> List[PrimerPair]:
-        primer_pairs = []
-
-        logger.info('Reading Fasta file')
-        slices = SliceData.parse_fasta(fasta)
-
-        for slice in slices:
-            slice_primer_pairs = self._get_primer_pairs(slice)
-            primer_pairs.extend(slice_primer_pairs)
-
-        return primer_pairs
-
-    def get_primers2(self, slice_data: SliceData) -> List[PrimerPair]:
+    def get_primers(self, slice_data: SliceData) -> List[PrimerPair]:
         logger.info('The pre-targeton used to generate primer pairs is:\n'
-                    f'Id: {slice_data.targeton_id}\n'
-                    f'Chromosome: {slice_data.chrom}\n'
-                    f'Start: {slice_data.start}\n'
-                    f'End: {slice_data.end}')
+                    f'\tId: {slice_data.targeton_id}\n'
+                    f'\tChromosome: {slice_data.chrom}\n'
+                    f'\tStart: {slice_data.start}\n'
+                    f'\tEnd: {slice_data.end}')
 
         slice_primer_pairs = self._get_primer_pairs(slice_data)
 

@@ -63,39 +63,9 @@ def primer_command(
         Primer3ParamsConfig(p3_config_file).params,
     )
 
-    primers = p3_class.get_primers(fasta)
-
-    filters_response = FilterManager().apply_filters(primers)
-
-    primer_result = write_primer_output(
-        primer_pairs=filters_response.primer_pairs_to_keep,
-        discarded_primer_pairs=filters_response.primer_pairs_to_discard,
-        prefix=prefix,
-        existing_dir=existing_dir,
-        primer_type=primer_type
-    )
-
-    return primer_result
-
-def primer_command2(
-    fasta: str ='',
-    prefix: str = '',
-    existing_dir: str = '',
-    primer_type: str = 'LibAmp',
-    p3_config_file: str = None,
-    designer_config_file: str = None
-) -> PrimerOutputData:
-    validate_files(fasta=fasta)
-    designer_config = DesignerConfig(designer_config_file)
-
-    p3_class = Primer3(
-        designer_config.params,
-        Primer3ParamsConfig(p3_config_file).params,
-    )
-
     slice_data = SliceData.get_first_pre_targeton(fasta)
 
-    primers = p3_class.get_primers2(slice_data)
+    primers = p3_class.get_primers(slice_data)
 
     filters_response = FilterManager().apply_filters(primers)
 
@@ -108,7 +78,6 @@ def primer_command2(
     )
 
     return primer_result
-
 
 def collate_primer_designer_data_command(
     design_output_data : DesignOutputData,
@@ -170,7 +139,7 @@ def resolve_command(args):
             slicer_command(args)
 
         if command == 'primer':
-            primer_command2(
+            primer_command(
                 fasta=args['fasta'],
                 prefix=args['dir'],
                 designer_config_file=args['conf'],
