@@ -97,7 +97,7 @@ class IntegrationTestPrimer3(TestCase):
 
         self.assertEqual(result, [expected_primer_pair])
 
-    @patch("primer3.bindings.design_primers")
+    @patch('primer3.bindings.design_primers')
     def test_get_primer_pairs_when_primer3_error(self, mock_design_primers):
         stringency = 1
         chromosome = "1"
@@ -149,7 +149,7 @@ class IntegrationTestPrimer3(TestCase):
 
         self.assertEqual(error_msg, expected_msg)
 
-    @patch("primer.primer3.build_primer_pairs")
+    @patch('primer.primer3.build_primer_pairs')
     def test_get_primer_pairs_empty_list(self, mock_build_primer_pairs):
         stringency = 1
         chromosome = "1"
