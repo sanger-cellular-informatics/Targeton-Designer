@@ -1,17 +1,15 @@
 import unittest
+from unittest import TestCase
 from unittest.mock import patch
-from pyfakefs.fake_filesystem_unittest import TestCase
 
 from primer.designed_primer import DesignedPrimer, Interval
 from primer.primer_pair import PrimerPair
 from primer.primer3 import Primer3
 from primer.slice_data import SliceData
 from utils.exceptions import Primer3Error
-from src import primer
-class IntegrationTestPrimer3(TestCase):
 
-    def setUp(self):
-        self.setUpPyfakefs()
+
+class IntegrationTestPrimer3(TestCase):
 
     def test_get_primer_pairs_from_fasta_file(self):
         stringency = 1
@@ -48,10 +46,9 @@ class IntegrationTestPrimer3(TestCase):
         # act
         result = Primer3(designer_config, p3_config).get_primers(slice)
 
-        uid = 'bc09fcac-07c0-11ef-b244-fa163e9abfe1'
         # assert
         expected_primer_pair = PrimerPair(
-            uid={uid},
+            uid='bc09fcac-07c0-11ef-b244-fa163e9abfe1',
             pair_id=f'{pre_targeton_name}_0_str1',
             chromosome=chromosome,
             pre_targeton_start=pre_targeton_start,
