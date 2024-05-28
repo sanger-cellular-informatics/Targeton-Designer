@@ -55,13 +55,19 @@ class TestFilterManager(TestCase):
         self.mock_config = {
             "stringency_vector": [1, 2, 3],
             "csv_column_order": ["col1", "col2", "col3"],
-            "filters": ["duplicates","HAP1_variant"]
+            "filters": {
+                        "duplicates": True,
+                        "HAP1_variant": True
+                    }
         }
 
         self.mock_config_with_incorrect_filter_name = {
             "stringency_vector": [1, 2, 3],
             "csv_column_order": ["col1", "col2", "col3"],
-            "filters": ["HAP3_variant", "HAP2"]
+            "filters": {
+                        "HAP3_variant": True,
+                        "HAP2": True
+                    }
         }
     
     def tearDown(self):
@@ -253,3 +259,11 @@ class TestFilterManager(TestCase):
 
         for incorrect_filter_name in self.mock_config_with_incorrect_filter_name["filters"]:
             self.assertTrue(f"Incorrect filter name {incorrect_filter_name}." in logs)
+    
+    def test_apply_filters_with_correct_filter_names(self):
+       
+        filter_response = FilterManager(self.mock_config["filters"])
+
+        check_filters = [filter.key for filter in filter_response._filters_to_apply]
+
+        self.assertEqual(list(self.mock_config["filters"].keys()), check_filters)

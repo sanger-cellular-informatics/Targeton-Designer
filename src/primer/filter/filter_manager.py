@@ -13,26 +13,25 @@ logger = CustomLogger(__name__)
 
 
 class FilterManager:
-    def __init__(self, apply_filters: list):
+    def __init__(self, apply_filters: dict):
       
         self.filters: List[Filter] = [DuplicatesFilter(), HAP1VariantFilter()]
 
         self._filters_to_apply: List[Filter] = []
 
         # Even if user forgot or do not add "duplicates" filter in config it will be applied.
-        if not apply_filters and not "duplicates" in apply_filters:
+        if not apply_filters and not "duplicates" in apply_filters.keys():
             apply_filters.append("duplicates")
 
         for is_filter in self.filters:
             
             # Check if user added incorrect filter name.
-            if not is_filter.key in apply_filters:
-                incorrect_filter_names = [filter_name for filter_name in apply_filters if is_filter.key != filter_name]
+            if not is_filter.key in apply_filters.keys() and not apply_filters.get(is_filter.key, ''):
+                incorrect_filter_names = [filter_name for filter_name in apply_filters.keys() if is_filter.key != filter_name]
                 [logger.info(f"Incorrect filter name {incorrect_names}.") for incorrect_names in incorrect_filter_names]
-                 
             
-            if is_filter.key in apply_filters:
-                self._filters_to_apply.append(is_filter)        
+            if is_filter.key in apply_filters.keys() and apply_filters.get(is_filter.key):
+                self._filters_to_apply.append(is_filter)      
         
 
     def apply_filters(self, primer_pairs_data: List[PrimerPair]) -> FilterResponse:

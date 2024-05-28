@@ -140,10 +140,10 @@ def resolve_command(args):
 
         if command == 'primer':
             primer_command(
-                fasta = args['fasta'],
-                prefix = args['dir'],
-                designer_config_file = args['conf'],
-                p3_config_file = args['primer3_params']
+                fasta=args['fasta'],
+                prefix=args['dir'],
+                designer_config_file=args['conf'],
+                p3_config_file=args['primer3_params']
             )
 
         if command == 'collate_primer_data':

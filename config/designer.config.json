@@ -1,6 +1,9 @@
 {
   "stringency_vector": [1, 0.5, 0.1],
-  "filters": ["duplicates","HAP1_variant"],
+  "filters": {
+    "duplicates": true,
+    "HAP1_variant": true
+  },
   "csv_column_order": ["primer_type",
                        "primer", 
                        "penalty", 

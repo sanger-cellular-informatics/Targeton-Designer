@@ -25,7 +25,7 @@ class DesignerConfig(Config):
     
         # Check if filters exist in configuration.
         if not config.get("filters", ""):
-            config["filters"] = []
+            config["filters"] = {}
             logger.info("No filters exist in configuration file.")          
      
         self.params = {'stringency_vector': config['stringency_vector'],
