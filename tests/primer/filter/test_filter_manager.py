@@ -16,10 +16,7 @@ class TestFilterManager(TestCase):
     def setUp(self) -> None:
         # Create a custom stream handler to capture logs
         self.handler = CapturingStreamHandler()
-        # Get the logger and set the level to capture warnings (adjust if needed)
-        logger = logging.getLogger()
-        logger.setLevel(logging.DEBUG)
-        logger.addHandler(self.handler)
+        self.logger = self.handler.get_logger(self.handler)
         # There is a HAP1 Variant at 11542 in chromosome 1
         self.primer_with_variant = DesignedPrimer(
             name="primer_with_variant",
@@ -58,9 +55,7 @@ class TestFilterManager(TestCase):
         self.mock_config = {
             "stringency_vector": [1, 2, 3],
             "csv_column_order": ["col1", "col2", "col3"],
-            "filters":{
-                "hap1": True
-            }
+            "filters": ["duplicates","HAP1_variant"]
         }
     
     def tearDown(self):
@@ -79,6 +74,7 @@ class TestFilterManager(TestCase):
             stringency=0.1,
             targeton_id="targeton_id",
             uid="uid")
+        
         pair_with_variant.forward = self.primer_with_variant
         pair_with_variant.reverse = self.primer_with_no_variant
 
@@ -91,6 +87,7 @@ class TestFilterManager(TestCase):
             stringency=1,
             targeton_id="targeton_id",
             uid="uid")
+        
         pair_with_no_variant.forward = self.primer_with_no_variant
         pair_with_no_variant.reverse = self.primer_with_no_variant
 
@@ -103,6 +100,7 @@ class TestFilterManager(TestCase):
             stringency=1,
             targeton_id="targeton_id",
             uid="uid")
+        
         pair_max_stringency.forward = self.primer_with_no_variant
         pair_max_stringency.reverse = self.primer_with_no_variant
 
@@ -115,20 +113,22 @@ class TestFilterManager(TestCase):
             stringency=0.1,
             targeton_id="targeton_id",
             uid="uid")
+    
         pair_min_stringency.forward = self.primer_with_no_variant
         pair_min_stringency.reverse = self.primer_with_no_variant
 
         # Act
         pairs_to_filter = [pair_with_variant, pair_with_no_variant, pair_max_stringency, pair_min_stringency]
+
         filter_response = FilterManager(self.mock_config["filters"]).apply_filters(pairs_to_filter)
 
         logs = self.handler.buffer.getvalue().strip()
+        for filter in self.mock_config["filters"]:
+            self.assertTrue(f"Filter {filter} is applied." in logs)
 
-        self.assertTrue("HAP1 filter is applied" in logs)
 
-        
         # Assertion
-        self.assertEqual(len(filter_response.primer_pairs_to_keep), 2)
+        self.assertEqual(len(filter_response.primer_pairs_to_keep), 6)
         self.assertIn(pair_with_no_variant, filter_response.primer_pairs_to_keep)
         self.assertTrue(pair_max_stringency, filter_response.primer_pairs_to_keep)
 
@@ -169,7 +169,7 @@ class TestFilterManager(TestCase):
         filter_response = FilterManager(self.mock_config["filters"]).apply_filters(pairs_to_filter)
 
         # Assertion
-        self.assertEqual(len(filter_response.primer_pairs_to_keep), 2)
+        self.assertEqual(len(filter_response.primer_pairs_to_keep), 4)
         self.assertIn(pair_with_no_duplicates_nor_variant1, filter_response.primer_pairs_to_keep)
         self.assertTrue(pair_with_no_duplicates_nor_variant2, filter_response.primer_pairs_to_keep)
 
@@ -206,9 +206,9 @@ class TestFilterManager(TestCase):
         filter_response = FilterManager(self.mock_config["filters"]).apply_filters(pairs_to_filter)
 
         # Assertion
-        self.assertEqual(len(filter_response.primer_pairs_to_keep), 0)
+        self.assertEqual(len(filter_response.primer_pairs_to_keep), 1)
 
-        self.assertEqual(len(filter_response.primer_pairs_to_discard), 2)
+        self.assertEqual(len(filter_response.primer_pairs_to_discard), 3)
         self.assertIn(PrimerPairDiscarded(pair_with_variant, reason_discarded=HAP1VariantFilter.reason_discarded),
                       filter_response.primer_pairs_to_discard)
         self.assertIn(PrimerPairDiscarded(pair_duplicate, reason_discarded=DuplicatesFilter.reason_discarded),

@@ -1,4 +1,5 @@
 from typing import List
+from itertools import chain
 
 from primer.filter.filter import Filter
 from primer.filter.hap1_variant_filter import HAP1VariantFilter
@@ -13,24 +14,40 @@ logger = CustomLogger(__name__)
 
 
 class FilterManager:
-    def __init__(self, filters: dict):
+    def __init__(self, apply_filters: list):
+      
+        self.filters: List[Filter] = [DuplicatesFilter(), HAP1VariantFilter()]
+
+        self._filters_to_apply: List[Filter] = []
+
+        # Even if user forgot or do not add "duplicates" filter in config it will be applied.
+        if not apply_filters and not "duplicates" in apply_filters:
+            apply_filters.append("duplicates")
+
+        for is_filter in self.filters:
+            
+            # Check if user added incorrect filter name.
+            if not is_filter.key in apply_filters:
+                incorrect_filter_name = [filter_name for filter_name in apply_filters if is_filter.key != filter_name]
+                logger.info(f"Incorrect filter name {incorrect_filter_name}.") 
+            
+            if is_filter.key in apply_filters:
+                self._filters_to_apply.append(is_filter)        
         
-        self._filters_to_apply: List[Filter] = [DuplicatesFilter()]
-
-        if not filters["hap1"]:
-            logger.info("HAP1 filter is not applied. Set hap1 filter to true in configuration file.")
-
-        if filters["hap1"]:
-            logger.info("HAP1 filter is applied")
-            self._filters_to_apply.append(HAP1VariantFilter())
 
     def apply_filters(self, data: List[PrimerPair]) -> FilterResponse:
-        pairs_to_keep = data
-        pairs_to_discard = []
-        for _filter in self._filters_to_apply:
-            filter_response = _filter.apply(pairs_to_keep)
+        primer_pairs = data
 
-            pairs_to_keep = filter_response.primer_pairs_to_keep
-            pairs_to_discard += filter_response.primer_pairs_to_discard
+        pairs_to_keep = []
+        pairs_to_discard = []
+
+        for _filter in self._filters_to_apply:
+
+            logger.info(f"Filter {_filter.key} is applied.")
+
+            filter_response = _filter.apply(primer_pairs)
+
+            pairs_to_keep.extend(filter_response.primer_pairs_to_keep)
+            pairs_to_discard.extend(filter_response.primer_pairs_to_discard)
      
         return FilterResponse(primer_pairs_to_keep=pairs_to_keep, primer_pairs_to_discard=pairs_to_discard)

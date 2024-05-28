@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
+from utils.file_system import parse_json
+
 from custom_logger.custom_logger import CustomLogger
 
 # Initialize logger
 logger = CustomLogger(__name__)
-
-from utils.file_system import parse_json
 
 
 class Config(ABC):
@@ -18,19 +18,15 @@ class Config(ABC):
 
 class DesignerConfig(Config):
     def __init__(self, config_file: str = None):
+      
         self._default_config_file = 'config/designer.config.json'
 
         config = self.read_config(self._default_config_file, config_file)
-
+    
+        # Check if filters exist in configuration.
         if not config.get("filters", ""):
-            config["filters"] = {"hap1": False}
-            logger.warning("No filters present in configuration file.")
-        else:
-
-            if not "hap1" in config["filters"]:
-                config["hap1"] = False
-                logger.info("Please check if you have used the correct filter name. Eg.- Use hap1")
-                
+            config["filters"] = []
+            logger.info("No filters exist in configuration file.")          
      
         self.params = {'stringency_vector': config['stringency_vector'],
                        'csv_column_order': config['csv_column_order'],
