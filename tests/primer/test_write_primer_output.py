@@ -151,7 +151,7 @@ class TestDataFrameBuild(TestCase):
                 chromosome="1",
                 pre_targeton_start=42930996,
                 pre_targeton_end=42931206,
-                product_size="129",
+                product_size=129,
                 stringency=1,
                 targeton_id="ABCD",
                 uid="uid0")
@@ -209,7 +209,7 @@ class TestDataFrameBuild(TestCase):
                 'chromosome': ['1', '1'],
                 'pre_targeton_start': [42930996, 42930996],
                 'pre_targeton_end': [42931206, 42931206],
-                'product_size': ['129', '129'],
+                'product_size': [129, 129],
                 'targeton_id': ['ABCD', 'ABCD']
                 }
 
@@ -239,7 +239,7 @@ class TestDataFrameBuild(TestCase):
                 'chromosome': ['1', '1'],
                 'pre_targeton_start': [42930996, 42930996],
                 'pre_targeton_end': [42931206, 42931206],
-                'product_size': ['129', '129'],
+                'product_size': [129, 129],
                 'targeton_id': ['ABCD', 'ABCD']
             }
 
@@ -248,7 +248,7 @@ class TestDataFrameBuild(TestCase):
                 chromosome="1",
                 pre_targeton_start=42930996,
                 pre_targeton_end=42931206,
-                product_size="122",
+                product_size=122,
                 stringency=1,
                 targeton_id="ABCD",
                 uid="uid1")
@@ -308,7 +308,7 @@ class TestDataFrameBuild(TestCase):
                 'chromosome': ['1', '1', '1', '1'],
                 'pre_targeton_start': [42930996, 42930996, 42930996, 42930996],
                 'pre_targeton_end': [42931206, 42931206, 42931206, 42931206],
-                'product_size': ['129', '129', '122', '122'],
+                'product_size': [129, 129, 122, 122],
                 'targeton_id': ['ABCD', 'ABCD', 'ABCD', 'ABCD']
             }
 
