@@ -52,7 +52,7 @@ def primer_command(
     existing_dir: str = '',
     primer_type: str = 'LibAmp',
     p3_config_file: str = None,
-    designer_config_file: str = None,
+    designer_config_file: str = None
 ) -> PrimerOutputData:
 
     validate_files(fasta=fasta)

@@ -1,5 +1,4 @@
 from typing import List
-from itertools import chain
 
 from primer.filter.filter import Filter
 from primer.filter.hap1_variant_filter import HAP1VariantFilter
@@ -36,9 +35,8 @@ class FilterManager:
                 self._filters_to_apply.append(is_filter)        
         
 
-    def apply_filters(self, data: List[PrimerPair]) -> FilterResponse:
-        primer_pairs = data
-
+    def apply_filters(self, primer_pairs_data: List[PrimerPair]) -> FilterResponse:
+  
         pairs_to_keep = []
         pairs_to_discard = []
 
@@ -46,7 +44,7 @@ class FilterManager:
 
             logger.info(f"Filter {_filter.key} is applied.")
 
-            filter_response = _filter.apply(primer_pairs)
+            filter_response = _filter.apply(primer_pairs_data)
 
             pairs_to_keep.extend(filter_response.primer_pairs_to_keep)
             pairs_to_discard.extend(filter_response.primer_pairs_to_discard)
