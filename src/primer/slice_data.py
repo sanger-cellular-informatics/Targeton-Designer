@@ -65,8 +65,8 @@ class SliceData:
                 bases=str(first_row.seq),
             )
 
-        if next(rows, None) is not None:
-            logger.warning(f"The FASTA file '{fasta}' contains more than one pre-targeton. "
-                           f"Only the first pre-targeton is taken.")
+            if next(rows, None) is not None:
+                logger.warning(f"The FASTA file '{fasta}' contains more than one pre-targeton. "
+                               f"Only the first pre-targeton is taken.")
 
         return slice_data
