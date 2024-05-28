@@ -57,6 +57,12 @@ class TestFilterManager(TestCase):
             "csv_column_order": ["col1", "col2", "col3"],
             "filters": ["duplicates","HAP1_variant"]
         }
+
+        self.mock_config_with_incorrect_filter_name = {
+            "stringency_vector": [1, 2, 3],
+            "csv_column_order": ["col1", "col2", "col3"],
+            "filters": ["HAP3_variant", "HAP2"]
+        }
     
     def tearDown(self):
         # Remove the handler after each test to reset logging
@@ -221,3 +227,29 @@ class TestFilterManager(TestCase):
         # Assertion
         self.assertEqual(len(filter_response.primer_pairs_to_keep), 0)
         self.assertEqual(len(filter_response.primer_pairs_to_discard), 0)
+
+    def test_apply_filters_with_incorrect_filter_name(self):
+        # Arrange
+        pair_with_variant = PrimerPair(
+            pair_id="pair_with_hap1_variant",
+            chromosome="1",
+            pre_targeton_start=11540,
+            pre_targeton_end=11545,
+            product_size="200",
+            stringency=0.1,
+            targeton_id="targeton_id",
+            uid="uid")
+        
+        pair_with_variant.forward = self.primer_with_variant
+        pair_with_variant.reverse = self.primer_with_no_variant
+
+
+        # Act
+        pairs_to_filter = [pair_with_variant]
+
+        _ = FilterManager(self.mock_config_with_incorrect_filter_name["filters"]).apply_filters(pairs_to_filter)
+
+        logs = self.handler.buffer.getvalue().strip()
+
+        for incorrect_filter_name in self.mock_config_with_incorrect_filter_name["filters"]:
+            self.assertTrue(f"Incorrect filter name {incorrect_filter_name}." in logs)

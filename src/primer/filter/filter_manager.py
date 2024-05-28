@@ -28,8 +28,9 @@ class FilterManager:
             
             # Check if user added incorrect filter name.
             if not is_filter.key in apply_filters:
-                incorrect_filter_name = [filter_name for filter_name in apply_filters if is_filter.key != filter_name]
-                logger.info(f"Incorrect filter name {incorrect_filter_name}.") 
+                incorrect_filter_names = [filter_name for filter_name in apply_filters if is_filter.key != filter_name]
+                [logger.info(f"Incorrect filter name {incorrect_names}.") for incorrect_names in incorrect_filter_names]
+                 
             
             if is_filter.key in apply_filters:
                 self._filters_to_apply.append(is_filter)        
