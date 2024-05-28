@@ -1,5 +1,5 @@
 import unittest
-from unittest import TestCase
+from pyfakefs.fake_filesystem_unittest import TestCase
 from unittest.mock import patch
 
 from primer.designed_primer import DesignedPrimer, Interval
@@ -10,6 +10,9 @@ from utils.exceptions import Primer3Error
 
 
 class IntegrationTestPrimer3(TestCase):
+
+    def setUp(self):
+        self.setUpPyfakefs()
 
     def test_get_primer_pairs_from_fasta_file(self):
         stringency = 1
@@ -40,7 +43,8 @@ class IntegrationTestPrimer3(TestCase):
              "PRIMER_MAX_SIZE": 23,
              "P3_FILE_FLAG": 1,
              "SEQUENCE_INCLUDED_REGION": [0, 200],
-             "PRIMER_EXPLAIN_FLAG": 1
+             "PRIMER_EXPLAIN_FLAG": 1,
+             "PRIMER_MASK_TEMPLATE": 0
              }
 
         # act
@@ -48,8 +52,8 @@ class IntegrationTestPrimer3(TestCase):
 
         # assert
         expected_primer_pair = PrimerPair(
-            uid='bc09fcac-07c0-11ef-b244-fa163e9abfe1',
-            pair_id=f'{pre_targeton_name}_0_str1',
+            uid="bc09fcac-07c0-11ef-b244-fa163e9abfe1",
+            pair_id=f"{pre_targeton_name}_0_str1",
             chromosome=chromosome,
             pre_targeton_start=pre_targeton_start,
             pre_targeton_end=pre_targeton_end,
@@ -59,14 +63,14 @@ class IntegrationTestPrimer3(TestCase):
         )
 
         expected_forward = DesignedPrimer(
-            name=f'{pre_targeton_name}_LibAmpF_0',
+            name=f"{pre_targeton_name}_LibAmpF_0",
             penalty=2.7456977357412597,
-            pair_id=f'{pre_targeton_name}_0_str1',
-            sequence='CAGACAGCTGCTGGGACA',
+            pair_id=f"{pre_targeton_name}_0_str1",
+            sequence="CAGACAGCTGCTGGGACA",
             coords=Interval(start=199, end=18),
             primer_start=42929775,
             primer_end=42929792,
-            strand='+',
+            strand="+",
             tm=59.25430226425874,
             gc_percent=61.111111111111114,
             self_any_th=30.996860910464648,
@@ -76,14 +80,14 @@ class IntegrationTestPrimer3(TestCase):
         )
 
         expected_reverse = DesignedPrimer(
-            name=f'{pre_targeton_name}_LibAmpR_0',
+            name=f"{pre_targeton_name}_LibAmpR_0",
             penalty=3.400054355094312,
-            pair_id=f'{pre_targeton_name}_0_str1',
-            sequence='CACCTTCCCTCCGGTCCC',
+            pair_id=f"{pre_targeton_name}_0_str1",
+            sequence="CACCTTCCCTCCGGTCCC",
             coords=Interval(start=0, end=18),
             primer_start=42929593,
             primer_end=42929610,
-            strand='-',
+            strand="-",
             tm=61.40005435509431,
             gc_percent=72.22222222222223,
             self_any_th=0.0,
@@ -99,10 +103,11 @@ class IntegrationTestPrimer3(TestCase):
 
     @patch('primer3.bindings.design_primers')
     def test_get_primer_pairs_when_primer3_error(self, mock_design_primers):
-        mock_design_primers.return_value = {'PRIMER_LEFT_EXPLAIN': 'considered 1469, GC content failed 769, low tm 1, high tm 657, high hairpin stability 2, ok 40',
-                                            'PRIMER_RIGHT_EXPLAIN': 'considered 1469, GC content failed 235, low tm 1, high tm 1159, ok 74',
-                                            'PRIMER_PAIR_EXPLAIN': 'considered 2960, unacceptable product size 2960, ok 0', 
-                                            'PRIMER_PAIR_NUM_RETURNED': 0, 'PRIMER_PAIR': []}
+        mock_design_primers.return_value = {
+            "PRIMER_LEFT_EXPLAIN": "considered 1469, GC content failed 769, low tm 1, high tm 657, high hairpin stability 2, ok 40",
+            "PRIMER_RIGHT_EXPLAIN": "considered 1469, GC content failed 235, low tm 1, high tm 1159, ok 74",
+            "PRIMER_PAIR_EXPLAIN": "considered 2960, unacceptable product size 2960, ok 0",
+            "PRIMER_PAIR_NUM_RETURNED": 0, "PRIMER_PAIR": []}
 
         # arrange
         bases = "GCTCGGGACCCGCACCGAGCCAGGCTCGGAGAGGCGCGCGGCCCGCCCCGGGCGCACAGCGCAGCGGGGCGGCGGGGGAGGCCCTGGCCGGCGTAAGGCGGGCAGGAGTCTGCGCCTTTGTTCCTGGCGGGAGGGCCCGCGGGCGCGCGACTCACCTTGCTGCTGGGCTCCATGGCAGCGCTGCGCTGGTGGCTCTGGCTGCGCCGGGTACGCGGGTGGCGACGGGCGTGCGAGCGGCGCTCTCCCGCTCAGGCTCGTGCTCCGGTCCGGGGACTCCCACTGCGACTCTGACTCCGACCCCCGTCGTTTGGTCTCCTGCTCCCTGGCG"
@@ -126,7 +131,8 @@ class IntegrationTestPrimer3(TestCase):
              "PRIMER_MAX_SIZE": 30,
              "P3_FILE_FLAG": 1,
              "SEQUENCE_INCLUDED_REGION": [0, 212],
-             "PRIMER_EXPLAIN_FLAG": 1
+             "PRIMER_EXPLAIN_FLAG": 1,
+             "PRIMER_MASK_TEMPLATE": 0
              }
 
         # act
@@ -141,10 +147,10 @@ class IntegrationTestPrimer3(TestCase):
             content failed 235, low tm 1, high tm 1159, ok 74; PRIMER_PAIR_EXPLAIN: considered 2960, \
             unacceptable product size 2960, ok 0"""
         expected_msg = ''.join(expected_msg.strip().split())
-            
+
         error_msg = str(primer_error.exception)
         error_msg = ''.join(error_msg.strip().split())
-        
+
         self.assertEqual(error_msg, expected_msg)
 
     @patch('primer.primer3.build_primer_pairs')
@@ -173,7 +179,8 @@ class IntegrationTestPrimer3(TestCase):
              "PRIMER_MAX_SIZE": 23,
              "P3_FILE_FLAG": 1,
              "SEQUENCE_INCLUDED_REGION": [0, 200],
-             "PRIMER_EXPLAIN_FLAG": 1
+             "PRIMER_EXPLAIN_FLAG": 1,
+             "PRIMER_MASK_TEMPLATE": 0
              }
 
         # act
@@ -182,6 +189,62 @@ class IntegrationTestPrimer3(TestCase):
 
         # assert
         self.assertEqual(str(value_error.exception), "No primer pairs returned")
+
+    def test_kmer_lists_exist_success(self):
+        # arrange
+        p3_config = {
+            "PRIMER_MASK_TEMPLATE": 1,
+            "PRIMER_MASK_KMERLIST_PATH": "kmers/",
+            }
+        designer_config = {"stringency_vector": [1]}
+
+        self.fs.create_dir("kmers/")
+        self.fs.create_file("kmers/homo_sapiens_11.list", contents="list of 11-mers")
+        self.fs.create_file("kmers/homo_sapiens_16.list", contents="list of 16-mers")
+
+        # act
+        result = Primer3(designer_config, p3_config)._kmer_lists_exist()
+
+        # assert
+        self.assertEqual(result, None)
+
+
+    def test_kmer_lists_exist_no_path(self):
+        # arrange
+        p3_config = {
+            "PRIMER_MASK_TEMPLATE": 1,
+            "PRIMER_MASK_KMERLIST_PATH": "kmers/",
+            }
+        designer_config = {"stringency_vector": [1]}
+
+        # act
+        with self.assertRaises(ValueError) as kmer_dir_error:
+            Primer3(designer_config, p3_config)._kmer_lists_exist()
+
+        # assert
+        expected_result = "Missing directory with kmer lists required for masking. Expected path: 'kmers/'"
+        result = str(kmer_dir_error.exception)
+        self.assertEqual(result, expected_result)
+
+
+    def test_kmer_lists_exist_no_lists(self):
+        # arrange
+        p3_config = {
+            "PRIMER_MASK_TEMPLATE": 1,
+            "PRIMER_MASK_KMERLIST_PATH": "kmers/",
+            }
+        designer_config = {"stringency_vector": [1]}
+
+        self.fs.create_dir("kmers/")
+
+        # act
+        with self.assertRaises(ValueError) as kmer_lists_error:
+            Primer3(designer_config, p3_config)._kmer_lists_exist()
+
+        # assert
+        expected_result = "Missing kmer list file(s) required for masking: 'kmers/homo_sapiens_11.list', 'kmers/homo_sapiens_16.list'"
+        result = str(kmer_lists_error.exception)
+        self.assertEqual(result, expected_result)
 
 
 if __name__ == '__main__':
