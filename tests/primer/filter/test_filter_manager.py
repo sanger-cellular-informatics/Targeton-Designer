@@ -69,7 +69,7 @@ class TestFilterManager(TestCase):
                         "HAP2": True
                     }
         }
-    
+
     def tearDown(self):
         # Remove the handler after each test to reset logging
         logger = logging.getLogger()
@@ -82,11 +82,11 @@ class TestFilterManager(TestCase):
             chromosome="1",
             pre_targeton_start=11540,
             pre_targeton_end=11545,
-            product_size="200",
+            product_size=200,
             stringency=0.1,
             targeton_id="targeton_id",
             uid="uid")
-        
+
         pair_with_variant.forward = self.primer_with_variant
         pair_with_variant.reverse = self.primer_with_no_variant
 
@@ -95,11 +95,11 @@ class TestFilterManager(TestCase):
             chromosome="1",
             pre_targeton_start=11540,
             pre_targeton_end=11545,
-            product_size="200",
+            product_size=200,
             stringency=1,
             targeton_id="targeton_id",
             uid="uid")
-        
+
         pair_with_no_variant.forward = self.primer_with_no_variant
         pair_with_no_variant.reverse = self.primer_with_no_variant
 
@@ -108,11 +108,11 @@ class TestFilterManager(TestCase):
             chromosome="2",
             pre_targeton_start=11540,
             pre_targeton_end=11545,
-            product_size="200",
+            product_size=200,
             stringency=1,
             targeton_id="targeton_id",
             uid="uid")
-        
+
         pair_max_stringency.forward = self.primer_with_no_variant
         pair_max_stringency.reverse = self.primer_with_no_variant
 
@@ -121,11 +121,11 @@ class TestFilterManager(TestCase):
             chromosome="2",
             pre_targeton_start=11540,
             pre_targeton_end=11545,
-            product_size="200",
+            product_size=200,
             stringency=0.1,
             targeton_id="targeton_id",
             uid="uid")
-    
+
         pair_min_stringency.forward = self.primer_with_no_variant
         pair_min_stringency.reverse = self.primer_with_no_variant
 
@@ -157,7 +157,7 @@ class TestFilterManager(TestCase):
             chromosome="1",
             pre_targeton_start=11540,
             pre_targeton_end=11545,
-            product_size="200",
+            product_size=200,
             stringency=1,
             targeton_id="targeton_id",
             uid="uid")
@@ -169,7 +169,7 @@ class TestFilterManager(TestCase):
             chromosome="2",
             pre_targeton_start=11540,
             pre_targeton_end=11545,
-            product_size="200",
+            product_size=200,
             stringency=1,
             targeton_id="targeton_id",
             uid="uid")
@@ -194,7 +194,7 @@ class TestFilterManager(TestCase):
             chromosome="1",
             pre_targeton_start=11540,
             pre_targeton_end=11545,
-            product_size="200",
+            product_size=200,
             stringency=1,
             targeton_id="targeton_id",
             uid="uid")
@@ -206,7 +206,7 @@ class TestFilterManager(TestCase):
             chromosome="1",
             pre_targeton_start=11540,
             pre_targeton_end=11545,
-            product_size="200",
+            product_size=200,
             stringency=0.1,
             targeton_id="targeton_id",
             uid="uid")
@@ -241,11 +241,11 @@ class TestFilterManager(TestCase):
             chromosome="1",
             pre_targeton_start=11540,
             pre_targeton_end=11545,
-            product_size="200",
+            product_size=200,
             stringency=0.1,
             targeton_id="targeton_id",
             uid="uid")
-        
+
         pair_with_variant.forward = self.primer_with_variant
         pair_with_variant.reverse = self.primer_with_no_variant
 
@@ -259,9 +259,9 @@ class TestFilterManager(TestCase):
 
         for incorrect_filter_name in self.mock_config_with_incorrect_filter_name["filters"]:
             self.assertTrue(f"Incorrect filter name {incorrect_filter_name}." in logs)
-    
+
     def test_apply_filters_with_correct_filter_names(self):
-       
+
         filter_response = FilterManager(self.mock_config["filters"])
 
         check_filters = [filter.key for filter in filter_response._filters_to_apply]

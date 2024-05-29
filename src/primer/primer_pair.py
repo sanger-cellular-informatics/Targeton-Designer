@@ -12,7 +12,7 @@ class PrimerPair:
     def __init__(self, pair_id: str, chromosome: str,
                        pre_targeton_start: int,
                        pre_targeton_end: int,
-                       product_size: str,
+                       product_size: int,
                        stringency: float,
                        targeton_id: str,
                        uid: str):
