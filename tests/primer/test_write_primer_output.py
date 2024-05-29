@@ -1,31 +1,23 @@
 import logging
-import subprocess
 import unittest
 from io import StringIO
 import pandas as pd
 from pyfakefs.fake_filesystem_unittest import TestCase
+
+from tests.utils.utils import CapturingStreamHandler
 
 from collections import defaultdict
 from primer.primer_pair import PrimerPair
 from primer.designed_primer import DesignedPrimer, Interval
 from primer.write_primer_output import _reorder_columns, _add_primer_pair
 
-class CapturingStreamHandler(logging.StreamHandler):
-  """Custom StreamHandler to capture logs in memory."""
-  def __init__(self):
-    super().__init__()
-    self.buffer = StringIO()
-    self.stream = self.buffer
 
 class TestWritePrimerOutputFiles(TestCase):
         
         def setUp(self):
             # Create a custom stream handler to capture logs
             self.handler = CapturingStreamHandler()
-            # Get the logger and set the level to capture warnings (adjust if needed)
-            logger = logging.getLogger()
-            logger.setLevel(logging.DEBUG)
-            logger.addHandler(self.handler)
+            self.logger = self.handler.get_logger(self.handler)
 
         def tearDown(self):
             # Remove the handler after each test to reset logging
