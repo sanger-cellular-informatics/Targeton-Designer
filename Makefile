@@ -125,7 +125,7 @@ clean-venv:
 test: setup-venv
 	@. venv/bin/activate
 	pip list
-	python -m unittest discover --start-directory ./tests --top-level-directory .
+	coverage run -m unittest discover --start-directory ./tests --top-level-directory .
 
 download-kmers:
 	bash download_kmer_lists.sh
