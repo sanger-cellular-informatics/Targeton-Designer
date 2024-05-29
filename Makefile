@@ -126,6 +126,7 @@ test: setup-venv
 	@. venv/bin/activate
 	pip list
 	coverage run -m unittest discover --start-directory ./tests --top-level-directory .
+	coverage report | grep tests
 
 download-kmers:
 	bash download_kmer_lists.sh
