@@ -47,7 +47,7 @@ class SliceData:
 
             first_row = next(rows, None)
             if first_row is None:
-                raise ValueError(f"The FASTA file '{fasta}' is empty and no contains expected sequence pattern.")
+                raise ValueError(f"Unable to parse the FASTA file '{fasta}'")
 
             # Name::Chr:Start-End(Strand)
             # ENSE00000769557_HG8_1::1:42929543-42929753
@@ -67,6 +67,6 @@ class SliceData:
 
             if next(rows, None) is not None:
                 logger.warning(f"The FASTA file '{fasta}' contains more than one pre-targeton. "
-                               f"Only the first pre-targeton is taken.")
+                               "Only the first pre-targeton is taken.")
 
         return slice_data

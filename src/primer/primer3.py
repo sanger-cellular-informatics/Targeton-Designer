@@ -32,9 +32,9 @@ class Primer3:
                     f'\tstart: {slice_data.start}\n'
                     f'\tend: {slice_data.end}')
 
-        slice_primer_pairs = self._get_primer_pairs(slice_data)
+        primer_pairs = self._get_primer_pairs(slice_data)
 
-        return slice_primer_pairs
+        return primer_pairs
 
     def _get_primer_pairs(self, slice_data: SliceData) -> List[PrimerPair]:
         primer_pairs = []

@@ -48,8 +48,9 @@ class TestSliceData(TestCase):
         self.assertEqual(result.end, expected.end)
         self.assertEqual(result.strand, expected.strand)
         self.assertEqual(result.bases, expected.bases)
-        logger_warning.assert_called_once_with("The FASTA file 'two_slices.fa' contains more than one pre-targeton. "
-                                               "Only the first pre-targeton is taken.")
+        logger_warning.assert_called_once_with(
+            f"The FASTA file '{slices_fasta_file}' contains more than one pre-targeton. "
+            "Only the first pre-targeton is taken.")
 
     def test_get_first_slice_when_wrong_sequence_format(self):
         wrong_fasta_file = "wrong.fa"
@@ -58,8 +59,7 @@ class TestSliceData(TestCase):
         with self.assertRaises(ValueError) as error:
             SliceData.get_first_slice_data(wrong_fasta_file)
 
-        self.assertEqual(str(error.exception),
-                         f"The FASTA file '{wrong_fasta_file}' is empty and no contains expected sequence pattern.")
+        self.assertEqual(str(error.exception), f"Unable to parse the FASTA file '{wrong_fasta_file}'")
 
     def test_get_first_slice_when_empty_fasta_file(self):
         empty_fasta = "empty.fa"
@@ -68,5 +68,4 @@ class TestSliceData(TestCase):
         with self.assertRaises(ValueError) as error:
             SliceData.get_first_slice_data(empty_fasta)
 
-        self.assertEqual(str(error.exception),
-                         f"The FASTA file '{empty_fasta}' is empty and no contains expected sequence pattern.")
+        self.assertEqual(str(error.exception), f"Unable to parse the FASTA file '{empty_fasta}'")
