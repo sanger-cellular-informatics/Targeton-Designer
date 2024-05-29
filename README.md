@@ -195,6 +195,23 @@ chmod +x ./download_kmer_lists.sh
 ./download_kmer_lists.sh
 ```
 
+Using Filters from Configuration file:
+
+To use the `filters` add filter names with respect to their values in `designer.config.json` file under `filters` as follows:
+
+```
+{
+  "stringency_vector": [...],
+  "filters": {
+    "duplicates": true,
+    "HAP1_variant": true
+  },
+  "csv_column_order": ["primer_type", "primer", "penalty", ...]
+}
+```
+
+Remember to use exact names as mentioned above. By default filter `duplicates` is applied when running primer designer command.
+
 ### Primer Scoring Tool
 
 Running primer scoring:
