@@ -63,7 +63,7 @@ class Primer3:
             raise ValueError("No primer pairs returned")
         return primer_pairs
 
-    def _get_primer3_designs(self, slice_info: dict, stringency: int) -> dict:
+    def _get_primer3_designs(self, slice_info: dict, stringency: float) -> dict:
         config_data = prepare_p3_config(self._p3_config, stringency)
         return primer3.bindings.design_primers(slice_info, config_data)
 
@@ -73,7 +73,7 @@ class Primer3:
 
             if not os.path.isdir(kmer_path):
                 msg = f"Missing directory with kmer lists required for masking. Expected path: '{kmer_path}'"
-                logger.exception(ValueError(msg))
+                logger.exception(msg)
                 raise ValueError(msg)
 
             else:
@@ -87,5 +87,5 @@ class Primer3:
                 if kmer_lists_missing:
                     kmer_lists_missing_str = ', '.join(["'{}'".format(klist) for klist in kmer_lists_missing])
                     msg = f"Missing kmer list file(s) required for masking: {kmer_lists_missing_str}"
-                    logger.exception(ValueError(msg))
+                    logger.exception(msg)
                     raise ValueError(msg)

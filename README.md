@@ -337,7 +337,7 @@ Raw file
 ```
 
 ### Primer3 and Designer Fasta Input File (Slicer Fasta output)
-Contains the slice sequence, with its ID, coordinates and strand in the header. 
+Contains the slice sequence, with its ID, coordinates and strand in the header.
 If multiple slices are provided in this file, only the first slice will be processed. The remaining slices
 will be ignored, and the user will be notified.
 
