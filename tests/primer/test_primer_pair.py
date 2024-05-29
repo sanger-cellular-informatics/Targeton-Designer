@@ -82,7 +82,7 @@ class TestPrimerPair(TestCase):
             chromosome="",
             pre_targeton_start=100,
             pre_targeton_end=200,
-            product_size="",
+            product_size=0,
             stringency=0.1,
             targeton_id="",
             uid=uid)
@@ -92,7 +92,7 @@ class TestPrimerPair(TestCase):
         input_design = {
             "PRIMER_LEFT_0_SEQUENCE": "CAGTGCCAGGACCTCTCCTA",
             "PRIMER_RIGHT_0_SEQUENCE": "TCCCTCTCAGTGGCCATCTT",
-            "PRIMER_PAIR_0_PRODUCT_SIZE": ""
+            "PRIMER_PAIR_0_PRODUCT_SIZE": 0
         }
 
         # act
@@ -204,7 +204,7 @@ class TestPrimerPair(TestCase):
         uid = 'bc09fcac-07c0-11ef-b244-fa163e9abfe1'
 
         pair = PrimerPair(pair_id="pair_id", chromosome="1", pre_targeton_start=100, pre_targeton_end=200,
-                          product_size="200", stringency=0.8, targeton_id="ENSE", uid=uid)
+                          product_size=200, stringency=0.8, targeton_id="ENSE", uid=uid)
         pair.forward_primer_data = {
             'primer': 'forward',
             'penalty': 0.5,
