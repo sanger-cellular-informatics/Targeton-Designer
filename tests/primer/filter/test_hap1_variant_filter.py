@@ -51,7 +51,7 @@ class TestHAP1VariantFilter(unittest.TestCase):
             chromosome="1",
             pre_targeton_start=11540,
             pre_targeton_end=11545,
-            product_size="200",
+            product_size=200,
             stringency=0.1,
             targeton_id="targeton_id",
             uid="uid")
@@ -63,7 +63,7 @@ class TestHAP1VariantFilter(unittest.TestCase):
             chromosome="1",
             pre_targeton_start=11540,
             pre_targeton_end=11545,
-            product_size="200",
+            product_size=200,
             stringency=1,
             targeton_id="targeton_id",
             uid="uid")
