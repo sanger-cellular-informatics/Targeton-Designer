@@ -25,15 +25,14 @@ class Primer3:
         self._kmer_lists_exist()
         self._stringency_vector = designer_config.get('stringency_vector', [""])
 
-    def get_primers(self, fasta: str) -> List[PrimerPair]:
-        primer_pairs = []
+    def get_primers(self, slice_data: SliceData) -> List[PrimerPair]:
+        logger.info('The pre-targeton used to generate primer pairs is:\n'
+                    f'\tid: {slice_data.targeton_id}\n'
+                    f'\tchromosome: {slice_data.chrom}\n'
+                    f'\tstart: {slice_data.start}\n'
+                    f'\tend: {slice_data.end}')
 
-        logger.info('Reading Fasta file')
-        slices = SliceData.parse_fasta(fasta)
-
-        for slice in slices:
-            slice_primer_pairs = self._get_primer_pairs(slice)
-            primer_pairs.extend(slice_primer_pairs)
+        primer_pairs = self._get_primer_pairs(slice_data)
 
         return primer_pairs
 
@@ -64,7 +63,7 @@ class Primer3:
             raise ValueError("No primer pairs returned")
         return primer_pairs
 
-    def _get_primer3_designs(self, slice_info: dict, stringency: int) -> dict:
+    def _get_primer3_designs(self, slice_info: dict, stringency: float) -> dict:
         config_data = prepare_p3_config(self._p3_config, stringency)
         return primer3.bindings.design_primers(slice_info, config_data)
 
@@ -74,7 +73,7 @@ class Primer3:
 
             if not os.path.isdir(kmer_path):
                 msg = f"Missing directory with kmer lists required for masking. Expected path: '{kmer_path}'"
-                logger.exception(ValueError(msg))
+                logger.exception(msg)
                 raise ValueError(msg)
 
             else:
@@ -88,5 +87,5 @@ class Primer3:
                 if kmer_lists_missing:
                     kmer_lists_missing_str = ', '.join(["'{}'".format(klist) for klist in kmer_lists_missing])
                     msg = f"Missing kmer list file(s) required for masking: {kmer_lists_missing_str}"
-                    logger.exception(ValueError(msg))
+                    logger.exception(msg)
                     raise ValueError(msg)
