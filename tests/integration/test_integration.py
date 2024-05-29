@@ -120,7 +120,7 @@ class TestPrimerIntegration(TestCase):
                 self.assertGreater(num_discarded,0)
                 self.assertEqual(num_primers + num_discarded, expected_num_pre_filter)
 
-                expected_discard_reasons = [filter.reason_discarded for filter in FilterManager(self.mock_config)._filters_to_apply]
+                expected_discard_reasons = [filter.reason_discarded for filter in FilterManager(self.mock_config["filters"])._filters_to_apply]
                 discard_reasons = df_discarded["discard_reason"].unique().tolist()
                 self.assertTrue(set(discard_reasons).issubset(set(expected_discard_reasons)))
 
