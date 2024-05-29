@@ -55,7 +55,9 @@ def primer_command(
     p3_config_file: str = None,
     designer_config_file: str = None
 ) -> PrimerOutputData:
+
     validate_files(fasta=fasta)
+    
     designer_config = DesignerConfig(designer_config_file)
 
     p3_class = Primer3(
@@ -67,7 +69,7 @@ def primer_command(
 
     primers = p3_class.get_primers(slice_data)
 
-    filters_response = FilterManager().apply_filters(primers)
+    filters_response = FilterManager(designer_config.params['filters']).apply_filters(primers)
 
     primer_result = write_primer_output(
         primer_pairs=filters_response.primer_pairs_to_keep,
