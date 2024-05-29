@@ -4,6 +4,7 @@ from os import path
 
 from config.config import DesignerConfig, Primer3ParamsConfig
 from primer.filter.filter_manager import FilterManager
+from primer.slice_data import SliceData
 from utils.arguments_parser import ParsedInputArguments
 from utils.validate_files import validate_files
 from utils.write_output_files import (
@@ -64,7 +65,9 @@ def primer_command(
         Primer3ParamsConfig(p3_config_file).params,
     )
 
-    primers = p3_class.get_primers(fasta)
+    slice_data = SliceData.get_first_slice_data(fasta)
+
+    primers = p3_class.get_primers(slice_data)
 
     filters_response = FilterManager(designer_config.params['filters']).apply_filters(primers)
 

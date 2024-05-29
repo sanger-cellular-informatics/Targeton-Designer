@@ -1,12 +1,12 @@
 import unittest
-from unittest.mock import patch
 from pyfakefs.fake_filesystem_unittest import TestCase
+from unittest.mock import patch
 
 from primer.designed_primer import DesignedPrimer, Interval
 from primer.primer_pair import PrimerPair
 from primer.primer3 import Primer3
+from primer.slice_data import SliceData
 from utils.exceptions import Primer3Error
-from src import primer
 
 
 class IntegrationTestPrimer3(TestCase):
@@ -20,12 +20,17 @@ class IntegrationTestPrimer3(TestCase):
         pre_targeton_name = "ENSE00000769557_HG8_11"
         pre_targeton_start = 42929593
         pre_targeton_end = 42929803
-        targeton_id = "ENSE"
+        bases = "CACCTTCCCTCCGGTCCCCCCAGTGCTAAAGAAGCTGCGCGGGACAGCTGACGTGACCCATGACCTGCAGGAGATGAAGGAAGAGAGTCGGCAGATGATGCGGGAGAAGAAGGTCACCATCCTGGAGCTGTTCCGCTCCCCCGCCTACCGCCAGCCCATCCTCATCGCTGTGGTGCTGCAGCTGTCCCAGCAGCTGTCTGGCATCAACGC"
 
         # arrange
-        slices_fasta_file = self.fs.create_file(
-            "fasta.fa",
-            contents=f">{pre_targeton_name}::{chromosome}:{pre_targeton_start}-{pre_targeton_end}(-)\nCACCTTCCCTCCGGTCCCCCCAGTGCTAAAGAAGCTGCGCGGGACAGCTGACGTGACCCATGACCTGCAGGAGATGAAGGAAGAGAGTCGGCAGATGATGCGGGAGAAGAAGGTCACCATCCTGGAGCTGTTCCGCTCCCCCGCCTACCGCCAGCCCATCCTCATCGCTGTGGTGCTGCAGCTGTCCCAGCAGCTGTCTGGCATCAACGC")
+        slice = SliceData(
+            name=pre_targeton_name,
+            chrom=chromosome,
+            start=f"{pre_targeton_start}",
+            end=f"{pre_targeton_end}",
+            bases=bases,
+            strand="-"
+        )
 
         designer_config = {"stringency_vector": [stringency]}
 
@@ -43,25 +48,24 @@ class IntegrationTestPrimer3(TestCase):
              }
 
         # act
-        result = Primer3(designer_config, p3_config).get_primers(slices_fasta_file.name)
+        result = Primer3(designer_config, p3_config).get_primers(slice)
 
-        uid = "bc09fcac-07c0-11ef-b244-fa163e9abfe1"
         # assert
         expected_primer_pair = PrimerPair(
-            uid={uid},
+            uid="bc09fcac-07c0-11ef-b244-fa163e9abfe1",
             pair_id=f"{pre_targeton_name}_0_str1",
             chromosome=chromosome,
-            pre_targeton_start=f"{pre_targeton_start}",
-            pre_targeton_end=f"{pre_targeton_end}",
-            product_size=200,
-            stringency=1,
+            pre_targeton_start=pre_targeton_start,
+            pre_targeton_end=pre_targeton_end,
+            product_size="200",
+            stringency=stringency,
             targeton_id="ENSE"
         )
 
         expected_forward = DesignedPrimer(
-            name="ENSE00000769557_HG8_11_LibAmpF_0",
+            name=f"{pre_targeton_name}_LibAmpF_0",
             penalty=2.7456977357412597,
-            pair_id="ENSE00000769557_HG8_11_0_str1",
+            pair_id=f"{pre_targeton_name}_0_str1",
             sequence="CAGACAGCTGCTGGGACA",
             coords=Interval(start=199, end=18),
             primer_start=42929775,
@@ -76,9 +80,9 @@ class IntegrationTestPrimer3(TestCase):
         )
 
         expected_reverse = DesignedPrimer(
-            name="ENSE00000769557_HG8_11_LibAmpR_0",
+            name=f"{pre_targeton_name}_LibAmpR_0",
             penalty=3.400054355094312,
-            pair_id="ENSE00000769557_HG8_11_0_str1",
+            pair_id=f"{pre_targeton_name}_0_str1",
             sequence="CACCTTCCCTCCGGTCCC",
             coords=Interval(start=0, end=18),
             primer_start=42929593,
@@ -99,12 +103,6 @@ class IntegrationTestPrimer3(TestCase):
 
     @patch('primer3.bindings.design_primers')
     def test_get_primer_pairs_when_primer3_error(self, mock_design_primers):
-        stringency = 1
-        chromosome = "1"
-        pre_targeton_name = "ARTY"
-        pre_targeton_start = 42958479
-        pre_targeton_end = 42958806
-
         mock_design_primers.return_value = {
             "PRIMER_LEFT_EXPLAIN": "considered 1469, GC content failed 769, low tm 1, high tm 657, high hairpin stability 2, ok 40",
             "PRIMER_RIGHT_EXPLAIN": "considered 1469, GC content failed 235, low tm 1, high tm 1159, ok 74",
@@ -112,11 +110,17 @@ class IntegrationTestPrimer3(TestCase):
             "PRIMER_PAIR_NUM_RETURNED": 0, "PRIMER_PAIR": []}
 
         # arrange
-        slices_fasta_file = self.fs.create_file(
-            "fasta.fa",
-            contents=f">{pre_targeton_name}::{chromosome}:{pre_targeton_start}-{pre_targeton_end}(+)\nGCTCGGGACCCGCACCGAGCCAGGCTCGGAGAGGCGCGCGGCCCGCCCCGGGCGCACAGCGCAGCGGGGCGGCGGGGGAGGCCCTGGCCGGCGTAAGGCGGGCAGGAGTCTGCGCCTTTGTTCCTGGCGGGAGGGCCCGCGGGCGCGCGACTCACCTTGCTGCTGGGCTCCATGGCAGCGCTGCGCTGGTGGCTCTGGCTGCGCCGGGTACGCGGGTGGCGACGGGCGTGCGAGCGGCGCTCTCCCGCTCAGGCTCGTGCTCCGGTCCGGGGACTCCCACTGCGACTCTGACTCCGACCCCCGTCGTTTGGTCTCCTGCTCCCTGGCG")
+        bases = "GCTCGGGACCCGCACCGAGCCAGGCTCGGAGAGGCGCGCGGCCCGCCCCGGGCGCACAGCGCAGCGGGGCGGCGGGGGAGGCCCTGGCCGGCGTAAGGCGGGCAGGAGTCTGCGCCTTTGTTCCTGGCGGGAGGGCCCGCGGGCGCGCGACTCACCTTGCTGCTGGGCTCCATGGCAGCGCTGCGCTGGTGGCTCTGGCTGCGCCGGGTACGCGGGTGGCGACGGGCGTGCGAGCGGCGCTCTCCCGCTCAGGCTCGTGCTCCGGTCCGGGGACTCCCACTGCGACTCTGACTCCGACCCCCGTCGTTTGGTCTCCTGCTCCCTGGCG"
+        slice = SliceData(
+            name="ARTY",
+            chrom="1",
+            start="42958479",
+            end="42958806",
+            bases=bases,
+            strand="+"
+        )
 
-        designer_config = {"stringency_vector": [stringency]}
+        designer_config = {"stringency_vector": [1]}
 
         p3_config = {
              "PRIMER_TASK": "generic",
@@ -133,7 +137,7 @@ class IntegrationTestPrimer3(TestCase):
 
         # act
         with self.assertRaises(Primer3Error) as primer_error:
-            Primer3(designer_config, p3_config).get_primers(slices_fasta_file.name)
+            Primer3(designer_config, p3_config).get_primers(slice)
 
         # assert
         expected_msg = """\
@@ -151,21 +155,20 @@ class IntegrationTestPrimer3(TestCase):
 
     @patch('primer.primer3.build_primer_pairs')
     def test_get_primer_pairs_empty_list(self, mock_build_primer_pairs):
-        stringency = 1
-        chromosome = "1"
-        pre_targeton_name = "ENSE00000769557_HG8_11"
-        pre_targeton_start = 42929593
-        pre_targeton_end = 42929803
-        targeton_id = "ENSE"
+        # arrange
+        bases = "CACCTTCCCTCCGGTCCCCCCAGTGCTAAAGAAGCTGCGCGGGACAGCTGACGTGACCCATGACCTGCAGGAGATGAAGGAAGAGAGTCGGCAGATGATGCGGGAGAAGAAGGTCACCATCCTGGAGCTGTTCCGCTCCCCCGCCTACCGCCAGCCCATCCTCATCGCTGTGGTGCTGCAGCTGTCCCAGCAGCTGTCTGGCATCAACGC"
+        slice = SliceData(
+            name="ENSE00000769557_HG8_11",
+            chrom="1",
+            start="42929593",
+            end="42929803",
+            bases=bases,
+            strand="-"
+        )
 
         mock_build_primer_pairs.return_value = []
 
-        # arrange
-        slices_fasta_file = self.fs.create_file(
-            "fasta.fa",
-            contents=f">{pre_targeton_name}::{chromosome}:{pre_targeton_start}-{pre_targeton_end}(-)\nCACCTTCCCTCCGGTCCCCCCAGTGCTAAAGAAGCTGCGCGGGACAGCTGACGTGACCCATGACCTGCAGGAGATGAAGGAAGAGAGTCGGCAGATGATGCGGGAGAAGAAGGTCACCATCCTGGAGCTGTTCCGCTCCCCCGCCTACCGCCAGCCCATCCTCATCGCTGTGGTGCTGCAGCTGTCCCAGCAGCTGTCTGGCATCAACGC")
-
-        designer_config = {"stringency_vector": [stringency]}
+        designer_config = {"stringency_vector": [1]}
 
         p3_config = {
              "PRIMER_TASK": "pick_cloning_primers",
@@ -182,13 +185,10 @@ class IntegrationTestPrimer3(TestCase):
 
         # act
         with self.assertRaises(ValueError) as value_error:
-            Primer3(designer_config, p3_config).get_primers(slices_fasta_file.name)
+            Primer3(designer_config, p3_config).get_primers(slice)
 
         # assert
-        error_msg = str(value_error.exception)
-        expected_msg = "No primer pairs returned"
-
-        self.assertEqual(error_msg, expected_msg)
+        self.assertEqual(str(value_error.exception), "No primer pairs returned")
 
     def test_kmer_lists_exist_success(self):
         # arrange
