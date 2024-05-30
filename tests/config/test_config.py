@@ -30,7 +30,7 @@ class TestDesignerConfigClass(TestCase):
                     'csv_column_order': ["primer_type", "primer", "penalty", "stringency", "sequence", "primer_start", 
                                          "primer_end", "tm", "gc_percent", "self_any_th", "self_end_th", "hairpin_th", 
                                          "end_stability", "chromosome", "pre_targeton_start", "pre_targeton_end", 
-                                         "product_size", "targeton_id"]}
+                                         "product_size", "targeton_id", "pair_uid"]}
 
         designer_config = DesignerConfig(self.config_path)
 
