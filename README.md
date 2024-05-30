@@ -144,7 +144,7 @@ Check Designer Version:
 
 Running full Designer Workflow:
 ```sh
-./designer.sh design [-h] [--fasta SLICES_FASTA] [--primer3_params PRIMER_CONFIG_JSON]
+./designer.sh design [-h] [--fasta SLICE_FASTA] [--primer3_params PRIMER_CONFIG_JSON]
 ```
 
 Example Command
@@ -175,13 +175,13 @@ If there is no config file for primer3, it will run with the default configurati
 
 Running Primer3:
 ```sh
-./designer.sh primer [--fasta SLICES_FASTA] [--dir OUTPUT_FOLDER] [--primer3_params PRIMER_CONFIG_JSON] [--conf DESIGNER_CONFIG_JSON]
+./designer.sh primer [--fasta SLICE_FASTA] [--dir OUTPUT_FOLDER] [--primer3_params PRIMER_CONFIG_JSON] [--conf DESIGNER_CONFIG_JSON]
 ```
 The input fasta and BED files are intended to be sourced from the slicer tool. Examples of how these files are constructed can be found below.
 
 Example command:
 ```sh
-./designer.sh primer --fasta slices.fa --dir p3_output
+./designer.sh primer --fasta slice.fa --dir p3_output
 ```
 
 To use kmer lists for primer generation: 
@@ -194,6 +194,23 @@ These kmer lists can be downloaded using:
 chmod +x ./download_kmer_lists.sh
 ./download_kmer_lists.sh
 ```
+
+Using Filters from Configuration file:
+
+To use the `filters` add filter names with respect to their values in `designer.config.json` file under `filters` as follows:
+
+```
+{
+  "stringency_vector": [...],
+  "filters": {
+    "duplicates": true,
+    "HAP1_variant": true
+  },
+  "csv_column_order": ["primer_type", "primer", "penalty", ...]
+}
+```
+
+Remember to use exact names as mentioned above. By default filter `duplicates` is applied when running primer designer command.
 
 ### Primer Scoring Tool
 
@@ -320,24 +337,14 @@ Raw file
 ```
 
 ### Primer3 and Designer Fasta Input File (Slicer Fasta output)
-Contains the slice sequences, with their IDs including an increment, coordinates and strand in the header
+Contains the slice sequence, with its ID, coordinates and strand in the header.
+If multiple slices are provided in this file, only the first slice will be processed. The remaining slices
+will be ignored, and the user will be notified.
 
 ```
 >ENSE00003571441_HG6_1::1:42930996-42931206(-)
 GTGATCGAGGAGTTCTACAACCAGACATGGGTCCACCGCTATGGGGAGAGCATCCTGCCCACCACGCTCACCACGCTCTGGTCCCTCTCAGTGGCCATCTTTTCTGTTGGGGGCATGATTGGCTCC
 TTCTCTGTGGGCCTTTTCGTTAACCGCTTTGGCCGGTAAGTAGGAGAGGTCCTGGCACTGCCCTTGGAGGGCCCATGCCCTCCT
->ENSE00003571441_HG6_2::1:42931001-42931211(-)
-TGCAGGTGATCGAGGAGTTCTACAACCAGACATGGGTCCACCGCTATGGGGAGAGCATCCTGCCCACCACGCTCACCACGCTCTGGTCCCTCTCAGTGGCCATCTTTTCTGTTGGGGGCATGATTG
-GCTCCTTCTCTGTGGGCCTTTTCGTTAACCGCTTTGGCCGGTAAGTAGGAGAGGTCCTGGCACTGCCCTTGGAGGGCCCATGCC
->ENSE00003571441_HG6_3::1:42931006-42931216(-)
-CCCCCTGCAGGTGATCGAGGAGTTCTACAACCAGACATGGGTCCACCGCTATGGGGAGAGCATCCTGCCCACCACGCTCACCACGCTCTGGTCCCTCTCAGTGGCCATCTTTTCTGTTGGGGGCAT
-GATTGGCTCCTTCTCTGTGGGCCTTTTCGTTAACCGCTTTGGCCGGTAAGTAGGAGAGGTCCTGGCACTGCCCTTGGAGGGCCC
->ENSE00003571441_HG6_4::1:42931011-42931221(-)
-CATCTCCCCCTGCAGGTGATCGAGGAGTTCTACAACCAGACATGGGTCCACCGCTATGGGGAGAGCATCCTGCCCACCACGCTCACCACGCTCTGGTCCCTCTCAGTGGCCATCTTTTCTGTTGGG
-GGCATGATTGGCTCCTTCTCTGTGGGCCTTTTCGTTAACCGCTTTGGCCGGTAAGTAGGAGAGGTCCTGGCACTGCCCTTGGAG
->ENSE00003571441_HG6_5::1:42931016-42931226(-)
-GGCTGCATCTCCCCCTGCAGGTGATCGAGGAGTTCTACAACCAGACATGGGTCCACCGCTATGGGGAGAGCATCCTGCCCACCACGCTCACCACGCTCTGGTCCCTCTCAGTGGCCATCTTTTCTG
-TTGGGGGCATGATTGGCTCCTTCTCTGTGGGCCTTTTCGTTAACCGCTTTGGCCGGTAAGTAGGAGAGGTCCTGGCACTGCCCT
 ```
 
 ### Primer3 Output BED file

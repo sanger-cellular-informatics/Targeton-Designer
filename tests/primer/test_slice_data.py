@@ -18,16 +18,54 @@ class TestSliceData(TestCase):
 
         self.assertEqual(result, expected_p3_input)
 
-    def test_read_input_fasta_valid_success(self):
-        slices_fasta_file = '/fasta.fa'
-        self.fs.create_file(slices_fasta_file, contents='>region1_1::chr1:5-10(+)\nGTGATCGAGGAGTTCTAC')
+    def test_get_first_slice(self):
+        slices_fasta_file = 'one_slice.fa'
+        self.fs.create_file(slices_fasta_file, contents='>region1_1::chr1:5-10(+)\nGTGATCGAGGAGTTCTA')
 
-        expected = [SliceData('region1_1', '5', '10', '+', 'chr1', 'GTGATCGAGGAGTTCTAC')]
+        expected = SliceData(name='region1_1', start='5', end='10', strand='+', chrom='chr1', bases='GTGATCGAGGAGTTCTA')
 
-        result = SliceData.parse_fasta(slices_fasta_file)
+        result = SliceData.get_first_slice_data(slices_fasta_file)
 
-        self.assertEqual(result[0].name, expected[0].name)
-        self.assertEqual(result[0].start, expected[0].start)
-        self.assertEqual(result[0].end, expected[0].end)
-        self.assertEqual(result[0].strand, expected[0].strand)
-        self.assertEqual(result[0].bases, expected[0].bases)
+        self.assertEqual(result.name, expected.name)
+        self.assertEqual(result.start, expected.start)
+        self.assertEqual(result.end, expected.end)
+        self.assertEqual(result.strand, expected.strand)
+        self.assertEqual(result.bases, expected.bases)
+
+    @patch('custom_logger.custom_logger.CustomLogger.warning')
+    def test_get_first_slice_when_more_than_one_slice(self, logger_warning):
+        slices_fasta_file = 'two_slices.fa'
+        self.fs.create_file(slices_fasta_file,
+                            contents='>region1_1::chr1:5-10(+)\nGTGATCGAGGAGTTCTA\n'
+                                     '>region2_1::chr1:5-10(+)\nAAAAGGGCCCTTTAAAA')
+
+        expected = SliceData(name='region1_1', start='5', end='10', strand='+', chrom='chr1', bases='GTGATCGAGGAGTTCTA')
+
+        result = SliceData.get_first_slice_data(slices_fasta_file)
+
+        self.assertEqual(result.name, expected.name)
+        self.assertEqual(result.start, expected.start)
+        self.assertEqual(result.end, expected.end)
+        self.assertEqual(result.strand, expected.strand)
+        self.assertEqual(result.bases, expected.bases)
+        logger_warning.assert_called_once_with(
+            f"The FASTA file '{slices_fasta_file}' contains more than one pre-targeton. "
+            "Only the first pre-targeton is taken.")
+
+    def test_get_first_slice_when_wrong_sequence_format(self):
+        wrong_fasta_file = "wrong.fa"
+        self.fs.create_file(wrong_fasta_file, contents='WRONG_SEQUENCE_PATTERN\nGTGATCGAGGAGTTCTA')
+
+        with self.assertRaises(ValueError) as error:
+            SliceData.get_first_slice_data(wrong_fasta_file)
+
+        self.assertEqual(str(error.exception), f"Unable to parse the FASTA file '{wrong_fasta_file}'")
+
+    def test_get_first_slice_when_empty_fasta_file(self):
+        empty_fasta = "empty.fa"
+        self.fs.create_file(empty_fasta, contents='')
+
+        with self.assertRaises(ValueError) as error:
+            SliceData.get_first_slice_data(empty_fasta)
+
+        self.assertEqual(str(error.exception), f"Unable to parse the FASTA file '{empty_fasta}'")

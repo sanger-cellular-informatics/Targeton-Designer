@@ -1,8 +1,12 @@
 import re
-from typing import List
 from Bio import SeqIO
 
 from primer.ensembl import get_seq_from_ensembl_by_coords
+
+from custom_logger.custom_logger import CustomLogger
+
+# Initialize logger
+logger = CustomLogger(__name__)
 
 
 class SliceData:
@@ -14,10 +18,10 @@ class SliceData:
         self.chrom = chrom
         self.bases = bases
         self.targeton_id = name[0:4]
-        self.designs = []
 
     def __repr__(self):
-        return f'SliceData({self.name}, {self.targeton_id}, {self.start}, {self.end}, {self.strand}, {self.chrom}, {self.bases})'
+        return (f'SliceData({self.name}, {self.targeton_id}, {self.start}, {self.end}, {self.strand}, {self.chrom},'
+                f' {self.bases})')
 
     @property
     def p3_input(self):
@@ -36,41 +40,33 @@ class SliceData:
             end=int(self.end) + surrounding_band
         )
 
-
     @staticmethod
-    def parse_fasta(fasta: str) -> List['SliceData']:
+    def get_first_slice_data(fasta: str) -> 'SliceData':
         with open(fasta) as fasta_data:
             rows = SeqIO.parse(fasta_data, 'fasta')
 
-            slices = []
-            for row in rows:
-                # Name::Chr:Start-End(Strand)
-                # ENSE00000769557_HG8_1::1:42929543-42929753
-                match = re.search(
-                    r'^(\w+)::((chr)?\d+):(\d+)\-(\d+)\(([+-\.]{1})\)$', row.id)
-                if match:
-                    parsed_id = _parse_slice(match)
+            first_row = next(rows, None)
+            if first_row is None:
+                raise ValueError(f"Unable to parse the FASTA file '{fasta}'")
 
-                    slice = SliceData(
-                        parsed_id["name"],
-                        parsed_id["start"],
-                        parsed_id["end"],
-                        parsed_id["strand"],
-                        parsed_id["chrom"],
-                        str(row.seq),
-                    )
+            # Name::Chr:Start-End(Strand)
+            # ENSE00000769557_HG8_1::1:42929543-42929753
+            match = re.search(r'^(\w+)::((chr)?\d+):(\d+)\-(\d+)\(([+-\.]{1})\)$', first_row.id)
 
-                    slices.append(slice)
+            if not match:
+                raise ValueError(f"The sequence ID '{first_row.id}' does not match the expected format.")
 
-        return slices
+            slice_data = SliceData(
+                name=match.group(1),
+                start=match.group(4),
+                end=match.group(5),
+                strand=match.group(6),
+                chrom=match.group(2),
+                bases=str(first_row.seq),
+            )
 
+            if next(rows, None) is not None:
+                logger.warning(f"The FASTA file '{fasta}' contains more than one pre-targeton. "
+                               "Only the first pre-targeton is taken.")
 
-def _parse_slice(match) -> dict:
-    coord_data = {
-        'name': match.group(1),
-        'start': match.group(4),
-        'end': match.group(5),
-        'strand': match.group(6),
-        'chrom': match.group(2),
-    }
-    return coord_data
+        return slice_data
