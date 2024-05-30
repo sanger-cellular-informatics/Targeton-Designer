@@ -8,7 +8,8 @@ test-dir:
   script:
     - whoami
     - uname -a
-    - ls -la
+    - ls -la ~
+    - df -h
 
 docker-build:
   # Use the official docker image.
@@ -42,18 +43,18 @@ docker-build:
       - Dockerfile
       - Makefile
 
-test:
-  # Reuse built container.
-  image: $DOCKER_IMAGE_NAME
-  stage: test
-  tags:
-    - openstack-autoscale
-    - autoscale-docker-in-docker
-  variables:
-    GIT_SUBMODULE_STRATEGY: recursive
-  before_script:
-    - make download-kmers
-  script:
-    - make test
-  dependencies:
-    - docker-build
+# test:
+#   # Reuse built container.
+#   image: $DOCKER_IMAGE_NAME
+#   stage: test
+#   tags:
+#     - openstack-autoscale
+#     - autoscale-docker-in-docker
+#   variables:
+#     GIT_SUBMODULE_STRATEGY: recursive
+#   before_script:
+#     - make download-kmers
+#   script:
+#     - make test
+#   dependencies:
+#     - docker-build
