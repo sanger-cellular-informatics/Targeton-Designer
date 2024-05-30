@@ -1,6 +1,14 @@
 stages:
+  - Get_Dir
   - .pre
   - test
+
+test-dir:
+  stage: Get_Dir
+  script:
+    - whoami
+    - uname -a
+    - ls -la
 
 docker-build:
   # Use the official docker image.
