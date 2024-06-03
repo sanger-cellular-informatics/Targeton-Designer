@@ -69,6 +69,10 @@ def primer_command(
 
     primers = p3_class.get_primers(slice_data)
 
+    print(f"primers -->> {type(primers)}")
+
+    return
+
     filters_response = FilterManager(designer_config.params['filters']).apply_filters(primers)
 
     primer_result = write_primer_output(

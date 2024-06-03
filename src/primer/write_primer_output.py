@@ -56,11 +56,6 @@ def export_primers_to_csv(primer_pairs: List[PrimerPair], export_dir: str, prime
 
     primers_dataframe = _get_primers_dataframe(primer_pairs, primer_type)
 
-    primers_dataframe["ranking"] = primers_dataframe[['stringency', 'product_size']].apply(tuple,axis=1)\
-             .rank(method='max',ascending=False).astype(int)
-    
-    # print(primers_dataframe.head(10))
-
     col_order = DesignerConfig().params['csv_column_order']
     write_dataframe_to_csv(primers_dataframe, col_order, primers_csv_output_path)
 

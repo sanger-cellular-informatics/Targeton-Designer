@@ -4,6 +4,18 @@
     "duplicates": true,
     "HAP1_variant": true
   },
+  "ranking_criteria":[
+    {
+        "name": "Stringency",
+        "ascending": true,
+        "column": "stringency"
+    },
+    {
+      "name": "ProductSize",
+      "ascending": true,
+      "column": "product_size"
+    }
+  ],
   "csv_column_order": ["primer_type",
                        "primer", 
                        "penalty", 
