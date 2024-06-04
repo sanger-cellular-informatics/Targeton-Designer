@@ -22,7 +22,7 @@ class FilterManager:
         self._filters_to_apply: List[Filter] = []
 
         if len(apply_filters) == 1 and apply_filters.get("duplicates"):
-            logger.info("No filters added in configuration file. Using duplicates filter as a default filter.")
+            logger.info("Using duplicates filter as a default filter.")
 
         correct_filter_names = [f_name.key for f_name in self.filters]
         incorrect_filter_names = set(apply_filters.keys()) - set(correct_filter_names)
