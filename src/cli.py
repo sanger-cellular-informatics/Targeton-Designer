@@ -73,9 +73,11 @@ def primer_command(
 
     filters_response = FilterManager(designer_config.params['filters']).apply_filters(primers)
 
-    validated_rankers = RankCriteriaValidator(designer_config.params).created_criteria
+    print(f"filters_response.primer_pairs_to_keep -->> {type(filters_response.primer_pairs_to_keep)}")
 
-    ranked_primer_pairs = Ranker(validated_rankers)
+    # validated_rankers = RankCriteriaValidator(designer_config.params).created_criteria
+
+    ranked_primer_pairs = Ranker(designer_config.params).rank()
     return
     primer_result = write_primer_output(
         primer_pairs=filters_response.primer_pairs_to_keep,

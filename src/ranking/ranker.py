@@ -1,9 +1,13 @@
 from typing import List
 import pandas as pd
 
-from ranking.ranking_validator import RankingCriteria
+from ranking.ranking_validator import RankCriteriaValidator, RankingCriteria
 
 
 class Ranker:
-    def __init__(self, validated_rankers: List[RankingCriteria]):
-        print(f"validated_rankers -->> {validated_rankers}")
+    def __init__(self, config: dict):
+        self.validated_rankers: List[RankingCriteria] = RankCriteriaValidator(config).created_criteria
+    
+
+    def rank(self):
+        pass
