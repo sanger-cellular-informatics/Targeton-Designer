@@ -69,7 +69,7 @@ def write_primer_output2(
     result.bed = export_to_bed(primer_rows, export_dir)
 
     result.csv = export_primers_to_csv2(primer_pairs_df, export_dir)
-    result.optimal_primer_pairs_csv = export_three_optimal_primers_to_csv(primer_pairs_df, export_dir)
+    result.optimal_primer_pairs_csv = export_three_optimal_primer_pairs_to_csv(primer_pairs_df, export_dir)
     result.dir = export_dir
 
     logger.info(f"Primer files saved: {result.bed}, {result.csv}, {result.optimal_primer_pairs_csv}")
@@ -108,11 +108,11 @@ def export_primers_to_csv2(primers_dataframe: pd.DataFrame, export_dir: str) -> 
     return primers_csv_output_path
 
 
-def export_three_optimal_primers_to_csv(df: pd.DataFrame, export_dir: str) -> str:
+def export_three_optimal_primer_pairs_to_csv(df: pd.DataFrame, export_dir: str) -> str:
     OPTIMAL_PRIMERS_CSV = 'optimal_primer_pairs.csv'
     primers_csv_output_path = path.join(export_dir, OPTIMAL_PRIMERS_CSV)
 
-    optimal_primers_df = df.head(3)
+    optimal_primers_df = df.head(6)
 
     col_order = DesignerConfig().params['csv_column_order']
     write_dataframe_to_csv(optimal_primers_df, col_order, primers_csv_output_path)

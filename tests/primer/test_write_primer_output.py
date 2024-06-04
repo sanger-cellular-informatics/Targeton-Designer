@@ -11,7 +11,8 @@ from tests.utils.utils import CapturingStreamHandler
 from collections import defaultdict
 from primer.primer_pair import PrimerPair
 from primer.designed_primer import DesignedPrimer, Interval
-from primer.write_primer_output import _reorder_columns, _add_primer_pair, export_three_optimal_primers_to_csv
+from primer.write_primer_output import _reorder_columns, _add_primer_pair, export_three_optimal_primer_pairs_to_csv, \
+    export_primers_to_csv2
 
 
 class TestWritePrimerOutputFiles(TestCase):
@@ -137,7 +138,7 @@ class TestWritePrimerOutputFiles(TestCase):
             pd.testing.assert_frame_equal(ordered_df, df[['Age', 'Name']])
 
         @patch('primer.write_primer_output.DesignerConfig')
-        def test_export_three_optimal_primers_to_csv(self, mock_designer_config):
+        def test_export_primers_to_csv2(self, mock_designer_config):
             # Arrange
             mock_designer_config.return_value.params = {'csv_column_order': ['col1', 'col2', 'col3']}
             data = {
@@ -151,7 +152,35 @@ class TestWritePrimerOutputFiles(TestCase):
             self.fs.create_dir(export_dir)
 
             # Act
-            result_path = export_three_optimal_primers_to_csv(df, export_dir)
+            result_path = export_primers_to_csv2(df, export_dir)
+
+            # Assert
+            expected_path = path.join(export_dir, 'p3_output.csv')
+            self.assertEqual(result_path, expected_path)
+
+            with open(result_path, 'r') as file:
+                content = file.read()
+
+            expected_content = "col1,col2,col3\n1,A,X\n2,B,Y\n3,C,Z\n4,D,W\n5,E,V\n"
+
+            self.assertEqual(content, expected_content)
+
+        @patch('primer.write_primer_output.DesignerConfig')
+        def test_export_three_optimal_primers_to_csv(self, mock_designer_config):
+            # Arrange
+            mock_designer_config.return_value.params = {'csv_column_order': ['col1', 'col2', 'col3']}
+            data = {
+                'col1': [1, 2, 3, 4, 5, 6, 7],
+                'col2': ['A', 'B', 'C', 'D', 'E', 'F', 'G'],
+                'col3': ['X', 'Y', 'Z', 'W', 'V', 'U', 'T']
+            }
+            df = pd.DataFrame(data)
+
+            export_dir = '/mock/directory'
+            self.fs.create_dir(export_dir)
+
+            # Act
+            result_path = export_three_optimal_primer_pairs_to_csv(df, export_dir)
 
             # Assert
             expected_path = path.join(export_dir, 'optimal_primer_pairs.csv')
@@ -160,7 +189,7 @@ class TestWritePrimerOutputFiles(TestCase):
             with open(result_path, 'r') as file:
                 content = file.read()
 
-            expected_content = "col1,col2,col3\n1,A,X\n2,B,Y\n3,C,Z\n"
+            expected_content = "col1,col2,col3\n1,A,X\n2,B,Y\n3,C,Z\n4,D,W\n5,E,V\n6,F,U\n"
 
             self.assertEqual(content, expected_content)
 
