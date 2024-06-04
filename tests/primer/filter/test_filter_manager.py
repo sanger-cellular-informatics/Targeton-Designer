@@ -253,8 +253,6 @@ class TestFilterManager(TestCase):
     
     
     def test_apply_filters_with_HAP1_enabled(self):
-
-
         pair_with_variant = PrimerPair(
             pair_id="pair_with_hap1_variant",
             chromosome="1",
