@@ -1,6 +1,8 @@
 import logging
 import unittest
-from io import StringIO
+from os import path
+from unittest.mock import patch
+
 import pandas as pd
 from pyfakefs.fake_filesystem_unittest import TestCase
 
@@ -9,7 +11,7 @@ from tests.utils.utils import CapturingStreamHandler
 from collections import defaultdict
 from primer.primer_pair import PrimerPair
 from primer.designed_primer import DesignedPrimer, Interval
-from primer.write_primer_output import _reorder_columns, _add_primer_pair
+from primer.write_primer_output import _reorder_columns, _add_primer_pair, export_three_optimal_primers_to_csv
 
 
 class TestWritePrimerOutputFiles(TestCase):
@@ -18,6 +20,8 @@ class TestWritePrimerOutputFiles(TestCase):
             # Create a custom stream handler to capture logs
             self.handler = CapturingStreamHandler()
             self.logger = self.handler.get_logger(self.handler)
+
+            self.setUpPyfakefs()
 
         def tearDown(self):
             # Remove the handler after each test to reset logging
@@ -131,6 +135,34 @@ class TestWritePrimerOutputFiles(TestCase):
 
             # Assertion
             pd.testing.assert_frame_equal(ordered_df, df[['Age', 'Name']])
+
+        @patch('primer.write_primer_output.DesignerConfig')
+        def test_export_three_optimal_primers_to_csv(self, mock_designer_config):
+            # Arrange
+            mock_designer_config.return_value.params = {'csv_column_order': ['col1', 'col2', 'col3']}
+            data = {
+                'col1': [1, 2, 3, 4, 5],
+                'col2': ['A', 'B', 'C', 'D', 'E'],
+                'col3': ['X', 'Y', 'Z', 'W', 'V']
+            }
+            df = pd.DataFrame(data)
+
+            export_dir = '/mock/directory'
+            self.fs.create_dir(export_dir)
+
+            # Act
+            result_path = export_three_optimal_primers_to_csv(df, export_dir)
+
+            # Assert
+            expected_path = path.join(export_dir, 'optimal_primer_pairs.csv')
+            self.assertEqual(result_path, expected_path)
+
+            with open(result_path, 'r') as file:
+                content = file.read()
+
+            expected_content = "col1,col2,col3\n1,A,X\n2,B,Y\n3,C,Z\n"
+
+            self.assertEqual(content, expected_content)
 
 
 class TestDataFrameBuild(TestCase):
