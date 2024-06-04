@@ -2,7 +2,7 @@
   "stringency_vector": [1, 0.5, 0.1],
   "filters": {
     "duplicates": true,
-    "HAP1_variant": true
+    "HAP1_variant": false
   },
   "ranking_criteria":[
     {

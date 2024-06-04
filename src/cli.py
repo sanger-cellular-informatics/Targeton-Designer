@@ -26,6 +26,8 @@ from slicer.slicer import Slicer
 from primer.primer3 import Primer3
 from primer_designer import PrimerDesigner
 from post_primer_pairs import post_primer_pairs
+from ranking.ranking_validator import RankCriteriaValidator
+from ranking.ranker import Ranker
 
 sys.path.append(path.abspath(path.join(path.dirname(__file__), '../sge-primer-scoring/src')))
 from scoring import Scoring
@@ -69,12 +71,12 @@ def primer_command(
 
     primers = p3_class.get_primers(slice_data)
 
-    print(f"primers -->> {type(primers)}")
-
-    return
-
     filters_response = FilterManager(designer_config.params['filters']).apply_filters(primers)
 
+    validated_rankers = RankCriteriaValidator(designer_config.params).created_criteria
+
+    ranked_primer_pairs = Ranker(validated_rankers)
+    return
     primer_result = write_primer_output(
         primer_pairs=filters_response.primer_pairs_to_keep,
         discarded_primer_pairs=filters_response.primer_pairs_to_discard,

@@ -28,9 +28,13 @@ class DesignerConfig(Config):
             config["filters"] = {}
             logger.info("No filters exist in configuration file.")          
      
+        if not config.get("ranking_criteria"):
+            config["ranking_criteria"] = []
+            logger.info("No Ranking criteria provided")
+
         self.params = {'stringency_vector': config['stringency_vector'],
                        'csv_column_order': config['csv_column_order'],
-                       'filters': config["filters"], 'ranking_criteria':}
+                       'filters': config["filters"], 'ranking_criteria': config["ranking_criteria"]}
     
         
 
