@@ -33,7 +33,6 @@ class DesignerConfig(Config):
         self.params = {'stringency_vector': config['stringency_vector'],
                        'csv_column_order': config['csv_column_order'],
                        'filters': config["filters"], 'ranking_criteria': config["ranking_criteria"]}
-    
         
 
     @staticmethod

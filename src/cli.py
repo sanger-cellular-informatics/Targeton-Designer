@@ -26,7 +26,6 @@ from slicer.slicer import Slicer
 from primer.primer3 import Primer3
 from primer_designer import PrimerDesigner
 from post_primer_pairs import post_primer_pairs
-from ranking.ranking_validator import RankCriteriaValidator
 from ranking.ranker import Ranker
 
 sys.path.append(path.abspath(path.join(path.dirname(__file__), '../sge-primer-scoring/src')))

@@ -16,10 +16,10 @@ class Ranker:
 
         primer_pairs_df = _get_primers_dataframe(primer_pairs, primer_type)
 
-        columns_sort_by = [column.column for column in self.validated_rankers]
+        columns_to_sort = [column.column for column in self.validated_rankers]
 
         is_ascending = [column.is_ascending for column in self.validated_rankers]
 
-        primer_pairs_df.sort_values(by=columns_sort_by, ascending=is_ascending, inplace=True)
+        primer_pairs_df.sort_values(by=columns_to_sort, ascending=is_ascending, inplace=True)
 
         return primer_pairs_df
