@@ -90,7 +90,7 @@ class TestFilterManager(TestCase):
             stringency=0.1,
             targeton_id="targeton_id",
             uid="uid")
-        
+
         pair_with_variant.forward = self.primer_with_variant
         pair_with_variant.reverse = self.primer_with_no_variant
 
@@ -103,7 +103,7 @@ class TestFilterManager(TestCase):
             stringency=1,
             targeton_id="targeton_id",
             uid="uid")
-        
+
         pair_with_no_variant.forward = self.primer_with_no_variant
         pair_with_no_variant.reverse = self.primer_with_no_variant
 
@@ -116,7 +116,7 @@ class TestFilterManager(TestCase):
             stringency=1,
             targeton_id="targeton_id",
             uid="uid")
-        
+
         pair_max_stringency.forward = self.primer_with_no_variant
         pair_max_stringency.reverse = self.primer_with_no_variant
 
@@ -129,12 +129,13 @@ class TestFilterManager(TestCase):
             stringency=0.1,
             targeton_id="targeton_id",
             uid="uid")
-    
+
         pair_min_stringency.forward = self.primer_with_no_variant
         pair_min_stringency.reverse = self.primer_with_no_variant
 
         # Act
-        pairs_to_filter = [pair_with_variant, pair_with_no_variant, pair_max_stringency, pair_min_stringency]
+        pairs_to_filter = [pair_with_variant, pair_with_no_variant,
+                           pair_max_stringency, pair_min_stringency]
 
         filter_response = FilterManager(self.mock_config["filters"]).apply_filters(pairs_to_filter)
 
@@ -144,15 +145,17 @@ class TestFilterManager(TestCase):
             self.assertTrue(f"Filter {filter} is applied." in logs)
 
         # Assertion
-        self.assertEqual(len(filter_response.primer_pairs_to_keep), 6)
+        self.assertEqual(len(filter_response.primer_pairs_to_keep), 2)
         self.assertIn(pair_with_no_variant, filter_response.primer_pairs_to_keep)
         self.assertTrue(pair_max_stringency, filter_response.primer_pairs_to_keep)
 
         self.assertEqual(len(filter_response.primer_pairs_to_discard), 2)
-        self.assertIn(PrimerPairDiscarded(pair_with_variant, reason_discarded=HAP1VariantFilter.reason_discarded),
-                    filter_response.primer_pairs_to_discard)
-        self.assertIn(PrimerPairDiscarded(pair_min_stringency, reason_discarded=DuplicatesFilter.reason_discarded),
-                    filter_response.primer_pairs_to_discard)
+        self.assertIn(PrimerPairDiscarded(pair_with_variant,
+                                          reason_discarded=HAP1VariantFilter.reason_discarded),
+                      filter_response.primer_pairs_to_discard)
+        self.assertIn(PrimerPairDiscarded(pair_min_stringency,
+                                          reason_discarded=DuplicatesFilter.reason_discarded),
+                      filter_response.primer_pairs_to_discard)
 
     def test_apply_filters_when_all_primer_pairs_are_kept(self):
         # Arrange
@@ -181,11 +184,12 @@ class TestFilterManager(TestCase):
         pair_with_no_duplicates_nor_variant2.reverse = self.primer_with_no_variant
 
         # Act
-        pairs_to_filter = [pair_with_no_duplicates_nor_variant1, pair_with_no_duplicates_nor_variant2]
+        pairs_to_filter = [pair_with_no_duplicates_nor_variant1,
+                           pair_with_no_duplicates_nor_variant2]
         filter_response = FilterManager(self.mock_config["filters"]).apply_filters(pairs_to_filter)
 
         # Assertion
-        self.assertEqual(len(filter_response.primer_pairs_to_keep), 4)
+        self.assertEqual(len(filter_response.primer_pairs_to_keep), 2)
         self.assertIn(pair_with_no_duplicates_nor_variant1, filter_response.primer_pairs_to_keep)
         self.assertTrue(pair_with_no_duplicates_nor_variant2, filter_response.primer_pairs_to_keep)
 
@@ -222,13 +226,15 @@ class TestFilterManager(TestCase):
         filter_response = FilterManager(self.mock_config["filters"]).apply_filters(pairs_to_filter)
 
         # Assertion
-        self.assertEqual(len(filter_response.primer_pairs_to_keep), 1)
+        self.assertEqual(len(filter_response.primer_pairs_to_keep), 0)
 
-        self.assertEqual(len(filter_response.primer_pairs_to_discard), 3)
-        self.assertIn(PrimerPairDiscarded(pair_with_variant, reason_discarded=HAP1VariantFilter.reason_discarded),
-                    filter_response.primer_pairs_to_discard)
-        self.assertIn(PrimerPairDiscarded(pair_duplicate, reason_discarded=DuplicatesFilter.reason_discarded),
-                    filter_response.primer_pairs_to_discard)
+        self.assertEqual(len(filter_response.primer_pairs_to_discard), 2)
+        self.assertIn(PrimerPairDiscarded(pair_with_variant,
+                                          reason_discarded=HAP1VariantFilter.reason_discarded),
+                      filter_response.primer_pairs_to_discard)
+        self.assertIn(PrimerPairDiscarded(pair_duplicate,
+                                          reason_discarded=DuplicatesFilter.reason_discarded),
+                      filter_response.primer_pairs_to_discard)
 
     def test_apply_filters_when_no_primer_pairs(self):
         # Act
@@ -292,5 +298,3 @@ class TestFilterManager(TestCase):
         logs = self.handler.buffer.getvalue().strip()
 
         self.assertTrue("Filter HAP1_variant is applied." in logs)
-    
-   
