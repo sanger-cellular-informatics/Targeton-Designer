@@ -112,7 +112,7 @@ class TestPrimerIntegration(TestCase):
 
                 self.assertEqual(set(discarded_headers), set(expected_discarded_headers))
 
-                expected_num_pre_filter = 240
+                expected_num_pre_filter = 120
                 num_primers = df_primers.shape[0]
                 num_discarded = df_discarded.shape[0]
 

@@ -29,6 +29,7 @@ class Primer3:
         logger.info('The pre-targeton used to generate primer pairs is:\n'
                     f'\tid: {slice_data.targeton_id}\n'
                     f'\tchromosome: {slice_data.chrom}\n'
+                    f'\tstrand: {slice_data.strand}\n'
                     f'\tstart: {slice_data.start}\n'
                     f'\tend: {slice_data.end}')
 

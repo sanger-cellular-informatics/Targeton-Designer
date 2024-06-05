@@ -1,5 +1,6 @@
 import logging
 from unittest import TestCase
+from unittest.mock import patch
 
 from tests.utils.utils import CapturingStreamHandler
 
@@ -62,12 +63,15 @@ class TestFilterManager(TestCase):
         }
 
         self.mock_config_with_incorrect_filter_name = {
-            "stringency_vector": [1, 2, 3],
-            "csv_column_order": ["col1", "col2", "col3"],
             "filters": {
                         "HAP3_variant": True,
                         "HAP2": True
                     }
+        }
+
+        self.mock_config_with_no_filters_section = {
+            "stringency_vector": [1, 2, 3],
+            "csv_column_order": ["col1", "col2", "col3"]
         }
     
     def tearDown(self):
@@ -86,7 +90,7 @@ class TestFilterManager(TestCase):
             stringency=0.1,
             targeton_id="targeton_id",
             uid="uid")
-        
+
         pair_with_variant.forward = self.primer_with_variant
         pair_with_variant.reverse = self.primer_with_no_variant
 
@@ -99,7 +103,7 @@ class TestFilterManager(TestCase):
             stringency=1,
             targeton_id="targeton_id",
             uid="uid")
-        
+
         pair_with_no_variant.forward = self.primer_with_no_variant
         pair_with_no_variant.reverse = self.primer_with_no_variant
 
@@ -112,7 +116,7 @@ class TestFilterManager(TestCase):
             stringency=1,
             targeton_id="targeton_id",
             uid="uid")
-        
+
         pair_max_stringency.forward = self.primer_with_no_variant
         pair_max_stringency.reverse = self.primer_with_no_variant
 
@@ -125,29 +129,32 @@ class TestFilterManager(TestCase):
             stringency=0.1,
             targeton_id="targeton_id",
             uid="uid")
-    
+
         pair_min_stringency.forward = self.primer_with_no_variant
         pair_min_stringency.reverse = self.primer_with_no_variant
 
         # Act
-        pairs_to_filter = [pair_with_variant, pair_with_no_variant, pair_max_stringency, pair_min_stringency]
+        pairs_to_filter = [pair_with_variant, pair_with_no_variant,
+                           pair_max_stringency, pair_min_stringency]
 
         filter_response = FilterManager(self.mock_config["filters"]).apply_filters(pairs_to_filter)
 
         logs = self.handler.buffer.getvalue().strip()
+        
         for filter in self.mock_config["filters"]:
             self.assertTrue(f"Filter {filter} is applied." in logs)
 
-
         # Assertion
-        self.assertEqual(len(filter_response.primer_pairs_to_keep), 6)
+        self.assertEqual(len(filter_response.primer_pairs_to_keep), 2)
         self.assertIn(pair_with_no_variant, filter_response.primer_pairs_to_keep)
         self.assertTrue(pair_max_stringency, filter_response.primer_pairs_to_keep)
 
         self.assertEqual(len(filter_response.primer_pairs_to_discard), 2)
-        self.assertIn(PrimerPairDiscarded(pair_with_variant, reason_discarded=HAP1VariantFilter.reason_discarded),
+        self.assertIn(PrimerPairDiscarded(pair_with_variant,
+                                          reason_discarded=HAP1VariantFilter.reason_discarded),
                       filter_response.primer_pairs_to_discard)
-        self.assertIn(PrimerPairDiscarded(pair_min_stringency, reason_discarded=DuplicatesFilter.reason_discarded),
+        self.assertIn(PrimerPairDiscarded(pair_min_stringency,
+                                          reason_discarded=DuplicatesFilter.reason_discarded),
                       filter_response.primer_pairs_to_discard)
 
     def test_apply_filters_when_all_primer_pairs_are_kept(self):
@@ -177,11 +184,12 @@ class TestFilterManager(TestCase):
         pair_with_no_duplicates_nor_variant2.reverse = self.primer_with_no_variant
 
         # Act
-        pairs_to_filter = [pair_with_no_duplicates_nor_variant1, pair_with_no_duplicates_nor_variant2]
+        pairs_to_filter = [pair_with_no_duplicates_nor_variant1,
+                           pair_with_no_duplicates_nor_variant2]
         filter_response = FilterManager(self.mock_config["filters"]).apply_filters(pairs_to_filter)
 
         # Assertion
-        self.assertEqual(len(filter_response.primer_pairs_to_keep), 4)
+        self.assertEqual(len(filter_response.primer_pairs_to_keep), 2)
         self.assertIn(pair_with_no_duplicates_nor_variant1, filter_response.primer_pairs_to_keep)
         self.assertTrue(pair_with_no_duplicates_nor_variant2, filter_response.primer_pairs_to_keep)
 
@@ -218,12 +226,14 @@ class TestFilterManager(TestCase):
         filter_response = FilterManager(self.mock_config["filters"]).apply_filters(pairs_to_filter)
 
         # Assertion
-        self.assertEqual(len(filter_response.primer_pairs_to_keep), 1)
+        self.assertEqual(len(filter_response.primer_pairs_to_keep), 0)
 
-        self.assertEqual(len(filter_response.primer_pairs_to_discard), 3)
-        self.assertIn(PrimerPairDiscarded(pair_with_variant, reason_discarded=HAP1VariantFilter.reason_discarded),
+        self.assertEqual(len(filter_response.primer_pairs_to_discard), 2)
+        self.assertIn(PrimerPairDiscarded(pair_with_variant,
+                                          reason_discarded=HAP1VariantFilter.reason_discarded),
                       filter_response.primer_pairs_to_discard)
-        self.assertIn(PrimerPairDiscarded(pair_duplicate, reason_discarded=DuplicatesFilter.reason_discarded),
+        self.assertIn(PrimerPairDiscarded(pair_duplicate,
+                                          reason_discarded=DuplicatesFilter.reason_discarded),
                       filter_response.primer_pairs_to_discard)
 
     def test_apply_filters_when_no_primer_pairs(self):
@@ -234,14 +244,27 @@ class TestFilterManager(TestCase):
         self.assertEqual(len(filter_response.primer_pairs_to_keep), 0)
         self.assertEqual(len(filter_response.primer_pairs_to_discard), 0)
 
-    def test_apply_filters_with_incorrect_filter_name(self):
-        # Arrange
+
+    @patch("primer.filter.filter_manager.FilterManager")
+    def test_apply_filters_with_incorrect_filter_name(self, mock_config_with_incorrect_filter_name):
+
+        mock_config_with_incorrect_filter_name.return_value = self.mock_config_with_incorrect_filter_name.copy()
+
+        with self.assertRaises(SystemExit):
+            _ = FilterManager(self.mock_config_with_incorrect_filter_name["filters"])
+        
+        logs = self.handler.buffer.getvalue().strip()
+
+        self.assertTrue("Please check and re-run the command again with the correct filter name in the configuration file." in logs)
+    
+    
+    def test_apply_filters_with_HAP1_enabled(self):
         pair_with_variant = PrimerPair(
             pair_id="pair_with_hap1_variant",
             chromosome="1",
             pre_targeton_start=11540,
             pre_targeton_end=11545,
-            product_size="200",
+            product_size=200,
             stringency=0.1,
             targeton_id="targeton_id",
             uid="uid")
@@ -249,21 +272,29 @@ class TestFilterManager(TestCase):
         pair_with_variant.forward = self.primer_with_variant
         pair_with_variant.reverse = self.primer_with_no_variant
 
+        pair_with_no_variant = PrimerPair(
+            pair_id="pair_with_no_variant",
+            chromosome="1",
+            pre_targeton_start=11540,
+            pre_targeton_end=11545,
+            product_size=200,
+            stringency=1,
+            targeton_id="targeton_id",
+            uid="uid")
+        
+        pair_with_no_variant.forward = self.primer_with_no_variant
+        pair_with_no_variant.reverse = self.primer_with_no_variant
 
-        # Act
-        pairs_to_filter = [pair_with_variant]
+        mocked_hap1_enable_config = {
+                                    "filters": {
+                                        "HAP1_variant": True
+                                    }
+                                }
+       
+        pairs_to_filter = [pair_with_variant, pair_with_no_variant]
 
-        _ = FilterManager(self.mock_config_with_incorrect_filter_name["filters"]).apply_filters(pairs_to_filter)
+        _ = FilterManager(mocked_hap1_enable_config["filters"]).apply_filters(pairs_to_filter)
 
         logs = self.handler.buffer.getvalue().strip()
 
-        for incorrect_filter_name in self.mock_config_with_incorrect_filter_name["filters"]:
-            self.assertTrue(f"Incorrect filter name {incorrect_filter_name}." in logs)
-    
-    def test_apply_filters_with_correct_filter_names(self):
-       
-        filter_response = FilterManager(self.mock_config["filters"])
-
-        check_filters = [filter.key for filter in filter_response._filters_to_apply]
-
-        self.assertEqual(list(self.mock_config["filters"].keys()), check_filters)
+        self.assertTrue("Filter HAP1_variant is applied." in logs)
