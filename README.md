@@ -396,6 +396,7 @@ It contains the top 3 optimal primer pairs. The column order is specified throug
 | LibAmp      | ENSE00003571441_HG6_6_LibAmpF_1 | 2.097   | 1          | AGTGCCAGGACCTCTCCTA  | 42931211     | 42931230   | 58.902 | 57.895     | 0.0         | 0.0         | 46.301     | 2.94          | 1          | 42931021           | 42931231         | 171          | ENSE        | 5720fdd7&#8209;095a&#8209;11ef&#8209;8b15&#8209;fa163e1ef5d5 |
 | LibAmp      | ENSE00003571441_HG6_6_LibAmpR_0 | 3.415   | 1          | ACCCAGGCTGCATCTCCC   | 42931021     | 42931039   | 61.415 | 66.667     | 9.565       | 0.0         | 0.0        | 4.3           | 1          | 42931021           | 42931231         | 170          | ENSE        | 5720fdd6&#8209;095a&#8209;11ef&#8209;8b15&#8209;fa163e1ef5d5 |
 | LibAmp      | ENSE00003571441_HG6_6_LibAmpF_0 | 0.324   | 1          | AGTGCCAGGACCTCTCCTAC | 42931210     | 42931230   | 60.324 | 60.0       | 0.0         | 0.0         | 46.301     | 3.18          | 1          | 42931021           | 42931231         | 170          | ENSE        | 5720fdd6&#8209;095a&#8209;11ef&#8209;8b15&#8209;fa163e1ef5d5 |
+
 Raw File ('optimal_primer_pairs.csv')
 ```
 primer_type,primer,penalty,stringency,sequence,primer_start,primer_end,tm,gc_percent,self_any_th,self_end_th,hairpin_th,end_stability,chromosome,pre_targeton_start,pre_targeton_end,product_size,targeton_id,pair_id
