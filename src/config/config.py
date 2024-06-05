@@ -22,7 +22,6 @@ class DesignerConfig(Config):
         self._default_config_file = 'config/designer.config.json'
 
         config = self.read_config(self._default_config_file, config_file)
-    
         # Check if filters exist in configuration.
         if not config.get("filters", ""):
             config["filters"] = {}
@@ -30,7 +29,6 @@ class DesignerConfig(Config):
      
         if not config.get("ranking_criteria"):
             config["ranking_criteria"] = []
-            logger.info("No Ranking criteria provided")
 
         self.params = {'stringency_vector': config['stringency_vector'],
                        'csv_column_order': config['csv_column_order'],

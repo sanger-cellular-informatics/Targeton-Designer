@@ -6,13 +6,13 @@
   },
   "ranking_criteria":[
     {
-        "name": "Stringency",
-        "ascending": true,
-        "column": "stringency"
+      "name": "Stringency",
+      "is_ascending": false,
+      "column": "stringency"
     },
     {
       "name": "ProductSize",
-      "ascending": true,
+      "is_ascending": false,
       "column": "product_size"
     }
   ],
@@ -34,6 +34,5 @@
                        "pre_targeton_end", 
                        "product_size",
                        "targeton_id",
-                       "pair_uid",
-                       "ranking"]
+                       "pair_uid"]
 }

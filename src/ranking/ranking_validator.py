@@ -13,7 +13,7 @@ logger = CustomLogger(__name__)
 @dataclass
 class RankingCriteria():
     name: str
-    ascending: bool
+    is_ascending: bool
     column: str
 
     def __init__(self, **criteria):
@@ -28,6 +28,10 @@ class RankCriteriaValidator:
         self.created_criteria: List[RankingCriteria] = []
         self.is_validated: bool
 
+        if not self.ranking_columns:
+            logger.info("No Ranking criteria provided.")
+            return
+
         for criteria in self.ranking_columns:
             created = RankingCriteria.from_dict(criteria)
             self.created_criteria.append(created)
@@ -35,8 +39,8 @@ class RankCriteriaValidator:
         validated, column_name, validated_rankers = validate_ranking_columns(self.created_criteria, self.csv_columns)
 
         if not validated:
-            logger.warning(f"Invalid ranking column name {column_name}. Please Check configuration file")
-            raise Exception(f"Invalid ranking column name {column_name}. Please Check configuration file")
+            logger.warning(f"Invalid ranking column name {column_name}. Please Check configuration file.")
+            raise Exception(f"Invalid ranking column name {column_name}. Please Check configuration file.")
         
         self.created_criteria = validated_rankers
     
@@ -48,11 +52,11 @@ def validate_ranking_columns(created_criteria, csv_columns):
     validated_rankers = []
 
     for ranking_criteria in created_criteria:
-        if ranking_criteria.column in csv_columns:
-            validated_rankers.append(ranking_criteria)
-        else:
+        if not ranking_criteria.column in csv_columns:
             is_validated = not is_validated
             column_name = ranking_criteria.column
             return is_validated, column_name, validated_rankers
         
+        validated_rankers.append(ranking_criteria)
+
     return is_validated, validated_rankers, validated_rankers
