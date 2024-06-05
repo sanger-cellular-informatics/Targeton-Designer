@@ -17,10 +17,10 @@ from custom_logger.custom_logger import CustomLogger
 logger = CustomLogger(__name__)
 
 def write_primer_output(
+    primer_pairs_df: pd.DataFrame,
     prefix='',
     primer_pairs=[],
     discarded_primer_pairs=[],
-    primer_pairs_df: pd.DataFrame = None,
     existing_dir='',
     primer_type='LibAmp'
 ) -> PrimerOutputData:
@@ -30,14 +30,11 @@ def write_primer_output(
     primer_rows = construct_primer_rows_bed_format(primer_pairs)
     result.bed = export_to_bed(primer_rows, export_dir)
 
-    result.csv = export_primers_to_csv(primer_pairs, export_dir, primer_type)
+    result.csv = export_primers_to_csv(primer_pairs_df, export_dir)
+    result.optimal_primer_pairs_csv = export_three_optimal_primer_pairs_to_csv(primer_pairs_df, export_dir)
     result.dir = export_dir
 
-    logger.info(f"Primer files saved: {result.bed} {result.csv}")
-
-    if primer_pairs_df:
-        result.optimal_primer_pairs_csv = export_three_optimal_primer_pairs_to_csv(primer_pairs_df, export_dir)
-        logger.info(f"Optimal primer pairs file saved: {result.optimal_primer_pairs_csv} ")
+    logger.info(f"Primer files saved: {result.bed}, {result.csv}, {result.optimal_primer_pairs_csv}")
 
     if discarded_primer_pairs:
         result.discarded_csv = export_discarded_primers_to_csv(
@@ -51,11 +48,9 @@ def write_primer_output(
     return result
 
 
-def export_primers_to_csv(primer_pairs: List[PrimerPair], export_dir: str, primer_type: str) -> str:
+def export_primers_to_csv(primers_dataframe: pd.DataFrame, export_dir: str) -> str:
     PRIMER3_OUTPUT_CSV = 'p3_output.csv'
     primers_csv_output_path = path.join(export_dir, PRIMER3_OUTPUT_CSV)
-
-    primers_dataframe = _get_primers_dataframe(primer_pairs, primer_type)
 
     col_order = DesignerConfig().params['csv_column_order']
     write_dataframe_to_csv(primers_dataframe, col_order, primers_csv_output_path)
