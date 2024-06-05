@@ -20,7 +20,7 @@ def write_primer_output(
     prefix='',
     primer_pairs=[],
     discarded_primer_pairs=[],
-    primer_pairs_df: pd.DataFrame = None,
+    primer_pairs_df:pd.DataFrame=None,
     existing_dir='',
     primer_type='LibAmp'
 ) -> PrimerOutputData:
