@@ -12,7 +12,7 @@ class Ranker:
     def rank(self, primer_type:str, primer_pairs=[]) -> pd.DataFrame:
 
         if not self._ranking_order:
-            return
+            return _get_primers_dataframe(primer_pairs, primer_type)
 
         primer_pairs_df = _get_primers_dataframe(primer_pairs, primer_type)
 
