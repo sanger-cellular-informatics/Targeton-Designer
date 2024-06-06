@@ -188,14 +188,14 @@ To use kmer lists for primer generation:
 1. Set config parameters (example config/primer3_kmer.config.json)
 2. Provide 2 files with kmers: homo_sapiens_11.list and homo_sapiens_16.list
 
-These kmer lists can be downloaded using:
+##### These kmer lists can be downloaded using:
 
 ```sh
 chmod +x ./download_kmer_lists.sh
 ./download_kmer_lists.sh
 ```
 
-Using Filters from Configuration file:
+##### Using Filters from Configuration file:
 
 To use the `filters` add filter names with respect to their values in `designer.config.json` file under `filters` as follows:
 
@@ -213,7 +213,7 @@ To use the `filters` add filter names with respect to their values in `designer.
 Remember to use exact names as mentioned above. By default filter `duplicates` is applied when running primer designer command.
 
 
-Primer Pairs Ranking:
+##### Primer Pairs Ranking:
 
 You can use the ranking functionality to rank the primer pairs. Add the column names which you need to rank by as given example below.Add the following `ranking_criteria` in your configuration file:
 
