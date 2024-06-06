@@ -125,7 +125,6 @@ def _add_primer_pair(primers_dict: defaultdict(list),
 
 def _reorder_columns(csv_col_order: List[str],
                      dataframe: pd.DataFrame):
-    
     col_order_unique = list(dict.fromkeys(csv_col_order))
     _check_unique_columns(col_order_unique, csv_col_order)
 
