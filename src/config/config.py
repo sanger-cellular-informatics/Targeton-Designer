@@ -24,11 +24,13 @@ class DesignerConfig(Config):
         config = self.read_config(self._default_config_file, config_file)
         # Check if filters exist in configuration.
         if not config.get("filters", {}):
-            logger.info("No filters exist in configuration file.")          
+            # If duplicates is False by mistake, it will be enabled to run as a default filter.
+            # Because we want to run duplicates filter even there's no filter added in configuration.
+            config["filters"] = {"duplicates": True}         
 
         self.params = {'stringency_vector': config['stringency_vector'],
                        'csv_column_order': config['csv_column_order'],
-                       'filters': config.get("filters", {}), 'ranking_criteria': config.get("ranking_criteria", [])}
+                       'filters': config.get("filters", {})}
         
 
     @staticmethod

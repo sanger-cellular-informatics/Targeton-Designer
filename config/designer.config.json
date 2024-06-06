@@ -2,9 +2,8 @@
   "stringency_vector": [1, 0.5, 0.1],
   "filters": {
     "duplicates": true,
-    "HAP1_variant": true
+    "HAP1_variant": false
   },
-  "ranking_criteria":["stringency", "product_size"],
   "csv_column_order": ["primer_type",
                        "primer", 
                        "penalty", 
