@@ -23,16 +23,12 @@ class DesignerConfig(Config):
 
         config = self.read_config(self._default_config_file, config_file)
         # Check if filters exist in configuration.
-        if not config.get("filters", ""):
-            config["filters"] = {}
+        if not config.get("filters", {}):
             logger.info("No filters exist in configuration file.")          
-     
-        if not config.get("ranking_criteria"):
-            config["ranking_criteria"] = []
 
         self.params = {'stringency_vector': config['stringency_vector'],
                        'csv_column_order': config['csv_column_order'],
-                       'filters': config["filters"], 'ranking_criteria': config["ranking_criteria"]}
+                       'filters': config.get("filters", {}), 'ranking_criteria': config.get("ranking_criteria", [])}
         
 
     @staticmethod

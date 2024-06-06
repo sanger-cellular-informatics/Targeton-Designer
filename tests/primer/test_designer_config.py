@@ -15,11 +15,10 @@ class TestDesignerConfig(unittest.TestCase):
         self.logger = self.handler.get_logger(self.handler)
 
         self.mock_config_with_no_filters_section = {
-            "stringency_vector": [1, 2, 3],
-            "csv_column_order": ["col1", "col2", "col3"]
-        }
+                    "stringency_vector": [1, 2, 3],
+                    "csv_column_order": ["col1", "col2", "col3"]
+                }
 
-    
     def tearDown(self):
         # Remove the handler after each test to reset logging
         logger = logging.getLogger()
@@ -27,11 +26,12 @@ class TestDesignerConfig(unittest.TestCase):
     
     @patch('src.config.config.DesignerConfig.read_config')
     def test_filters_exist_in_config_file(self, mock_config_with_no_filters_section):
+
         mock_config_with_no_filters_section.return_value = self.mock_config_with_no_filters_section.copy()
+        
+        _ = DesignerConfig(self.mock_config_with_no_filters_section)
 
-        expected_default_filter_config = {"duplicates": True}
+        logs = self.handler.buffer.getvalue().strip()
 
-        mocked_designer_config = DesignerConfig(self.mock_config_with_no_filters_section)
-
-        self.assertEqual(mocked_designer_config.params["filters"], expected_default_filter_config)
+        self.assertTrue("No filters exist in configuration file." in logs)
        

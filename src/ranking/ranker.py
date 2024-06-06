@@ -22,6 +22,4 @@ class Ranker:
 
         primer_pairs_df.sort_values(by=columns_to_sort, ascending=is_ascending, inplace=True)
 
-        primer_pairs_df.to_csv("rankers_primer.csv", index=False)
-
         return primer_pairs_df
