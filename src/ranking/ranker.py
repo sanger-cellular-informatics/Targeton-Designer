@@ -7,19 +7,21 @@ from primer.write_primer_output import _get_primers_dataframe
 
 class Ranker:
     def __init__(self, config: dict):
-        self.validated_rankers: List[RankingCriteria] = RankCriteriaValidator(config).created_criteria
+        self._ranking_order: List[RankingCriteria] = RankCriteriaValidator(config).validated_criteria()
     
     def rank(self, primer_type:str, primer_pairs=[]) -> pd.DataFrame:
 
-        if not self.validated_rankers:
+        if not self._ranking_order:
             return
 
         primer_pairs_df = _get_primers_dataframe(primer_pairs, primer_type)
 
-        columns_to_sort = [column.column for column in self.validated_rankers]
+        columns_to_sort = [column.column for column in self._ranking_order]
 
-        is_ascending = [column.is_ascending for column in self.validated_rankers]
+        is_ascending = [column.is_ascending for column in self._ranking_order]
 
         primer_pairs_df.sort_values(by=columns_to_sort, ascending=is_ascending, inplace=True)
+
+        primer_pairs_df.to_csv("rankers_primer.csv", index=False)
 
         return primer_pairs_df
