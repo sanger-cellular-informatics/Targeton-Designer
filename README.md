@@ -215,7 +215,7 @@ Remember to use exact names as mentioned above. By default filter `duplicates` i
 
 ##### Primer Pairs Ranking:
 
-You can use the ranking functionality to rank the primer pairs. Add the column names which you need to rank by as given example below.Add the following `ranking_criteria` in your configuration file:
+You can use the ranking functionality to rank the primer pairs. Add the column names which you need to rank by as given example below.Add the following `ranking_criteria` in your `designer.config.json` configuration file:
 
 ```
 {
