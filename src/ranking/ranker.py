@@ -22,3 +22,4 @@ class Ranker:
             primer_pairs_df.sort_values(by=columns_to_sort, ascending=is_ascending, inplace=True)
 
         return primer_pairs_df
+    

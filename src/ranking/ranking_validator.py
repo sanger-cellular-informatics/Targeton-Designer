@@ -41,3 +41,4 @@ def _get_rank_criterion(name: str) -> RankingCriteria:
 def _check_criterion_name(name: str):
     if name not in [_criterion.name for _criterion in RankingCriteria.__subclasses__()]:
         raise ValueError(f'Invalid ranking criteria: the given rank criterion "{name}" is not valid')
+    
