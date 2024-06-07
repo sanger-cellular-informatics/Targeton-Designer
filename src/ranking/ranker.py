@@ -19,7 +19,7 @@ class Ranker:
         primer_pairs_df = _get_primers_dataframe(primer_pairs, primer_type)
 
         if primer_pairs_df.empty:
-            logger.info("No primer pairs to rank.")
+            logger.warning("No primer pairs to rank.")
             return primer_pairs_df
         
         if self._ranking_order:
