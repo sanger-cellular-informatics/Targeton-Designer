@@ -1,7 +1,6 @@
 from typing import List
 import pandas as pd
 
-from ranking.ranking_validator import RankingCriteria
 from primer.write_primer_output import _get_primers_dataframe
 from ranking.rank_criteria import ProductSizeCriteria, StringencyCriteria
 
