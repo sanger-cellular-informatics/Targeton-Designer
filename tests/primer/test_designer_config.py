@@ -28,10 +28,9 @@ class TestDesignerConfig(unittest.TestCase):
     def test_filters_exist_in_config_file(self, mock_config_with_no_filters_section):
 
         mock_config_with_no_filters_section.return_value = self.mock_config_with_no_filters_section.copy()
-        
-        _ = DesignerConfig(self.mock_config_with_no_filters_section)
+        expected_config = {}
+        expected_config["filters"] = {"duplicates": True}
+        config = DesignerConfig(self.mock_config_with_no_filters_section)
 
-        logs = self.handler.buffer.getvalue().strip()
-
-        self.assertTrue("No filters exist in configuration file." in logs)
+        self.assertEqual(config.params["filters"], expected_config["filters"])
        
