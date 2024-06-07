@@ -27,6 +27,7 @@ class DesignerConfig(Config):
             # If duplicates is False by mistake, it will be enabled to run as a default filter.
             # Because we want to run duplicates filter even there's no filter added in configuration.
             config["filters"] = {"duplicates": True}         
+            logger.info("No filters exist in configuration file.")
 
         self.params = {'stringency_vector': config['stringency_vector'],
                        'csv_column_order': config['csv_column_order'],
