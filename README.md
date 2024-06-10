@@ -201,12 +201,12 @@ To use the `filters` add filter names with respect to their values in `designer.
 
 ```
 {
-    "stringency_vector": [...],
-    "filters": {
-        "duplicates": true,
-        "HAP1_variant": true
-    },
-    "csv_column_order": ["primer_type", "primer", "penalty", ...]
+  "stringency_vector": [...],
+  "filters": {
+    "duplicates": true,
+    "HAP1_variant": true
+  },
+  "csv_column_order": ["primer_type", "primer", "penalty", ...]
 }
 ```
 
