@@ -16,17 +16,17 @@ class Ranker:
     def rank(self, primer_type:str, primer_pairs=[]) -> pd.DataFrame:
 
         # Primer pairs dataframe are grouped together.
-        primer_df = _get_primers_dataframe(primer_pairs, primer_type)
+        primers_df = _get_primers_dataframe(primer_pairs, primer_type)
 
-        if primer_df.empty:
+        if primers_df.empty:
             logger.warning("No primer pairs to rank.")
-            return primer_df
+            return primers_df
         
         if self._ranking_order:
             logger.info(f"Ranking is being applied by {', '.join([column.name for column in self._ranking_order])}")
             columns_to_sort = [column.column for column in self._ranking_order]
             is_ascending = [column.is_ascending for column in self._ranking_order]
 
-            primer_df.sort_values(by=columns_to_sort, ascending=is_ascending, inplace=True)
+            primers_df.sort_values(by=columns_to_sort, ascending=is_ascending, inplace=True)
 
-        return primer_df
+        return primers_df
