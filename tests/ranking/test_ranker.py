@@ -173,6 +173,7 @@ mockType,primer_rv,0.5,CTCGATCG,11640,11645,60.0,50.0,30.0,10.0,20.0,25.0,uid7,0
 
         ranked_df = Ranker().rank("mockType", self.mocked_primer_pairs)
 
+        # index being dropped to make comparison.
         assert_frame_equal(ranked_df.reset_index(drop=True), expected_ranked_df)
 
     def test_ranker_with_same_stringency_rank_by_product_size(self):
@@ -180,6 +181,7 @@ mockType,primer_rv,0.5,CTCGATCG,11640,11645,60.0,50.0,30.0,10.0,20.0,25.0,uid7,0
 
         ranked_df = Ranker().rank("mockType",  self.mocked_primer_data_with_stringency)
 
+        # index being dropped to make comparison.
         assert_frame_equal(ranked_df.reset_index(drop=True), expected_ranked_with_same_stringency_df)
 
     def test_ranker_with_same_stringency_same_product_size(self):
@@ -187,6 +189,7 @@ mockType,primer_rv,0.5,CTCGATCG,11640,11645,60.0,50.0,30.0,10.0,20.0,25.0,uid7,0
 
         unranked_df = Ranker().rank("mockType", self.mocked_same_stringency_same_product_size)
         
+        # index being dropped to make comparison.
         assert_frame_equal(unranked_df.reset_index(drop=True), expected_ranked_with_same_stringency_same_product_size_df)
     
     def test_empty_df_when_no_primer_pairs_provided(self):
