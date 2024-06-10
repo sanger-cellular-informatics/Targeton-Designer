@@ -38,7 +38,7 @@ class RankerTest(TestCase):
             coords=Interval(start=299, end=18),
             primer_start=11640,
             primer_end=11645,
-            strand="+",
+            strand="-",
             tm=60.0,
             gc_percent=50.0,
             self_any_th=30.0,
