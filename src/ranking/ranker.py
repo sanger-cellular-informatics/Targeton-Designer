@@ -2,7 +2,7 @@ from typing import List
 import pandas as pd
 
 from primer.write_primer_output import _get_primers_dataframe
-from ranking.rank_criteria import ProductSizeCriteria, StringencyCriteria
+from ranking.rank_criteria import RankingCriteria, ProductSizeCriteria, StringencyCriteria
 
 from custom_logger.custom_logger import CustomLogger
 
@@ -29,4 +29,3 @@ class Ranker:
             primer_pairs_df.sort_values(by=columns_to_sort, ascending=is_ascending, inplace=True)
 
         return primer_pairs_df
-    

@@ -23,3 +23,4 @@ class ProductSizeCriteria(RankingCriteria):
     name: str = 'product_size'
     is_ascending: bool = False
     column: str = 'product_size'
+    
