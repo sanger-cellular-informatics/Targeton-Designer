@@ -212,19 +212,6 @@ To use the `filters` add filter names with respect to their values in `designer.
 
 Remember to use exact names as mentioned above. By default filter `duplicates` is applied when running primer designer command.
 
-
-##### Primer Pairs Ranking:
-
-You can use the ranking functionality to rank the primer pairs. Add the column names which you need to rank by as given example below.Add the following `ranking_criteria` in your `json` configuration file:
-
-```
-{
-    "stringency_vector": [...],
-    "ranking_criteria":["stringency", "product_size"],
-    "csv_column_order": ["primer_type", "primer", "penalty", ...]
-}
-```
-
 ### Primer Scoring Tool
 
 Running primer scoring:
