@@ -158,7 +158,6 @@ class TestWritePrimerOutputFiles(TestCase):
 
         self.assertEqual(content, expected_content)
 
-
     @patch('primer.write_primer_output.DesignerConfig')
     def test_export_three_optimal_primers_to_csv(self, mock_designer_config):
         # Arrange

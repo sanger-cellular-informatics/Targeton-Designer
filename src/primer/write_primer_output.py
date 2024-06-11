@@ -36,10 +36,6 @@ def write_primer_output(
 
     logger.info(f"Primer files saved: {result.bed}, {result.csv}, {result.optimal_primer_pairs_csv}")
 
-    if primer_pairs_df.empty:
-        result.optimal_primer_pairs_csv = export_three_optimal_primer_pairs_to_csv(primer_pairs_df, export_dir)
-        logger.info(f"Optimal primer pairs file saved: {result.optimal_primer_pairs_csv} ")
-
     if discarded_primer_pairs:
         result.discarded_csv = export_discarded_primers_to_csv(
                                   discarded_primer_pairs,
