@@ -74,6 +74,7 @@ def primer_command(
 
     ranked_primer_pairs_df = Ranker().rank(primer_type, filters_response.primer_pairs_to_keep)
     primer_result = write_primer_output(
+        primer_pairs_df=ranked_primer_pairs_df,
         primer_pairs=filters_response.primer_pairs_to_keep,
         discarded_primer_pairs=filters_response.primer_pairs_to_discard,
         prefix=prefix,
