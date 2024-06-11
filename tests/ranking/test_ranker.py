@@ -56,7 +56,7 @@ class RankerTest(TestCase):
             stringency=0.1,
             targeton_id="targeton_id",
             uid="uid1")
-        
+
         self.mocked_pair_1.forward = self.mocked_primer_forward
         self.mocked_pair_1.reverse = self.mocked_primer_reverse
 
@@ -69,7 +69,7 @@ class RankerTest(TestCase):
             stringency=0.2,
             targeton_id="targeton_id",
             uid="uid2")
-        
+
         self.mocked_pair_2.forward = self.mocked_primer_forward
         self.mocked_pair_2.reverse = self.mocked_primer_reverse
 
@@ -191,17 +191,17 @@ mockType,primer_rv,0.5,CTCGATCG,11640,11645,60.0,50.0,30.0,10.0,20.0,25.0,uid7,0
         
         # index being dropped to make comparison.
         assert_frame_equal(unranked_df.reset_index(drop=True), expected_ranked_with_same_stringency_same_product_size_df)
-    
+
     def test_empty_df_when_no_primer_pairs_provided(self):
 
         ranked_df = Ranker().rank("mockType", [])
 
         self.assertTrue(ranked_df.empty)
-        
+
 
 
 def _create_dataframe(data: str) -> pd.DataFrame:
     data_io = StringIO(data)
     df = pd.read_csv(data_io, delim_whitespace=False)
-    df["chromosome"] = df["chromosome"].astype(str) 
+    df["chromosome"] = df["chromosome"].astype(str)
     return df
