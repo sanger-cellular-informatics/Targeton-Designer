@@ -26,6 +26,7 @@ from slicer.slicer import Slicer
 from primer.primer3 import Primer3
 from primer_designer import PrimerDesigner
 from post_primer_pairs import post_primer_pairs
+from ranking.ranker import Ranker
 
 sys.path.append(path.abspath(path.join(path.dirname(__file__), '../sge-primer-scoring/src')))
 from scoring import Scoring
@@ -71,6 +72,7 @@ def primer_command(
 
     filters_response = FilterManager(designer_config.params['filters']).apply_filters(primers)
 
+    ranked_primer_pairs_df = Ranker().rank(primer_type, filters_response.primer_pairs_to_keep)
     primer_result = write_primer_output(
         primer_pairs=filters_response.primer_pairs_to_keep,
         discarded_primer_pairs=filters_response.primer_pairs_to_discard,
