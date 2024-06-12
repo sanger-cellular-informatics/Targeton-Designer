@@ -367,7 +367,7 @@ Raw file
 ```
 
 ### Primer3 Output CSV file
-It contains all the additional information from Primer3 for the individual primers. Column order can be specified through the Designer tool config. Primer pairs are ranked  `stringency` and `product_size`.
+It contains all the additional information from Primer3 for the individual primers. Column order can be specified through the Designer tool config. Primer pairs are ranked  `stringency` and `product_size`. 
 
 | primer_type | primer                          | penalty | stringency | sequence             | primer_start | primer_end | tm     | gc_percent | self_any_th | self_end_th | hairpin_th | end_stability | chromosome | pre_targeton_start | pre_targeton_end | product_size | targeton_id | pair_uid                             |
 |-------------|---------------------------------|---------|------------|----------------------|--------------|------------|--------|------------|-------------|-------------|------------|---------------|------------|--------------------|------------------|--------------|-------------|--------------------------------------|
@@ -379,6 +379,8 @@ It contains all the additional information from Primer3 for the individual prime
 | LibAmp      | ENSE00003571441_HG6_6_LibAmpR_0 | 3.415   | 1          | ACCCAGGCTGCATCTCCC   | 42931021     | 42931039   | 61.415 | 66.667     | 9.565       | 0.0         | 0.0        | 4.3           | 1          | 42931021           | 42931231         | 170          | ENSE        | 5720fdd6&#8209;095a&#8209;11ef&#8209;8b15&#8209;fa163e1ef5d5 |
 | LibAmp      | ENSE00003571441_HG6_6_LibAmpF_3 | 0.324   | 0.5        | AGTGCCAGGACCTCTCCTAC | 42931210     | 42931230   | 60.324 | 60.0       | 0.0         | 0.0         | 46.301     | 3.18          | 1          | 42931021           | 42931231         | 170          | ENSE        | 5720fdd6&#8209;095a&#8209;11ef&#8209;8b15&#8209;fa163e1ef5d5 |
 | LibAmp      | ENSE00003571441_HG6_6_LibAmpR_3 | 3.415   | 0.5        | ACCCAGGCTGCATCTCCC   | 42931021     | 42931039   | 61.415 | 66.667     | 9.565       | 0.0         | 0.0        | 4.3           | 1          | 42931021           | 42931231         | 170          | ENSE        | 5720fdd6&#8209;095a&#8209;11ef&#8209;8b15&#8209;fa163e1ef5d5 |
+
+*Note: In example above, 0.5 stringency has been added as an example to show the ranking.*
 
 Raw File
 ```
