@@ -23,8 +23,7 @@ class Ranker:
             return primers_df
 
         if self._ranking_order:
-            # Commented below line of code temporarily for future enhancement.
-            # logger.info(f"Ranking is being applied by {', '.join([column.name for column in self._ranking_order])}")
+            logger.info(f"Ranking is being applied by {', '.join([column.name for column in self._ranking_order])}")
             columns_to_sort = [column.column for column in self._ranking_order]
             is_ascending = [column.is_ascending for column in self._ranking_order]
 
