@@ -52,10 +52,11 @@ test:
       - kmer/homo_sapiens_16.list
       - kmer/homo_sapiens_11.list
   script:
-    - echo $DOCKER_IMAGE_NAME
-    - echo $CI_REGISTRY_USER
-    - echo $CI_REGISTRY_PASSWORD
-    - echo $CI_REGISTRY
     - make test
   dependencies:
     - docker-build
+
+run-fr:
+  stage: test
+  script:
+    - echo "Running FR check"
