@@ -213,7 +213,7 @@ To apply filtering, a custom config file can be created (the `config/designer.co
 
 Remember to use exact names as mentioned above.
 
-If no custom config file is passed, then the default `config/designer.config.json` is applied (unless there is no `config/designer.config.json` file, in which case the `duplicates` filter will be applied by default). If a custom config file is passed but it does not contain a `filters` field, then the filters from `config/designer.config.json` will be applied (unless there is no `config/designer.config.json` file, in which case the `duplicates` filter will be applied by default). If the custom config file contains a `filters` field an empty dictionary, i.e. `"filters": {}`, then the `duplicates` filter will be applied by default.
+If no custom config file is passed, then the default `config/designer.config.json` is applied (unless there is no `config/designer.config.json` file, in which case the `duplicates` filter will be applied by default). If a custom config file is passed but it does not contain a `filters` field, then the filters from `config/designer.config.json` will be applied (unless there is no `config/designer.config.json` file, in which case the `duplicates` filter will be applied by default). If the custom config file contains a `filters` field as an empty dictionary, i.e. `"filters": {}`, then the `duplicates` filter will be applied by default.
 
 ### Primer Scoring Tool
 
