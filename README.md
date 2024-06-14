@@ -211,9 +211,9 @@ To apply filtering, a custom config file can be created (the `config/designer.co
 }
 ```
 
-Remember to use exact names as mentioned above.
+Remember to use exact names as mentioned above. If a filter name is missing, it will not be applied (e.g., if `"filters": {"duplicates": true}`, `"HAP1_variant"` will not be applied).
 
-If no custom config file is passed, then the default `config/designer.config.json` is applied. If a custom config file is passed but it does not contain a `filters` key, then the filters from `config/designer.config.json` will be applied. If the custom config file contains a `filters` key and no filters defined, i.e. `"filters": {},`, then the `duplicates` filter will be applied by default.
+If no custom config file is passed, then the default `config/designer.config.json` will be applied. If a custom config file is passed but it does not contain a `filters` key, then the filters from `config/designer.config.json` will be applied. If the custom config file contains a `filters` key and no filters defined, i.e. `"filters": {},`, then the `duplicates` filter will be applied by default.
 
 ### Primer Scoring Tool
 
