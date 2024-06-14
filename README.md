@@ -196,6 +196,8 @@ chmod +x ./download_kmer_lists.sh
 ./download_kmer_lists.sh
 ```
 
+Using Filters from Configuration file:
+
 To apply filtering, a custom config file can be created (the `config/designer.config.json` file can be used as a template) and passed throught the `--conf` flag. These filters can be turned on (`true`) or off (`false`) as follows:
 
 ```
