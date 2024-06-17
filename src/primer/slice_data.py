@@ -44,24 +44,25 @@ class SliceData:
     def get_first_slice_data(fasta: str) -> 'SliceData':
         with open(fasta) as fasta_data:
             rows = SeqIO.parse(fasta_data, 'fasta')
-
             first_row = next(rows, None)
             if first_row is None:
                 raise ValueError(f"Unable to parse the FASTA file '{fasta}'")
 
             # Name::Chr:Start-End(Strand)
             # ENSE00000769557_HG8_1::1:42929543-42929753
-            match = re.search(r'^(\w+)::((chr)?\d+):(\d+)\-(\d+)\(([+-\.]{1})\)$', first_row.id)
-
+            match = re.search(r'^(\w+)::(\w+):(\d+)\-(\d+)\(([+-\.]{1})\)$', first_row.id)
+   
             if not match:
                 raise ValueError(f"The sequence ID '{first_row.id}' does not match the expected format.")
 
+            chromosome = ''.join(filter(str.isdigit, match.group(2)))
+
             slice_data = SliceData(
                 name=match.group(1),
-                start=match.group(4),
-                end=match.group(5),
-                strand=match.group(6),
-                chrom=match.group(2),
+                start=match.group(3),
+                end=match.group(4),
+                strand=match.group(5),
+                chrom=chromosome,
                 bases=str(first_row.seq),
             )
 
