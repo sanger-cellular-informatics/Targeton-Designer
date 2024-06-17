@@ -69,3 +69,21 @@ class TestSliceData(TestCase):
             SliceData.get_first_slice_data(empty_fasta)
 
         self.assertEqual(str(error.exception), f"Unable to parse the FASTA file '{empty_fasta}'")
+
+    def test_fasta_file_parsing_chromosome_with_characters(self):
+        mocked_fasta = 'mocked_fasta.fa'
+        self.fs.create_file(mocked_fasta, contents='>region1_1::xyzchr1:5-10(+)\nGTGATCGAGGAGTTCTA')
+        
+        expected = SliceData(name='region1_1', start='5', end='10', strand='+', chrom='1', bases='GTGATCGAGGAGTTCTA')
+        result = SliceData.get_first_slice_data(mocked_fasta)
+
+        self.assertEqual(result.chrom, expected.chrom)
+    
+    def test_fasta_file_parsing_chromosome_with_invalid_characters(self):
+        mocked_fasta = 'mocked_fasta.fa'
+        self.fs.create_file(mocked_fasta, contents='>region1_1::xyz$#r1:5-10(+)\nGTGATCGAGGAGTTCTA')
+
+        with self.assertRaises(ValueError) as ex:
+            _ = SliceData.get_first_slice_data(mocked_fasta)
+
+        self.assertEqual(ex.exception, "The sequence ID 'mask_mask_1::xyz$#r1:42930996-42931206(-)' does not match the expected format.")
