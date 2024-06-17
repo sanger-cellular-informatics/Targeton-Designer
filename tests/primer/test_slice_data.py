@@ -86,4 +86,5 @@ class TestSliceData(TestCase):
         with self.assertRaises(ValueError) as ex:
             _ = SliceData.get_first_slice_data(mocked_fasta)
 
-        self.assertEqual(ex.exception, "The sequence ID 'mask_mask_1::xyz$#r1:42930996-42931206(-)' does not match the expected format.")
+        self.assertTrue("does not match the expected format" in str(ex.exception))
+        
