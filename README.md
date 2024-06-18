@@ -229,6 +229,7 @@ To apply ranking, a custom config file can be created (the `config/designer.conf
   "csv_column_order": ["primer_type", "primer", "penalty", ...]
 }
 ```
+The order specified in the config file will be retained for ranking: in this example, ranking will be applied first by stringency and then by product size (i.e., primers pairs with the same stringency will be ranked according to their product size).
 
 If a name is missing, it will not be applied. If no custom config file is passed, then the default `config/designer.config.json` will be applied. If a custom config file is passed but it does not contain a `ranking` key, then the ranking parameters from `config/designer.config.json` will be applied. If the custom config file contains a `ranking` key and no ranking defined, i.e. `"ranking": {},`, no ranking will be applied.
 
@@ -386,7 +387,7 @@ Raw file
 ```
 
 ### Primer3 Output CSV file
-It contains all the additional information from Primer3 for the individual primers. Column order can be specified through the Designer tool config. Primer pairs are ranked  `stringency` and `product_size`. 
+It contains all the additional information from Primer3 for the individual primers. Column order can be specified through the Designer tool config. In this example, primer pairs are ranked first by `stringency` and then by `product_size`. 
 
 | primer_type | primer                          | penalty | stringency | sequence             | primer_start | primer_end | tm     | gc_percent | self_any_th | self_end_th | hairpin_th | end_stability | chromosome | pre_targeton_start | pre_targeton_end | product_size | targeton_id | pair_uid                             |
 |-------------|---------------------------------|---------|------------|----------------------|--------------|------------|--------|------------|-------------|-------------|------------|---------------|------------|--------------------|------------------|--------------|-------------|--------------------------------------|
