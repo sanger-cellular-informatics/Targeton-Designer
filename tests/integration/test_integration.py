@@ -124,6 +124,15 @@ class TestPrimerIntegration(TestCase):
                 discard_reasons = df_discarded["discard_reason"].unique().tolist()
                 self.assertTrue(set(discard_reasons).issubset(set(expected_discard_reasons)))
 
+                # Tests that ranker was applied and the three optimal primers are output
+                optimal_primer_pairs_csv = Path(primer_result.optimal_primer_pairs_csv)
+                optimal_primer_pairs_csv_content = _get_file_content(optimal_primer_pairs_csv)
+
+                p3_csv_output = Path(primer_result.csv)
+                p3_csv_output_first_3_primer_pairs = _get_first_3_primer_pairs(p3_csv_output)
+
+                self.assertEqual(optimal_primer_pairs_csv_content, p3_csv_output_first_3_primer_pairs)
+
 
 class TestTargetonCSVIntegration(TestCase):
     def setUp(self):
@@ -209,6 +218,22 @@ class TestScoringIntegration(TestCase):
                 # Assert
                 self.assertTrue(path_tsv.is_file())
                 self.assertGreater(path_tsv.stat().st_size, 0)
+
+
+def _get_file_content(file_path):
+    with open(file_path, 'r') as file:
+        return file.read()
+
+
+def _get_first_3_primer_pairs(file_path):
+    with open(file_path, 'r') as file:
+        lines = []
+        for _ in range(7):
+            line = file.readline()
+            if not line:
+                break
+            lines.append(line)
+        return ''.join(lines)
 
 
 if __name__ == '__main__':
