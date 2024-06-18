@@ -231,7 +231,7 @@ To apply ranking, a custom config file can be created (the `config/designer.conf
 ```
 The order specified in the config file will be retained for ranking: in this example, ranking will be applied first by stringency and then by product size (i.e., primers pairs with the same stringency will be ranked according to their product size).
 
-If a name is missing, it will not be applied. If no custom config file is passed, then the default `config/designer.config.json` will be applied. If a custom config file is passed but it does not contain a `ranking` key, then the ranking parameters from `config/designer.config.json` will be applied. If the custom config file contains a `ranking` key and no ranking defined, i.e. `"ranking": {},`, no ranking will be applied.
+If a name is missing, it will not be used for ranking. If no custom config file is passed, then the default `config/designer.config.json` will be applied. If a custom config file is passed but it does not contain a `ranking` key, then the ranking parameters from `config/designer.config.json` will be applied. If the custom config file contains a `ranking` key and no ranking defined, i.e. `"ranking": {},`, no ranking will be applied.
 
 ### Primer Scoring Tool
 
