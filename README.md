@@ -215,6 +215,23 @@ Remember to use exact names as mentioned above. If a filter name is missing, it 
 
 If no custom config file is passed, then the default `config/designer.config.json` will be applied. If a custom config file is passed but it does not contain a `filters` key, then the filters from `config/designer.config.json` will be applied. If the custom config file contains a `filters` key and no filters defined, i.e. `"filters": {},`, then the `duplicates` filter will be applied by default.
 
+Applying Ranking from Configuration file:
+
+To apply ranking, a custom config file can be created (the `config/designer.config.json` file can be used as a template) and passed throught the `--conf` flag. Ranking parameters can be turned on (`true`) or off (`false`) as follows:
+
+```
+{
+  "stringency_vector": [...],
+  "ranking": {
+    "stringency": true,
+    "product_size": true
+  },
+  "csv_column_order": ["primer_type", "primer", "penalty", ...]
+}
+```
+
+If a name is missing, it will not be applied. If no custom config file is passed, then the default `config/designer.config.json` will be applied. If a custom config file is passed but it does not contain a `ranking` key, then the ranking parameters from `config/designer.config.json` will be applied. If the custom config file contains a `ranking` key and no ranking defined, i.e. `"ranking": {},`, no ranking will be applied.
+
 ### Primer Scoring Tool
 
 Running primer scoring:
