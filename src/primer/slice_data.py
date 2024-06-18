@@ -10,17 +10,17 @@ logger = CustomLogger(__name__)
 
 
 class SliceData:
-    def __init__(self, name: str, start: str, end: str, strand: str, chrom: str, bases: str):
+    def __init__(self, name: str, start: str, end: str, strand: str, chromosome: str, bases: str):
         self.name = name
         self.start = start
         self.end = end
         self.strand = strand
-        self.chrom = chrom
+        self.chromosome = chromosome
         self.bases = bases
         self.targeton_id = name[0:4]
 
     def __repr__(self):
-        return (f'SliceData({self.name}, {self.targeton_id}, {self.start}, {self.end}, {self.strand}, {self.chrom},'
+        return (f'SliceData({self.name}, {self.targeton_id}, {self.start}, {self.end}, {self.strand}, {self.chromosome},'
                 f' {self.bases})')
 
     @property
@@ -35,7 +35,7 @@ class SliceData:
         surrounding_band = 1000
 
         return get_seq_from_ensembl_by_coords(
-            chromosome=self.chrom,
+            chromosome=self.chromosome,
             start=int(self.start) - surrounding_band,
             end=int(self.end) + surrounding_band
         )
@@ -62,7 +62,7 @@ class SliceData:
                 start=match.group(3),
                 end=match.group(4),
                 strand=match.group(5),
-                chrom=chromosome,
+                chromosome=chromosome,
                 bases=str(first_row.seq),
             )
 
