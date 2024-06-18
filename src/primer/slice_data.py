@@ -19,6 +19,19 @@ class SliceData:
         self.bases = bases
         self.targeton_id = name[0:4]
 
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, SliceData):
+            return False
+        return  self.name == other.name and \
+                self.start == other.start and \
+                self.end == other.end and \
+                self.strand == other.strand and \
+                self.chromosome == other.chromosome and \
+                self.bases == other.bases
+    
+    def __hash__(self):
+        return hash((self.name, self.start, self.end, self.strand, self.chromosome))
+
     def __repr__(self):
         return (f'SliceData({self.name}, {self.targeton_id}, {self.start}, {self.end}, {self.strand}, {self.chromosome},'
                 f' {self.bases})')
@@ -50,7 +63,7 @@ class SliceData:
 
             # Name::Chr:Start-End(Strand)
             # ENSE00000769557_HG8_1::1:42929543-42929753
-            match = re.search(r'^(\w+)::(\w+):(\d+)\-(\d+)\(([+-\.]{1})\)$', first_row.id)
+            match = re.search(r'^(\w+)::(chr\d+|ch\d+|\d+):(\d+)\-(\d+)\(([+-\.]{1})\)$', first_row.id)
    
             if not match:
                 raise ValueError(f"The sequence ID '{first_row.id}' does not match the expected format.")

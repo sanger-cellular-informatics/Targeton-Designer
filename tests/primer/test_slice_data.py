@@ -71,13 +71,26 @@ class TestSliceData(TestCase):
         self.assertEqual(str(error.exception), f"Unable to parse the FASTA file '{empty_fasta}'")
 
     def test_fasta_file_parsing_chromosome_with_characters(self):
-        mocked_fasta = 'mocked_fasta.fa'
-        self.fs.create_file(mocked_fasta, contents='>region1_1::xyzchr1:5-10(+)\nGTGATCGAGGAGTTCTA')
+        mocked_fasta_1 = 'mocked_fasta_1.fa'
+        mocked_fasta_2 = 'mocked_fasta_2.fa'
+
+        # create fasta with ch
+        self.fs.create_file(mocked_fasta_1, contents='>region1_1::ch1:5-10(+)\nGTGATCGAGGAGTTCTA')
+
+        # create fasta with chr
+        self.fs.create_file(mocked_fasta_2, contents='>region1_1::chr1:5-10(+)\nGTGATCGAGGAGTTCTA')
         
         expected = SliceData(name='region1_1', start='5', end='10', strand='+', chromosome='1', bases='GTGATCGAGGAGTTCTA')
-        result = SliceData.get_first_slice_data(mocked_fasta)
+        
+        result = SliceData.get_first_slice_data(mocked_fasta_1)
 
-        self.assertEqual(result.chromosome, expected.chromosome)
+        # check with chr parsed correctly
+        assert result == expected
+
+        result = SliceData.get_first_slice_data(mocked_fasta_2)
+        
+        #check with ch parsed correctly
+        assert result == expected
     
     def test_fasta_file_parsing_chromosome_with_invalid_characters(self):
         mocked_fasta = 'mocked_fasta.fa'
