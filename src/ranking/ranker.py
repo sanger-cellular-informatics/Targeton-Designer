@@ -66,7 +66,8 @@ class Ranker:
             columns_to_sort = [column.column for column in self._ranking_order]
             is_ascending = [column.is_ascending for column in self._ranking_order]
 
+            # kind = "stable" added to ensure stable sorting when sorting on one column
             primers_df.sort_values(by=columns_to_sort, ascending=is_ascending, inplace=True,
-                                   kind="mergesort")
+                                   kind="stable")
 
         return primers_df
