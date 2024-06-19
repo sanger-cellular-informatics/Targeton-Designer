@@ -28,7 +28,7 @@ class SliceData:
                 self.strand == other.strand and \
                 self.chromosome == other.chromosome and \
                 self.bases == other.bases
-    
+
     def __hash__(self):
         return hash((self.name, self.start, self.end, self.strand, self.chromosome))
 
@@ -63,8 +63,9 @@ class SliceData:
 
             # Name::Chr:Start-End(Strand)
             # ENSE00000769557_HG8_1::1:42929543-42929753
+            # Only matches with numerical chromosome, not X, Y, and MT.
             match = re.search(r'^(\w+)::(chr\d+|ch\d+|\d+):(\d+)\-(\d+)\(([+-\.]{1})\)$', first_row.id)
-   
+
             if not match:
                 raise ValueError(f"The sequence ID '{first_row.id}' does not match the expected format.")
 
