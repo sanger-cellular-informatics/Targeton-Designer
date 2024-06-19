@@ -100,4 +100,3 @@ class TestSliceData(TestCase):
             _ = SliceData.get_first_slice_data(mocked_fasta)
 
         self.assertTrue("does not match the expected format" in str(ex.exception))
-        
