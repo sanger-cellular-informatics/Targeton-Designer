@@ -82,15 +82,15 @@ class TestSliceData(TestCase):
         
         expected = SliceData(name='region1_1', start='5', end='10', strand='+', chromosome='1', bases='GTGATCGAGGAGTTCTA')
         
-        result = SliceData.get_first_slice_data(mocked_fasta_1)
+        result_1 = SliceData.get_first_slice_data(mocked_fasta_1)
 
         # check with chr parsed correctly
-        assert result == expected
+        self.assertEqual(result_1, expected)
 
-        result = SliceData.get_first_slice_data(mocked_fasta_2)
+        result_2 = SliceData.get_first_slice_data(mocked_fasta_2)
         
         #check with ch parsed correctly
-        assert result == expected
+        self.assertEqual(result_2, expected)
     
     def test_fasta_file_parsing_chromosome_with_invalid_characters(self):
         mocked_fasta = 'mocked_fasta.fa'
