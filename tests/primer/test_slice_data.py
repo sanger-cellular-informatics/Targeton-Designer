@@ -11,7 +11,7 @@ class TestSliceData(TestCase):
         self.setUpPyfakefs()
 
     def test_p3_input(self):
-        slice_sample = SliceData('slice_name', 'start', 'end', 'strand', 'chrom', 'slice_bases')
+        slice_sample = SliceData('slice_name', 'start', 'end', 'strand', 'chromosome', 'slice_bases')
         expected_p3_input = {'SEQUENCE_ID': 'slice_name', 'SEQUENCE_TEMPLATE': 'slice_bases'}
 
         result = slice_sample.p3_input
@@ -22,7 +22,7 @@ class TestSliceData(TestCase):
         slices_fasta_file = 'one_slice.fa'
         self.fs.create_file(slices_fasta_file, contents='>region1_1::chr1:5-10(+)\nGTGATCGAGGAGTTCTA')
 
-        expected = SliceData(name='region1_1', start='5', end='10', strand='+', chrom='chr1', bases='GTGATCGAGGAGTTCTA')
+        expected = SliceData(name='region1_1', start='5', end='10', strand='+', chromosome='1', bases='GTGATCGAGGAGTTCTA')
 
         result = SliceData.get_first_slice_data(slices_fasta_file)
 
@@ -31,6 +31,7 @@ class TestSliceData(TestCase):
         self.assertEqual(result.end, expected.end)
         self.assertEqual(result.strand, expected.strand)
         self.assertEqual(result.bases, expected.bases)
+        self.assertEqual(result.chromosome, expected.chromosome)
 
     @patch('custom_logger.custom_logger.CustomLogger.warning')
     def test_get_first_slice_when_more_than_one_slice(self, logger_warning):
@@ -39,7 +40,7 @@ class TestSliceData(TestCase):
                             contents='>region1_1::chr1:5-10(+)\nGTGATCGAGGAGTTCTA\n'
                                      '>region2_1::chr1:5-10(+)\nAAAAGGGCCCTTTAAAA')
 
-        expected = SliceData(name='region1_1', start='5', end='10', strand='+', chrom='chr1', bases='GTGATCGAGGAGTTCTA')
+        expected = SliceData(name='region1_1', start='5', end='10', strand='+', chromosome='1', bases='GTGATCGAGGAGTTCTA')
 
         result = SliceData.get_first_slice_data(slices_fasta_file)
 
@@ -48,6 +49,7 @@ class TestSliceData(TestCase):
         self.assertEqual(result.end, expected.end)
         self.assertEqual(result.strand, expected.strand)
         self.assertEqual(result.bases, expected.bases)
+        self.assertEqual(result.chromosome, expected.chromosome)
         logger_warning.assert_called_once_with(
             f"The FASTA file '{slices_fasta_file}' contains more than one pre-targeton. "
             "Only the first pre-targeton is taken.")
@@ -69,3 +71,43 @@ class TestSliceData(TestCase):
             SliceData.get_first_slice_data(empty_fasta)
 
         self.assertEqual(str(error.exception), f"Unable to parse the FASTA file '{empty_fasta}'")
+
+    def test_fasta_file_parsing_chromosome_with_characters(self):
+        mocked_fasta_1 = 'mocked_fasta_1.fa'
+        mocked_fasta_2 = 'mocked_fasta_2.fa'
+        mocked_fasta_3 = 'mocked_fasta_3.fa'
+
+        # create fasta with ch
+        self.fs.create_file(mocked_fasta_1, contents='>region1_1::ch1:5-10(+)\nGTGATCGAGGAGTTCTA')
+
+        # create fasta with chr
+        self.fs.create_file(mocked_fasta_2, contents='>region1_1::chr1:5-10(+)\nGTGATCGAGGAGTTCTA')
+
+        # create fasta with only chromosome number
+        self.fs.create_file(mocked_fasta_3, contents='>region1_1::1:5-10(+)\nGTGATCGAGGAGTTCTA')
+
+        expected = SliceData(name='region1_1', start='5', end='10', strand='+', chromosome='1', bases='GTGATCGAGGAGTTCTA')
+
+        result_1 = SliceData.get_first_slice_data(mocked_fasta_1)
+
+        # check with chr parsed correctly
+        self.assertEqual(result_1, expected)
+
+        result_2 = SliceData.get_first_slice_data(mocked_fasta_2)
+
+        # check with ch parsed correctly
+        self.assertEqual(result_2, expected)
+
+        # check with numerical chromosome
+        result_3 = SliceData.get_first_slice_data(mocked_fasta_3)
+
+        self.assertEqual(result_3, expected)
+
+    def test_fasta_file_parsing_chromosome_with_invalid_characters(self):
+        mocked_fasta = 'mocked_fasta.fa'
+        self.fs.create_file(mocked_fasta, contents='>region1_1::xyz$#r1:5-10(+)\nGTGATCGAGGAGTTCTA')
+
+        with self.assertRaises(ValueError) as ex:
+            _ = SliceData.get_first_slice_data(mocked_fasta)
+
+        self.assertTrue("does not match the expected format" in str(ex.exception))
