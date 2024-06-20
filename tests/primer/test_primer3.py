@@ -25,7 +25,7 @@ class IntegrationTestPrimer3(TestCase):
         # arrange
         slice = SliceData(
             name=pre_targeton_name,
-            chrom=chromosome,
+            chromosome=chromosome,
             start=f"{pre_targeton_start}",
             end=f"{pre_targeton_end}",
             bases=bases,
@@ -113,7 +113,7 @@ class IntegrationTestPrimer3(TestCase):
         bases = "GCTCGGGACCCGCACCGAGCCAGGCTCGGAGAGGCGCGCGGCCCGCCCCGGGCGCACAGCGCAGCGGGGCGGCGGGGGAGGCCCTGGCCGGCGTAAGGCGGGCAGGAGTCTGCGCCTTTGTTCCTGGCGGGAGGGCCCGCGGGCGCGCGACTCACCTTGCTGCTGGGCTCCATGGCAGCGCTGCGCTGGTGGCTCTGGCTGCGCCGGGTACGCGGGTGGCGACGGGCGTGCGAGCGGCGCTCTCCCGCTCAGGCTCGTGCTCCGGTCCGGGGACTCCCACTGCGACTCTGACTCCGACCCCCGTCGTTTGGTCTCCTGCTCCCTGGCG"
         slice = SliceData(
             name="ARTY",
-            chrom="1",
+            chromosome="1",
             start="42958479",
             end="42958806",
             bases=bases,
@@ -159,7 +159,7 @@ class IntegrationTestPrimer3(TestCase):
         bases = "CACCTTCCCTCCGGTCCCCCCAGTGCTAAAGAAGCTGCGCGGGACAGCTGACGTGACCCATGACCTGCAGGAGATGAAGGAAGAGAGTCGGCAGATGATGCGGGAGAAGAAGGTCACCATCCTGGAGCTGTTCCGCTCCCCCGCCTACCGCCAGCCCATCCTCATCGCTGTGGTGCTGCAGCTGTCCCAGCAGCTGTCTGGCATCAACGC"
         slice = SliceData(
             name="ENSE00000769557_HG8_11",
-            chrom="1",
+            chromosome="1",
             start="42929593",
             end="42929803",
             bases=bases,

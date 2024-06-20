@@ -216,7 +216,7 @@ def build_primer_pairs(
                 uid = str(uuid.uuid1())
                 pair = PrimerPair(
                     pair_id=primer_pair_id,
-                    chromosome=slice_data.chrom,
+                    chromosome=slice_data.chromosome,
                     pre_targeton_start=int(slice_data.start),
                     pre_targeton_end=int(slice_data.end),
                     product_size=primer_pair_product_size,
