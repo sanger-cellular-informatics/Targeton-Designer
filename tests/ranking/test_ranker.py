@@ -251,8 +251,8 @@ mockType,primer_rv,0.5,CTCGATCG,11640,11645,60.0,50.0,30.0,10.0,20.0,25.0,uid2,0
 
         # Arrange
         expected_unranked_df = _create_dataframe(self.expected_unranked)
-        expected_warning = "No ranking criteria specified in config file "\
-                           "- Ranking will not be applied"
+        expected_warning = "No ranking criteria defined in config file under the ranking key"\
+                           "\nNo ranking applied"
 
         # Act
         result = Ranker(self.mocked_ranking_config_empty).rank("mockType",
