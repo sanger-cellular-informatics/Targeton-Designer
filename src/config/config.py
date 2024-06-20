@@ -29,6 +29,9 @@ class DesignerConfig(Config):
             # Because we want to run duplicates filter even there's no filter added in configuration.
             config["filters"] = {"duplicates": True}
 
+        if not config.get("ranking"):
+            config["ranking"] = {}
+
         self.params = {'stringency_vector': config['stringency_vector'],
                        'csv_column_order': config['csv_column_order'],
                        'filters': config['filters'],

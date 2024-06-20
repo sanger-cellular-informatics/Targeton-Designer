@@ -15,32 +15,34 @@ class Ranker:
     def __init__(self, ranking_config: dict):
 
         self._ranking_criteria: List[RankingCriteria] = [StringencyCriteria, ProductSizeCriteria]
-        _ranking_criteria_names = [criterion.name for criterion in self._ranking_criteria]
+        _ranking_criteria_names: List[str] = [criterion.name for criterion
+                                              in self._ranking_criteria]
 
-        ranking_retained = [key for key, value in ranking_config.items() if value is True]
+        ranking_retained: List[str] = [key for key, value in ranking_config.items()
+                                       if value is True]
 
         if not ranking_config:
-            msg = "No ranking criteria specified in config file - Ranking will not be applied"
+            msg: str = "No ranking criteria defined in config file under the ranking key"
             logger.warning(msg)
         else:
             for criterion in _ranking_criteria_names:
                 if criterion not in ranking_config.keys():
-                    msg = f"'{criterion}' missing in config file for ranking " \
+                    msg: str = f"'{criterion}' missing in config file for ranking " \
                           "- Will not be used for ranking"
                     logger.warning(msg)
 
         incorrect_values = [key for key, value in ranking_config.items()
                             if not isinstance(value, bool)]
         if incorrect_values:
-            msg = f"Wrong value(s) provided for '{', '.join(incorrect_values)}' in config file" \
-                  " (only takes true or false). Unable to apply ranking - Exiting programme"
+            msg: str = f"Wrong value(s) provided for '{', '.join(incorrect_values)}' in config " \
+                  "file (only takes true or false). Unable to apply ranking - Exiting programme"
             logger.error(msg)
             sys.exit(1)
 
-        incorrect_keys = [key for key in ranking_config.keys()
-                          if key not in _ranking_criteria_names]
+        incorrect_keys: List[str] = [key for key in ranking_config.keys()
+                                     if key not in _ranking_criteria_names]
         if incorrect_keys:
-            msg = "Invalid name(s) provided for ranking in config file: " \
+            msg: str = "Invalid name(s) provided for ranking in config file: " \
                   f"'{', '.join(incorrect_keys)}'. The only valid names are: " \
                   f"{', '.join(_ranking_criteria_names)}. Unable to apply ranking - " \
                   "Exiting programme"
@@ -49,7 +51,7 @@ class Ranker:
 
         self._ranking_order: List[RankingCriteria] = []
         for criterion in ranking_retained:
-            criterion_index = _ranking_criteria_names.index(criterion)
+            criterion_index: int = _ranking_criteria_names.index(criterion)
             self._ranking_order.append(self._ranking_criteria[criterion_index])
 
     def rank(self, primer_type: str, primer_pairs=list) -> pd.DataFrame:
@@ -69,5 +71,8 @@ class Ranker:
             # kind = "stable" added to ensure stable sorting when sorting on one column
             primers_df.sort_values(by=columns_to_sort, ascending=is_ascending, inplace=True,
                                    kind="stable")
+
+        else:
+            logger.info("No ranking applied")
 
         return primers_df
