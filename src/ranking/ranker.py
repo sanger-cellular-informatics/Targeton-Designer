@@ -17,6 +17,7 @@ class Ranker:
         self._ranking_criteria: List[RankingCriteria] = [StringencyCriteria, ProductSizeCriteria]
         _ranking_criteria_names: List[str] = [criterion.name for criterion
                                               in self._ranking_criteria]
+        self._ranking_order: List[RankingCriteria] = []
 
         ranking_retained: List[str] = [key for key, value in ranking_config.items()
                                        if value is True]
@@ -49,7 +50,6 @@ class Ranker:
             logger.error(msg)
             sys.exit(1)
 
-        self._ranking_order: List[RankingCriteria] = []
         for criterion in ranking_retained:
             criterion_index: int = _ranking_criteria_names.index(criterion)
             self._ranking_order.append(self._ranking_criteria[criterion_index])
