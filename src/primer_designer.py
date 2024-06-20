@@ -263,14 +263,14 @@ def iterate_design(primers: list, scoring: list) -> defaultdict:
 def map_primer_data(primer: dict, scoring: list, pairs: defaultdict) -> defaultdict:
     pair = primer['primer']
     if (pair):
-        chrom = primer['chr']
+        chromosome = primer['chr']
         # ENSE00000769557_HG8_16_LibAmpR_0
         # (ENSE00000769557_HG8_16_LibAmp)(R)_(0)
         match = re.search(r"^(\w+LibAmp)([F|R])\_(\d+)$", pair)
         pair_key = match.group(1) + '_' + match.group(3)
         side = match.group(2)
         pairs[pair_key][side] = primer
-        pairs[pair_key][side]['chr'] = chrom
+        pairs[pair_key][side]['chr'] = chromosome
         pairs[pair_key]['version'] = VERSION
         pairs[pair_key]['pair'] = pair_key
         for score in scoring:
