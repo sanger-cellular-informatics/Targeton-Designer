@@ -16,14 +16,15 @@ class TestDesignerConfig(unittest.TestCase):
 
         self.mock_config_with_no_filters_section = {
                     "stringency_vector": [1, 2, 3],
-                    "csv_column_order": ["col1", "col2", "col3"]
+                    "csv_column_order": ["col1", "col2", "col3"],
+                    "ranking": {}
                 }
 
     def tearDown(self):
         # Remove the handler after each test to reset logging
         logger = logging.getLogger()
         logger.removeHandler(self.handler)
-    
+
     @patch('src.config.config.DesignerConfig.read_config')
     def test_filters_exist_in_config_file(self, mock_config_with_no_filters_section):
 
@@ -33,4 +34,4 @@ class TestDesignerConfig(unittest.TestCase):
         config = DesignerConfig(self.mock_config_with_no_filters_section)
 
         self.assertEqual(config.params["filters"], expected_config["filters"])
-       
+
