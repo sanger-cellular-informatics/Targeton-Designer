@@ -18,22 +18,25 @@ class Config(ABC):
 
 class DesignerConfig(Config):
     def __init__(self, config_file: str = None):
-      
+
         self._default_config_file = 'config/designer.config.json'
 
         config = self.read_config(self._default_config_file, config_file)
-    
+
         # Check if filters exist in configuration.
         if not config.get("filters"):
             # If duplicates is False by mistake, it will be enabled to run as a default filter.
             # Because we want to run duplicates filter even there's no filter added in configuration.
             config["filters"] = {"duplicates": True}
-                  
-     
+
+        if not config.get("ranking"):
+            config["ranking"] = {}
+
         self.params = {'stringency_vector': config['stringency_vector'],
                        'csv_column_order': config['csv_column_order'],
-                       'filters': config["filters"]}
-        
+                       'filters': config['filters'],
+                       'ranking': config['ranking']}
+
 
     @staticmethod
     def read_config(

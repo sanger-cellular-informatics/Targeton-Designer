@@ -4,6 +4,10 @@
     "duplicates": true,
     "HAP1_variant": true
   },
+    "ranking": {
+      "stringency": true,
+      "product_size": true
+    },
   "csv_column_order": ["primer_type",
                        "primer", 
                        "penalty", 
