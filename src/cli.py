@@ -58,7 +58,7 @@ def primer_command(
 ) -> PrimerOutputData:
 
     validate_files(fasta=fasta)
-    
+
     designer_config = DesignerConfig(designer_config_file)
 
     p3_class = Primer3(
@@ -72,7 +72,8 @@ def primer_command(
 
     filters_response = FilterManager(designer_config.params['filters']).apply_filters(primers)
 
-    ranked_primer_pairs_df = Ranker().rank(primer_type, filters_response.primer_pairs_to_keep)
+    ranked_primer_pairs_df = Ranker(designer_config.params['ranking']).rank(primer_type,
+                                                                            filters_response.primer_pairs_to_keep)
     primer_result = write_primer_output(
         primer_pairs_df=ranked_primer_pairs_df,
         primer_pairs=filters_response.primer_pairs_to_keep,
