@@ -225,6 +225,8 @@ class TestFilterManager(TestCase):
         pairs_to_filter = [pair_with_variant, pair_duplicate]
         filter_response = FilterManager(self.mock_config["filters"]).apply_filters(pairs_to_filter)
 
+        filter_log = self.handler.buffer.getvalue().split('\n')[-2]
+
         # Assertion
         self.assertEqual(len(filter_response.primer_pairs_to_keep), 0)
 
@@ -235,6 +237,9 @@ class TestFilterManager(TestCase):
         self.assertIn(PrimerPairDiscarded(pair_duplicate,
                                           reason_discarded=DuplicatesFilter.reason_discarded),
                       filter_response.primer_pairs_to_discard)
+
+        self.assertEqual(filter_log, "All primer pairs discarded during filtering")
+
 
     def test_apply_filters_when_no_primer_pairs(self):
         # Act
@@ -252,12 +257,12 @@ class TestFilterManager(TestCase):
 
         with self.assertRaises(SystemExit):
             _ = FilterManager(self.mock_config_with_incorrect_filter_name["filters"])
-        
+
         logs = self.handler.buffer.getvalue().strip()
 
         self.assertTrue("Please check and re-run the command again with the correct filter name in the configuration file." in logs)
-    
-    
+
+
     def test_apply_filters_with_HAP1_enabled(self):
         pair_with_variant = PrimerPair(
             pair_id="pair_with_hap1_variant",
@@ -268,7 +273,7 @@ class TestFilterManager(TestCase):
             stringency=0.1,
             targeton_id="targeton_id",
             uid="uid")
-        
+
         pair_with_variant.forward = self.primer_with_variant
         pair_with_variant.reverse = self.primer_with_no_variant
 
@@ -281,7 +286,7 @@ class TestFilterManager(TestCase):
             stringency=1,
             targeton_id="targeton_id",
             uid="uid")
-        
+
         pair_with_no_variant.forward = self.primer_with_no_variant
         pair_with_no_variant.reverse = self.primer_with_no_variant
 
@@ -290,7 +295,7 @@ class TestFilterManager(TestCase):
                                         "HAP1_variant": True
                                     }
                                 }
-       
+
         pairs_to_filter = [pair_with_variant, pair_with_no_variant]
 
         _ = FilterManager(mocked_hap1_enable_config["filters"]).apply_filters(pairs_to_filter)

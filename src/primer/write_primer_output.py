@@ -27,14 +27,15 @@ def write_primer_output(
     export_dir = existing_dir or timestamped_dir(prefix)
     result = PrimerOutputData(export_dir)
 
-    primer_rows = construct_primer_rows_bed_format(primer_pairs)
-    result.bed = export_to_bed(primer_rows, export_dir)
+    if primer_pairs:
+        primer_rows = construct_primer_rows_bed_format(primer_pairs)
+        result.bed = export_to_bed(primer_rows, export_dir)
 
-    result.csv = export_primers_to_csv(primer_pairs_df, export_dir)
-    result.optimal_primer_pairs_csv = export_three_optimal_primer_pairs_to_csv(primer_pairs_df, export_dir)
-    result.dir = export_dir
+        result.csv = export_primers_to_csv(primer_pairs_df, export_dir)
+        result.optimal_primer_pairs_csv = export_three_optimal_primer_pairs_to_csv(primer_pairs_df,
+                                                                                   export_dir)
 
-    logger.info(f"Primer files saved: {result.bed}, {result.csv}, {result.optimal_primer_pairs_csv}")
+        logger.info(f"Primer files saved: {result.bed}, {result.csv}, {result.optimal_primer_pairs_csv}")
 
     if discarded_primer_pairs:
         result.discarded_csv = export_discarded_primers_to_csv(
@@ -147,7 +148,7 @@ def _reorder_columns(csv_col_order: List[str],
             logger.warning(f"'{column}' specified in config file not is not a column name")
         else:
             final_order.append(column)
-    
+
     if not final_order:
         raise ValueError("All column names in config file are wrong")
 
