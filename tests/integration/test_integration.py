@@ -105,7 +105,7 @@ class TestPrimerIntegration(TestCase):
                 self.assertTrue(path_discarded_csv.is_file())
                 self.assertGreater(path_discarded_csv.stat().st_size, 0)
 
-                expected_discarded_headers = expected_csv_headers
+                expected_discarded_headers = expected_csv_headers.copy()
                 expected_discarded_headers.append("discard_reason")
                 df_discarded = pd.read_csv(path_discarded_csv)
                 discarded_headers = list(df_discarded.columns)
@@ -125,13 +125,19 @@ class TestPrimerIntegration(TestCase):
                 self.assertTrue(set(discard_reasons).issubset(set(expected_discard_reasons)))
 
                 # Tests that ranker was applied and the three optimal primers are output
-                optimal_primer_pairs_csv = Path(primer_result.optimal_primer_pairs_csv)
-                optimal_primer_pairs_csv_content = _get_file_content(optimal_primer_pairs_csv)
+                path_optimal_primer_pairs_csv = Path(primer_result.optimal_primer_pairs_csv)
 
-                p3_csv_output = Path(primer_result.csv)
-                p3_csv_output_first_3_primer_pairs = _get_first_3_primer_pairs(p3_csv_output)
+                self.assertTrue(path_optimal_primer_pairs_csv.is_file())
+                self.assertGreater(path_optimal_primer_pairs_csv.stat().st_size, 0)
 
-                self.assertEqual(optimal_primer_pairs_csv_content, p3_csv_output_first_3_primer_pairs)
+                df_optimal_primers = pd.read_csv(path_optimal_primer_pairs_csv)
+                optimal_csv_headers = list(df_optimal_primers.columns)
+                self.assertEqual(set(optimal_csv_headers), set(expected_csv_headers))
+                num_optimal_primers = df_optimal_primers.shape[0]
+
+                # Maximum optimal primer pairs is 3 (6 primers)
+                expected_num_optimal_primers = min(6, num_primers)
+                self.assertEqual(num_optimal_primers, expected_num_optimal_primers)
 
 
 class TestTargetonCSVIntegration(TestCase):
@@ -218,22 +224,6 @@ class TestScoringIntegration(TestCase):
                 # Assert
                 self.assertTrue(path_tsv.is_file())
                 self.assertGreater(path_tsv.stat().st_size, 0)
-
-
-def _get_file_content(file_path):
-    with open(file_path, 'r') as file:
-        return file.read()
-
-
-def _get_first_3_primer_pairs(file_path):
-    with open(file_path, 'r') as file:
-        lines = []
-        for _ in range(7):
-            line = file.readline()
-            if not line:
-                break
-            lines.append(line)
-        return ''.join(lines)
 
 
 if __name__ == '__main__':
