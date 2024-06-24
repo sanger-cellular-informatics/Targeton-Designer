@@ -10,7 +10,7 @@ logger = CustomLogger(__name__)
 
 
 class SliceData:
-    def __init__(self, name: str, start: str, end: str, strand: str, chromosome: str, bases: str):
+    def __init__(self, name: str, start: int, end: int, strand: str, chromosome: str, bases: str):
         self.name = name
         self.start = start
         self.end = end
@@ -73,8 +73,8 @@ class SliceData:
 
             slice_data = SliceData(
                 name=match.group(1),
-                start=match.group(3),
-                end=match.group(4),
+                start=int(match.group(3)),
+                end=int(match.group(4)),
                 strand=match.group(5),
                 chromosome=chromosome,
                 bases=str(first_row.seq),

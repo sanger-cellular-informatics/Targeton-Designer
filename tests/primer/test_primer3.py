@@ -26,8 +26,8 @@ class IntegrationTestPrimer3(TestCase):
         slice = SliceData(
             name=pre_targeton_name,
             chromosome=chromosome,
-            start=f"{pre_targeton_start}",
-            end=f"{pre_targeton_end}",
+            start=pre_targeton_start,
+            end=pre_targeton_end,
             bases=bases,
             strand="-"
         )
@@ -57,7 +57,7 @@ class IntegrationTestPrimer3(TestCase):
             chromosome=chromosome,
             pre_targeton_start=pre_targeton_start,
             pre_targeton_end=pre_targeton_end,
-            product_size="200",
+            product_size=200,
             stringency=stringency,
             targeton_id="ENSE"
         )
@@ -114,8 +114,8 @@ class IntegrationTestPrimer3(TestCase):
         slice = SliceData(
             name="ARTY",
             chromosome="1",
-            start="42958479",
-            end="42958806",
+            start=42958479,
+            end=42958806,
             bases=bases,
             strand="+"
         )
@@ -160,8 +160,8 @@ class IntegrationTestPrimer3(TestCase):
         slice = SliceData(
             name="ENSE00000769557_HG8_11",
             chromosome="1",
-            start="42929593",
-            end="42929803",
+            start=42929593,
+            end=42929803,
             bases=bases,
             strand="-"
         )
