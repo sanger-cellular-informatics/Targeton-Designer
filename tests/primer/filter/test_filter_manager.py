@@ -238,7 +238,7 @@ class TestFilterManager(TestCase):
                                           reason_discarded=DuplicatesFilter.reason_discarded),
                       filter_response.primer_pairs_to_discard)
 
-        self.assertEqual(filter_log, "All primer pairs discarded during filtering")
+        self.assertEqual(filter_log, "All primer pairs discarded during filtering.")
 
 
     def test_apply_filters_when_no_primer_pairs(self):

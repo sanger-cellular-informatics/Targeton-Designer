@@ -60,7 +60,7 @@ class FilterManager:
             pairs_to_discard.extend(filter_response.primer_pairs_to_discard)
 
         if not pairs_to_keep:
-            logger.warning("All primer pairs discarded during filtering")
+            logger.warning("All primer pairs discarded during filtering.")
 
         return FilterResponse(primer_pairs_to_keep=pairs_to_keep,
                               primer_pairs_to_discard=pairs_to_discard)
