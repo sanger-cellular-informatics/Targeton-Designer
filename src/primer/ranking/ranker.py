@@ -3,7 +3,7 @@ import pandas as pd
 import sys
 
 from primer.write_primer_output import _get_primers_dataframe
-from ranking.rank_criteria import RankingCriteria, ProductSizeCriteria, StringencyCriteria
+from primer.ranking.rank_criteria import RankingCriteria, ProductSizeCriteria, StringencyCriteria
 
 from custom_logger.custom_logger import CustomLogger
 
