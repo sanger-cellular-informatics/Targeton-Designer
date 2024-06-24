@@ -105,7 +105,7 @@ class TestPrimerIntegration(TestCase):
                 self.assertTrue(path_discarded_csv.is_file())
                 self.assertGreater(path_discarded_csv.stat().st_size, 0)
 
-                expected_discarded_headers = expected_csv_headers
+                expected_discarded_headers = expected_csv_headers.copy()
                 expected_discarded_headers.append("discard_reason")
                 df_discarded = pd.read_csv(path_discarded_csv)
                 discarded_headers = list(df_discarded.columns)
@@ -123,6 +123,21 @@ class TestPrimerIntegration(TestCase):
                 expected_discard_reasons = [filter.reason_discarded for filter in FilterManager(self.mock_config["filters"])._filters_to_apply]
                 discard_reasons = df_discarded["discard_reason"].unique().tolist()
                 self.assertTrue(set(discard_reasons).issubset(set(expected_discard_reasons)))
+
+                # Tests that ranker was applied and the three optimal primers are output
+                path_optimal_primer_pairs_csv = Path(primer_result.optimal_primer_pairs_csv)
+
+                self.assertTrue(path_optimal_primer_pairs_csv.is_file())
+                self.assertGreater(path_optimal_primer_pairs_csv.stat().st_size, 0)
+
+                df_optimal_primers = pd.read_csv(path_optimal_primer_pairs_csv)
+                optimal_csv_headers = list(df_optimal_primers.columns)
+                self.assertEqual(set(optimal_csv_headers), set(expected_csv_headers))
+                num_optimal_primers = df_optimal_primers.shape[0]
+
+                # Maximum optimal primer pairs is 3 (6 primers)
+                expected_num_optimal_primers = min(6, num_primers)
+                self.assertEqual(num_optimal_primers, expected_num_optimal_primers)
 
 
 class TestTargetonCSVIntegration(TestCase):
