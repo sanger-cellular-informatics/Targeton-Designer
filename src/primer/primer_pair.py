@@ -74,7 +74,7 @@ def build_primer_loci(
         primer_pair_id: str,
 ) -> dict:
     primer_field = primer_details['field']
-
+ 
     primer['primer'] = primer_name
     primer[primer_field] = design[key]
 
@@ -85,8 +85,11 @@ def build_primer_loci(
         primer_coords = calculate_primer_coords(
             primer_details['side'],
             design[key],
-            slice_data.start
+            slice_data.start,
+            slice_data.end,
+            slice_data.strand
         )
+        # breakpoint()
 
         primer['primer_start'] = primer_coords[0]
         primer['primer_end'] = primer_coords[1]
@@ -135,17 +138,32 @@ def capture_primer_details(primer_name: str) -> dict:
     return result
 
 
-def calculate_primer_coords(side: str, coords: list, slice_start: int) -> Tuple[int, int]:
-    left_flank = {
-        'start': slice_start + int(coords[0]),
-        'end': slice_start + int(coords[0]) + int(coords[1]) - 1
-    }
+def calculate_primer_coords(side: str, coords: list,
+                            slice_start: int, slice_end: int,
+                            strand: str) -> Tuple[int, int]:
+    if strand == "+":
+        left_flank = {
+            'start': slice_start + int(coords[0]),
+            'end': slice_start + int(coords[0]) + int(coords[1]) - 1
+        }
 
-    slice_end = slice_start + int(coords[0])
-    right_flank = {
-        'start': 1 + slice_end - int(coords[1]),
-        'end': slice_end,
-    }
+        right_end = slice_start + int(coords[0])
+        right_flank = {
+            'start': 1 + right_end - int(coords[1]),
+            'end': right_end,
+        }
+
+    if strand == "-":
+        left_flank = {
+            'start': slice_end - int(coords[0]) - int(coords[1]) + 1,
+            'end': slice_end - int(coords[0])
+        }
+
+        right_start = slice_end - int(coords[0])
+        right_flank = {
+            'start': right_start,
+            'end': right_start + coords[1] - 1,
+        }
 
     slice_coords = {
         'left': left_flank,
@@ -197,7 +215,7 @@ def build_primer_pairs(
 
             primer_name_with_stringency = primer_name + stringency_string
             primer_pair_id = slice_data.name + "_" + primer_details['pair'] + stringency_string
-            
+
             primer_pair_product_size = design['PRIMER_PAIR_' + primer_details['pair'] + '_PRODUCT_SIZE']
 
             primer = build_primer_loci(
