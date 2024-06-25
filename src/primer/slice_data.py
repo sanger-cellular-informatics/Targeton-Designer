@@ -49,8 +49,8 @@ class SliceData:
 
         return get_seq_from_ensembl_by_coords(
             chromosome=self.chromosome,
-            start=int(self.start) - surrounding_band,
-            end=int(self.end) + surrounding_band
+            start=self.start - surrounding_band,
+            end=self.end + surrounding_band
         )
 
     @staticmethod

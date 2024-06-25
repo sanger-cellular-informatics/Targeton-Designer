@@ -135,8 +135,7 @@ def capture_primer_details(primer_name: str) -> dict:
     return result
 
 
-def calculate_primer_coords(side: str, coords: list, slice_start: str) -> Tuple[int, int]:
-    slice_start = int(slice_start)
+def calculate_primer_coords(side: str, coords: list, slice_start: int) -> Tuple[int, int]:
     left_flank = {
         'start': slice_start + int(coords[0]),
         'end': slice_start + int(coords[0]) + int(coords[1]) - 1
@@ -217,8 +216,8 @@ def build_primer_pairs(
                 pair = PrimerPair(
                     pair_id=primer_pair_id,
                     chromosome=slice_data.chromosome,
-                    pre_targeton_start=int(slice_data.start),
-                    pre_targeton_end=int(slice_data.end),
+                    pre_targeton_start=slice_data.start,
+                    pre_targeton_end=slice_data.end,
                     product_size=primer_pair_product_size,
                     stringency=stringency,
                     targeton_id=slice_data.targeton_id,
