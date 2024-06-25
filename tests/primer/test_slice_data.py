@@ -11,7 +11,7 @@ class TestSliceData(TestCase):
         self.setUpPyfakefs()
 
     def test_p3_input(self):
-        slice_sample = SliceData('slice_name', 'start', 'end', 'strand', 'chromosome', 'slice_bases')
+        slice_sample = SliceData('slice_name', 100, 200, 'strand', 'chromosome', 'slice_bases')
         expected_p3_input = {'SEQUENCE_ID': 'slice_name', 'SEQUENCE_TEMPLATE': 'slice_bases'}
 
         result = slice_sample.p3_input
@@ -22,7 +22,7 @@ class TestSliceData(TestCase):
         slices_fasta_file = 'one_slice.fa'
         self.fs.create_file(slices_fasta_file, contents='>region1_1::chr1:5-10(+)\nGTGATCGAGGAGTTCTA')
 
-        expected = SliceData(name='region1_1', start='5', end='10', strand='+', chromosome='1', bases='GTGATCGAGGAGTTCTA')
+        expected = SliceData(name='region1_1', start=5, end=10, strand='+', chromosome='1', bases='GTGATCGAGGAGTTCTA')
 
         result = SliceData.get_first_slice_data(slices_fasta_file)
 
@@ -40,7 +40,7 @@ class TestSliceData(TestCase):
                             contents='>region1_1::chr1:5-10(+)\nGTGATCGAGGAGTTCTA\n'
                                      '>region2_1::chr1:5-10(+)\nAAAAGGGCCCTTTAAAA')
 
-        expected = SliceData(name='region1_1', start='5', end='10', strand='+', chromosome='1', bases='GTGATCGAGGAGTTCTA')
+        expected = SliceData(name='region1_1', start=5, end=10, strand='+', chromosome='1', bases='GTGATCGAGGAGTTCTA')
 
         result = SliceData.get_first_slice_data(slices_fasta_file)
 
@@ -86,7 +86,7 @@ class TestSliceData(TestCase):
         # create fasta with only chromosome number
         self.fs.create_file(mocked_fasta_3, contents='>region1_1::1:5-10(+)\nGTGATCGAGGAGTTCTA')
 
-        expected = SliceData(name='region1_1', start='5', end='10', strand='+', chromosome='1', bases='GTGATCGAGGAGTTCTA')
+        expected = SliceData(name='region1_1', start=5, end=10, strand='+', chromosome='1', bases='GTGATCGAGGAGTTCTA')
 
         result_1 = SliceData.get_first_slice_data(mocked_fasta_1)
 
