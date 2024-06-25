@@ -68,8 +68,8 @@ class IntegrationTestPrimer3(TestCase):
             pair_id=f"{pre_targeton_name}_0_str1",
             sequence="CAGACAGCTGCTGGGACA",
             coords=Interval(start=199, end=18),
-            primer_start=42929775,
-            primer_end=42929792,
+            primer_start=42929604,
+            primer_end=42929621,
             strand="+",
             tm=59.25430226425874,
             gc_percent=61.111111111111114,
@@ -85,8 +85,8 @@ class IntegrationTestPrimer3(TestCase):
             pair_id=f"{pre_targeton_name}_0_str1",
             sequence="CACCTTCCCTCCGGTCCC",
             coords=Interval(start=0, end=18),
-            primer_start=42929593,
-            primer_end=42929610,
+            primer_start=42929786,
+            primer_end=42929803,
             strand="-",
             tm=61.40005435509431,
             gc_percent=72.22222222222223,
@@ -98,7 +98,6 @@ class IntegrationTestPrimer3(TestCase):
 
         expected_primer_pair.forward = expected_forward
         expected_primer_pair.reverse = expected_reverse
-
         self.assertEqual(result, [expected_primer_pair])
 
     @patch('primer3.bindings.design_primers')
