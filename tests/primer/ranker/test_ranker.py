@@ -4,7 +4,7 @@ from unittest import TestCase
 import pandas as pd
 
 from pandas.testing import assert_frame_equal
-from primer.ranking.ranker import Ranker
+from primer.ranker.ranker import Ranker
 from primer.primer_pair import PrimerPair
 from primer.designed_primer import DesignedPrimer, Interval
 from tests.utils.utils import CapturingStreamHandler
