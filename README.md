@@ -386,7 +386,7 @@ Note that all sample output files from the primer designer command (i.e., this B
 | 7     | 44490294   | 44490313 |       STEQ_LibAmpF_4            | 0     |  +     |
 | 7     | 44490404   | 44490422 |       STEQ_LibAmpR_4            | 0     |  -     |
 
-Raw file
+Raw file ('p3_output.bed')
 ```
 7       44490309        44490328        STEQ_LibAmpF_0  0       +
 7       44490404        44490422        STEQ_LibAmpR_0  0       -
@@ -417,7 +417,7 @@ It contains all the additional information from Primer3 for the individual prime
 |  LibAmp  |  STEQ_LibAmpF_2  |  0.328  |  1.0  |  CCCCAGGACACCAGGAAAAG  |  44490293  |  44490312  |  60.251  |  60.0  |  0.0  |  0.0  |  31.239  |  2.27  |  7  |  44490254  |  44490755  |  130  |  STEQ  |  eaf60c2e-33a8-11ef-91cc-fa163e1eb62c  |
 |  LibAmp  |  STEQ_LibAmpR_2  |  2.056  |  1.0  |  CCTTGGTGCTGCAGGTGAG  |  44490404  |  44490422  |  60.97  |  63.158  |  17.124  |  0.0  |  0.0  |  3.51  |  7  |  44490254  |  44490755  |  130  |  STEQ  |  eaf60c2e-33a8-11ef-91cc-fa163e1eb62c  |
 
-Raw File
+Raw File ('p3_output.csv')
 ```
 primer_type,primer,penalty,stringency,sequence,primer_start,primer_end,tm,gc_percent,self_any_th,self_end_th,hairpin_th,end_stability,chromosome,pre_targeton_start,pre_targeton_end,product_size,targeton_id,pair_uid
 LibAmp,STEQ_LibAmpF_12,0.455,1.0,TCTCACAAGCTCAACCCCAG,44490279,44490298,59.602,55.0,0.0,0.0,0.0,4.45,7,44490254,44490755,144,STEQ,eaf60c38-33a8-11ef-91cc-fa163e1eb62c
@@ -475,7 +475,7 @@ LibAmp  |  STEQ_LibAmpF_3  |  0.328  |  0.5  |  CCCCAGGACACCAGGAAAAG  |  4449029
 LibAmp  |  STEQ_LibAmpR_3  |  2.056  |  0.5  |  CTTGGTGCTGCAGGTGAGG  |  44490403  |  44490421  |  60.97  |  63.158  |  17.124  |  0.0  |  0.0  |  3.86  |  7  |  44490254  |  44490755  |  129  |  STEQ  |  eaf60c43-33a8-11ef-91cc-fa163e1eb62c  |  has duplicate with a higher stringency
 
 
-Raw File ('optimal_primer_pairs.csv')
+Raw File ('discarded_pairs.csv')
 ```
 primer_type,primer,penalty,stringency,sequence,primer_start,primer_end,tm,gc_percent,self_any_th,self_end_th,hairpin_th,end_stability,chromosome,pre_targeton_start,pre_targeton_end,product_size,targeton_id,pair_uid,discard_reason
 LibAmp,STEQ_LibAmpF_0,0.22,0.5,AAAGGAGGAAACAGGCTGGG,44490309,44490328,59.887,55.0,20.341,0.0,0.0,4.45,7,44490254,44490755,114,STEQ,eaf60c40-33a8-11ef-91cc-fa163e1eb62c,has duplicate with a higher stringency
