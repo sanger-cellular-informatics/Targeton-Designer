@@ -1,12 +1,10 @@
 import logging
 from io import StringIO
 from unittest import TestCase
-from unittest.mock import Mock
 import pandas as pd
 
 from pandas.testing import assert_frame_equal
-from pysam import index
-from ranking.ranker import Ranker
+from primer.ranker.ranker import Ranker
 from primer.primer_pair import PrimerPair
 from primer.designed_primer import DesignedPrimer, Interval
 from tests.utils.utils import CapturingStreamHandler
