@@ -300,7 +300,7 @@ class TestCalculatePrimerCoords(unittest.TestCase):
     ):
         result = calculate_primer_coords(side, coords, slice_start, slice_end, strand)
 
-        # self.assertEqual(result, expected_result)
+        self.assertEqual(result, expected_result)
 
 
 if __name__ == '__main__':
