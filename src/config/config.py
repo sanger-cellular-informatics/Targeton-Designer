@@ -1,28 +1,16 @@
-from abc import ABC, abstractmethod
 from utils.file_system import parse_json
 
 from custom_logger.custom_logger import CustomLogger
-from utils.validate_files import validate_fasta_format
 
 # Initialize logger
 logger = CustomLogger(__name__)
 
 
-class Config(ABC):
-    def __init__(self):
-        pass
-
-    @abstractmethod
-    def read_config(self):
-        pass
-
-
-class DesignerConfig(Config):
+class DesignerConfig:
     def __init__(self, args: dict):
+        default_config_file = 'config/designer.config.json'
 
-        self._default_config_file = 'config/designer.config.json'
-
-        config = self.read_config(self._default_config_file, args['conf'])
+        config = DesignerConfig.read_config(default_config_file, args.get('conf', None))
 
         # Check if filters exist in configuration.
         if not config.get("filters"):
@@ -40,12 +28,10 @@ class DesignerConfig(Config):
 
         self.prefix_output_dir = args.get('dir', None) or config.get('dir', None)
         self.fasta = args.get('fasta', None) or config.get('fasta', None)
-        validate_fasta_format(self.fasta)
 
         primer3_params_path = (args.get('primer3_params', None) or config.get('primer3_params', None)
                                or 'src/primer/primer3.config.json')
         self.primer3_params = parse_json(primer3_params_path)
-
 
     @staticmethod
     def read_config(

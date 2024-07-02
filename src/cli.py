@@ -6,7 +6,7 @@ from config.config import DesignerConfig
 from primer.filter.filter_manager import FilterManager
 from primer.slice_data import SliceData
 from utils.arguments_parser import ParsedInputArguments
-from utils.validate_files import validate_files
+from utils.validate_files import validate_files, validate_fasta_format
 from utils.write_output_files import (
     write_slicer_output,
     write_targeton_csv,
@@ -52,9 +52,9 @@ def primer_command(
         args: dict
 ) -> PrimerOutputData:
     PRIMER_TYPE = 'LibAmp'
-
     config = DesignerConfig(args)
 
+    validate_fasta_format(config.fasta)
     slice_data = SliceData.get_first_slice_data(config.fasta)
 
     primers = Primer3(config.params, config.primer3_params).get_primers(slice_data)
@@ -103,8 +103,6 @@ def scoring_command(ipcress_output, mismatch, output_tsv, targeton_csv=None) -> 
 
 
 def design_command(args) -> DesignOutputData:
-    validate_files(fasta=args['fasta'])
-
     primer_result = primer_command(args=args)
 
     output_dir = primer_result.dir

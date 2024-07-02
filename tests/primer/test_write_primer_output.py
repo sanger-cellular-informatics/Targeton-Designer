@@ -157,10 +157,8 @@ class TestWritePrimerOutputFiles(TestCase):
 
         self.assertEqual(content, expected_content)
 
-    @patch('primer.write_primer_output.DesignerConfig')
-    def test_export_three_optimal_primers_to_csv(self, mock_designer_config):
+    def test_export_three_optimal_primers_to_csv(self):
         # Arrange
-        mock_designer_config.return_value.params = {'csv_column_order': ['col1', 'col2', 'col3']}
         data = {
             'col1': [1, 2, 3, 4, 5, 6, 7],
             'col2': ['A', 'B', 'C', 'D', 'E', 'F', 'G'],
@@ -172,7 +170,7 @@ class TestWritePrimerOutputFiles(TestCase):
         self.fs.create_dir(export_dir)
 
         # Act
-        result_path = export_three_optimal_primer_pairs_to_csv(df, export_dir)
+        result_path = export_three_optimal_primer_pairs_to_csv(df, export_dir, column_order=['col1', 'col2', 'col3'])
 
         # Assert
         expected_path = path.join(export_dir, 'optimal_primer_pairs.csv')

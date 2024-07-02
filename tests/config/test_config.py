@@ -11,7 +11,7 @@ class TestDesignerConfigClass(TestCase):
     def test_stringency_is_set(self):
         expected = [1, 0.5, 0.1]
         
-        designer_config = DesignerConfig(self.config_path)
+        designer_config = DesignerConfig(args={'conf': self.config_path})
         
         self.assertEqual(designer_config.params['stringency_vector'], expected)
 
@@ -21,7 +21,7 @@ class TestDesignerConfigClass(TestCase):
                     "end_stability", "chromosome", "pre_targeton_start", "pre_targeton_end", 
                     "product_size", "targeton_id", "pair_uid"]
         
-        designer_config = DesignerConfig(self.config_path)
+        designer_config = DesignerConfig(args={'conf': self.config_path})
         
         self.assertEqual(designer_config.params['csv_column_order'], expected)
 
@@ -32,9 +32,7 @@ class TestDesignerConfigClass(TestCase):
                                          "end_stability", "chromosome", "pre_targeton_start", "pre_targeton_end", 
                                          "product_size", "targeton_id", "pair_uid"]}
 
-        designer_config = DesignerConfig(self.config_path)
-
-        result = designer_config.read_config(
+        result = DesignerConfig.read_config(
             default_config_file=self.default_config_path, config_file=self.config_path
         )
         self.assertEqual(result, expected)
@@ -43,8 +41,7 @@ class TestDesignerConfigClass(TestCase):
         incorrect_path = 'tests/config/111.config.json'
 
         with self.assertRaises(FileNotFoundError):
-            config = DesignerConfig(incorrect_path)
-            config.read_config(incorrect_path)
+            DesignerConfig.read_config(incorrect_path)
 
     def test_use_default_config(self):
         expected = {'stringency_vector': [1, 0.1],
@@ -59,9 +56,7 @@ class TestDesignerConfigClass(TestCase):
     def test_no_default_config_file_found(self):
         incorrect_default_path = 'tests/config/111.config.json'
 
-        config = DesignerConfig(self.config_path)
-
         with self.assertRaises(FileNotFoundError):
-            config.read_config(
+            DesignerConfig.read_config(
                 default_config_file=incorrect_default_path, config_file=self.config_path
             )
