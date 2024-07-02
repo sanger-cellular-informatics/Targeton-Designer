@@ -2,7 +2,7 @@
 import sys
 from os import path
 
-from config.config import DesignerConfig, Primer3ParamsConfig
+from config.config import DesignerConfig
 from primer.filter.filter_manager import FilterManager
 from primer.slice_data import SliceData
 from utils.arguments_parser import ParsedInputArguments
@@ -52,30 +52,25 @@ def primer_command(
         args: dict
 ) -> PrimerOutputData:
     PRIMER_TYPE = 'LibAmp'
-    validate_files(fasta=args['fasta'])
 
-    designer_config = DesignerConfig(args['conf'])
+    config = DesignerConfig(args)
 
-    p3_class = Primer3(
-        designer_config.params,
-        Primer3ParamsConfig(args['primer3_params']).params,
-    )
+    slice_data = SliceData.get_first_slice_data(config.fasta)
 
-    slice_data = SliceData.get_first_slice_data(args['fasta'])
+    primers = Primer3(config.params, config.primer3_params).get_primers(slice_data)
 
-    primers = p3_class.get_primers(slice_data)
+    filters_response = FilterManager(config.params['filters']).apply_filters(primers)
 
-    filters_response = FilterManager(designer_config.params['filters']).apply_filters(primers)
-
-    ranked_primer_pairs_df = (Ranker(designer_config.params['ranking'])
+    ranked_primer_pairs_df = (Ranker(config.params['ranking'])
                               .rank(primer_type=PRIMER_TYPE, primer_pairs=filters_response.primer_pairs_to_keep))
 
     primer_result = write_primer_output(
         primer_pairs_df=ranked_primer_pairs_df,
         primer_pairs=filters_response.primer_pairs_to_keep,
         discarded_primer_pairs=filters_response.primer_pairs_to_discard,
-        prefix=args['dir'],
-        primer_type=PRIMER_TYPE
+        prefix=config.prefix_output_dir,
+        primer_type=PRIMER_TYPE,
+        column_order=config.params['csv_column_order']
     )
 
     return primer_result
