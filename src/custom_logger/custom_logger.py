@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 
 
 class CustomLogger:
@@ -84,10 +85,17 @@ class CustomLogger:
     
     # Customize and override log level methods
 
-    def info(self, message: str) -> None:
+    def info(self, message: str, to_stdout: bool = False) -> None:
         self.setup_formatter(self.info_formatter)
+
+        # to_std is boolean variable for not writing specific logs to log file.
+        # Default is set to False.
+        if to_stdout:
+            sys.stdout.write(message)
+            return
+
         self.logger.info(message)
-    
+
     def debug(self, message: str) -> None:
         self.setup_formatter(self.debug_formatter)
         self.logger.debug(message)

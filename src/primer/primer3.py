@@ -41,6 +41,13 @@ class Primer3:
         primer_pairs = []
         primer_explain = []
 
+        p3_config_params = ""
+        for key, param in self._p3_config.items():
+            p3_config_params += f"{' '*8}{key.replace('_', ' ')}: {param} \n"
+        
+        logger.info("Primer3 Configuration:\n", to_stdout = True)
+        logger.info(p3_config_params, to_stdout = True)
+
         for stringency in self._stringency_vector:
             designs = self._get_primer3_designs(slice_data.p3_input, stringency)
 
@@ -61,6 +68,7 @@ class Primer3:
             handle_primer3_errors(primer_explain, any(primer_pairs))
         # If Primer3 returns pairs but built_primer_pairs does not
         elif not primer_pairs:
+            logger.info(p3_config_params)
             raise ValueError("No primer pairs returned")
         return primer_pairs
 
