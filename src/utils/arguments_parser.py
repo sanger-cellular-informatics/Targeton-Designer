@@ -35,7 +35,7 @@ class ParsedInputArguments:
         self.arguments = values
         self.command = self.arguments['command']
 
-    def get_args(self) -> str:
+    def get_args(self) -> dict:
         return self.arguments
 
 
