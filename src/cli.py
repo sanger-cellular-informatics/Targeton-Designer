@@ -69,7 +69,7 @@ def primer_command(
     slice_data = SliceData.get_first_slice_data(fasta)
 
     primers = p3_class.get_primers(slice_data)
-
+    return
     filters_response = FilterManager(designer_config.params['filters']).apply_filters(primers)
 
     ranked_primer_pairs_df = Ranker(designer_config.params['ranking']).rank(primer_type,
