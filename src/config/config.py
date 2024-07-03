@@ -1,4 +1,3 @@
-from abc import ABC, abstractmethod
 from utils.file_system import parse_json
 
 from custom_logger.custom_logger import CustomLogger
@@ -7,21 +6,11 @@ from custom_logger.custom_logger import CustomLogger
 logger = CustomLogger(__name__)
 
 
-class Config(ABC):
-    def __init__(self):
-        pass
+class DesignerConfig:
+    def __init__(self, args: dict):
+        default_config_file = 'config/designer.config.json'
 
-    @abstractmethod
-    def read_config(self):
-        pass
-
-
-class DesignerConfig(Config):
-    def __init__(self, config_file: str = None):
-
-        self._default_config_file = 'config/designer.config.json'
-
-        config = self.read_config(self._default_config_file, config_file)
+        config = DesignerConfig.read_config(default_config_file, args.get('conf', None))
 
         # Check if filters exist in configuration.
         if not config.get("filters"):
@@ -37,6 +26,12 @@ class DesignerConfig(Config):
                        'filters': config['filters'],
                        'ranking': config['ranking']}
 
+        self.prefix_output_dir = args.get('dir', None) or config.get('dir', None)
+        self.fasta = args.get('fasta', None) or config.get('fasta', None)
+
+        primer3_params_path = (args.get('primer3_params', None) or config.get('primer3_params', None)
+                               or 'src/primer/primer3.config.json')
+        self.primer3_params = parse_json(primer3_params_path)
 
     @staticmethod
     def read_config(
@@ -55,23 +50,3 @@ class DesignerConfig(Config):
                 config.setdefault(field, default_config[field])
 
         return config
-
-
-class Primer3ParamsConfig(Config):
-    def __init__(self, config_file: str = None):
-        self._default_config_file = 'src/primer/primer3.config.json'
-        self.params = self.read_config(self._default_config_file, config_file)
-
-    @staticmethod
-    def read_config(
-            default_config_file: str,
-            config_file: str = None,
-    ) -> dict:
-
-        file = default_config_file
-        if config_file is not None:
-            file = config_file
-
-        config_data = parse_json(file)
-
-        return config_data

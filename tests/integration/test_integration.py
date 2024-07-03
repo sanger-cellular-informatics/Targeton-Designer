@@ -78,12 +78,7 @@ class TestPrimerIntegration(TestCase):
                 args = parsed_input.get_args()
 
                 # Act
-                primer_result = primer_command(
-                    fasta=args["fasta"],
-                    prefix=args["dir"],
-                    designer_config_file=args["conf"],
-                    p3_config_file=args["primer3_params"]
-                )
+                primer_result = primer_command(args=args)
 
                 path_primer_bed = Path(primer_result.bed)
                 path_primer_csv = Path(primer_result.csv)
@@ -94,7 +89,7 @@ class TestPrimerIntegration(TestCase):
                 self.assertGreater(path_primer_bed.stat().st_size, 0)
                 self.assertGreater(path_primer_csv.stat().st_size, 0)
 
-                expected_csv_headers = DesignerConfig(args["conf"]).params['csv_column_order']
+                expected_csv_headers = DesignerConfig(args={'conf': self.designer_config}).params['csv_column_order']
                 df_primers = pd.read_csv(path_primer_csv)
                 csv_headers = list(df_primers.columns)
                 self.assertEqual(set(csv_headers), set(expected_csv_headers))
