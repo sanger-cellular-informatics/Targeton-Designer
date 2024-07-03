@@ -18,6 +18,7 @@ logger = CustomLogger(__name__)
 
 def write_primer_output(
     primer_pairs_df: pd.DataFrame,
+    column_order: List[str],
     prefix='',
     primer_pairs=[],
     discarded_primer_pairs=[],
@@ -31,9 +32,10 @@ def write_primer_output(
         primer_rows = construct_primer_rows_bed_format(primer_pairs)
         result.bed = export_to_bed(primer_rows, export_dir)
 
-        result.csv = export_primers_to_csv(primer_pairs_df, export_dir)
+        result.csv = export_primers_to_csv(primer_pairs_df, export_dir, column_order)
         result.optimal_primer_pairs_csv = export_three_optimal_primer_pairs_to_csv(primer_pairs_df,
-                                                                                   export_dir)
+                                                                                   export_dir,
+                                                                                   column_order)
 
         logger.info(f"Primer files saved: {result.bed}, {result.csv}, {result.optimal_primer_pairs_csv}")
 
@@ -41,7 +43,8 @@ def write_primer_output(
         result.discarded_csv = export_discarded_primers_to_csv(
                                   discarded_primer_pairs,
                                   export_dir,
-                                  primer_type)
+                                  primer_type,
+                                  column_order)
         logger.info(f"Discarded primer file saved: {result.discarded_csv}")
     else:
         logger.info("No discarded primers")
@@ -49,37 +52,34 @@ def write_primer_output(
     return result
 
 
-def export_primers_to_csv(primers_dataframe: pd.DataFrame, export_dir: str) -> str:
+def export_primers_to_csv(primers_dataframe: pd.DataFrame, export_dir: str, column_order: List[str]) -> str:
     PRIMER3_OUTPUT_CSV = 'p3_output.csv'
     primers_csv_output_path = path.join(export_dir, PRIMER3_OUTPUT_CSV)
 
-    col_order = DesignerConfig().params['csv_column_order']
-    write_dataframe_to_csv(primers_dataframe, col_order, primers_csv_output_path)
+    write_dataframe_to_csv(primers_dataframe, column_order, primers_csv_output_path)
 
     return primers_csv_output_path
 
 def export_discarded_primers_to_csv(discarded_pairs: List[PrimerPairDiscarded],
-                                    export_dir: str, primer_type: str) -> str:
+                                    export_dir: str, primer_type: str, column_order: List[str]) -> str:
     PRIMER3_DISCARDED_OUTPUT_CSV = 'discarded_pairs.csv'
     output_path = path.join(export_dir, PRIMER3_DISCARDED_OUTPUT_CSV)
 
     # create a data frame for output as csv
     discarded_df = _get_discarded_primer_dataframe(discarded_pairs, primer_type)
-    col_order = DesignerConfig().params['csv_column_order']
-    col_order.append('discard_reason')
-    write_dataframe_to_csv(discarded_df, col_order, output_path)
+    column_order.append('discard_reason')
+    write_dataframe_to_csv(discarded_df, column_order, output_path)
 
     return output_path
 
 
-def export_three_optimal_primer_pairs_to_csv(df: pd.DataFrame, export_dir: str) -> str:
+def export_three_optimal_primer_pairs_to_csv(df: pd.DataFrame, export_dir: str, column_order: List[str]) -> str:
     OPTIMAL_PRIMERS_CSV = 'optimal_primer_pairs.csv'
     primers_csv_output_path = path.join(export_dir, OPTIMAL_PRIMERS_CSV)
 
     optimal_primers_df = df.head(6)
 
-    col_order = DesignerConfig().params['csv_column_order']
-    write_dataframe_to_csv(optimal_primers_df, col_order, primers_csv_output_path)
+    write_dataframe_to_csv(optimal_primers_df, column_order, primers_csv_output_path)
 
     return primers_csv_output_path
 

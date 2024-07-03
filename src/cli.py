@@ -2,11 +2,11 @@
 import sys
 from os import path
 
-from config.config import DesignerConfig, Primer3ParamsConfig
+from config.config import DesignerConfig
 from primer.filter.filter_manager import FilterManager
 from primer.slice_data import SliceData
 from utils.arguments_parser import ParsedInputArguments
-from utils.validate_files import validate_files
+from utils.validate_files import validate_files, validate_fasta_format
 from utils.write_output_files import (
     write_slicer_output,
     write_targeton_csv,
@@ -49,38 +49,28 @@ def slicer_command(args) -> SlicerOutputData:
 
 
 def primer_command(
-    fasta: str ='',
-    prefix: str = '',
-    existing_dir: str = '',
-    primer_type: str = 'LibAmp',
-    p3_config_file: str = None,
-    designer_config_file: str = None
+        args: dict
 ) -> PrimerOutputData:
+    PRIMER_TYPE = 'LibAmp'
+    config = DesignerConfig(args)
 
-    validate_files(fasta=fasta)
+    validate_fasta_format(config.fasta)
+    slice_data = SliceData.get_first_slice_data(config.fasta)
 
-    designer_config = DesignerConfig(designer_config_file)
+    primers = Primer3(config.params, config.primer3_params).get_primers(slice_data)
 
-    p3_class = Primer3(
-        designer_config.params,
-        Primer3ParamsConfig(p3_config_file).params,
-    )
+    filters_response = FilterManager(config.params['filters']).apply_filters(primers)
 
-    slice_data = SliceData.get_first_slice_data(fasta)
+    ranked_primer_pairs_df = (Ranker(config.params['ranking'])
+                              .rank(primer_type=PRIMER_TYPE, primer_pairs=filters_response.primer_pairs_to_keep))
 
-    primers = p3_class.get_primers(slice_data)
-
-    filters_response = FilterManager(designer_config.params['filters']).apply_filters(primers)
-
-    ranked_primer_pairs_df = Ranker(designer_config.params['ranking']).rank(primer_type,
-                                                                            filters_response.primer_pairs_to_keep)
     primer_result = write_primer_output(
         primer_pairs_df=ranked_primer_pairs_df,
         primer_pairs=filters_response.primer_pairs_to_keep,
         discarded_primer_pairs=filters_response.primer_pairs_to_discard,
-        prefix=prefix,
-        existing_dir=existing_dir,
-        primer_type=primer_type
+        prefix=config.prefix_output_dir,
+        primer_type=PRIMER_TYPE,
+        column_order=config.params['csv_column_order']
     )
 
     return primer_result
@@ -113,13 +103,7 @@ def scoring_command(ipcress_output, mismatch, output_tsv, targeton_csv=None) -> 
 
 
 def design_command(args) -> DesignOutputData:
-    validate_files(fasta=args['fasta'])
-
-    primer_result = primer_command(
-        fasta=args['fasta'],
-        prefix=args['dir'],
-        p3_config_file=args['primer3_params']
-    )
+    primer_result = primer_command(args=args)
 
     output_dir = primer_result.dir
 
@@ -146,12 +130,7 @@ def resolve_command(args):
             slicer_command(args)
 
         if command == 'primer':
-            primer_command(
-                fasta=args['fasta'],
-                prefix=args['dir'],
-                designer_config_file=args['conf'],
-                p3_config_file=args['primer3_params']
-            )
+            primer_command(args=args)
 
         if command == 'collate_primer_data':
             design_output_data = DesignOutputData()
