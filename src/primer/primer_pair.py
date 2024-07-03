@@ -74,7 +74,7 @@ def build_primer_loci(
         primer_pair_id: str,
 ) -> dict:
     primer_field = primer_details['field']
- 
+
     primer['primer'] = primer_name
     primer[primer_field] = design[key]
 
@@ -89,7 +89,6 @@ def build_primer_loci(
             slice_data.end,
             slice_data.strand
         )
-        # breakpoint()
 
         primer['primer_start'] = primer_coords[0]
         primer['primer_end'] = primer_coords[1]
