@@ -108,3 +108,4 @@ class CustomLogger:
         self.setup_formatter(self.critical_formatter)
         self.logger.critical(message)
 
+
