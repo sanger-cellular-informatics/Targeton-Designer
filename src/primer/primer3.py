@@ -1,3 +1,4 @@
+import sys
 import primer3
 
 from typing import List
@@ -41,12 +42,8 @@ class Primer3:
         primer_pairs = []
         primer_explain = []
 
-        p3_config_params = ""
-        for key, param in self._p3_config.items():
-            p3_config_params += f"{'':>8}{str(key):<28}: {str(param):^5}\n"
-
-        logger.info("Primer3 Configuration:\n", to_stdout = True)
-        logger.info(p3_config_params, to_stdout = True)
+        p3_formatted_config = self.format_p3_config(self._p3_config)
+        sys.stdout.write(p3_formatted_config)
 
         for stringency in self._stringency_vector:
             designs = self._get_primer3_designs(slice_data.p3_input, stringency)
@@ -68,7 +65,7 @@ class Primer3:
             handle_primer3_errors(primer_explain, any(primer_pairs))
         # If Primer3 returns pairs but built_primer_pairs does not
         elif not primer_pairs:
-            logger.info(p3_config_params)
+            logger.info(p3_formatted_config)
             raise ValueError("No primer pairs returned")
         return primer_pairs
 
@@ -98,3 +95,11 @@ class Primer3:
                     msg = f"Missing kmer list file(s) required for masking: {kmer_lists_missing_str}"
                     logger.exception(msg)
                     raise ValueError(msg)
+    
+    def format_p3_config(self, p3_config: dict):
+        p3_config_params = "Primer3 Configuration:\n\n"
+        for key, param in p3_config.items():
+            p3_config_params += f"{'':>8}{str(key):<28}: {str(param):^5}\n"
+
+        return p3_config_params
+
