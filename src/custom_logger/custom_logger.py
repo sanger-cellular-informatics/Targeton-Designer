@@ -1,6 +1,5 @@
 import logging
 import os
-import sys
 
 
 class CustomLogger:
@@ -88,7 +87,7 @@ class CustomLogger:
     def info(self, message: str) -> None:
         self.setup_formatter(self.info_formatter)
         self.logger.info(message)
-
+    
     def debug(self, message: str) -> None:
         self.setup_formatter(self.debug_formatter)
         self.logger.debug(message)
@@ -108,5 +107,4 @@ class CustomLogger:
     def critical(self, message: str) -> None:
         self.setup_formatter(self.critical_formatter)
         self.logger.critical(message)
-
 
