@@ -43,7 +43,7 @@ class Primer3:
 
         p3_config_params = ""
         for key, param in self._p3_config.items():
-            p3_config_params += f"{'':>8}{str(key).replace('_', ' ').title():<28}: {str(param):^5}\n"
+            p3_config_params += f"{'':>8}{str(key):<28}: {str(param):^5}\n"
         
         logger.info("Primer3 Configuration:\n", to_stdout = True)
         logger.info(p3_config_params, to_stdout = True)
