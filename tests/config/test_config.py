@@ -67,6 +67,7 @@ class TestDesignerConfigClass(TestCase):
 
     @patch('config.config.parse_json')
     def test_args_params_override_config_file_params(self, mock_parse_json):
+        # Arrange
         primer3_params = {"key": "second_value"}
 
         def side_effect(*args, **kwargs):
@@ -83,14 +84,18 @@ class TestDesignerConfigClass(TestCase):
             "conf": self.config_with_params_path
         }
 
+        # Act
         config = DesignerConfig(args)
 
+        # Assert
         self.assertEqual(config.prefix_output_dir, "OUTPUT_DIR_FROM_ARGS")
         self.assertEqual(config.fasta, "FASTA_DIR_FROM_ARGS")
         self.assertEqual(config.primer3_params, primer3_params)
         self.assertEqual(mock_parse_json.call_args_list[2], call("PRIMER3_PARAMS_FROM_ARGS"))
+
     @patch('config.config.parse_json')
     def test_get_params_from_config_file_when_no_args(self, mock_parse_json):
+        # Arrange
         primer3_params = {"key": "second_value"}
 
         def side_effect(*args, **kwargs):
@@ -101,15 +106,15 @@ class TestDesignerConfigClass(TestCase):
 
         mock_parse_json.side_effect = side_effect
         args = {
-            "dir": "OUTPUT_DIR_FROM_ARGS",
-            "fasta": "FASTA_DIR_FROM_ARGS",
-            "primer3_params": "PRIMER3_PARAMS_FROM_ARGS",
             "conf": self.config_with_params_path
         }
 
+        # Act
         config = DesignerConfig(args)
 
-        self.assertEqual(config.prefix_output_dir, "OUTPUT_DIR_FROM_ARGS")
-        self.assertEqual(config.fasta, "FASTA_DIR_FROM_ARGS")
+        # Assert
+        json_config_expected = parse_json(self.config_with_params_path)
+        self.assertEqual(config.prefix_output_dir, json_config_expected["dir"])
+        self.assertEqual(config.fasta, json_config_expected["fasta"])
         self.assertEqual(config.primer3_params, primer3_params)
-        self.assertEqual(mock_parse_json.call_args_list[2], call("PRIMER3_PARAMS_FROM_ARGS"))
+        self.assertEqual(mock_parse_json.call_args_list[2], call(json_config_expected["primer3_params"]))
