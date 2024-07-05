@@ -233,6 +233,26 @@ The order specified in the config file will be retained for ranking: in this exa
 
 If a name is missing, it will not be used for ranking. If no custom config file is passed, then the default `config/designer.config.json` will be applied. If a custom config file is passed but it does not contain a `ranking` key, then the ranking parameters from `config/designer.config.json` will be applied. If the custom config file contains a `ranking` key and no ranking defined, i.e. `"ranking": {},`, no ranking will be applied.
 
+Using Configuration file to set arguments
+
+The command line arguments (dir, fasta, primer3_params) can also be specified within the designer config file.
+
+```
+{
+  "stringency_vector": [...],
+  "ranking": {
+    "stringency": true,
+    "product_size": true
+  },
+  "csv_column_order": ["primer_type", "primer", "penalty", ...],
+  "dir": "/path/to/output/directory",
+  "fasta": "/path/to/fasta/file.fa",
+  "primer3_params": "/path/to/primer3/configuration/file"
+}
+```
+**Note:** In case these arguments are specified both in the command line and in the designer config file, the parameters specified in the command line will take precedence.
+
+
 ### Primer Scoring Tool
 
 Running primer scoring:
