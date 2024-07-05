@@ -1,12 +1,16 @@
 from unittest import TestCase
 
+from unittest.mock import patch, call
+
 from config.config import DesignerConfig
+from utils.file_system import parse_json
 
 
 class TestDesignerConfigClass(TestCase):
     def setUp(self):
         self.config_path = 'tests/config/designer.config.json'
         self.default_config_path = 'tests/config/designer_default.config.json'
+        self.config_with_params_path = 'tests/config/designer.config_with_params.json'
 
     def test_stringency_is_set(self):
         expected = [1, 0.5, 0.1]
@@ -60,3 +64,52 @@ class TestDesignerConfigClass(TestCase):
             DesignerConfig.read_config(
                 default_config_file=incorrect_default_path, config_file=self.config_path
             )
+
+    @patch('config.config.parse_json')
+    def test_args_params_override_config_file_params(self, mock_parse_json):
+        primer3_params = {"key": "second_value"}
+
+        def side_effect(*args, **kwargs):
+            if mock_parse_json.call_count == 3:
+                return primer3_params
+            else:
+                return parse_json(*args, **kwargs)
+
+        mock_parse_json.side_effect = side_effect
+        args = {
+            "dir": "OUTPUT_DIR_FROM_ARGS",
+            "fasta": "FASTA_DIR_FROM_ARGS",
+            "primer3_params": "PRIMER3_PARAMS_FROM_ARGS",
+            "conf": self.config_with_params_path
+        }
+
+        config = DesignerConfig(args)
+
+        self.assertEqual(config.prefix_output_dir, "OUTPUT_DIR_FROM_ARGS")
+        self.assertEqual(config.fasta, "FASTA_DIR_FROM_ARGS")
+        self.assertEqual(config.primer3_params, primer3_params)
+        self.assertEqual(mock_parse_json.call_args_list[2], call("PRIMER3_PARAMS_FROM_ARGS"))
+    @patch('config.config.parse_json')
+    def test_get_params_from_config_file_when_no_args(self, mock_parse_json):
+        primer3_params = {"key": "second_value"}
+
+        def side_effect(*args, **kwargs):
+            if mock_parse_json.call_count == 3:
+                return primer3_params
+            else:
+                return parse_json(*args, **kwargs)
+
+        mock_parse_json.side_effect = side_effect
+        args = {
+            "dir": "OUTPUT_DIR_FROM_ARGS",
+            "fasta": "FASTA_DIR_FROM_ARGS",
+            "primer3_params": "PRIMER3_PARAMS_FROM_ARGS",
+            "conf": self.config_with_params_path
+        }
+
+        config = DesignerConfig(args)
+
+        self.assertEqual(config.prefix_output_dir, "OUTPUT_DIR_FROM_ARGS")
+        self.assertEqual(config.fasta, "FASTA_DIR_FROM_ARGS")
+        self.assertEqual(config.primer3_params, primer3_params)
+        self.assertEqual(mock_parse_json.call_args_list[2], call("PRIMER3_PARAMS_FROM_ARGS"))
