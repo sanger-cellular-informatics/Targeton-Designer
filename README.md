@@ -210,7 +210,7 @@ chmod +x ./download_kmer_lists.sh
 }
 ```
 
-Remember to use exact names mentioned above. If a filter name is missing, it will not be applied (e.g., if only `"filters": {"duplicates": true}`, `"HAP1_variant"` will not be applied).
+Remember to use the exact names mentioned above. If a filter name is missing, it will not be applied (e.g., if only `"filters": {"duplicates": true}`, `"HAP1_variant"` will not be applied).
 
 If no custom config file is passed, then the default `config/default_designer.config.json` will be applied. If a custom config file is passed but it does not contain a `filters` key, then the filters from `config/default_designer.config.json` will be applied. If the custom config file contains a `filters` key and no filters defined, i.e. `"filters": {},`, then the `duplicates` filter will be applied by default.
 
