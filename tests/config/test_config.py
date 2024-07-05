@@ -5,8 +5,8 @@ from config.config import DesignerConfig
 
 class TestDesignerConfigClass(TestCase):
     def setUp(self):
-        self.config_path = 'tests/config/designer.config.json'
-        self.default_config_path = 'tests/config/designer_default.config.json'
+        self.config_path = 'tests/config_files/test_user_designer.config.json'
+        self.default_config_path = 'tests/config_files/test_default_designer.config.json'
 
     def test_stringency_is_set(self):
         expected = [1, 0.5, 0.1]
