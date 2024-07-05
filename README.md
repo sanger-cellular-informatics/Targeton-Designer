@@ -158,6 +158,7 @@ Example Command
 Primer3 runner uses 2 types of config:
 
 ##### Primer3 parameters config
+
 This defines the configuration settings for Primer3 (see the [Primer3 Manual](https://primer3.org/manual.html) for more details).
 
 The default configuration can be found in `config/default_primer3.config.json` (which should NOT be moved, deleted or edited). This file contains the default configuration that will be applied if no user config file is provided.
@@ -165,6 +166,7 @@ The default configuration can be found in `config/default_primer3.config.json` (
 To provide your own config parameters, please copy the default file into a new file, rename it, and edit it. You can pass your own user Primer3 config file to the `primer` command using the  `--primer3_params` argument indicating the file path.
 
 ##### Designer config
+
 This specifies parameters specific to the Primer Designer tool. You can specify:
 1. A vector of different stringencies to be applied when running Primer3,
 2. Any filters that should be applied to the list of primer pairs provided by Primer3 (see [below](
@@ -178,6 +180,7 @@ The default configuration can be found in `config/default_designer.config.json` 
  To provide your own config parameters, please copy the default file into a new file, rename it, and edit it. You can pass your own user designer config file to the `primer` command using the  `--conf` argument indicating the file path. For any fields missing in the user-defined config file, the default settings from `config/default_designer.config.json` will be applied.
 
 ##### Running Primer3
+
 ```sh
 ./designer.sh primer [--fasta SLICE_FASTA] [--dir OUTPUT_FOLDER] [--primer3_params PRIMER_CONFIG_JSON] [--conf DESIGNER_CONFIG_JSON]
 ```
@@ -189,6 +192,7 @@ Example command:
 ```
 
 ###### Using kmer lists for primer generation
+
 A kmer list is needed if multiple stringencies are to be applied (see [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_KMERLIST_PATH)).
 
 1. Set config parameters (in your user-defined designer config file, see [above](
@@ -204,7 +208,7 @@ chmod +x ./download_kmer_lists.sh
 
 ###### Applying filters from the designer config file
 
- You can set your own filtering parameters using your user designer config file (see [above](
+You can set your own filtering parameters using your user designer config file (see [above](
 #designer-config)).
  * The `duplicates` filter will discard all primer pairs with lower stringencies also present with a higher stringency.
  * The `HAP1_variant` filter will discard all primer pairs with at least one primer containing SNPs (variants) that differ between the HAP1 genome and the GRCh38 reference genome.
@@ -227,7 +231,7 @@ If no user config file is passed, then the default `config/default_designer.conf
 
 ###### Applying ranking from the designer config file
 
- You can set your own ranking parameters using your user designer config file (see [above](
+You can set your own ranking parameters using your user designer config file (see [above](
 #designer-config)). Ranking parameters can be turned on (`true`) or off (`false`) as follows:
 
 ```
@@ -246,8 +250,10 @@ The order specified in the config file will be retained for ranking: in this exa
 If a name is missing, it will not be used for ranking. If no user config file is passed, then the default `config/default_designer.config.json` will be applied. If a user config file is passed but it does not contain a `ranking` key, then the ranking parameters from `config/default_designer.config.json` will be applied. If the user config file contains a `ranking` key and no ranking defined, i.e. `"ranking": {},`, no ranking will be applied.
 
 ###### Specifying column order through the designer config file
+
 Column order can be speficied through the user designer config file:
 
+```
 {
   ...
   "csv_column_order": ["primer_type",
@@ -268,6 +274,7 @@ Column order can be speficied through the user designer config file:
                         "pre_targeton_end",
                         "product_size"]
 }
+```
 
 All avaiable columns are indicated in the example above. Note that any columns with names missing in the user designer config file not be present in the output CSV files.
 
