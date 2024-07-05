@@ -156,25 +156,22 @@ Example Command
 #### Primer3 Runner
 
 Primer runner uses 2 types of config:
-##### Primer3 parameters config: 
-Defines configuration for Primer3. 
-To set up user defined configuration for primer3, you can pass ``--primer3_params`` argument with file path to the ``primer`` command.
-You can use ``/config/primer3_example.config.json`` file as a template. 
 
-If there is no config file for primer3, it will run with the default configuration.
+##### Primer3 parameters config
+This defines the configuration settings for Primer3 (see the [Primer3 Manual](https://primer3.org/manual.html for more details).
+
+The default configuration can be found in `config/default_primer3.config.json` (which should NOT be moved, deleted or edited). This file contains the default configuration that will be applied if no user config file is provided.
+
+ To provide your own config parameters, please copy the default file into a new file and rename it (e.g., you can save it as `user_primer3.config.json`). You can pass your own primer3 config file to the `primer` command using the  `--primer3_params` argument indicating the file path.
 
 ##### Designer config
-Is used to specify parameters specific for the Primer Designer tool. 
- Designer tool config contains a stringency vector to specify a set of stringencies to run Primer3, and a vector to specify the column order of the csv output file.  Available columns are: 'primer_type', 'primer', 'penalty', 'stringency', 'sequence', 'primer_start', 'primer_end', 'tm', 'gc_percent', 'self_any_th', 'self_end_th', 'hairpin_th', 'end_stability', 'chromosome', 'pre_targeton_start', 'pre_targeton_end' and 'product_size'.
-To set up user defined configuration for primer3, you can pass ``--conf`` argument with file path to the ``primer`` command.
+This specifies parameters specific to the Primer Designer tool. You can specify: i) a vector of different stringencies to be applied when running Primer3, ii) any filters that should be applied to the list of primer pairs provided by Primer3 (see below), iii) the order in which primer pairs should be ranked in the output csv file (see below), and iv) the column order for said file. Note that, for column order, available columns are: 'primer_type', 'primer', 'penalty', 'stringency', 'sequence', 'primer_start', 'primer_end', 'tm', 'gc_percent', 'self_any_th', 'self_end_th', 'hairpin_th', 'end_stability', 'chromosome', 'pre_targeton_start', 'pre_targeton_end' and 'product_size' (missing columns will not be present in the output csv file).
 
+The default configuration can be found in `config/default_designer.config.json` (which should NOT be moved, deleted or edited). This file contains the default configuration that will be applied if no user config file is provided.
 
-To set up user defined configuration for primer3, you can create file named ``primer3.config.json`` inside of the ``/config`` folder. 
-You can use ``/config/primer3_example.config.json`` file as a template. 
+ To provide your own config parameters, please copy the default file into a new file and rename it (e.g., you can save it as `user_designer.config.json`). You can pass your own designer config file to the `primer` command using the  `--conf` argument indicating the file path. For any fields missing in the user-defined config file, the default settings from `config/default_designer.config.json` will be applied.
 
-If there is no config file for primer3, it will run with the default configuration.
-
-Running Primer3:
+##### Running Primer3
 ```sh
 ./designer.sh primer [--fasta SLICE_FASTA] [--dir OUTPUT_FOLDER] [--primer3_params PRIMER_CONFIG_JSON] [--conf DESIGNER_CONFIG_JSON]
 ```
@@ -185,8 +182,10 @@ Example command:
 ./designer.sh primer --fasta slice.fa --dir p3_output
 ```
 
-To use kmer lists for primer generation: 
-1. Set config parameters (example config/primer3_kmer.config.json)
+###### Using kmer lists for primer generation
+A kmer list is needed if multiple stringencies are to be applied (see [Primer3 Manual](https://primer3.org/manual.html)).
+
+1. Set config parameters (in your user-defined designer config file, see above)
 2. Provide 2 files with kmers: homo_sapiens_11.list and homo_sapiens_16.list
 
 These kmer lists can be downloaded using:
@@ -196,42 +195,43 @@ chmod +x ./download_kmer_lists.sh
 ./download_kmer_lists.sh
 ```
 
-Using Filters from Configuration file:
+###### Applying filters from the designer config file
 
-To apply filtering, a custom config file can be created (the `config/designer.config.json` file can be used as a template) and passed throught the `--conf` flag. These filters can be turned on (`true`) or off (`false`) as follows:
+ You can set your own filtering parameters using your custom designer config file (see above). The `duplicates` filter will discard all primer pairs with lower stringencies also present with a higher stringency. The `HAP1_variant` filter will discard all primer pairs with at least one primer containing SNPs (variants) that differ between the HAP1 genome and the GRCh38 reference genome. These filters can be turned on (`true`) or off (`false`) as follows:
 
 ```
 {
-  "stringency_vector": [...],
+  ...
   "filters": {
     "duplicates": true,
     "HAP1_variant": true
   },
-  "csv_column_order": ["primer_type", "primer", "penalty", ...]
+  ...
 }
 ```
 
-Remember to use exact names as mentioned above. If a filter name is missing, it will not be applied (e.g., if `"filters": {"duplicates": true}`, `"HAP1_variant"` will not be applied).
+Remember to use exact names mentioned above. If a filter name is missing, it will not be applied (e.g., if only `"filters": {"duplicates": true}`, `"HAP1_variant"` will not be applied).
 
-If no custom config file is passed, then the default `config/designer.config.json` will be applied. If a custom config file is passed but it does not contain a `filters` key, then the filters from `config/designer.config.json` will be applied. If the custom config file contains a `filters` key and no filters defined, i.e. `"filters": {},`, then the `duplicates` filter will be applied by default.
+If no custom config file is passed, then the default `config/default_designer.config.json` will be applied. If a custom config file is passed but it does not contain a `filters` key, then the filters from `config/default_designer.config.json` will be applied. If the custom config file contains a `filters` key and no filters defined, i.e. `"filters": {},`, then the `duplicates` filter will be applied by default.
 
-Applying Ranking from Configuration file:
+###### Applying ranking from the designer config file
 
-To apply ranking, a custom config file can be created (the `config/designer.config.json` file can be used as a template) and passed throught the `--conf` flag. Ranking parameters can be turned on (`true`) or off (`false`) as follows:
+ You can set your own ranking parameters using your custom designer config file (see above). Ranking parameters can be turned on (`true`) or off (`false`) as follows:
 
 ```
 {
-  "stringency_vector": [...],
+  ...
   "ranking": {
     "stringency": true,
     "product_size": true
   },
-  "csv_column_order": ["primer_type", "primer", "penalty", ...]
+  ...
 }
 ```
+
 The order specified in the config file will be retained for ranking: in this example, ranking will be applied first by stringency and then by product size (i.e., primers pairs with the same stringency will be ranked according to their product size).
 
-If a name is missing, it will not be used for ranking. If no custom config file is passed, then the default `config/designer.config.json` will be applied. If a custom config file is passed but it does not contain a `ranking` key, then the ranking parameters from `config/designer.config.json` will be applied. If the custom config file contains a `ranking` key and no ranking defined, i.e. `"ranking": {},`, no ranking will be applied.
+If a name is missing, it will not be used for ranking. If no custom config file is passed, then the default `config/default_designer.config.json` will be applied. If a custom config file is passed but it does not contain a `ranking` key, then the ranking parameters from `config/default_designer.config.json` will be applied. If the custom config file contains a `ranking` key and no ranking defined, i.e. `"ranking": {},`, no ranking will be applied.
 
 ### Primer Scoring Tool
 
