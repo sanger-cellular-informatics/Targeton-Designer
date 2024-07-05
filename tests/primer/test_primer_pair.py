@@ -161,7 +161,7 @@ class TestPrimerPair(TestCase):
         self.assertEqual(expected, actual)
         self.assertEqual(
             f"{coords_mock.call_args}",
-            "call('primer_side', 'design_value', 100)"
+            "call('primer_side', 'design_value', 100, 200, '+')"
         )
 
         self.assertEqual(
@@ -284,19 +284,21 @@ class TestCalculatePrimerCoords(unittest.TestCase):
 
     @parameterized.expand(
         [
-            ('left', [55, 20], 44490254, (44490309, 44490328)),
-            ('right', [168, 19], 44490254, (44490404, 44490422)),
-            ('left', [39, 20], 44490254, (44490293, 44490312)),
-            ('right', [167, 19], 44490254, (44490403, 44490421)),
+            ('left', [55, 20], 44490254, 44490755, '+', (44490309, 44490328)),
+            ('right', [168, 19], 44490254, 44490755, '+', (44490404, 44490422)),
+            ('left', [39, 20], 44490254, 44490755, '-', (44490697, 44490716)),
+            ('right', [167, 19], 44490254, 44490755, '-', (44490588, 44490606)),
         ])
     def test_calculate_primer_coords(
             self,
             side,
             coords,
             slice_start,
+            slice_end,
+            strand,
             expected_result
     ):
-        result = calculate_primer_coords(side, coords, slice_start)
+        result = calculate_primer_coords(side, coords, slice_start, slice_end, strand)
 
         self.assertEqual(result, expected_result)
 
