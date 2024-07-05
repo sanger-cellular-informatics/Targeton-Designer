@@ -162,14 +162,14 @@ This defines the configuration settings for Primer3 (see the [Primer3 Manual](ht
 
 The default configuration can be found in `config/default_primer3.config.json` (which should NOT be moved, deleted or edited). This file contains the default configuration that will be applied if no user config file is provided.
 
- To provide your own config parameters, please copy the default file into a new file and rename it (e.g., you can save it as `user_primer3.config.json`). You can pass your own primer3 config file to the `primer` command using the  `--primer3_params` argument indicating the file path.
+ To provide your own config parameters, please copy the default file into a new file, rename it (e.g., you can save it as `user_primer3.config.json`) and edit it according to your needs. You can pass your own primer3 config file to the `primer` command using the  `--primer3_params` argument indicating the file path.
 
 ##### Designer config
 This specifies parameters specific to the Primer Designer tool. You can specify: i) a vector of different stringencies to be applied when running Primer3, ii) any filters that should be applied to the list of primer pairs provided by Primer3 (see below), iii) the order in which primer pairs should be ranked in the output csv file (see below), and iv) the column order for said file. Note that, for column order, available columns are: 'primer_type', 'primer', 'penalty', 'stringency', 'sequence', 'primer_start', 'primer_end', 'tm', 'gc_percent', 'self_any_th', 'self_end_th', 'hairpin_th', 'end_stability', 'chromosome', 'pre_targeton_start', 'pre_targeton_end' and 'product_size' (missing columns will not be present in the output csv file).
 
 The default configuration can be found in `config/default_designer.config.json` (which should NOT be moved, deleted or edited). This file contains the default configuration that will be applied if no user config file is provided.
 
- To provide your own config parameters, please copy the default file into a new file and rename it (e.g., you can save it as `user_designer.config.json`). You can pass your own designer config file to the `primer` command using the  `--conf` argument indicating the file path. For any fields missing in the user-defined config file, the default settings from `config/default_designer.config.json` will be applied.
+ To provide your own config parameters, please copy the default file into a new file, rename it (e.g., you can save it as `user_designer.config.json`) and edit it according to your needs. You can pass your own designer config file to the `primer` command using the  `--conf` argument indicating the file path. For any fields missing in the user-defined config file, the default settings from `config/default_designer.config.json` will be applied.
 
 ##### Running Primer3
 ```sh
