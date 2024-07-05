@@ -185,6 +185,9 @@ Example command:
 ./designer.sh primer --fasta slice.fa --dir p3_output
 ```
 
+**Note:** The command line arguments (dir, fasta, primer3_params) can also be specified within the designer config file. In case these arguments are specified both in the command line and in the designer config file, the parameters specified in the command line will take precedence.
+
+
 To use kmer lists for primer generation: 
 1. Set config parameters (example config/primer3_kmer.config.json)
 2. Provide 2 files with kmers: homo_sapiens_11.list and homo_sapiens_16.list
