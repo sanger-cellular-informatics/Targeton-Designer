@@ -48,8 +48,8 @@ class TestSlicerIntegration(TestCase):
 class TestPrimerIntegration(TestCase):
     def setUp(self):
         self.fasta_file_path = r"./tests/integration/fixtures/test_mask.fa"
-        self.config_file_path = r"./tests/primer3_test_config.json"
-        self.designer_config = r"./tests/config/designer.config.json"
+        self.config_file_path = r"./tests/config_files/test_user_primer3.config.json"
+        self.designer_config = r"./tests/config_files/test_user_designer.config.json"
 
         self.mock_config = {
             "stringency_vector": [1, 2, 3],
