@@ -8,15 +8,15 @@ from utils.file_system import parse_json
 
 class TestDesignerConfigClass(TestCase):
     def setUp(self):
-        self.config_path = 'tests/config/designer.config.json'
-        self.default_config_path = 'tests/config/designer_default.config.json'
-        self.config_with_params_path = 'tests/config/designer.config_with_params.json'
+        self.config_path = 'tests/config_files/test_user_designer.config.json'
+        self.default_config_path = 'tests/config_files/test_default_designer.config.json'
+        self.config_with_params_path = 'tests/config_files/test_user_designer.config_with_params.json'
 
     def test_stringency_is_set(self):
         expected = [1, 0.5, 0.1]
-        
+
         designer_config = DesignerConfig(args={'conf': self.config_path})
-        
+
         self.assertEqual(designer_config.params['stringency_vector'], expected)
 
     def test_column_order_is_provided(self):
@@ -24,9 +24,9 @@ class TestDesignerConfigClass(TestCase):
                     "primer_end", "tm", "gc_percent", "self_any_th", "self_end_th", "hairpin_th", 
                     "end_stability", "chromosome", "pre_targeton_start", "pre_targeton_end", 
                     "product_size", "targeton_id", "pair_uid"]
-        
+
         designer_config = DesignerConfig(args={'conf': self.config_path})
-        
+
         self.assertEqual(designer_config.params['csv_column_order'], expected)
 
     def test_read_config(self):

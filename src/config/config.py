@@ -8,7 +8,7 @@ logger = CustomLogger(__name__)
 
 class DesignerConfig:
     def __init__(self, args: dict):
-        default_config_file = 'config/designer.config.json'
+        default_config_file = 'config/default_designer.config.json'
 
         config = DesignerConfig.read_config(default_config_file, args.get('conf', None))
 
@@ -30,7 +30,7 @@ class DesignerConfig:
         self.fasta = args.get('fasta', None) or config.get('fasta', None)
 
         primer3_params_path = (args.get('primer3_params', None) or config.get('primer3_params', None)
-                               or 'src/primer/primer3.config.json')
+                               or 'config/default_primer3.config.json')
         self.primer3_params = parse_json(primer3_params_path)
 
     @staticmethod
