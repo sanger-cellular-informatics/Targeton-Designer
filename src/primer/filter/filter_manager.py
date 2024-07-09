@@ -39,6 +39,7 @@ class FilterManager:
 
         for filter_object in self.filters:
             if type(apply_filters[filter_object.key]) is not bool:
+                logger.info(f'Invalid filter: the value given for "{filter_object.key}" is not of type Boolean')
                 raise ValueError(f'Invalid filter: the value given for "{filter_object.key}" is not of type Boolean')
 
             if apply_filters[filter_object.key]:
