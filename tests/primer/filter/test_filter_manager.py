@@ -303,3 +303,14 @@ class TestFilterManager(TestCase):
         logs = self.handler.buffer.getvalue().strip()
 
         self.assertTrue("Filter HAP1_variant is applied." in logs)
+
+    def test_get_filter_when_invalid_value(self):
+        filters_dict = {
+            "duplicates": "NOT_BOOLEAN"
+        }
+
+        with self.assertRaises(ValueError) as error:
+            FilterManager(filters_dict)
+
+        self.assertEqual(
+            str(error.exception), 'Invalid filter: the value given for "duplicates" is not of type Boolean')

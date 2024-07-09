@@ -24,7 +24,7 @@ class FilterManager:
         if len(apply_filters) == 1 and apply_filters.get("duplicates"):
             logger.info("Using duplicates filter as a default filter.")
 
-        correct_filter_names = [f_name.key for f_name in self.filters]
+        correct_filter_names = [_filter.key for _filter in self.filters]
         incorrect_filter_names = set(apply_filters.keys()) - set(correct_filter_names)
 
         if incorrect_filter_names:
@@ -37,9 +37,12 @@ class FilterManager:
         # Filter out filters which are not in apply_filter list.
         self.filters = filter(lambda f: f.key in list(apply_filters.keys()), self.filters)
 
-        for is_filter in self.filters:
-            if apply_filters[is_filter.key]:
-                self._filters_to_apply.append(is_filter)
+        for filter_object in self.filters:
+            if type(apply_filters[filter_object.key]) is not bool:
+                raise ValueError(f'Invalid filter: the value given for "{filter_object.key}" is not of type Boolean')
+
+            if apply_filters[filter_object.key]:
+                self._filters_to_apply.append(filter_object)
 
 
     def apply_filters(self, primer_pairs_data: List[PrimerPair]) -> FilterResponse:
