@@ -307,12 +307,13 @@ class TestFilterManager(TestCase):
     @patch('custom_logger.custom_logger.CustomLogger.info')
     def test_get_filter_when_invalid_value(self, logger_info):
         filters_dict = {
-            "duplicates": "NOT_BOOLEAN",
+            "duplicates": "yes",
             "HAP1_variant": True
         }
 
         with self.assertRaises(ValueError) as err:
             FilterManager(filters_dict)
 
-        logger_info.assert_called_once_with('Invalid filter: the value given for "duplicates" is not of type Boolean')
-        self.assertEqual(str(err.exception), 'Invalid filter: the value given for "duplicates" is not of type Boolean')
+        expected_error_message = 'Invalid filter: the value given for "duplicates" is not of type Boolean'
+        logger_info.assert_called_once_with(expected_error_message)
+        self.assertEqual(str(err.exception), expected_error_message)

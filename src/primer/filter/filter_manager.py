@@ -24,7 +24,7 @@ class FilterManager:
         if len(apply_filters) == 1 and apply_filters.get("duplicates"):
             logger.info("Using duplicates filter as a default filter.")
 
-        correct_filter_names = [_filter.key for _filter in self.filters]
+        correct_filter_names = [filter_object.key for filter_object in self.filters]
         incorrect_filter_names = set(apply_filters.keys()) - set(correct_filter_names)
 
         if incorrect_filter_names:
