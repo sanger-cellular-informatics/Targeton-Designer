@@ -303,3 +303,17 @@ class TestFilterManager(TestCase):
         logs = self.handler.buffer.getvalue().strip()
 
         self.assertTrue("Filter HAP1_variant is applied." in logs)
+
+    @patch('custom_logger.custom_logger.CustomLogger.error')
+    def test_get_filter_when_invalid_value(self, logger_error):
+        filters_dict = {
+            "duplicates": "yes",
+            "HAP1_variant": 1
+        }
+
+        with self.assertRaises(SystemExit) as err:
+            FilterManager(filters_dict)
+
+        expected_error_message = ("Wrong value(s) provided for 'duplicates, HAP1_variant' in config file "
+                                  "(only takes true or false). Unable to apply filtering - Exiting programme")
+        logger_error.assert_called_once_with(expected_error_message)
