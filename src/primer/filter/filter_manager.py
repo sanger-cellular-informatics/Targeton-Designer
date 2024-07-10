@@ -24,7 +24,7 @@ class FilterManager:
         if len(apply_filters) == 1 and apply_filters.get("duplicates"):
             logger.info("Using duplicates filter as a default filter.")
 
-        correct_filter_names = [f_name.key for f_name in self.filters]
+        correct_filter_names = [filter_object.key for filter_object in self.filters]
         incorrect_filter_names = set(apply_filters.keys()) - set(correct_filter_names)
 
         if incorrect_filter_names:
@@ -34,12 +34,19 @@ class FilterManager:
             # Terminate the running script until incorrect filter names gets corrected.
             sys.exit(1)
 
+        incorrect_values = [key for key, value in apply_filters.items() if not isinstance(value, bool)]
+        if incorrect_values:
+            msg: str = f"Wrong value(s) provided for '{', '.join(incorrect_values)}' in config " \
+                       "file (only takes true or false). Unable to apply filtering - Exiting programme"
+            logger.error(msg)
+            sys.exit(1)
+
         # Filter out filters which are not in apply_filter list.
         self.filters = filter(lambda f: f.key in list(apply_filters.keys()), self.filters)
 
-        for is_filter in self.filters:
-            if apply_filters[is_filter.key]:
-                self._filters_to_apply.append(is_filter)
+        for filter_object in self.filters:
+            if apply_filters[filter_object.key]:
+                self._filters_to_apply.append(filter_object)
 
 
     def apply_filters(self, primer_pairs_data: List[PrimerPair]) -> FilterResponse:
