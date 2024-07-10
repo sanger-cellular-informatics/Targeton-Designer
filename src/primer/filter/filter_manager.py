@@ -34,14 +34,17 @@ class FilterManager:
             # Terminate the running script until incorrect filter names gets corrected.
             sys.exit(1)
 
+        incorrect_values = [key for key, value in apply_filters.items() if not isinstance(value, bool)]
+        if incorrect_values:
+            msg: str = f"Wrong value(s) provided for '{', '.join(incorrect_values)}' in config " \
+                       "file (only takes true or false). Unable to apply filtering - Exiting programme"
+            logger.error(msg)
+            sys.exit(1)
+
         # Filter out filters which are not in apply_filter list.
         self.filters = filter(lambda f: f.key in list(apply_filters.keys()), self.filters)
 
         for filter_object in self.filters:
-            if type(apply_filters[filter_object.key]) is not bool:
-                logger.info(f'Invalid filter: the value given for "{filter_object.key}" is not of type Boolean')
-                raise ValueError(f'Invalid filter: the value given for "{filter_object.key}" is not of type Boolean')
-
             if apply_filters[filter_object.key]:
                 self._filters_to_apply.append(filter_object)
 
