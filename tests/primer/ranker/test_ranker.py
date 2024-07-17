@@ -161,10 +161,10 @@ class RankerTest(TestCase):
 
         self.expected_ranked_primers = """
 primer_type,primer,penalty,sequence,primer_start,primer_end,tm,gc_percent,self_any_th,self_end_th,hairpin_th,end_stability,pair_uid,stringency,chromosome,pre_targeton_start,pre_targeton_end,product_size,targeton_id
-mockType,primer_fr,0.5,ATCGATCG,11540,11545,60.0,50.0,30.0,10.0,20.0,25.0,uid3,0.3,ch1,11540,11645,3,targeton_id
-mockType,primer_rv,0.5,CTCGATCG,11640,11645,60.0,50.0,30.0,10.0,20.0,25.0,uid3,0.3,ch1,11540,11645,3,targeton_id
 mockType,primer_fr,0.5,ATCGATCG,11540,11545,60.0,50.0,30.0,10.0,20.0,25.0,uid1,0.1,ch1,11540,11645,3,targeton_id
 mockType,primer_rv,0.5,CTCGATCG,11640,11645,60.0,50.0,30.0,10.0,20.0,25.0,uid1,0.1,ch1,11540,11645,3,targeton_id
+mockType,primer_fr,0.5,ATCGATCG,11540,11545,60.0,50.0,30.0,10.0,20.0,25.0,uid3,0.3,ch1,11540,11645,3,targeton_id
+mockType,primer_rv,0.5,CTCGATCG,11640,11645,60.0,50.0,30.0,10.0,20.0,25.0,uid3,0.3,ch1,11540,11645,3,targeton_id
 mockType,primer_fr,0.5,ATCGATCG,11540,11545,60.0,50.0,30.0,10.0,20.0,25.0,uid2,0.2,ch1,11540,11645,1,targeton_id
 mockType,primer_rv,0.5,CTCGATCG,11640,11645,60.0,50.0,30.0,10.0,20.0,25.0,uid2,0.2,ch1,11540,11645,1,targeton_id
 """
