@@ -175,7 +175,7 @@ This specifies parameters specific to the Primer Designer tool. You can specify:
 #applying-ranking-from-the-designer-config-file)),
 4. The column order for the output CSV files.
 
-Note that the stringency vector corresponds to the 'PRIMER_MASK_FAILURE_RATE' in the [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_FAILURE_RATE), meaning that low values give higher stringency.
+Note that the stringency vector corresponds to 'PRIMER_MASK_FAILURE_RATE' in the [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_FAILURE_RATE), meaning that low values give higher stringency.
 
 The default configuration can be found in `config/default_designer.config.json` (which should NOT be moved, deleted or edited). This file contains the default configuration that will be applied if no user config file is provided.
 
