@@ -36,7 +36,7 @@ def _take_pair_with_max_stringency_and_others(pairs: List[PrimerPair]) -> Tuple[
 
 
 def _get_max_stringency_pair(duplicate_group: List[PrimerPair]) -> PrimerPair:
-    return max(duplicate_group, key=lambda pair: pair.stringency)
+    return min(duplicate_group, key=lambda pair: pair.stringency)
 
 
 def _group_duplicate_pairs(pairs: List[PrimerPair]) -> List[List[PrimerPair]]:
