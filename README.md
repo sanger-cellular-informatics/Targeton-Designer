@@ -35,28 +35,12 @@ Standalone primer designer tool.
 ## Installation
 
 ### Clone Repository
-Pull down the Primer Designer repo and cd into it.
+Clone the Primer Designer repository and `cd` into it by using the following command.
 Recursively pull any submodules.
 ```sh
 git clone --recurse-submodule https://gitlab.internal.sanger.ac.uk/sci/targeton-designer.git
 cd primer-designer
 ```
-
-### Python Virtual Environment
-
-Requirements:
- - Python3.8+
- - Python-venv
-
-Run
-```sh
-make
-make install
-make setup-venv
-```
-```make``` sets up the git hooks that run unittests and pycodestyle on /src and /tests on ```git push```.
-```make install``` installs dependencies below.
-```make setup-venv``` creates a venv at ./venv and installs requirements.txt(s)
 
 Dependencies:
 
@@ -66,8 +50,26 @@ Change ```python``` command to point to Python (3.8), ubuntu expects python3 to 
 sudo apt-get update \
 && sudo apt-get -y install build-essential bedtools python3.8-dev python3.8-venv \
 && sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.8 2  \
-&& sudo update-alternatives --config python
+&& sudo update-alternatives --config python \
+&& sudo apt-get install python3-pip \
+&& sudo apt install make
 ```
+
+### Python Virtual Environment
+
+Requirements:
+ - Python3.8+
+ - Python-venv
+
+Run
+
+```sh
+make
+make install
+```
+```make``` sets up the git hooks that run unittests and pycodestyle on /src and /tests on ```git push```.
+```make install``` installs dependencies.
+
 
 Check Python3 (base) and Python (updated) version
 ```sh
@@ -76,27 +78,36 @@ python --version
 ```
 
 Setting up Virtual Env:
-```sh
-python -m venv venv
+Install Python virtual environment using the following command:
+```
+sudo pip3 install virtualenv 
+```
 
+Then, by using following command create a virtual environment and activate it:
+
+```
+python -m venv venv
 source venv/bin/activate
 
-pip install -U pip wheel setuptools 
-pip install -r requirements.txt
-pip install -r sge-primer-scoring/requirements.txt
-
+# To deactivate virtual environment type the following command and hit enter:
 deactivate
 ```
 
+After creating the virtual environment, you need to install python packages from `requirements.txt` using the following commands:
+
+```
+pip install -U pip wheel setuptools 
+pip install -r requirements.txt
+pip install -r sge-primer-scoring/requirements.txt
+```
+
+Before you run the tests you need to have `kmer` files in your project directory. You can follow these [steps](#using-kmer-lists-for-primer-generation) to download and add `kmers` in your project root directory.
+
 Run the tests:
 ```sh
-source venv/bin/activate
-
 python -m unittest discover --start-directory ./tests --top-level-directory .
 cd sge-primer-scoring
 python -m unittest discover --start-directory ./tests --top-level-directory .
-
-deactivate
 ```
 
 ### Git Hooks (for devs)
@@ -251,7 +262,7 @@ If a name is missing, it will not be used for ranking. If no user config file is
 
 ###### Specifying column order through the designer config file
 
-Column order can be speficied through the user designer config file:
+Column order can be specified through the user designer config file:
 
 ```
 {
@@ -276,7 +287,7 @@ Column order can be speficied through the user designer config file:
 }
 ```
 
-All avaiable columns are indicated in the example above. Note that any columns with names missing in the user designer config file not be present in the output CSV files.
+All available columns are indicated in the example above. Note that any columns with names missing in the user designer config file not be present in the output CSV files.
 
 ###### Using the designer config file to set command-line arguments
 
@@ -293,6 +304,17 @@ Command-line arguments (`--dir`, `--fasta`, and `--primer3_params`) can, alterna
   "primer3_params": "/path/to/primer3/configuration/file"
 }
 ```
+Once, you add above configuration to `custom_config.json` file, you will be able to run the following commands:
+
+```
+./designer.sh design --conf custom_config.json
+```
+**or**
+
+```
+./designer.sh primer --conf custom_config.json
+```
+
 **Note:** Where these arguments are specified both in the command line and in the user designer config file, the parameters specified in the command line will take precedence.
 
 
