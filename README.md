@@ -248,7 +248,7 @@ You can set your own ranking parameters using your user designer config file (se
 }
 ```
 
-The order specified in the config file will be retained for ranking: in this example, ranking will be applied first by stringency (with more stringent settings being preffered) and then by product size (i.e., primers pairs with the same stringency will be ranked according to their product size, with larger products being prefered).
+The order specified in the config file will be retained for ranking. In this example, ranking will be applied first by stringency (in ascending order) and then by product size (in descending order), i.e., primers pairs with the same stringency will be ranked according to their product size.
 
 If a name is missing, it will not be used for ranking. If no user config file is passed, then the default `config/default_designer.config.json` will be applied. If a user config file is passed but it does not contain a `ranking` key, then the ranking parameters from `config/default_designer.config.json` will be applied. If the user config file contains a `ranking` key and no ranking defined, i.e. `"ranking": {},`, no ranking will be applied.
 
