@@ -7,9 +7,9 @@ from primer.primer_pair import PrimerPair
 
 
 class DuplicatesFilter(Filter):
-    key: str = 'duplicates'
+    key: str = "duplicates"
     value_type: type = bool
-    reason_discarded: str = "has duplicate with a higher stringency"
+    reason_discarded: str = "has duplicate with a higher failure rate for masking"
 
     def apply(self, pairs: List[PrimerPair]) -> FilterResponse:
         pairs_to_keep = []
@@ -20,7 +20,9 @@ class DuplicatesFilter(Filter):
         for duplicate_group in pair_duplicates_grouped:
             pair_max_stringency, others = _take_pair_with_max_stringency_and_others(duplicate_group)
 
-            pairs_from_group_to_discard = [PrimerPairDiscarded(pair, DuplicatesFilter.reason_discarded) for pair in others]
+            pairs_from_group_to_discard = [
+                PrimerPairDiscarded(pair, DuplicatesFilter.reason_discarded) for pair in others
+            ]
 
             pairs_to_keep.append(pair_max_stringency)
             pairs_to_discard.extend(pairs_from_group_to_discard)

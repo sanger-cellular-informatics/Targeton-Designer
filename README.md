@@ -175,7 +175,7 @@ This specifies parameters specific to the Primer Designer tool. You can specify:
 #applying-ranking-from-the-designer-config-file)),
 4. The column order for the output CSV files.
 
-Note that the stringency vector corresponds to 'PRIMER_MASK_FAILURE_RATE' in the [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_FAILURE_RATE), meaning that low values give higher stringency.
+Note that, in the Designer config, `stringency_vector` corresponds to 'PRIMER_MASK_FAILURE_RATE' in the [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_FAILURE_RATE). This means that a value of 0.1 will apply more stringent settings for the masking algorithm than a value of 1.
 
 The default configuration can be found in `config/default_designer.config.json` (which should NOT be moved, deleted or edited). This file contains the default configuration that will be applied if no user config file is provided.
 
@@ -212,8 +212,7 @@ chmod +x ./download_kmer_lists.sh
 
 You can set your own filtering parameters using your user designer config file (see [above](
 #designer-config)).
- * The `duplicates` filter will discard all primer pairs with lower stringencies (i.e., with higher stringency values, see [above](
-#designer-config)) also present with a higher stringency.
+ * The `duplicates` filter will discard any duplicated primer pairs that have an equivalent pair with a lower failure rate cutoff value (see [above](#designer-config)).
  * The `HAP1_variant` filter will discard all primer pairs with at least one primer containing SNPs (variants) that differ between the HAP1 genome and the GRCh38 reference genome.
  These filters can be turned on (`true`) or off (`false`) as follows:
 
@@ -248,7 +247,7 @@ You can set your own ranking parameters using your user designer config file (se
 }
 ```
 
-The order specified in the config file will be retained for ranking. In this example, ranking will be applied first by stringency (in ascending order) and then by product size (in descending order), i.e., primers pairs with the same stringency will be ranked according to their product size.
+The order specified in the config file will be retained for ranking. In this example, ranking will be applied first by the stringency cutoff value (in ascending order) and then by product size (in descending order), i.e., primers pairs with the same stringency value will be ranked according to their product size.
 
 If a name is missing, it will not be used for ranking. If no user config file is passed, then the default `config/default_designer.config.json` will be applied. If a user config file is passed but it does not contain a `ranking` key, then the ranking parameters from `config/default_designer.config.json` will be applied. If the user config file contains a `ranking` key and no ranking defined, i.e. `"ranking": {},`, no ranking will be applied.
 
@@ -471,6 +470,8 @@ Raw file (`p3_output.bed`)
 
 ### Primer3 Output CSV file
 It contains all the additional information from Primer3 for the individual primers. Column order can be specified through the Designer tool config. In this example, primer pairs have been ranked first by `stringency` and then by `product_size`, according to the default config file. Example only showing the first 10 rows of the file (plus, in the table, the first 4 rows with a different stringency).
+
+**TO BE DECIDED FOLLOWING UAT IN FUTURE: whether the 'stringency' column should be renamed as 'primer_mask_failure_rate' for clarity and consistency with the Primer3 manual.**
 
 |  primer_type  |  primer  |  penalty  |  stringency  |  sequence  |  primer_start  |  primer_end  |  tm  |  gc_percent  |  self_any_th  |  self_end_th  |  hairpin_th  |  end_stability  |  chromosome  |  pre_targeton_start  |  pre_targeton_end  |  product_size  |  targeton_id  |  pair_uid
 |---------------|----------|-----------|--------------|------------|----------------|--------------|------|--------------|---------------|---------------|--------------|-----------------|--------------|----------------------|--------------------|----------------|---------------|----------
