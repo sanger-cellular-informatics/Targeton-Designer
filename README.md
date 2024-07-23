@@ -108,13 +108,11 @@ pip install -r requirements.txt
 pip install -r sge-primer-scoring/requirements.txt
 ```
 
-##### Using kmer lists for primer generation
+##### Downloading kmer lists for primer generation
 
-`kmer` files are essential element of primer designer tool, it is used to help avoid regions of the genome that are likely to produce non-specific binding or amplification. 
+`kmer` files are required in order to use the Primer3 masker function, which prevents the design of primers using repetitive template regions.
 
-The `kmer` files are needed in the project root director to the primer design command and to run the unit tests.
-
-A kmer list is needed if multiple stringencies are to be applied (see [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_KMERLIST_PATH)).
+The `kmer` files are needed in the project root directory to run the `primer` command and to run the unit tests. (see [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_KMERLIST_PATH)).
 
 1. Set config parameters (in your user-defined designer config file, see [below](
 #designer-config))
@@ -127,7 +125,7 @@ chmod +x ./download_kmer_lists.sh
 ./download_kmer_lists.sh
 ```
 
-Make designer.sh executable
+#### Make designer script file executable
 ```sh
 chmod +x ./designer.sh
 ```
