@@ -212,7 +212,7 @@ chmod +x ./download_kmer_lists.sh
 
 You can set your own filtering parameters using your user designer config file (see [above](
 #designer-config)).
- * The `duplicates` filter will discard any duplicated primer pairs that have an equivalent pair with a lower primer_mask_failure_rate (see [above](#designer-config)).
+ * The `duplicates` filter will discard any duplicated primer pairs that have an equivalent pair with a lower primer mask failure rate (see [above](#designer-config)).
  * The `HAP1_variant` filter will discard all primer pairs with at least one primer containing SNPs (variants) that differ between the HAP1 genome and the GRCh38 reference genome.
  These filters can be turned on (`true`) or off (`false`) as follows:
 
@@ -247,7 +247,7 @@ You can set your own ranking parameters using your user designer config file (se
 }
 ```
 
-The order specified in the config file will be retained for ranking. In this example, ranking will be applied first by the primer_mask_failure_rate value (in ascending order) and then by product size (in descending order), i.e., primers pairs with the same primer_mask_failure_rate value will be ranked according to their product size.
+The order specified in the config file will be retained for ranking. In this example, ranking will be applied first by the primer mask failure rate value (in ascending order) and then by product size (in descending order), i.e., primers pairs with the same primer mask failure rate value will be ranked according to their product size.
 
 If a name is missing, it will not be used for ranking. If no user config file is passed, then the default `config/default_designer.config.json` will be applied. If a user config file is passed but it does not contain a `ranking` key, then the ranking parameters from `config/default_designer.config.json` will be applied. If the user config file contains a `ranking` key and no ranking defined, i.e. `"ranking": {},`, no ranking will be applied.
 
