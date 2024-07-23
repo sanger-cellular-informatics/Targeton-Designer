@@ -1,6 +1,6 @@
 # Primer Designer
 
-Standalone primer designer tool.
+A Standalone primer designer tool that takes target region coordinates of the genome, determines the targeton tiles for that region and identifies the appropriate LibAmp primers at the ends of the targeton locations and scores those primers for uniqueness. The individual tools within this workflow are termed Primer3, Slicer, iPCRess, Primer Scoring.
 
 ## Table of contents
 
@@ -8,7 +8,7 @@ Standalone primer designer tool.
   - [Clone Repository](#clone-repository)
   - [Install Dependencies](#install-dependencies)
   - [Setup Environment](#setup-environment)
-    - [Setting up Python Virtual Environement](#setting-up-python-virtual-environement)
+    - [Setting up Python Virtual Environement](#setting-up-python-virtual-environment)
     - [Using kmer lists for primer generation](#using-kmer-lists-for-primer-generation)
   - [Running unit tests](#running-unit-tests)
 - [Usage](#usage)
@@ -21,9 +21,6 @@ Standalone primer designer tool.
             - [Applying ranking from the designer config file](#applying-ranking-from-the-designer-config-file)
             - [Specifying column order through the designer config file](#specifying-column-order-through-the-designer-config-file)
             - [Using the designer config file to set command-line arguments](#using-the-designer-config-file-to-set-command-line-arguments)
-    -  [Primer Scoring Tool](#primer-scoring-tool)
-    -  [Slicer Tool](#slicer-tool)
-    -  [Other Tools](#other-tools)
         - [Targeton CSV generation](#targeton-csv-generation) 
         - [Primer data collation and output to csv & Json (for benchling)](#primer-data-collation-and-output-to-csv--json-for-benchling) 
         - [Post primers to Benchling](#post-primers-to-benchling) 
@@ -38,7 +35,7 @@ Standalone primer designer tool.
    - [Primer Designer Output example](#primer-designer-output-example) 
    - [Scoring Tool Input iPCRess file example](#scoring-tool-input-ipcress-file-example) 
 - [For Developers](#for-developers)
-- [Unsed commands](#unsed-commands)
+- [Deprecated tools and commands](#deprecated-tools-and-commands-deprecated-tools-and-commands)
 
 
 ## Installation
@@ -82,10 +79,10 @@ Run
 sudo make install
 ```
 
-```make install``` installs dependencies and setup envvironment for running primer designer commands.
+```make install``` installs dependencies and setup environment for running primer designer commands.
 
 
-##### Setting up Python Virtual Environement
+##### Setting up Python Virtual Environment
 Install Python virtual environment using the following command:
 ```
 sudo pip3 install virtualenv 
@@ -130,13 +127,6 @@ chmod +x ./download_kmer_lists.sh
 ./download_kmer_lists.sh
 ```
 
-### Running unit tests
-```sh
-python -m unittest discover --start-directory ./tests --top-level-directory .
-```
-
-### Usage
-
 Make designer.sh executable
 ```sh
 chmod +x ./designer.sh
@@ -147,10 +137,18 @@ Check Designer Version:
 ./designer.sh version
 ```
 
+#### Running unit tests
+```sh
+python -m unittest discover --start-directory ./tests --top-level-directory .
+```
+
+## Usage
 ### Primer Designer Tool
-#### Primer3 Runner
+##### Primer3 Runner
 
 Primer3 runner uses 2 types of config:
+- Primer3 parameters config
+- Designer config
 
 ##### Primer3 parameters config
 
@@ -287,49 +285,6 @@ Once, you add above configuration to `custom_config.json` file, you will be able
 
 **Note:** Where these arguments are specified both in the command line and in the user designer config file, the parameters specified in the command line will take precedence.
 
-
-### Primer Scoring Tool
-
-Running primer scoring:
-```sh
-./designer.sh scoring [--ipcress_file IPCRESS_FILE] [--scoring_mismatch SCORING_MISMATCH] [--output_tsv OUTPUT_TSV] [--targeton_csv TARGETON_CSV] 
-```
-
-Example command:
-```sh
-./designer.sh scoring --ipcress_file example_ipcress_file.txt --scoring_mismatch 4 --output_tsv example_output.tsv
-```
-Example command with targeton csv:
-```sh
-./designer.sh scoring --ipcress_file example_ipcress_file.txt --scoring_mismatch 4 --output_tsv example_targeton_output.tsv --targeton_csv example_targetons.csv
-```
-For more information and example files see the [Primer Scoring repo](https://gitlab.internal.sanger.ac.uk/sci/sge-primer-scoring).
-
-### Slicer Tool
-
-Running Slicer tool:
-```sh
-./designer.sh slicer [-h] [-f5 FLANK_5] [-f3 FLANK_3] [-l LENGTH] [-o OFFSET] [-d DIR] [--bed INPUT_BED] [--fasta REF_FASTA]
-```
-
-Example command:
-```sh
-./designer.sh slicer --bed example.bed --fasta example_genomic_ref.fa -d example_dir
-```
-
-### Other Tools
-
-#### Targeton CSV generation
-
-To generate the targeton CSV used in primer scoring:
-```sh
-./designer.sh generate_targeton_csv [--primers PRIMERS] [--bed BED] [--dir DIR]
-```
-Example command:
-```sh
-./designer.sh generate_targeton_csv --primers example_ipcress_input.txt --bed example.bed --dir example_dir
-```
-Please note primer pair names in the iPCRess input file must be prefixed by the corresponding region name in the BED file.
 
 #### Primer data collation and output to csv & Json (for benchling)
 
@@ -622,7 +577,7 @@ To debug with vscode, make sure the cwd in the debugger settings are pointed at 
 Additionally, make sure the interpreter is pointed at the correct virtual environment (venv/bin/python).
 
 
-## Unsed commands
+## Deprecated tools and commands
 
 Following are some commands that are not widely used or they perform similar operations. These commands will be used in the future after enhancing their functionality.
 
@@ -637,6 +592,49 @@ Example Command
 ```sh
 ./designer.sh design --fasta examples/fasta_example.fa
 ```
+
+### Primer Scoring Tool
+
+Running primer scoring:
+```sh
+./designer.sh scoring [--ipcress_file IPCRESS_FILE] [--scoring_mismatch SCORING_MISMATCH] [--output_tsv OUTPUT_TSV] [--targeton_csv TARGETON_CSV] 
+```
+
+Example command:
+```sh
+./designer.sh scoring --ipcress_file example_ipcress_file.txt --scoring_mismatch 4 --output_tsv example_output.tsv
+```
+Example command with targeton csv:
+```sh
+./designer.sh scoring --ipcress_file example_ipcress_file.txt --scoring_mismatch 4 --output_tsv example_targeton_output.tsv --targeton_csv example_targetons.csv
+```
+For more information and example files see the [Primer Scoring repo](https://gitlab.internal.sanger.ac.uk/sci/sge-primer-scoring).
+
+### Slicer Tool
+
+Running Slicer tool:
+```sh
+./designer.sh slicer [-h] [-f5 FLANK_5] [-f3 FLANK_3] [-l LENGTH] [-o OFFSET] [-d DIR] [--bed INPUT_BED] [--fasta REF_FASTA]
+```
+
+Example command:
+```sh
+./designer.sh slicer --bed example.bed --fasta example_genomic_ref.fa -d example_dir
+```
+
+### Other Tools
+
+#### Targeton CSV generation
+
+To generate the targeton CSV used in primer scoring:
+```sh
+./designer.sh generate_targeton_csv [--primers PRIMERS] [--bed BED] [--dir DIR]
+```
+Example command:
+```sh
+./designer.sh generate_targeton_csv --primers example_ipcress_input.txt --bed example.bed --dir example_dir
+```
+Please note primer pair names in the iPCRess input file must be prefixed by the corresponding region name in the BED file.
 
 ## Upcoming releases
 
