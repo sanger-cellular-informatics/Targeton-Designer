@@ -36,6 +36,7 @@ A Standalone primer designer tool that takes target region coordinates of the ge
    - [Scoring Tool Input iPCRess file example](#scoring-tool-input-ipcress-file-example) 
 - [For Developers](#for-developers)
 - [Deprecated tools and commands](#deprecated-tools-and-commands)
+- [Upcoming releases](#upcoming-releases)
 
 
 ## Installation
