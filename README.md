@@ -6,14 +6,21 @@ Standalone primer designer tool.
 
 - [Installation](#installation)
   - [Clone Repository](#clone-repository)
-  - [Python Virtual Environment](#python-virtual-environment)
-  - [Git Hooks (for devs)](#git-hooks-for-devs)
-  - [Docker Images](#docker-images)
-  - [Python debugger](#python-debugger)
+  - [Install Dependencies](#install-dependencies)
+  - [Setup Environment](#setup-environment)
+    - [Setting up Python Virtual Environement](#setting-up-python-virtual-environement)
+    - [Using kmer lists for primer generation](#using-kmer-lists-for-primer-generation)
+  - [Running unit tests](#running-unit-tests)
 - [Usage](#usage)
     -  [Primer Designer Tool](#primer-designer-tool) 
-        -  [Designer Workflow (Primer3)](#designer-workflow-primer3)
         -  [Primer3 Runner](#primer3-runner)
+            - [Primer3 parameters config](#primer3-parameters-config)
+            - [Designer config](#designer-config)
+            - [Running Primer3](#running-primer3)
+            - [Applying filters from the designer config file](#applying-filters-from-the-designer-config-file)
+            - [Applying ranking from the designer config file](#applying-ranking-from-the-designer-config-file)
+            - [Specifying column order through the designer config file](#specifying-column-order-through-the-designer-config-file)
+            - [Using the designer config file to set command-line arguments](#using-the-designer-config-file-to-set-command-line-arguments)
     -  [Primer Scoring Tool](#primer-scoring-tool)
     -  [Slicer Tool](#slicer-tool)
     -  [Other Tools](#other-tools)
@@ -30,6 +37,8 @@ Standalone primer designer tool.
    - [Primer3 Output Optimal Primer Pairs CSV file](#primer3-output-optimal-primer-pairs-csv-file) 
    - [Primer Designer Output example](#primer-designer-output-example) 
    - [Scoring Tool Input iPCRess file example](#scoring-tool-input-ipcress-file-example) 
+- [For Developers](#for-developers)
+- [Unsed commands](#unsed-commands)
 
 
 ## Installation
@@ -39,13 +48,13 @@ Clone the Primer Designer repository and `cd` into it by using the following com
 Recursively pull any submodules.
 ```sh
 git clone --recurse-submodule https://gitlab.internal.sanger.ac.uk/sci/targeton-designer.git
-cd primer-designer
+cd targeton-designer
 ```
 
-Dependencies:
+### Install Dependencies
 
-Build-essential, BedTools and Python (3.8), Python-venv (3.8)
-Change ```python``` command to point to Python (3.8), ubuntu expects python3 to be a specific version for compatibility.
+Build-essential, BedTools and Python (3.8), Python-venv (3.8).
+Change ```python``` command to point to Python (3.8), Ubuntu expects python3 to be a specific version for compatibility.
 ```sh
 sudo apt-get update \
 && sudo apt-get -y install build-essential bedtools python3.8-dev python3.8-venv \
@@ -55,7 +64,13 @@ sudo apt-get update \
 && sudo apt install make
 ```
 
-### Python Virtual Environment
+Check Python3 (base) and Python (updated) version
+```sh
+python3 --version
+python --version
+```
+
+### Setup Environment
 
 Requirements:
  - Python3.8+
@@ -64,20 +79,13 @@ Requirements:
 Run
 
 ```sh
-make
-make install
-```
-```make``` sets up the git hooks that run unittests and pycodestyle on /src and /tests on ```git push```.
-```make install``` installs dependencies.
-
-
-Check Python3 (base) and Python (updated) version
-```sh
-python3 --version
-python --version
+sudo make install
 ```
 
-Setting up Virtual Env:
+```make install``` installs dependencies and setup envvironment for running primer designer commands.
+
+
+##### Setting up Python Virtual Environement
 Install Python virtual environment using the following command:
 ```
 sudo pip3 install virtualenv 
@@ -88,8 +96,10 @@ Then, by using following command create a virtual environment and activate it:
 ```
 python -m venv venv
 source venv/bin/activate
+```
 
-# To deactivate virtual environment type the following command and hit enter:
+To deactivate virtual environment type the following command and hit enter:
+```
 deactivate
 ```
 
@@ -101,44 +111,31 @@ pip install -r requirements.txt
 pip install -r sge-primer-scoring/requirements.txt
 ```
 
-Before you run the tests you need to have `kmer` files in your project directory. You can follow these [steps](#using-kmer-lists-for-primer-generation) to download and add `kmers` in your project root directory.
+##### Using kmer lists for primer generation
 
-Run the tests:
+`kmer` files are essential element of primer designer tool, it is used to help avoid regions of the genome that are likely to produce non-specific binding or amplification. 
+
+The `kmer` files are needed in the project root director to the primer design command and to run the unit tests.
+
+A kmer list is needed if multiple stringencies are to be applied (see [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_KMERLIST_PATH)).
+
+1. Set config parameters (in your user-defined designer config file, see [below](
+#designer-config))
+2. Provide 2 files with kmers: `homo_sapiens_11.list` and `homo_sapiens_16.list`
+
+These kmer lists can be downloaded using:
+
+```sh
+chmod +x ./download_kmer_lists.sh
+./download_kmer_lists.sh
+```
+
+### Running unit tests
 ```sh
 python -m unittest discover --start-directory ./tests --top-level-directory .
-cd sge-primer-scoring
-python -m unittest discover --start-directory ./tests --top-level-directory .
 ```
 
-### Git Hooks (for devs)
-
-Located in  .githooks/
-Follows standard Git hook methodology: https://git-scm.com/docs/githooks
-Currently just "pre-push" that is run on ```git push```
-To run either invoke ```make``` or:
-```sh
-git config core.hooksPath .githooks
-chmod +x .githooks/*
-```
-
-### Docker images
-
-Upcoming feature in later releases
-
-### Python debugger
-To debug with a local debugger, insert at the top of the file:
-```
-import sys, os
-os.chdir(r'/home/ubuntu/lims2-webapp-filesystem/user/primer-designer')
-sys.path.insert(0, '')
-sys.path.insert(0, 'src/')
-```
-This allows src and submodules inside src to be found.
-
-To debug with vscode, make sure the cwd in the debugger settings are pointed at primer-designer.
-Additionally, make sure the interpreter is pointed at the correct virtual environment (venv/bin/python).
-
-## Usage
+### Usage
 
 Make designer.sh executable
 ```sh
@@ -151,19 +148,6 @@ Check Designer Version:
 ```
 
 ### Primer Designer Tool
-
-#### Designer Workflow (Primer3)
-
-Running full Designer Workflow:
-```sh
-./designer.sh design [-h] [--fasta SLICE_FASTA] [--primer3_params PRIMER_CONFIG_JSON]
-```
-
-Example Command
-```sh
-./designer.sh design --fasta tests/integration/fixtures/fasta_example.fa
-```
-
 #### Primer3 Runner
 
 Primer3 runner uses 2 types of config:
@@ -202,20 +186,6 @@ Example command:
 ./designer.sh primer --fasta slice.fa --dir p3_output
 ```
 
-###### Using kmer lists for primer generation
-
-A kmer list is needed if multiple stringencies are to be applied (see [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_KMERLIST_PATH)).
-
-1. Set config parameters (in your user-defined designer config file, see [above](
-#designer-config))
-2. Provide 2 files with kmers: `homo_sapiens_11.list` and `homo_sapiens_16.list`
-
-These kmer lists can be downloaded using:
-
-```sh
-chmod +x ./download_kmer_lists.sh
-./download_kmer_lists.sh
-```
 
 ###### Applying filters from the designer config file
 
@@ -289,7 +259,7 @@ Column order can be specified through the user designer config file:
 
 All available columns are indicated in the example above. Note that any columns with names missing in the user designer config file not be present in the output CSV files.
 
-###### Using the designer config file to set command-line arguments
+##### Using the designer config file to set command-line arguments
 
 Command-line arguments (`--dir`, `--fasta`, and `--primer3_params`) can, alternatively, be specified in the user designer config file. Note that, as no command line arguments are specified in `config/default_designer.config.json`, if no user designer config file is provided, `--fasta` (mandatory parameter), `--dir` and `--primer3_params` (both optional) will have to be passed as command-line arguments.
 
@@ -584,7 +554,7 @@ LibAmp,STEQ_LibAmpR_3,2.056,0.5,CTTGGTGCTGCAGGTGAGG,44490403,44490421,60.97,63.1
 
 
 ### Primer Designer Output example
-Note: currently under review
+**Note**: currently under review
 
 Creates a data structure of LIST_PAIRS->PRIMER_PAIR->PRIMER
 
@@ -739,3 +709,49 @@ exon1_2_LibAmp_1,exon1
 exon1_2_LibAmp_2,exon1
 exon1_2_LibAmp_3,exon1
 ```
+
+## For Developers
+### Git Hooks
+
+Located in  .githooks/
+Follows standard Git hook methodology: https://git-scm.com/docs/githooks
+Currently just "pre-push" that is run on ```git push```
+To run either invoke ```make``` or:
+```sh
+git config core.hooksPath .githooks
+chmod +x .githooks/*
+```
+
+### Python debugger
+To debug with a local debugger, insert at the top of the file:
+```
+import sys, os
+os.chdir(r'/home/ubuntu/lims2-webapp-filesystem/user/primer-designer')
+sys.path.insert(0, '')
+sys.path.insert(0, 'src/')
+```
+This allows src and submodules inside src to be found.
+
+To debug with vscode, make sure the cwd in the debugger settings are pointed at primer-designer.
+Additionally, make sure the interpreter is pointed at the correct virtual environment (venv/bin/python).
+
+
+## Unsed commands
+
+Following are some commands that are not widely used or they perform similar operations. These commands will be used in the future after enhancing their functionality.
+
+#### Designer Workflow (Primer3)
+
+Running full Designer Workflow:
+```sh
+./designer.sh design [-h] [--fasta SLICE_FASTA] [--primer3_params PRIMER_CONFIG_JSON]
+```
+
+Example Command
+```sh
+./designer.sh design --fasta examples/fasta_example.fa
+```
+
+## Upcoming releases
+
+Docker image in upcoming feature in later release.
