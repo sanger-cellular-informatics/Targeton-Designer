@@ -16,7 +16,7 @@ class RankingCriteria:
 
 class StringencyCriteria(RankingCriteria):
     name: str = 'stringency'
-    is_ascending: bool = False
+    is_ascending: bool = True
     column: str = 'stringency'
 
 class ProductSizeCriteria(RankingCriteria):
