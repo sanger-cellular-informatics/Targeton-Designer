@@ -1,6 +1,6 @@
 # Primer Designer
 
-A standalone primer designer tool that takes a sequence of a target region of the genome (i.e., a targeton) and identifies the appropriate LibAmp primers at both ends of the targeton. The Primer3 Designer tool and includes filtering and ranking of primers.. 
+A standalone primer designer tool that takes a sequence of a target region of the genome (i.e., a targeton) and identifies the appropriate LibAmp primers at both ends of the targeton. The Primer3 Designer tool includes filtering and ranking of primers.
 
 ## Table of contents
 
