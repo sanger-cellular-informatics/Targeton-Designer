@@ -1,6 +1,6 @@
 # Primer Designer
 
-A Standalone primer designer tool that takes target region coordinates of the genome, determines the targeton tiles for that region and identifies the appropriate LibAmp primers at the end of the targeton locationsand scores those primers for uniqueness. The individual tools within this workflow are termed Primer3 and subsequent features like filtering and ranking primers.
+A Standalone primer designer tool that takes target region coordinates of the genome, determines the targeton tiles for that region and identifies the appropriate LibAmp primers at the end of the targeton location and scores those primers for uniqueness. The Primer3 Designer tool includes features like filtering and ranking primers are discussed with their uses case in this ReadMe instruction. 
 
 ## Table of contents
 
