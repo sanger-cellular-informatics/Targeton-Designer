@@ -1,6 +1,6 @@
 # Primer Designer
 
-A Standalone primer designer tool that takes target region coordinates of the genome, determines the targeton tiles for that region and identifies the appropriate LibAmp primers at the end of the targeton location and scores those primers for uniqueness. The Primer3 Designer tool includes features like filtering and ranking primers are discussed with their uses case in this ReadMe instruction. 
+A Standalone primer designer tool that takes target region coordinates of the genome, determines the targeton tiles for that region and identifies the appropriate LibAmp primers at the end of the targeton location and scores those primers for uniqueness. The Primer3 Designer tool includes features like filtering and ranking primers are discussed with their uses case in this README instruction. 
 
 ## Table of contents
 
@@ -22,8 +22,8 @@ A Standalone primer designer tool that takes target region coordinates of the ge
             - [Applying ranking from the designer config file](#applying-ranking-from-the-designer-config-file)
             - [Specifying column order through the designer config file](#specifying-column-order-through-the-designer-config-file)
             - [Using the designer config file to set command-line arguments](#using-the-designer-config-file-to-set-command-line-arguments)
-        - [Primer data collation and output to csv & Json (for benchling)](#primer-data-collation-and-output-to-csv--json-for-benchling) 
-        - [Post primers to Benchling](#post-primers-to-benchling) 
+    - [Primer data collation and output to csv & Json (for benchling)](#primer-data-collation-and-output-to-csv--json-for-benchling) 
+    - [Post primers to Benchling](#post-primers-to-benchling) 
 - [File formats](#file-formats)
    - [Primer3 and Designer Fasta Input File (Slicer Fasta output)](#primer3-and-designer-fasta-input-file-slicer-fasta-output) 
    - [Primer3 Output BED file](#primer3-output-bed-file) 
