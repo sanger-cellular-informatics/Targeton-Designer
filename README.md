@@ -1,72 +1,65 @@
 # Primer Designer
 
-Standalone primer designer tool.
+A standalone primer designer tool that takes a sequence of a target region of the genome (i.e., a targeton) and identifies the appropriate LibAmp primers at both ends of the targeton. The Primer3 Designer tool includes filtering and ranking of primers.
 
 ## Table of contents
 
 - [Installation](#installation)
   - [Clone Repository](#clone-repository)
-  - [Python Virtual Environment](#python-virtual-environment)
-  - [Git Hooks (for devs)](#git-hooks-for-devs)
-  - [Docker Images](#docker-images)
-  - [Python debugger](#python-debugger)
+  - [Install Dependencies](#install-dependencies)
+  - [Setup Environment](#setup-environment)
+    - [Setting up Python Virtual Environement](#setting-up-python-virtual-environment)
+    - [Downloading kmer lists for primer generation](#downloading-kmer-lists-for-primer-generation)
+  - [Running unit tests](#running-unit-tests)
 - [Usage](#usage)
+    - [Quick start with primer command](#quick-start-with-primer-command)
     -  [Primer Designer Tool](#primer-designer-tool) 
-        -  [Designer Workflow (Primer3)](#designer-workflow-primer3)
         -  [Primer3 Runner](#primer3-runner)
-    -  [Primer Scoring Tool](#primer-scoring-tool)
-    -  [Slicer Tool](#slicer-tool)
-    -  [Other Tools](#other-tools)
-        - [Targeton CSV generation](#targeton-csv-generation) 
-        - [Primer data collation and output to csv & Json (for benchling)](#primer-data-collation-and-output-to-csv--json-for-benchling) 
-        - [Post primers to Benchling](#post-primers-to-benchling) 
+            - [Primer3 parameters config](#primer3-parameters-config)
+            - [Designer config](#designer-config)
+            - [Running Primer3](#running-primer3)
+            - [Applying filters from the designer config file](#applying-filters-from-the-designer-config-file)
+            - [Applying ranking from the designer config file](#applying-ranking-from-the-designer-config-file)
+            - [Specifying column order through the designer config file](#specifying-column-order-through-the-designer-config-file)
+            - [Using the designer config file to set command-line arguments](#using-the-designer-config-file-to-set-command-line-arguments)
+    - [Primer data collation and output to CSV and JSON (for benchling)](#primer-data-collation-and-output-to-csv-and-json-for-benchling) 
+    - [Post primers to Benchling](#post-primers-to-benchling) 
 - [File formats](#file-formats)
-   - [Genomic Reference file](#genomic-reference-file) 
-   - [Slicer Input BED File](#slicer-input-bed-file) 
-   - [Slicer BED output](#slicer-bed-output) 
    - [Primer3 and Designer Fasta Input File (Slicer Fasta output)](#primer3-and-designer-fasta-input-file-slicer-fasta-output) 
    - [Primer3 Output BED file](#primer3-output-bed-file) 
    - [Primer3 Output CSV file](#primer3-output-csv-file) 
    - [Primer3 Output Optimal Primer Pairs CSV file](#primer3-output-optimal-primer-pairs-csv-file) 
-   - [Primer Designer Output example](#primer-designer-output-example) 
+   - [Genomic Reference file](#genomic-reference-file) 
+   - [Slicer Input BED File](#slicer-input-bed-file) 
+   - [Slicer BED output](#slicer-bed-output)  
    - [Scoring Tool Input iPCRess file example](#scoring-tool-input-ipcress-file-example) 
+   - [Primer Designer Output example](#primer-designer-output-example)
+- [For Developers](#for-developers)
+- [Deprecated tools and commands](#deprecated-tools-and-commands)
+- [Upcoming releases](#upcoming-releases)
 
 
 ## Installation
 
 ### Clone Repository
-Pull down the Primer Designer repo and cd into it.
+Clone the Primer Designer repository and `cd` into it by using the following command.
 Recursively pull any submodules.
 ```sh
 git clone --recurse-submodule https://gitlab.internal.sanger.ac.uk/sci/targeton-designer.git
-cd primer-designer
+cd targeton-designer
 ```
 
-### Python Virtual Environment
+### Install Dependencies
 
-Requirements:
- - Python3.8+
- - Python-venv
-
-Run
-```sh
-make
-make install
-make setup-venv
-```
-```make``` sets up the git hooks that run unittests and pycodestyle on /src and /tests on ```git push```.
-```make install``` installs dependencies below.
-```make setup-venv``` creates a venv at ./venv and installs requirements.txt(s)
-
-Dependencies:
-
-Build-essential, BedTools and Python (3.8), Python-venv (3.8)
-Change ```python``` command to point to Python (3.8), ubuntu expects python3 to be a specific version for compatibility.
+Build-essential, BedTools and Python (3.8), Python-venv (3.8).
+Change ```python``` command to point to Python (3.8), Ubuntu expects python3 to be a specific version for compatibility.
 ```sh
 sudo apt-get update \
 && sudo apt-get -y install build-essential bedtools python3.8-dev python3.8-venv \
 && sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.8 2  \
-&& sudo update-alternatives --config python
+&& sudo update-alternatives --config python \
+&& sudo apt-get install python3-pip \
+&& sudo apt install make
 ```
 
 Check Python3 (base) and Python (updated) version
@@ -75,61 +68,65 @@ python3 --version
 python --version
 ```
 
-Setting up Virtual Env:
+### Setup Environment
+
+Requirements:
+ - Python3.8+
+ - Python-venv
+
+Run
+
 ```sh
+sudo make install
+```
+
+```make install``` installs dependencies and setup environment for running primer designer commands.
+
+
+##### Setting up Python Virtual Environment
+Install Python virtual environment using the following command:
+```
+sudo pip3 install virtualenv 
+```
+
+Then, by using following command create a virtual environment and activate it:
+
+```
 python -m venv venv
-
 source venv/bin/activate
+```
 
+To deactivate virtual environment type the following command and hit enter:
+```
+deactivate
+```
+
+After creating the virtual environment, you need to install python packages from `requirements.txt` using the following commands:
+
+```
 pip install -U pip wheel setuptools 
 pip install -r requirements.txt
 pip install -r sge-primer-scoring/requirements.txt
-
-deactivate
 ```
 
-Run the tests:
+##### Downloading kmer lists for primer generation
+
+`kmer` files are required in order to use the Primer3 masker function, which prevents the design of primers using repetitive template regions.
+
+The `kmer` files are needed in the project root directory to run the `primer` command and to run the unit tests. (see [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_KMERLIST_PATH)).
+
+1. Set config parameters (in your user-defined designer config file, see [below](
+#designer-config))
+2. Provide 2 files with kmers: `homo_sapiens_11.list` and `homo_sapiens_16.list`
+
+These kmer lists can be downloaded using:
+
 ```sh
-source venv/bin/activate
-
-python -m unittest discover --start-directory ./tests --top-level-directory .
-cd sge-primer-scoring
-python -m unittest discover --start-directory ./tests --top-level-directory .
-
-deactivate
+chmod +x ./download_kmer_lists.sh
+./download_kmer_lists.sh
 ```
 
-### Git Hooks (for devs)
-
-Located in  .githooks/
-Follows standard Git hook methodology: https://git-scm.com/docs/githooks
-Currently just "pre-push" that is run on ```git push```
-To run either invoke ```make``` or:
-```sh
-git config core.hooksPath .githooks
-chmod +x .githooks/*
-```
-
-### Docker images
-
-Upcoming feature in later releases
-
-### Python debugger
-To debug with a local debugger, insert at the top of the file:
-```
-import sys, os
-os.chdir(r'/home/ubuntu/lims2-webapp-filesystem/user/primer-designer')
-sys.path.insert(0, '')
-sys.path.insert(0, 'src/')
-```
-This allows src and submodules inside src to be found.
-
-To debug with vscode, make sure the cwd in the debugger settings are pointed at primer-designer.
-Additionally, make sure the interpreter is pointed at the correct virtual environment (venv/bin/python).
-
-## Usage
-
-Make designer.sh executable
+#### Make designer script file executable
 ```sh
 chmod +x ./designer.sh
 ```
@@ -139,23 +136,27 @@ Check Designer Version:
 ./designer.sh version
 ```
 
+#### Running unit tests
+```sh
+python -m unittest discover --start-directory ./tests --top-level-directory .
+```
+
+## Usage
+### Quick start with primer command
+To run the `primer` command with minimal configuration, you can follow the steps below to get started. In the project directory there are example files you use to run the `primer` command. For example you will need test `Fasta` file from `./examples` as follows:
+
+```
+./designer.sh primer --fasta ./examples/test_example_slice.fa
+```
+
+By running the above command, you will see output files are generated in the `td_output` folder in the necessary file formats. 
+
 ### Primer Designer Tool
-
-#### Designer Workflow (Primer3)
-
-Running full Designer Workflow:
-```sh
-./designer.sh design [-h] [--fasta SLICE_FASTA] [--primer3_params PRIMER_CONFIG_JSON]
-```
-
-Example Command
-```sh
-./designer.sh design --fasta tests/integration/fixtures/fasta_example.fa
-```
-
-#### Primer3 Runner
+##### Primer3 Runner
 
 Primer3 runner uses 2 types of config:
+- Primer3 parameters config
+- Designer config
 
 ##### Primer3 parameters config
 
@@ -186,29 +187,14 @@ The default configuration can be found in `config/default_designer.config.json` 
 ```sh
 ./designer.sh primer [--fasta SLICE_FASTA] [--dir OUTPUT_FOLDER] [--primer3_params PRIMER_CONFIG_JSON] [--conf DESIGNER_CONFIG_JSON]
 ```
-The input fasta and BED files are intended to be sourced from the slicer tool. Examples of how these files are constructed can be found below.
 
 Example command:
 ```sh
 ./designer.sh primer --fasta slice.fa --dir p3_output
 ```
 
-###### Using kmer lists for primer generation
 
-A kmer list is needed if multiple stringencies are to be applied (see [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_KMERLIST_PATH)).
-
-1. Set config parameters (in your user-defined designer config file, see [above](
-#designer-config))
-2. Provide 2 files with kmers: `homo_sapiens_11.list` and `homo_sapiens_16.list`
-
-These kmer lists can be downloaded using:
-
-```sh
-chmod +x ./download_kmer_lists.sh
-./download_kmer_lists.sh
-```
-
-###### Applying filters from the designer config file
+##### Applying filters from the designer config file
 
 You can set your own filtering parameters using your user designer config file (see [above](
 #designer-config)).
@@ -231,7 +217,7 @@ Remember to use the exact names mentioned above. If a filter name is missing, it
 
 If no user config file is passed, then the default `config/default_designer.config.json` will be applied. If a user config file is passed but it does not contain a `filters` key, then the filters from `config/default_designer.config.json` will be applied. If the user config file contains a `filters` key and no filters defined, i.e. `"filters": {},`, then the `duplicates` filter will be applied by default.
 
-###### Applying ranking from the designer config file
+##### Applying ranking from the designer config file
 
 You can set your own ranking parameters using your user designer config file (see [above](
 #designer-config)). Ranking parameters can be turned on (`true`) or off (`false`) as follows:
@@ -251,9 +237,9 @@ The order specified in the config file will be retained for ranking. In this exa
 
 If a name is missing, it will not be used for ranking. If no user config file is passed, then the default `config/default_designer.config.json` will be applied. If a user config file is passed but it does not contain a `ranking` key, then the ranking parameters from `config/default_designer.config.json` will be applied. If the user config file contains a `ranking` key and no ranking defined, i.e. `"ranking": {},`, no ranking will be applied.
 
-###### Specifying column order through the designer config file
+##### Specifying column order through the designer config file
 
-Column order can be speficied through the user designer config file:
+Column order can be specified through the user designer config file:
 
 ```
 {
@@ -278,9 +264,9 @@ Column order can be speficied through the user designer config file:
 }
 ```
 
-All avaiable columns are indicated in the example above. Note that any columns with names missing in the user designer config file not be present in the output CSV files.
+All available columns are indicated in the example above. Note that any columns with names missing in the user designer config file not be present in the output CSV files.
 
-###### Using the designer config file to set command-line arguments
+##### Using the designer config file to set command-line arguments
 
 Command-line arguments (`--dir`, `--fasta`, and `--primer3_params`) can, alternatively, be specified in the user designer config file. Note that, as no command line arguments are specified in `config/default_designer.config.json`, if no user designer config file is provided, `--fasta` (mandatory parameter), `--dir` and `--primer3_params` (both optional) will have to be passed as command-line arguments.
 
@@ -295,53 +281,21 @@ Command-line arguments (`--dir`, `--fasta`, and `--primer3_params`) can, alterna
   "primer3_params": "/path/to/primer3/configuration/file"
 }
 ```
+Once, you add above configuration to `custom_config.json` file, you will be able to run the following commands:
+
+```
+./designer.sh design --conf custom_config.json
+```
+**or**
+
+```
+./designer.sh primer --conf custom_config.json
+```
+
 **Note:** Where these arguments are specified both in the command line and in the user designer config file, the parameters specified in the command line will take precedence.
 
 
-### Primer Scoring Tool
-
-Running primer scoring:
-```sh
-./designer.sh scoring [--ipcress_file IPCRESS_FILE] [--scoring_mismatch SCORING_MISMATCH] [--output_tsv OUTPUT_TSV] [--targeton_csv TARGETON_CSV] 
-```
-
-Example command:
-```sh
-./designer.sh scoring --ipcress_file example_ipcress_file.txt --scoring_mismatch 4 --output_tsv example_output.tsv
-```
-Example command with targeton csv:
-```sh
-./designer.sh scoring --ipcress_file example_ipcress_file.txt --scoring_mismatch 4 --output_tsv example_targeton_output.tsv --targeton_csv example_targetons.csv
-```
-For more information and example files see the [Primer Scoring repo](https://gitlab.internal.sanger.ac.uk/sci/sge-primer-scoring).
-
-### Slicer Tool
-
-Running Slicer tool:
-```sh
-./designer.sh slicer [-h] [-f5 FLANK_5] [-f3 FLANK_3] [-l LENGTH] [-o OFFSET] [-d DIR] [--bed INPUT_BED] [--fasta REF_FASTA]
-```
-
-Example command:
-```sh
-./designer.sh slicer --bed example.bed --fasta example_genomic_ref.fa -d example_dir
-```
-
-### Other Tools
-
-#### Targeton CSV generation
-
-To generate the targeton CSV used in primer scoring:
-```sh
-./designer.sh generate_targeton_csv [--primers PRIMERS] [--bed BED] [--dir DIR]
-```
-Example command:
-```sh
-./designer.sh generate_targeton_csv --primers example_ipcress_input.txt --bed example.bed --dir example_dir
-```
-Please note primer pair names in the iPCRess input file must be prefixed by the corresponding region name in the BED file.
-
-#### Primer data collation and output to csv & Json (for benchling)
+#### Primer data collation and output to CSV and JSON (for benchling)
 
 To collate the primer and scoring data and output to CSV & JSON file:
 ```sh
@@ -366,62 +320,7 @@ A message will be printed if there are less than 3 primer pairs for a particular
 
 ## File formats
 
-### Genomic Reference file
-A Fasta file of latest GRCh38 genome. This is used for gathering the slice sequences and retrieving primer information. 
-Either supply a local genome reference file or download one from EnsEMBL and point to it with the relevant parameters:
-http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/
-
-We've included a bash script to download the reference genome:
-```sh
-./download_reference_genome.sh
-```
-
-Otherwise, you can download it manually here:
-```sh
-wget http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
-gunzip Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz 
-```
-
-### Slicer Input BED File
-A BED file containing the regions you wish to slice across. 
-
-The chromosome column data must match your reference fasta file IDs. If your reference had >chr1 then you must call chromosome 1 'chr1' in this column and vice-versa.
-
-Note: BED effectively are applied tsv files so use tabs to separate the values. Headers are optional in BED file and can be a cause of issues if they aren't perfect. Strand is required for the slicer to ensure sequences are output in the correct orientation. Score isn't used but the field must be present for the file format to be read correctly.
-
-| chrom | chromStart | chromEnd | name                 | score | strand |
-|-------|------------|----------|----------------------|-------|--------|
-| 1     | 42931046   | 42931206 | ENSE00003571441_HG6	 | 0	    | -      |
-| 1	    | 42929593   | 42929780 | ENSE00000769557_HG8  | 0     | -      |
-
-Raw file
-```
-1	42931046	42931206	ENSE00003571441_HG6	0	-
-1	42929593	42929780	ENSE00000769557_HG8	0	-
-```
-
-More information can be found here: https://en.wikipedia.org/wiki/BED_(file_format)
-
-### Slicer BED output
-BED file output with row for each slice. This file will also be used for running VaLiAnt.
-
-| chrom | chromStart | chromEnd | name | score | strand |
-| ----- | ---------- | -------- | ---- | ----- | ------ |
-| 1 | 42930996 | 42931206 | ENSE00003571441_HG6_1 | 0 | - | 
-| 1 | 42931001 | 42931211 | ENSE00003571441_HG6_2 | 0 | - | 
-| 1 | 42931006 | 42931216 | ENSE00003571441_HG6_3 | 0 | - |
-| 1 | 42931011 | 42931221 | ENSE00003571441_HG6_4 | 0 | - |
-| 1 | 42931016 | 42931226 | ENSE00003571441_HG6_5 | 0 | - |
-
-Raw file
-```
-1	42930996	42931206	ENSE00003571441_HG6_1	0	-
-1	42931001	42931211	ENSE00003571441_HG6_2	0	-
-1	42931006	42931216	ENSE00003571441_HG6_3	0	-
-1	42931011	42931221	ENSE00003571441_HG6_4	0	-
-1	42931016	42931226	ENSE00003571441_HG6_5	0	-
-```
-
+File formats for data input and output files used by Primer Designer Tool are listed and described with examples below.
 
 ### Primer3 and Designer Fasta Input File (Slicer Fasta output)
 Contains the slice sequence, with its ID, coordinates and strand in the header.
@@ -566,10 +465,68 @@ LibAmp,STEQ_LibAmpR_3,2.056,1.0,CTTGGTGCTGCAGGTGAGG,44490403,44490421,60.97,63.1
 ```
 
 
-### Primer Designer Output example
-The output generated by the Primer Designer is identical to that of the `primer` command. 
-This consistency arises because the `design` command workflow follows the same procedures as the `primer` command workflow. 
-For more details, refer to the Primer3 Output examples provided in the previous sections.
+### Genomic Reference file
+A Fasta file of latest GRCh38 genome. This is used for gathering the slice sequences and retrieving primer information. 
+Either supply a local genome reference file or download one from EnsEMBL and point to it with the relevant parameters:
+http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/
+
+We've included a bash script to download the reference genome:
+```sh
+./download_reference_genome.sh
+```
+
+Otherwise, you can download it manually here:
+```sh
+wget http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
+gunzip Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz 
+``` 
+
+
+\
+\
+\
+Following are the file formats that are generated by deprecated tools and commands. You can refer [Deprecated tools and commands](#deprecated-tools-and-commands) section for more details.
+
+### Slicer Input BED File
+A BED file containing the regions you wish to slice across. 
+
+The chromosome column data must match your reference fasta file IDs. If your reference had >chr1 then you must call chromosome 1 'chr1' in this column and vice-versa.
+
+Note: BED effectively are applied tsv files so use tabs to separate the values. Headers are optional in BED file and can be a cause of issues if they aren't perfect. Strand is required for the slicer to ensure sequences are output in the correct orientation. Score isn't used but the field must be present for the file format to be read correctly.
+
+| chrom | chromStart | chromEnd | name                 | score | strand |
+|-------|------------|----------|----------------------|-------|--------|
+| 1     | 42931046   | 42931206 | ENSE00003571441_HG6	 | 0	    | -      |
+| 1	    | 42929593   | 42929780 | ENSE00000769557_HG8  | 0     | -      |
+
+Raw file
+```
+1	42931046	42931206	ENSE00003571441_HG6	0	-
+1	42929593	42929780	ENSE00000769557_HG8	0	-
+```
+
+More information can be found here: https://en.wikipedia.org/wiki/BED_(file_format)
+
+### Slicer BED output
+BED file output with row for each slice. This file will also be used for running VaLiAnt.
+
+| chrom | chromStart | chromEnd | name | score | strand |
+| ----- | ---------- | -------- | ---- | ----- | ------ |
+| 1 | 42930996 | 42931206 | ENSE00003571441_HG6_1 | 0 | - | 
+| 1 | 42931001 | 42931211 | ENSE00003571441_HG6_2 | 0 | - | 
+| 1 | 42931006 | 42931216 | ENSE00003571441_HG6_3 | 0 | - |
+| 1 | 42931011 | 42931221 | ENSE00003571441_HG6_4 | 0 | - |
+| 1 | 42931016 | 42931226 | ENSE00003571441_HG6_5 | 0 | - |
+
+Raw file
+```
+1	42930996	42931206	ENSE00003571441_HG6_1	0	-
+1	42931001	42931211	ENSE00003571441_HG6_2	0	-
+1	42931006	42931216	ENSE00003571441_HG6_3	0	-
+1	42931011	42931221	ENSE00003571441_HG6_4	0	-
+1	42931016	42931226	ENSE00003571441_HG6_5	0	-
+```
+
 
 ### Scoring Tool Input iPCRess file example
 Two files, stnd and err.
@@ -609,3 +566,96 @@ exon1_2_LibAmp_1,exon1
 exon1_2_LibAmp_2,exon1
 exon1_2_LibAmp_3,exon1
 ```
+
+### Primer Designer Output example
+The output generated by the Primer Designer using `design` command is identical to that of the `primer` command. 
+This consistency arises because the `design` command workflow follows the same procedures as the `primer` command workflow. 
+
+
+## For Developers
+### Git Hooks
+
+Located in  .githooks/
+Follows standard Git hook methodology: https://git-scm.com/docs/githooks
+Currently just "pre-push" that is run on ```git push```
+To run either invoke ```make``` or:
+```sh
+git config core.hooksPath .githooks
+chmod +x .githooks/*
+```
+
+### Python debugger
+To debug with a local debugger, insert at the top of the file:
+```
+import sys, os
+os.chdir(r'/home/ubuntu/lims2-webapp-filesystem/user/primer-designer')
+sys.path.insert(0, '')
+sys.path.insert(0, 'src/')
+```
+This allows src and submodules inside src to be found.
+
+To debug with vscode, make sure the cwd in the debugger settings are pointed at primer-designer.
+Additionally, make sure the interpreter is pointed at the correct virtual environment (venv/bin/python).
+
+
+## Deprecated tools and commands
+
+Following are some commands that are not widely used or they perform similar operations. These commands will be used in the future after enhancing their functionality.
+
+#### Designer Workflow (Primer3)
+
+Running full Designer Workflow:
+```sh
+./designer.sh design [-h] [--fasta SLICE_FASTA] [--primer3_params PRIMER_CONFIG_JSON]
+```
+
+Example Command
+```sh
+./designer.sh design --fasta examples/fasta_example.fa
+```
+
+### Primer Scoring Tool
+
+Running primer scoring:
+```sh
+./designer.sh scoring [--ipcress_file IPCRESS_FILE] [--scoring_mismatch SCORING_MISMATCH] [--output_tsv OUTPUT_TSV] [--targeton_csv TARGETON_CSV] 
+```
+
+Example command:
+```sh
+./designer.sh scoring --ipcress_file example_ipcress_file.txt --scoring_mismatch 4 --output_tsv example_output.tsv
+```
+Example command with targeton csv:
+```sh
+./designer.sh scoring --ipcress_file example_ipcress_file.txt --scoring_mismatch 4 --output_tsv example_targeton_output.tsv --targeton_csv example_targetons.csv
+```
+For more information and example files see the [Primer Scoring repo](https://gitlab.internal.sanger.ac.uk/sci/sge-primer-scoring).
+
+### Slicer Tool
+
+Running Slicer tool:
+```sh
+./designer.sh slicer [-h] [-f5 FLANK_5] [-f3 FLANK_3] [-l LENGTH] [-o OFFSET] [-d DIR] [--bed INPUT_BED] [--fasta REF_FASTA]
+```
+
+Example command:
+```sh
+./designer.sh slicer --bed example.bed --fasta example_genomic_ref.fa -d example_dir
+```
+
+#### Targeton CSV generation
+
+To generate the targeton CSV used in primer scoring:
+```sh
+./designer.sh generate_targeton_csv [--primers PRIMERS] [--bed BED] [--dir DIR]
+```
+Example command:
+```sh
+./designer.sh generate_targeton_csv --primers example_ipcress_input.txt --bed example.bed --dir example_dir
+```
+Please note primer pair names in the iPCRess input file must be prefixed by the corresponding region name in the BED file.
+
+
+## Upcoming releases
+
+Docker image in upcoming feature in later release.
