@@ -1,6 +1,6 @@
 # Primer Designer
 
-A Standalone primer designer tool that takes target region coordinates of the genome, determines the targeton tiles for that region and identifies the appropriate LibAmp primers at the ends of the targeton locations and scores those primers for uniqueness. The individual tools within this workflow are termed Primer3, Slicer, iPCRess, Primer Scoring.
+A Standalone primer designer tool that takes target region coordinates of the genome, determines the targeton tiles for that region and identifies the appropriate LibAmp primers at the ends of the targeton locations and scores those primers for uniqueness. The individual tools within this workflow are termed Primer3 and subsequent features like filtering and ranking primers.
 
 ## Table of contents
 
@@ -9,9 +9,10 @@ A Standalone primer designer tool that takes target region coordinates of the ge
   - [Install Dependencies](#install-dependencies)
   - [Setup Environment](#setup-environment)
     - [Setting up Python Virtual Environement](#setting-up-python-virtual-environment)
-    - [Using kmer lists for primer generation](#using-kmer-lists-for-primer-generation)
+    - [Downloading kmer lists for primer generation](#downloading-kmer-lists-for-primer-generation)
   - [Running unit tests](#running-unit-tests)
 - [Usage](#usage)
+    - [Quick start with primer command](#quick-start-with-primer-command)
     -  [Primer Designer Tool](#primer-designer-tool) 
         -  [Primer3 Runner](#primer3-runner)
             - [Primer3 parameters config](#primer3-parameters-config)
@@ -21,7 +22,6 @@ A Standalone primer designer tool that takes target region coordinates of the ge
             - [Applying ranking from the designer config file](#applying-ranking-from-the-designer-config-file)
             - [Specifying column order through the designer config file](#specifying-column-order-through-the-designer-config-file)
             - [Using the designer config file to set command-line arguments](#using-the-designer-config-file-to-set-command-line-arguments)
-        - [Targeton CSV generation](#targeton-csv-generation) 
         - [Primer data collation and output to csv & Json (for benchling)](#primer-data-collation-and-output-to-csv--json-for-benchling) 
         - [Post primers to Benchling](#post-primers-to-benchling) 
 - [File formats](#file-formats)
@@ -142,6 +142,15 @@ python -m unittest discover --start-directory ./tests --top-level-directory .
 ```
 
 ## Usage
+### Quick start with primer command
+To run the `primer` command with minimal configuration, you can follow the steps below to get started. In the project directory there are example files you use to run the `primer` command. For example you will need test `Fasta` file from `./examples` as follows:
+
+```
+./designer.sh primer --fasta ./examples/test_example_slice.fa
+```
+
+By running the above command, you will see output files are generated in the `td_output` folder in the necessary file formats. 
+
 ### Primer Designer Tool
 ##### Primer3 Runner
 
@@ -184,7 +193,7 @@ Example command:
 ```
 
 
-###### Applying filters from the designer config file
+##### Applying filters from the designer config file
 
 You can set your own filtering parameters using your user designer config file (see [above](
 #designer-config)).
@@ -207,7 +216,7 @@ Remember to use the exact names mentioned above. If a filter name is missing, it
 
 If no user config file is passed, then the default `config/default_designer.config.json` will be applied. If a user config file is passed but it does not contain a `filters` key, then the filters from `config/default_designer.config.json` will be applied. If the user config file contains a `filters` key and no filters defined, i.e. `"filters": {},`, then the `duplicates` filter will be applied by default.
 
-###### Applying ranking from the designer config file
+##### Applying ranking from the designer config file
 
 You can set your own ranking parameters using your user designer config file (see [above](
 #designer-config)). Ranking parameters can be turned on (`true`) or off (`false`) as follows:
@@ -227,7 +236,7 @@ The order specified in the config file will be retained for ranking: in this exa
 
 If a name is missing, it will not be used for ranking. If no user config file is passed, then the default `config/default_designer.config.json` will be applied. If a user config file is passed but it does not contain a `ranking` key, then the ranking parameters from `config/default_designer.config.json` will be applied. If the user config file contains a `ranking` key and no ranking defined, i.e. `"ranking": {},`, no ranking will be applied.
 
-###### Specifying column order through the designer config file
+##### Specifying column order through the designer config file
 
 Column order can be specified through the user designer config file:
 
@@ -451,11 +460,6 @@ LibAmp,STEQ_LibAmpR_3,2.056,0.5,CTTGGTGCTGCAGGTGAGG,44490403,44490421,60.97,63.1
 ```
 
 
-### Primer Designer Output example
-The output generated by the Primer Designer is identical to that of the `primer` command. 
-This consistency arises because the `design` command workflow follows the same procedures as the `primer` command workflow. 
-For more details, refer to the Primer3 Output examples provided in the previous sections.
-
 ### Genomic Reference file
 A Fasta file of latest GRCh38 genome. This is used for gathering the slice sequences and retrieving primer information. 
 Either supply a local genome reference file or download one from EnsEMBL and point to it with the relevant parameters:
@@ -636,6 +640,12 @@ Example command:
 ./designer.sh generate_targeton_csv --primers example_ipcress_input.txt --bed example.bed --dir example_dir
 ```
 Please note primer pair names in the iPCRess input file must be prefixed by the corresponding region name in the BED file.
+
+
+### Primer Designer Output example
+The output generated by the Primer Designer is identical to that of the `primer` command. 
+This consistency arises because the `design` command workflow follows the same procedures as the `primer` command workflow. 
+For more details, refer to the Primer3 Output examples provided in the [File formats](#file-formats) sections.
 
 ## Upcoming releases
 
