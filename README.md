@@ -1,6 +1,6 @@
 # Primer Designer
 
-A Standalone primer designer tool that takes target region coordinates of the genome, determines the targeton tiles for that region and identifies the appropriate LibAmp primers at the end of the targeton location and scores those primers for uniqueness. The Primer3 Designer tool includes features like filtering and ranking primers are discussed with their uses case in this README instruction. 
+A standalone primer designer tool that takes a sequence of a target region of the genome (i.e., a targeton) and identifies the appropriate LibAmp primers at both ends of the targeton. The Primer3 Designer tool and includes filtering and ranking of primers.. 
 
 ## Table of contents
 
@@ -22,7 +22,7 @@ A Standalone primer designer tool that takes target region coordinates of the ge
             - [Applying ranking from the designer config file](#applying-ranking-from-the-designer-config-file)
             - [Specifying column order through the designer config file](#specifying-column-order-through-the-designer-config-file)
             - [Using the designer config file to set command-line arguments](#using-the-designer-config-file-to-set-command-line-arguments)
-    - [Primer data collation and output to csv & Json (for benchling)](#primer-data-collation-and-output-to-csv--json-for-benchling) 
+    - [Primer data collation and output to CSV and JSON (for benchling)](#primer-data-collation-and-output-to-csv-and-json-for-benchling) 
     - [Post primers to Benchling](#post-primers-to-benchling) 
 - [File formats](#file-formats)
    - [Primer3 and Designer Fasta Input File (Slicer Fasta output)](#primer3-and-designer-fasta-input-file-slicer-fasta-output) 
@@ -187,7 +187,6 @@ The default configuration can be found in `config/default_designer.config.json` 
 ```sh
 ./designer.sh primer [--fasta SLICE_FASTA] [--dir OUTPUT_FOLDER] [--primer3_params PRIMER_CONFIG_JSON] [--conf DESIGNER_CONFIG_JSON]
 ```
-The input fasta and BED files are intended to be sourced from the slicer tool. Examples of how these files are constructed can be found below.
 
 Example command:
 ```sh
@@ -296,7 +295,7 @@ Once, you add above configuration to `custom_config.json` file, you will be able
 **Note:** Where these arguments are specified both in the command line and in the user designer config file, the parameters specified in the command line will take precedence.
 
 
-#### Primer data collation and output to csv & Json (for benchling)
+#### Primer data collation and output to CSV and JSON (for benchling)
 
 To collate the primer and scoring data and output to CSV & JSON file:
 ```sh
