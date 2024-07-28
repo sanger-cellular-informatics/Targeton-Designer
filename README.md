@@ -337,19 +337,19 @@ Genomic locations of the primers and their names. Names are incremented from 0 a
 
 Note that all sample output files from the primer designer command (i.e., this BED file and the two following CSV files) have been produced using the settings from the default config files and the FASTA file above.
 
-| chrom | chromStart | chromEnd | name                            | score | strand |
-|-------|------------|----------|---------------------------------|-------|--------|
-7       | 44490309   | 44490328 |  STEQ_LibAmpF_0                 | 0     | +      |
-7       | 44490404   | 44490422 |  STEQ_LibAmpR_0                 | 0     | -      |
-7       | 44490309   | 44490328 |  STEQ_LibAmpF_1                 | 0     | +      |
-7       | 44490403   | 44490421 |  STEQ_LibAmpR_1                 | 0     | -      |
-7       | 44490293   | 44490312 |  STEQ_LibAmpF_0                 | 0     | +      |
-7       | 44490404   | 44490422 |  STEQ_LibAmpR_0                 | 0     | -      |
-7       | 44490293   | 44490312 |  STEQ_LibAmpF_1                 | 0     | +      |
-7       | 44490403   | 44490421 |  STEQ_LibAmpR_1                 | 0     | -      |
-7       | 44490294   | 44490313 |  STEQ_LibAmpF_2                 | 0     | +      |
-7       | 44490404   | 44490422 |  STEQ_LibAmpR_2                 | 0     | -      |
-7       | 44490294   | 44490313 |  STEQ_LibAmpF_3                 | 0     | +      |
+| chrom | chromStart | chromEnd | name           | score | strand |
+|-------|------------|----------|----------------|-------|--------|
+| 7     | 44490309   | 44490328 | STEQ_LibAmpF_0 | 0     | +      |
+| 7     | 44490404   | 44490422 | STEQ_LibAmpR_0 | 0     | -      |
+| 7     | 44490309   | 44490328 | STEQ_LibAmpF_1 | 0     | +      |
+| 7     | 44490403   | 44490421 | STEQ_LibAmpR_1 | 0     | -      |
+| 7     | 44490293   | 44490312 | STEQ_LibAmpF_0 | 0     | +      |
+| 7     | 44490404   | 44490422 | STEQ_LibAmpR_0 | 0     | -      |
+| 7     | 44490293   | 44490312 | STEQ_LibAmpF_1 | 0     | +      |
+| 7     | 44490403   | 44490421 | STEQ_LibAmpR_1 | 0     | -      |
+| 7     | 44490294   | 44490313 | STEQ_LibAmpF_2 | 0     | +      |
+| 7     | 44490404   | 44490422 | STEQ_LibAmpR_2 | 0     | -      |
+| 7     | 44490294   | 44490313 | STEQ_LibAmpF_3 | 0     | +      |
 
 Raw file (`p3_output.bed`)
 ```
@@ -370,24 +370,24 @@ Raw file (`p3_output.bed`)
 ### 3.3 Primer3 Output CSV file
 It contains all the additional information from Primer3 for the individual primers. Column order can be specified through the Designer tool config. In this example, primer pairs have been ranked first by `stringency` and then by `product_size`, according to the default config file. Example only showing the first 10 rows of the file (plus, in the table, the first 4 rows with a different stringency).
 
-|  primer_type  |  primer  |  penalty  |  stringency  |  sequence  |  primer_start  |  primer_end  |  tm  |  gc_percent  |  self_any_th  |  self_end_th  |  hairpin_th  |  end_stability  |  chromosome  |  pre_targeton_start  |  pre_targeton_end  |  product_size  |  targeton_id  |  pair_uid
-|---------------|----------|-----------|--------------|------------|----------------|--------------|------|--------------|---------------|---------------|--------------|-----------------|--------------|----------------------|--------------------|----------------|---------------|----------
-| LibAmp  |  STEQ_LibAmpF_18  |  0.894  |  0.1  |  TTCTCACAAGCTCAACCCCA  |  44490278  |  44490297  |  59.157  |  50.0  |  0.0  |  0.0  |  0.0  |  4.96  |  7  |  44490254  |  44490755  |  145  |  STEQ  |  8fb6334a-443c-11ef-91cc-fa163e1eb62c  |
-| LibAmp  |  STEQ_LibAmpR_18  |  2.056  |  0.1  |  CCTTGGTGCTGCAGGTGAG  |  44490404  |  44490422  |  60.97  |  63.158  |  17.124  |  0.0  |  0.0  |  3.51  |  7  |  44490254  |  44490755  |  145  |  STEQ  |  8fb6334a-443c-11ef-91cc-fa163e1eb62c  |
-| LibAmp  |  STEQ_LibAmpF_6  |  0.455  |  0.1  |  TCTCACAAGCTCAACCCCAG  |  44490279  |  44490298  |  59.602  |  55.0  |  0.0  |  0.0  |  0.0  |  4.45  |  7  |  44490254  |  44490755  |  144  |  STEQ  |  8fb6333e-443c-11ef-91cc-fa163e1eb62c  |
-| LibAmp  |  STEQ_LibAmpR_6  |  2.056  |  0.1  |  CCTTGGTGCTGCAGGTGAG  |  44490404  |  44490422  |  60.97  |  63.158  |  17.124  |  0.0  |  0.0  |  3.51  |  7  |  44490254  |  44490755  |  144  |  STEQ  |  8fb6333e-443c-11ef-91cc-fa163e1eb62c  |
-| LibAmp  |  STEQ_LibAmpF_10  |  0.455  |  0.1  |  TCTCACAAGCTCAACCCCAG  |  44490279  |  44490298  |  59.602  |  55.0  |  0.0  |  0.0  |  0.0  |  4.45  |  7  |  44490254  |  44490755  |  144  |  STEQ  |  8fb63342-443c-11ef-91cc-fa163e1eb62c  |
-| LibAmp  |  STEQ_LibAmpR_10  |  2.172  |  0.1  |  CCTTGGTGCTGCAGGTGA  |  44490405  |  44490422  |  59.886  |  61.111  |  17.124  |  0.0  |  0.0  |  4.02  |  7  |  44490254  |  44490755  |  144  |  STEQ  |  8fb63342-443c-11ef-91cc-fa163e1eb62c  |
-| LibAmp  |  STEQ_LibAmpF_19  |  0.894  |  0.1  |  TTCTCACAAGCTCAACCCCA  |  44490278  |  44490297  |  59.157  |  50.0  |  0.0  |  0.0  |  0.0  |  4.96  |  7  |  44490254  |  44490755  |  144  |  STEQ  |  8fb6334b-443c-11ef-91cc-fa163e1eb62c  |
-| LibAmp  |  STEQ_LibAmpR_19  |  2.056  |  0.1  |  CTTGGTGCTGCAGGTGAGG  |  44490403  |  44490421  |  60.97  |  63.158  |  17.124  |  0.0  |  0.0  |  3.86  |  7  |  44490254  |  44490755  |  144  |  STEQ  |  8fb6334b-443c-11ef-91cc-fa163e1eb62c  |
-| LibAmp  |  STEQ_LibAmpF_7  |  0.455  |  0.1  |  TCTCACAAGCTCAACCCCAG  |  44490279  |  44490298  |  59.602  |  55.0  |  0.0  |  0.0  |  0.0  |  4.45  |  7  |  44490254  |  44490755  |  143  |  STEQ  |  8fb6333f-443c-11ef-91cc-fa163e1eb62c  |
-| LibAmp  |  STEQ_LibAmpR_7  |  2.056  |  0.1  |  CTTGGTGCTGCAGGTGAGG  |  44490403  |  44490421  |  60.97  |  63.158  |  17.124  |  0.0  |  0.0  |  3.86  |  7  |  44490254  |  44490755  |  143  |  STEQ  |  8fb6333f-443c-11ef-91cc-fa163e1eb62c  |
-...  |  ...  |  ...  |  ...  |  ...  |  ...  |  ...  |  ...  |  ...  |  ...  |  ...  |  ...  |  ...  |  ...  |  ...  |  ...  |  ...  |  ...  |  ...  |
-| LibAmp  |  STEQ_LibAmpF_0  |  0.22  |  0.5  |  AAAGGAGGAAACAGGCTGGG  |  44490309  |  44490328  |  59.887  |  55.0  |  20.341  |  0.0  |  0.0  |  4.45  |  7  |  44490254  |  44490755  |  114  |  STEQ  |  8fb63324-443c-11ef-91cc-fa163e1eb62c  |
-| LibAmp  |  STEQ_LibAmpR_0  |  2.056  |  0.5  |  CCTTGGTGCTGCAGGTGAG  |  44490404  |  44490422  |  60.97  |  63.158  |  17.124  |  0.0  |  0.0  |  3.51  |  7  |  44490254  |  44490755  |  114  |  STEQ  |  8fb63324-443c-11ef-91cc-fa163e1eb62c  |
-| LibAmp  |  STEQ_LibAmpF_6  |  0.22  |  0.5  |  AAAGGAGGAAACAGGCTGGG  |  44490309  |  44490328  |  59.887  |  55.0  |  20.341  |  0.0  |  0.0  |  4.45  |  7  |  44490254  |  44490755  |  114  |  STEQ  |  8fb6332a-443c-11ef-91cc-fa163e1eb62c
-| LibAmp  |  STEQ_LibAmpR_6  |  2.172  |  0.5  |  CCTTGGTGCTGCAGGTGA  |  44490405  |  44490422  |  59.886  |  61.111  |  17.124  |  0.0  |  0.0  |  4.02  |  7  |  44490254  |  44490755  |  114  |  STEQ  |  8fb6332a-443c-11ef-91cc-fa163e1eb62c  |
-...  |  ...  |  ...  |  ...  |  ...  |  ...  |  ...  |  ...  |  ...  |  ...  |  ...  |  ...  |  ...  |  ...  |  ...  |  ...  |  ...  |  ...  |  ...  |
+| primer_type | primer          | penalty | stringency | sequence             | primer_start | primer_end | tm     | gc_percent | self_any_th | self_end_th | hairpin_th | end_stability | chromosome | pre_targeton_start | pre_targeton_end | product_size | targeton_id | pair_uid                             |
+|-------------|-----------------|---------|------------|----------------------|--------------|------------|--------|------------|-------------|-------------|------------|---------------|------------|--------------------|------------------|--------------|-------------|--------------------------------------|
+| LibAmp      | STEQ_LibAmpF_18 | 0.894   | 0.1        | TTCTCACAAGCTCAACCCCA | 44490278     | 44490297   | 59.157 | 50.0       | 0.0         | 0.0         | 0.0        | 4.96          | 7          | 44490254           | 44490755         | 145          | STEQ        | 8fb6334a-443c-11ef-91cc-fa163e1eb62c |
+| LibAmp      | STEQ_LibAmpR_18 | 2.056   | 0.1        | CCTTGGTGCTGCAGGTGAG  | 44490404     | 44490422   | 60.97  | 63.158     | 17.124      | 0.0         | 0.0        | 3.51          | 7          | 44490254           | 44490755         | 145          | STEQ        | 8fb6334a-443c-11ef-91cc-fa163e1eb62c |
+| LibAmp      | STEQ_LibAmpF_6  | 0.455   | 0.1        | TCTCACAAGCTCAACCCCAG | 44490279     | 44490298   | 59.602 | 55.0       | 0.0         | 0.0         | 0.0        | 4.45          | 7          | 44490254           | 44490755         | 144          | STEQ        | 8fb6333e-443c-11ef-91cc-fa163e1eb62c |
+| LibAmp      | STEQ_LibAmpR_6  | 2.056   | 0.1        | CCTTGGTGCTGCAGGTGAG  | 44490404     | 44490422   | 60.97  | 63.158     | 17.124      | 0.0         | 0.0        | 3.51          | 7          | 44490254           | 44490755         | 144          | STEQ        | 8fb6333e-443c-11ef-91cc-fa163e1eb62c |
+| LibAmp      | STEQ_LibAmpF_10 | 0.455   | 0.1        | TCTCACAAGCTCAACCCCAG | 44490279     | 44490298   | 59.602 | 55.0       | 0.0         | 0.0         | 0.0        | 4.45          | 7          | 44490254           | 44490755         | 144          | STEQ        | 8fb63342-443c-11ef-91cc-fa163e1eb62c |
+| LibAmp      | STEQ_LibAmpR_10 | 2.172   | 0.1        | CCTTGGTGCTGCAGGTGA   | 44490405     | 44490422   | 59.886 | 61.111     | 17.124      | 0.0         | 0.0        | 4.02          | 7          | 44490254           | 44490755         | 144          | STEQ        | 8fb63342-443c-11ef-91cc-fa163e1eb62c |
+| LibAmp      | STEQ_LibAmpF_19 | 0.894   | 0.1        | TTCTCACAAGCTCAACCCCA | 44490278     | 44490297   | 59.157 | 50.0       | 0.0         | 0.0         | 0.0        | 4.96          | 7          | 44490254           | 44490755         | 144          | STEQ        | 8fb6334b-443c-11ef-91cc-fa163e1eb62c |
+| LibAmp      | STEQ_LibAmpR_19 | 2.056   | 0.1        | CTTGGTGCTGCAGGTGAGG  | 44490403     | 44490421   | 60.97  | 63.158     | 17.124      | 0.0         | 0.0        | 3.86          | 7          | 44490254           | 44490755         | 144          | STEQ        | 8fb6334b-443c-11ef-91cc-fa163e1eb62c |
+| LibAmp      | STEQ_LibAmpF_7  | 0.455   | 0.1        | TCTCACAAGCTCAACCCCAG | 44490279     | 44490298   | 59.602 | 55.0       | 0.0         | 0.0         | 0.0        | 4.45          | 7          | 44490254           | 44490755         | 143          | STEQ        | 8fb6333f-443c-11ef-91cc-fa163e1eb62c |
+| LibAmp      | STEQ_LibAmpR_7  | 2.056   | 0.1        | CTTGGTGCTGCAGGTGAGG  | 44490403     | 44490421   | 60.97  | 63.158     | 17.124      | 0.0         | 0.0        | 3.86          | 7          | 44490254           | 44490755         | 143          | STEQ        | 8fb6333f-443c-11ef-91cc-fa163e1eb62c |
+| ...         | ...             | ...     | ...        | ...                  | ...          | ...        | ...    | ...        | ...         | ...         | ...        | ...           | ...        | ...                | ...              | ...          | ...         | ...                                  |
+| LibAmp      | STEQ_LibAmpF_0  | 0.22    | 0.5        | AAAGGAGGAAACAGGCTGGG | 44490309     | 44490328   | 59.887 | 55.0       | 20.341      | 0.0         | 0.0        | 4.45          | 7          | 44490254           | 44490755         | 114          | STEQ        | 8fb63324-443c-11ef-91cc-fa163e1eb62c |
+| LibAmp      | STEQ_LibAmpR_0  | 2.056   | 0.5        | CCTTGGTGCTGCAGGTGAG  | 44490404     | 44490422   | 60.97  | 63.158     | 17.124      | 0.0         | 0.0        | 3.51          | 7          | 44490254           | 44490755         | 114          | STEQ        | 8fb63324-443c-11ef-91cc-fa163e1eb62c |
+| LibAmp      | STEQ_LibAmpF_6  | 0.22    | 0.5        | AAAGGAGGAAACAGGCTGGG | 44490309     | 44490328   | 59.887 | 55.0       | 20.341      | 0.0         | 0.0        | 4.45          | 7          | 44490254           | 44490755         | 114          | STEQ        | 8fb6332a-443c-11ef-91cc-fa163e1eb62c |
+| LibAmp      | STEQ_LibAmpR_6  | 2.172   | 0.5        | CCTTGGTGCTGCAGGTGA   | 44490405     | 44490422   | 59.886 | 61.111     | 17.124      | 0.0         | 0.0        | 4.02          | 7          | 44490254           | 44490755         | 114          | STEQ        | 8fb6332a-443c-11ef-91cc-fa163e1eb62c |
+| ...         | ...             | ...     | ...        | ...                  | ...          | ...        | ...    | ...        | ...         | ...         | ...        | ...           | ...        | ...                | ...              | ...          | ...         | ...                                  |
 
 
 Raw File (`p3_output.csv`)
@@ -409,14 +409,14 @@ LibAmp,STEQ_LibAmpR_7,2.056,0.1,CTTGGTGCTGCAGGTGAGG,44490403,44490421,60.97,63.1
 ### 3.4 Primer3 Output Optimal Primer Pairs CSV file
 It contains the top 3 optimal primer pairs from the previous CSV file (`p3_output.csv`).
 
-|  primer_type  |  primer  |  penalty  |  stringency  |  sequence  |  primer_start  |  primer_end  |  tm  |  gc_percent  |  self_any_th  |  self_end_th  |  hairpin_th  |  end_stability  |  chromosome  |  pre_targeton_start  |  pre_targeton_end  |  product_size  |  targeton_id  |  pair_uid
-|---------------|----------|-----------|--------------|------------|----------------|--------------|------|--------------|---------------|---------------|--------------|-----------------|--------------|----------------------|--------------------|----------------|---------------|----------
-| LibAmp  |  STEQ_LibAmpF_18  |  0.894  |  0.1  |  TTCTCACAAGCTCAACCCCA  |  44490278  |  44490297  |  59.157  |  50.0  |  0.0  |  0.0  |  0.0  |  4.96  |  7  |  44490254  |  44490755  |  145  |  STEQ  |  8fb6334a-443c-11ef-91cc-fa163e1eb62c  |
-| LibAmp  |  STEQ_LibAmpR_18  |  2.056  |  0.1  |  CCTTGGTGCTGCAGGTGAG  |  44490404  |  44490422  |  60.97  |  63.158  |  17.124  |  0.0  |  0.0  |  3.51  |  7  |  44490254  |  44490755  |  145  |  STEQ  |  8fb6334a-443c-11ef-91cc-fa163e1eb62c  |
-| LibAmp  |  STEQ_LibAmpF_6  |  0.455  |  0.1  |  TCTCACAAGCTCAACCCCAG  |  44490279  |  44490298  |  59.602  |  55.0  |  0.0  |  0.0  |  0.0  |  4.45  |  7  |  44490254  |  44490755  |  144  |  STEQ  |  8fb6333e-443c-11ef-91cc-fa163e1eb62c  |
-| LibAmp  |  STEQ_LibAmpR_6  |  2.056  |  0.1  |  CCTTGGTGCTGCAGGTGAG  |  44490404  |  44490422  |  60.97  |  63.158  |  17.124  |  0.0  |  0.0  |  3.51  |  7  |  44490254  |  44490755  |  144  |  STEQ  |  8fb6333e-443c-11ef-91cc-fa163e1eb62c  |
-| LibAmp  |  STEQ_LibAmpF_10  |  0.455  |  0.1  |  TCTCACAAGCTCAACCCCAG  |  44490279  |  44490298  |  59.602  |  55.0  |  0.0  |  0.0  |  0.0  |  4.45  |  7  |  44490254  |  44490755  |  144  |  STEQ  |  8fb63342-443c-11ef-91cc-fa163e1eb62c  |
-| LibAmp  |  STEQ_LibAmpR_10  |  2.172  |  0.1  |  CCTTGGTGCTGCAGGTGA  |  44490405  |  44490422  |  59.886  |  61.111  |  17.124  |  0.0  |  0.0  |  4.02  |  7  |  44490254  |  44490755  |  144  |  STEQ  |  8fb63342-443c-11ef-91cc-fa163e1eb62c  |
+| primer_type | primer          | penalty | stringency | sequence             | primer_start | primer_end | tm     | gc_percent | self_any_th | self_end_th | hairpin_th | end_stability | chromosome | pre_targeton_start | pre_targeton_end | product_size | targeton_id | pair_uid                             |
+|-------------|-----------------|---------|------------|----------------------|--------------|------------|--------|------------|-------------|-------------|------------|---------------|------------|--------------------|------------------|--------------|-------------|--------------------------------------|
+| LibAmp      | STEQ_LibAmpF_18 | 0.894   | 0.1        | TTCTCACAAGCTCAACCCCA | 44490278     | 44490297   | 59.157 | 50.0       | 0.0         | 0.0         | 0.0        | 4.96          | 7          | 44490254           | 44490755         | 145          | STEQ        | 8fb6334a-443c-11ef-91cc-fa163e1eb62c |
+| LibAmp      | STEQ_LibAmpR_18 | 2.056   | 0.1        | CCTTGGTGCTGCAGGTGAG  | 44490404     | 44490422   | 60.97  | 63.158     | 17.124      | 0.0         | 0.0        | 3.51          | 7          | 44490254           | 44490755         | 145          | STEQ        | 8fb6334a-443c-11ef-91cc-fa163e1eb62c |
+| LibAmp      | STEQ_LibAmpF_6  | 0.455   | 0.1        | TCTCACAAGCTCAACCCCAG | 44490279     | 44490298   | 59.602 | 55.0       | 0.0         | 0.0         | 0.0        | 4.45          | 7          | 44490254           | 44490755         | 144          | STEQ        | 8fb6333e-443c-11ef-91cc-fa163e1eb62c |
+| LibAmp      | STEQ_LibAmpR_6  | 2.056   | 0.1        | CCTTGGTGCTGCAGGTGAG  | 44490404     | 44490422   | 60.97  | 63.158     | 17.124      | 0.0         | 0.0        | 3.51          | 7          | 44490254           | 44490755         | 144          | STEQ        | 8fb6333e-443c-11ef-91cc-fa163e1eb62c |
+| LibAmp      | STEQ_LibAmpF_10 | 0.455   | 0.1        | TCTCACAAGCTCAACCCCAG | 44490279     | 44490298   | 59.602 | 55.0       | 0.0         | 0.0         | 0.0        | 4.45          | 7          | 44490254           | 44490755         | 144          | STEQ        | 8fb63342-443c-11ef-91cc-fa163e1eb62c |
+| LibAmp      | STEQ_LibAmpR_10 | 2.172   | 0.1        | CCTTGGTGCTGCAGGTGA   | 44490405     | 44490422   | 59.886 | 61.111     | 17.124      | 0.0         | 0.0        | 4.02          | 7          | 44490254           | 44490755         | 144          | STEQ        | 8fb63342-443c-11ef-91cc-fa163e1eb62c |
 
 
 Raw File (`optimal_primer_pairs.csv`)
