@@ -1,6 +1,8 @@
 # Primer Designer
 
-A standalone primer designer tool that takes a sequence of a target region of the genome (i.e., a targeton) and identifies the appropriate LibAmp primers at both ends of the targeton. The Primer3 Designer tool includes filtering and ranking of primers.
+A standalone primer designer tool that takes a sequence of a target region of the genome (i.e., a targeton) 
+and identifies the appropriate LibAmp primers at both ends of the targeton. 
+The Primer3 Designer tool includes filtering and ranking of primers.
 
 ## Table of contents
 
@@ -8,7 +10,7 @@ A standalone primer designer tool that takes a sequence of a target region of th
    1. [Clone Repository](#11-clone-repository)
    2. [Install Dependencies](#12-install-dependencies)
    3. [Setup Environment](#13-setup-environment)
-      1. [Setting up Python Virtual Environement](#131-setting-up-python-virtual-environment)
+      1. [Setting up Python Virtual Environment](#131-setting-up-python-virtual-environment)
       2. [Downloading kmer lists for primer generation](#132-downloading-kmer-lists-for-primer-generation)
    4. [Running unit tests](#14-running-unit-tests)
 2. [Usage](#2-usage)
@@ -89,14 +91,14 @@ Install Python virtual environment using the following command:
 sudo pip3 install virtualenv 
 ```
 
-Then, by using following command create a virtual environment and activate it:
+Then, by using the following command, create a virtual environment and activate it:
 
 ```
 python -m venv venv
 source venv/bin/activate
 ```
 
-To deactivate virtual environment type the following command and hit enter:
+To deactivate the virtual environment type the following command and hit enter:
 ```
 deactivate
 ```
@@ -113,7 +115,8 @@ pip install -r sge-primer-scoring/requirements.txt
 
 `kmer` files are required in order to use the Primer3 masker function, which prevents the design of primers using repetitive template regions.
 
-The `kmer` files are needed in the project root directory to run the `primer` command and to run the unit tests. (see [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_KMERLIST_PATH)).
+The `kmer` files are needed in the project root directory to run the `primer` command and to run the unit tests. 
+(see [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_KMERLIST_PATH)).
 
 1. Set config parameters (in your user-defined designer config file, see [below](
 #2212-designer-config))
@@ -126,12 +129,12 @@ chmod +x ./download_kmer_lists.sh
 ./download_kmer_lists.sh
 ```
 
-#### Make designer script file executable
+#### Make the designer script file executable
 ```sh
 chmod +x ./designer.sh
 ```
 
-Check Designer Version:
+Check the Designer Version:
 ```sh
 ./designer.sh version
 ```
@@ -142,8 +145,11 @@ python -m unittest discover --start-directory ./tests --top-level-directory .
 ```
 
 ## 2. Usage
+
 ### 2.1 Quick start with primer command
-To run the `primer` command with minimal configuration, you can follow the steps below to get started. In the project directory there are example files you use to run the `primer` command. For example you will need test `Fasta` file from `./examples` as follows:
+To run the `primer` command with minimal configuration, you can follow the steps below to get started. 
+In the project directory there are example files you can use to run the `primer` command. 
+For example, you will need the test `Fasta` file from `./examples` as follows:
 
 ```
 ./designer.sh primer --fasta ./examples/test_example_slice.fa
@@ -152,6 +158,7 @@ To run the `primer` command with minimal configuration, you can follow the steps
 By running the above command, you will see output files are generated in the `td_output` folder in the necessary file formats. 
 
 ### 2.2 Primer Designer Tool
+
 ##### 2.2.1 Primer3 Runner
 
 Primer3 runner uses 2 types of config:
@@ -162,9 +169,11 @@ Primer3 runner uses 2 types of config:
 
 This defines the configuration settings for Primer3 (see the [Primer3 Manual](https://primer3.org/manual.html) for more details).
 
-The default configuration can be found in `config/default_primer3.config.json` (which should NOT be moved, deleted or edited). This file contains the default configuration that will be applied if no user config file is provided.
+The default configuration can be found in `config/default_primer3.config.json` (which should NOT be moved, deleted or edited). 
+This file contains the default configuration that will be applied if no user config file is provided.
 
-To provide your own config parameters, please copy the default file into a new file, rename it, and edit it. You can pass your own user Primer3 config file to the `primer` command using the  `--primer3_params` argument indicating the file path.
+To provide your own config parameters, please copy the default file into a new file, rename it, and edit it. 
+You can pass your own user Primer3 config file to the `primer` command using the  `--primer3_params` argument indicating the file path.
 
 ##### 2.2.1.2 Designer config
 
@@ -176,11 +185,15 @@ This specifies parameters specific to the Primer Designer tool. You can specify:
 #2215-applying-ranking-from-the-designer-config-file)),
 4. The column order for the output CSV files.
 
-Note that, in the Designer config, `stringency_vector` corresponds to 'PRIMER_MASK_FAILURE_RATE' in the [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_FAILURE_RATE). This means that a value of 0.1 will apply more stringent settings for the masking algorithm than a value of 1.
+Note that, in the Designer config, `stringency_vector` corresponds to 'PRIMER_MASK_FAILURE_RATE' in the [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_FAILURE_RATE). 
+This means that a value of 0.1 will apply more stringent settings for the masking algorithm than a value of 1.
 
-The default configuration can be found in `config/default_designer.config.json` (which should NOT be moved, deleted or edited). This file contains the default configuration that will be applied if no user config file is provided.
+The default configuration can be found in `config/default_designer.config.json` (which should NOT be moved, deleted or edited). 
+This file contains the default configuration that will be applied if no user config file is provided.
 
- To provide your own config parameters, please copy the default file into a new file, rename it, and edit it. You can pass your own user designer config file to the `primer` command using the  `--conf` argument indicating the file path. For any fields missing in the user-defined config file, the default settings from `config/default_designer.config.json` will be applied.
+ To provide your own config parameters, please copy the default file into a new file, rename it, and edit it. 
+ You can pass your own user designer config file to the `primer` command using the  `--conf` argument indicating the file path. 
+ For any fields missing in the user-defined config file, the default settings from `config/default_designer.config.json` will be applied.
 
 ##### 2.2.1.3 Running Primer3
 
@@ -198,7 +211,7 @@ Example command:
 
 You can set your own filtering parameters using your user designer config file (see [above](
 #2212-designer-config)).
- * The `duplicates` filter will discard any duplicated primer pairs that have an equivalent pair with a lower primer mask failure rate (see [above](#designer-config)).
+ * The `duplicates` filter will discard any duplicated primer pairs that have an equivalent pair with a lower primer mask failure rate (see [above](#2212-designer-config)).
  * The `HAP1_variant` filter will discard all primer pairs with at least one primer containing SNPs (variants) that differ between the HAP1 genome and the GRCh38 reference genome.
  These filters can be turned on (`true`) or off (`false`) as follows:
 
@@ -215,7 +228,9 @@ You can set your own filtering parameters using your user designer config file (
 
 Remember to use the exact names mentioned above. If a filter name is missing, it will not be applied (e.g., if only `"filters": {"duplicates": true}`, `"HAP1_variant"` will not be applied).
 
-If no user config file is passed, then the default `config/default_designer.config.json` will be applied. If a user config file is passed but it does not contain a `filters` key, then the filters from `config/default_designer.config.json` will be applied. If the user config file contains a `filters` key and no filters defined, i.e. `"filters": {},`, then the `duplicates` filter will be applied by default.
+If no user config file is passed, then the default `config/default_designer.config.json` will be applied. 
+If a user config file is passed, but it does not contain a `filters` key, then the filters from `config/default_designer.config.json` will be applied. 
+If the user config file contains a `filters` key and no filters are defined, i.e. `"filters": {},`, then the `duplicates` filter will be applied by default.
 
 ##### 2.2.1.5 Applying ranking from the designer config file
 
@@ -233,9 +248,13 @@ You can set your own ranking parameters using your user designer config file (se
 }
 ```
 
-The order specified in the config file will be retained for ranking. In this example, ranking will be applied first by the primer mask failure rate value (in ascending order) and then by product size (in descending order), i.e., primers pairs with the same primer mask failure rate value will be ranked according to their product size.
+The order specified in the config file will be retained for ranking. 
+In this example, ranking will be applied first by the primer mask failure rate value (in ascending order) 
+and then by product size (in descending order), i.e., primer pairs with the same primer mask failure rate value will be ranked according to their product size.
 
-If a name is missing, it will not be used for ranking. If no user config file is passed, then the default `config/default_designer.config.json` will be applied. If a user config file is passed but it does not contain a `ranking` key, then the ranking parameters from `config/default_designer.config.json` will be applied. If the user config file contains a `ranking` key and no ranking defined, i.e. `"ranking": {},`, no ranking will be applied.
+If a name is missing, it will not be used for ranking. If no user config file is passed, then the default `config/default_designer.config.json` will be applied. 
+If a user config file is passed, but it does not contain a `ranking` key, then the ranking parameters from `config/default_designer.config.json` will be applied. 
+If the user config file contains a `ranking` key and no ranking is defined, i.e. `"ranking": {},`, no ranking will be applied.
 
 ##### 2.2.1.6 Specifying column order through the designer config file
 
@@ -264,11 +283,14 @@ Column order can be specified through the user designer config file:
 }
 ```
 
-All available columns are indicated in the example above. Note that any columns with names missing in the user designer config file not be present in the output CSV files.
+All available columns are indicated in the example above. Note that any columns with names missing in the user designer config file will not be present in the output CSV files.
 
 ##### 2.2.1.7 Using the designer config file to set command-line arguments
 
-Command-line arguments (`--dir`, `--fasta`, and `--primer3_params`) can, alternatively, be specified in the user designer config file. Note that, as no command line arguments are specified in `config/default_designer.config.json`, if no user designer config file is provided, `--fasta` (mandatory parameter), `--dir` and `--primer3_params` (both optional) will have to be passed as command-line arguments.
+Command-line arguments (`--dir`, `--fasta`, and `--primer3_params`) can, alternatively, be specified in the user designer config file. 
+Note that, as no command line arguments are specified in `config/default_designer.config.json`, 
+if no user designer config file is provided, `--fasta` (mandatory parameter), `--dir` and `--primer3_params` 
+(both optional) will have to be passed as command-line arguments.
 
 ```
 {
@@ -281,7 +303,7 @@ Command-line arguments (`--dir`, `--fasta`, and `--primer3_params`) can, alterna
   "primer3_params": "/path/to/primer3/configuration/file"
 }
 ```
-Once, you add above configuration to `custom_config.json` file, you will be able to run the following commands:
+Once you add the above configuration to `custom_config.json` file, you will be able to run the following commands:
 
 ```
 ./designer.sh design --conf custom_config.json
@@ -304,7 +326,7 @@ To collate the primer and scoring data and output to CSV & JSON file:
 
 Examples of the output can be found below.
 
-Is also run as part of the design command.
+This is also run as part of the design command.
 
 #### 2.4 Post primers to Benchling
 
@@ -316,15 +338,17 @@ Example command:
 ```sh
 ./designer.sh post_primers --primer_json primer_designer.json
 ```
-A message will be printed if there are less than 3 primer pairs for a particular targeton. Please note some fields on Benchling will have to be updated manually for now.
+A message will be printed if there are less than 3 primer pairs for a particular targeton. 
+Please note that some fields on Benchling will have to be updated manually for now.
 
 ## 3. File formats
 
-File formats for data input and output files used by Primer Designer Tool are listed and described with examples below.
+File formats for data input and output files used by the Primer Designer Tool are listed and described with examples below.
 
 ### 3.1 Primer3 and Designer Fasta Input File (Slicer Fasta output)
 Contains the slice sequence, with its ID, coordinates and strand in the header.
-If multiple slices are provided in this file, only the first slice will be processed. The remaining slices will be ignored, and the user will be notified.
+If multiple slices are provided in this file, only the first slice will be processed. 
+The remaining slices will be ignored, and the user will be notified.
 
 ```
 >STEQ::7:44490254-44490755(+)
@@ -333,9 +357,11 @@ CCGCGCTTCAAATTACTGAAGCCATTCTCACAAGCTCAACCCCAGGACACCAGGAAAAGGAGGAAACAGGCTGGGAGAGC
 
 
 ### 3.2 Primer3 Output BED file
-Genomic locations of the primers and their names. Names are incremented from 0 and given F and R depending on whether they reflect the positive (5'-3') or negative (3'-5') strand, respectively. Example only showing the first 10 rows of the file.
+Genomic locations of the primers and their names. Names are incremented from 0 and given F and R depending on whether they reflect the positive (5'-3') or negative (3'-5') strand, respectively. 
+See example showing the first 10 rows of the file.
 
-Note that all sample output files from the primer designer command (i.e., this BED file and the two following CSV files) have been produced using the settings from the default config files and the FASTA file above.
+Note that all sample output files from the primer designer command (i.e., this BED file and the two following CSV files) 
+have been produced using the settings from the default config files and the FASTA file above.
 
 | chrom | chromStart | chromEnd | name           | score | strand |
 |-------|------------|----------|----------------|-------|--------|
@@ -368,7 +394,10 @@ Raw file (`p3_output.bed`)
 
 
 ### 3.3 Primer3 Output CSV file
-It contains all the additional information from Primer3 for the individual primers. Column order can be specified through the Designer tool config. In this example, primer pairs have been ranked first by `stringency` and then by `product_size`, according to the default config file. Example only showing the first 10 rows of the file (plus, in the table, the first 4 rows with a different stringency).
+It contains all the additional information from Primer3 for the individual primers. 
+Column order can be specified through the Designer tool config. 
+In this example, primer pairs have been ranked first by `stringency` and then by `product_size`, according to the default config file. 
+See example showing the first 10 rows of the file (plus, in the table, the first 4 rows with a different stringency).
 
 | primer_type | primer          | penalty | stringency | sequence             | primer_start | primer_end | tm     | gc_percent | self_any_th | self_end_th | hairpin_th | end_stability | chromosome | pre_targeton_start | pre_targeton_end | product_size | targeton_id | pair_uid                             |
 |-------------|-----------------|---------|------------|----------------------|--------------|------------|--------|------------|-------------|-------------|------------|---------------|------------|--------------------|------------------|--------------|-------------|--------------------------------------|
@@ -432,20 +461,21 @@ LibAmp,STEQ_LibAmpR_10,2.172,0.1,CCTTGGTGCTGCAGGTGA,44490405,44490422,59.886,61.
 
 
 ### Primer3 Output Discarded Primer Pairs CSV file
-It contains primer pairs discarded during filtering, with discard reason in column discard_reason (last column). The column order is specified through the Designer tool config. Example only showing the first 10 rows of the file.
+It contains primer pairs discarded during filtering, with discard reason in column discard_reason (last column). 
+The column order is specified through the Designer tool config. See example showing the first 10 rows of the file.
 
-|  primer_type  |  primer  |  penalty  |  stringency  |  sequence  |  primer_start  |  primer_end  |  tm  |  gc_percent  |  self_any_th  |  self_end_th  |  hairpin_th  |  end_stability  |  chromosome  |  pre_targeton_start  |  pre_targeton_end  |  product_size  |  targeton_id  |  pair_uid | discard reason |
-|---------------|----------|-----------|--------------|------------|----------------|--------------|------|--------------|---------------|---------------|--------------|-----------------|--------------|----------------------|--------------------|----------------|---------------|----------|---------------|
-| LibAmp  |  STEQ_LibAmpF_0  |  0.22  |  1.0  |  AAAGGAGGAAACAGGCTGGG  |  44490309  |  44490328  |  59.887  |  55.0  |  20.341  |  0.0  |  0.0  |  4.45  |  7  |  44490254  |  44490755  |  114  |  STEQ  |  8fb63310-443c-11ef-91cc-fa163e1eb62c  |  has duplicate with a higher stringency |
-| LibAmp  |  STEQ_LibAmpR_0  |  2.056  |  1.0  |  CCTTGGTGCTGCAGGTGAG  |  44490404  |  44490422  |  60.97  |  63.158  |  17.124  |  0.0  |  0.0  |  3.51  |  7  |  44490254  |  44490755  |  114  |  STEQ  |  8fb63310-443c-11ef-91cc-fa163e1eb62c  |  has duplicate with a higher stringency |
-| LibAmp  |  STEQ_LibAmpF_1  |  0.22  |  1.0  |  AAAGGAGGAAACAGGCTGGG  |  44490309  |  44490328  |  59.887  |  55.0  |  20.341  |  0.0  |  0.0  |  4.45  |  7  |  44490254  |  44490755  |  113  |  STEQ  |  8fb63311-443c-11ef-91cc-fa163e1eb62c  |  has duplicate with a higher stringency |
-| LibAmp  |  STEQ_LibAmpR_1  |  2.056  |  1.0  |  CTTGGTGCTGCAGGTGAGG  |  44490403  |  44490421  |  60.97  |  63.158  |  17.124  |  0.0  |  0.0  |  3.86  |  7  |  44490254  |  44490755  |  113  |  STEQ  |  8fb63311-443c-11ef-91cc-fa163e1eb62c  |  has duplicate with a higher stringency |
-| LibAmp  |  STEQ_LibAmpF_2  |  0.328  |  1.0  |  CCCCAGGACACCAGGAAAAG  |  44490293  |  44490312  |  60.251  |  60.0  |  0.0  |  0.0  |  31.239  |  2.27  |  7  |  44490254  |  44490755  |  130  |  STEQ  |  8fb63312-443c-11ef-91cc-fa163e1eb62c  |  has duplicate with a higher stringency |
-| LibAmp  |  STEQ_LibAmpR_2  |  2.056  |  1.0  |  CCTTGGTGCTGCAGGTGAG  |  44490404  |  44490422  |  60.97  |  63.158  |  17.124  |  0.0  |  0.0  |  3.51  |  7  |  44490254  |  44490755  |  130  |  STEQ  |  8fb63312-443c-11ef-91cc-fa163e1eb62c  |  has duplicate with a higher stringency |
-| LibAmp  |  STEQ_LibAmpF_2  |  0.328  |  0.5  |  CCCCAGGACACCAGGAAAAG  |  44490293  |  44490312  |  60.251  |  60.0  |  0.0  |  0.0  |  31.239  |  2.27  |  7  |  44490254  |  44490755  |  130  |  STEQ  |  8fb63326-443c-11ef-91cc-fa163e1eb62c  |  has duplicate with a higher stringency |
-| LibAmp  |  STEQ_LibAmpR_2  |  2.056  |  0.5  |  CCTTGGTGCTGCAGGTGAG  |  44490404  |  44490422  |  60.97  |  63.158  |  17.124  |  0.0  |  0.0  |  3.51  |  7  |  44490254  |  44490755  |  130  |  STEQ  |  8fb63326-443c-11ef-91cc-fa163e1eb62c  |  has duplicate with a higher stringency |
-| LibAmp  |  STEQ_LibAmpF_3  |  0.328  |  1.0  |  CCCCAGGACACCAGGAAAAG  |  44490293  |  44490312  |  60.251  |  60.0  |  0.0  |  0.0  |  31.239  |  2.27  |  7  |  44490254  |  44490755  |  129  |  STEQ  |  8fb63313-443c-11ef-91cc-fa163e1eb62c  |  has duplicate with a higher stringency |
-| LibAmp  |  STEQ_LibAmpR_3  |  2.056  |  1.0  |  CTTGGTGCTGCAGGTGAGG  |  44490403  |  44490421  |  60.97  |  63.158  |  17.124  |  0.0  |  0.0  |  3.86  |  7  |  44490254  |  44490755  |  129  |  STEQ  |  8fb63313-443c-11ef-91cc-fa163e1eb62c  |  has duplicate with a higher stringency |
+| primer_type | primer         | penalty | stringency | sequence             | primer_start | primer_end | tm     | gc_percent | self_any_th | self_end_th | hairpin_th | end_stability | chromosome | pre_targeton_start | pre_targeton_end | product_size | targeton_id | pair_uid                             | discard reason                         |
+|-------------|----------------|---------|------------|----------------------|--------------|------------|--------|------------|-------------|-------------|------------|---------------|------------|--------------------|------------------|--------------|-------------|--------------------------------------|----------------------------------------|
+| LibAmp      | STEQ_LibAmpF_0 | 0.22    | 1.0        | AAAGGAGGAAACAGGCTGGG | 44490309     | 44490328   | 59.887 | 55.0       | 20.341      | 0.0         | 0.0        | 4.45          | 7          | 44490254           | 44490755         | 114          | STEQ        | 8fb63310-443c-11ef-91cc-fa163e1eb62c | has duplicate with a higher stringency |
+| LibAmp      | STEQ_LibAmpR_0 | 2.056   | 1.0        | CCTTGGTGCTGCAGGTGAG  | 44490404     | 44490422   | 60.97  | 63.158     | 17.124      | 0.0         | 0.0        | 3.51          | 7          | 44490254           | 44490755         | 114          | STEQ        | 8fb63310-443c-11ef-91cc-fa163e1eb62c | has duplicate with a higher stringency |
+| LibAmp      | STEQ_LibAmpF_1 | 0.22    | 1.0        | AAAGGAGGAAACAGGCTGGG | 44490309     | 44490328   | 59.887 | 55.0       | 20.341      | 0.0         | 0.0        | 4.45          | 7          | 44490254           | 44490755         | 113          | STEQ        | 8fb63311-443c-11ef-91cc-fa163e1eb62c | has duplicate with a higher stringency |
+| LibAmp      | STEQ_LibAmpR_1 | 2.056   | 1.0        | CTTGGTGCTGCAGGTGAGG  | 44490403     | 44490421   | 60.97  | 63.158     | 17.124      | 0.0         | 0.0        | 3.86          | 7          | 44490254           | 44490755         | 113          | STEQ        | 8fb63311-443c-11ef-91cc-fa163e1eb62c | has duplicate with a higher stringency |
+| LibAmp      | STEQ_LibAmpF_2 | 0.328   | 1.0        | CCCCAGGACACCAGGAAAAG | 44490293     | 44490312   | 60.251 | 60.0       | 0.0         | 0.0         | 31.239     | 2.27          | 7          | 44490254           | 44490755         | 130          | STEQ        | 8fb63312-443c-11ef-91cc-fa163e1eb62c | has duplicate with a higher stringency |
+| LibAmp      | STEQ_LibAmpR_2 | 2.056   | 1.0        | CCTTGGTGCTGCAGGTGAG  | 44490404     | 44490422   | 60.97  | 63.158     | 17.124      | 0.0         | 0.0        | 3.51          | 7          | 44490254           | 44490755         | 130          | STEQ        | 8fb63312-443c-11ef-91cc-fa163e1eb62c | has duplicate with a higher stringency |
+| LibAmp      | STEQ_LibAmpF_2 | 0.328   | 0.5        | CCCCAGGACACCAGGAAAAG | 44490293     | 44490312   | 60.251 | 60.0       | 0.0         | 0.0         | 31.239     | 2.27          | 7          | 44490254           | 44490755         | 130          | STEQ        | 8fb63326-443c-11ef-91cc-fa163e1eb62c | has duplicate with a higher stringency |
+| LibAmp      | STEQ_LibAmpR_2 | 2.056   | 0.5        | CCTTGGTGCTGCAGGTGAG  | 44490404     | 44490422   | 60.97  | 63.158     | 17.124      | 0.0         | 0.0        | 3.51          | 7          | 44490254           | 44490755         | 130          | STEQ        | 8fb63326-443c-11ef-91cc-fa163e1eb62c | has duplicate with a higher stringency |
+| LibAmp      | STEQ_LibAmpF_3 | 0.328   | 1.0        | CCCCAGGACACCAGGAAAAG | 44490293     | 44490312   | 60.251 | 60.0       | 0.0         | 0.0         | 31.239     | 2.27          | 7          | 44490254           | 44490755         | 129          | STEQ        | 8fb63313-443c-11ef-91cc-fa163e1eb62c | has duplicate with a higher stringency |
+| LibAmp      | STEQ_LibAmpR_3 | 2.056   | 1.0        | CTTGGTGCTGCAGGTGAGG  | 44490403     | 44490421   | 60.97  | 63.158     | 17.124      | 0.0         | 0.0        | 3.86          | 7          | 44490254           | 44490755         | 129          | STEQ        | 8fb63313-443c-11ef-91cc-fa163e1eb62c | has duplicate with a higher stringency |
 
 
 Raw File (`discarded_pairs.csv`)
@@ -485,14 +515,18 @@ gunzip Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
 \
 \
 \
-Following are the file formats that are generated by deprecated tools and commands. You can refer [Deprecated tools and commands](#5-deprecated-tools-and-commands) section for more details.
+The following are the file formats that are generated by deprecated tools and commands. 
+You can refer to the [Deprecated tools and commands](#5-deprecated-tools-and-commands) section for more details.
 
 ### 3.6 Slicer Input BED File
 A BED file containing the regions you wish to slice across. 
 
 The chromosome column data must match your reference fasta file IDs. If your reference had >chr1 then you must call chromosome 1 'chr1' in this column and vice-versa.
 
-Note: BED effectively are applied tsv files so use tabs to separate the values. Headers are optional in BED file and can be a cause of issues if they aren't perfect. Strand is required for the slicer to ensure sequences are output in the correct orientation. Score isn't used but the field must be present for the file format to be read correctly.
+Note: BED effectively are applied tsv files so use tabs to separate the values. 
+Headers are optional in the BED file and can be a cause of issues if they aren't perfect. 
+Strand is required for the slicer to ensure sequences are output in the correct orientation. 
+Score isn't used but the field must be present for the file format to be read correctly.
 
 | chrom | chromStart | chromEnd | name                 | score | strand |
 |-------|------------|----------|----------------------|-------|--------|
@@ -508,7 +542,7 @@ Raw file
 More information can be found here: https://en.wikipedia.org/wiki/BED_(file_format)
 
 ### 3.7 Slicer BED output
-BED file output with row for each slice. This file will also be used for running VaLiAnt.
+BED file output with a row for each slice. This file will also be used for running VaLiAnt.
 
 | chrom | chromStart | chromEnd | name | score | strand |
 | ----- | ---------- | -------- | ---- | ----- | ------ |
@@ -600,7 +634,8 @@ Additionally, make sure the interpreter is pointed at the correct virtual enviro
 
 ## 5. Deprecated tools and commands
 
-Following are some commands that are not widely used or they perform similar operations. These commands will be used in the future after enhancing their functionality.
+The following are some commands that are not widely used, or they perform similar operations. 
+These commands will be used in the future after enhancing their functionality.
 
 #### Designer Workflow (Primer3)
 
