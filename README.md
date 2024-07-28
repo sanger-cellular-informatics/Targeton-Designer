@@ -149,7 +149,7 @@ python -m unittest discover --start-directory ./tests --top-level-directory .
 ### 2.1 Quick start with primer command
 To run the `primer` command with minimal configuration, you can follow the steps below to get started. 
 In the project directory there are example files you can use to run the `primer` command. 
-For example, you will need the test `Fasta` file from `./examples` as follows:
+For example, you will need the test `fasta` file from `./examples` as follows:
 
 ```
 ./designer.sh primer --fasta ./examples/test_example_slice.fa
@@ -496,7 +496,7 @@ LibAmp,STEQ_LibAmpR_3,2.056,1.0,CTTGGTGCTGCAGGTGAGG,44490403,44490421,60.97,63.1
 
 
 ### 3.5 Genomic Reference file
-A Fasta file of latest GRCh38 genome. This is used for gathering the slice sequences and retrieving primer information. 
+A fasta file of latest GRCh38 genome. This is used for gathering the slice sequences and retrieving primer information. 
 Either supply a local genome reference file or download one from EnsEMBL and point to it with the relevant parameters:
 http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/
 
