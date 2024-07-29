@@ -46,7 +46,7 @@ The Primer3 Designer tool includes filtering and ranking of primers.
    2. [Primer Scoring Tool](#52-primer-scoring-tool)
    3. [Slicer Tool](#53-slicer-tool)
    4. [Targeton CSV generation](#54-targeton-csv-generation)
-6. [Docker Image](#6-docker-image)
+6. [Upcoming releases](#6-upcoming-releases)
 
 
 ## 1. Installation
@@ -689,6 +689,6 @@ Example command:
 ```
 Please note primer pair names in the iPCRess input file must be prefixed by the corresponding region name in the BED file.
 
-## 6. Docker Image
+## 6. Upcoming releases
 
 Docker image in upcoming feature in later release.
