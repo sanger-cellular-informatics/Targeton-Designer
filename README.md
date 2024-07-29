@@ -633,8 +633,8 @@ Additionally, make sure the interpreter is pointed at the correct virtual enviro
 
 ## 5. Tools and commands no longer in use
 
-The following are some commands that are not widely used, or they perform similar operations. 
-These commands will be used in the future after enhancing their functionality.
+The following tools and commands are no longer in use because they are no longer part of the main Primer Designer Workflow. 
+However, note that they can still be run as separate tools. We are currently not providing maintenance for these tools.
 
 #### 5.1 Designer Workflow (Primer3)
 
