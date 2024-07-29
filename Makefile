@@ -24,29 +24,26 @@ DOCKER_IMAGE_NAME ?= ${DOCKER_REPO}/${DOCKER_NAME}:${DOCKER_TAG}
 init: check-make
 	git config core.hooksPath .githooks
 	chmod +x .githooks/*
-	
+
 
 install:
 	@echo "Installing..."
 	@apt-get update 
-	@if [ "$(shell which build-essential)" = "" ]; then
-		$(MAKE) install-build-essential;
-	fi
-	@if [ "$(shell which bedtools)" = "" ]; then
-		$(MAKE) install-bedtools;
-	fi
-	@if [ "$(shell which python3.8-dev)" = "" ]; then
-		$(MAKE) install-python3.8-dev;
-	fi
-	@if [ "$(shell which curl)" = "" ]; then
-		$(MAKE) install-curl;
-	fi
+	$(MAKE) install-build-essential;
+	$(MAKE) install-bedtools;
+	$(MAKE) install-python3.8-dev;
+	$(MAKE) install-curl;
+	$(MAKE) install-bedtools
+	
 
 install-bedtools:
+	@apt-get update 
 	@echo "Installing bedtools..."
 	@apt-get -y install bedtools
 
+
 install-build-essential:
+	@apt-get update 
 	@echo "Installing build-essential..."
 	@apt-get -y install build-essential git
 
@@ -87,15 +84,13 @@ install-curl:
 	@echo "Installing curl..."
 	apt-get -y install curl
 
-install-make:
-	@echo "Installing make..."
-	apt-get -y install make
 
 check-make:
-	@MAKE_VERSION = $$(make --version | grep '^GNU Make' | sed 's/^.* //g')
-	if (( $(echo "3.82 > $$MAKE_VERSION" |bc -l) )); then
-	echo "make version = ${MAKE_VERSION}, minimum version 3.82 required for multiline."
-		$(MAKE) install-make
+	@MAKE_VERSION=$$(make --version | grep '^GNU Make' | sed 's/^.* //g'); \
+	echo "Detected make version: $$MAKE_VERSION"; \
+	if (( $$(echo "$$MAKE_VERSION < 3.82" | bc -l) )); then \
+		echo "make version = $$MAKE_VERSION, minimum version 3.82 required for multiline."; \
+		$(MAKE) install-make; \
 	fi
 
 install-autopep8: venv/bin/activate
