@@ -32,15 +32,9 @@ install:
 	$(MAKE) install-build-essential;
 	$(MAKE) install-bedtools;
 	$(MAKE) install-python3.8-dev;
-	$(MAKE) install-curl;
 	$(MAKE) install-bedtools
+	$(MAKE) install-curl;
 	
-
-install-bedtools:
-	@apt-get update 
-	@echo "Installing bedtools..."
-	@apt-get -y install bedtools
-
 
 install-build-essential:
 	@apt-get update 
@@ -48,41 +42,51 @@ install-build-essential:
 	@apt-get -y install build-essential git
 
 
-install-python3.8-dev:
-	@if [ "$(shell which python3)" = "" ]; then
-		# Python3 not installed.
-		@echo "Installing python3.8-dev..."
-		@apt-get -y install python3.8-dev
-	else
-		@PYTHONPATH = which python
-		@ver=$$(python3 -V 2>&1 | sed 's/.* \([0-9]\).\([0-9]\).*/\1\2/')
-		@if [ "$$ver" -eq 38 ]; then
-			PYTHONPATH38 = which python3
-		else
-			@echo "Installing python3.8-dev..."
-			@apt-get -y install python3.8-dev
-			PYTHONPATH38 = which python3.8
-		fi
-		@update-alternatives --install ${PYTHONPATH} python ${PYTHONPATH38} 2 
-		@update-alternatives --config python 
-	fi
+install-bedtools:
+	@apt-get update 
+	@echo "Installing bedtools..."
+	@apt-get -y install bedtools
 
-install-sudo:
-	@echo "Installing sudo..."
-	@apt-get update
-	@apt-get -y install sudo
+
+install-python3.8-dev:
+	@echo "Installing python3.8-dev..."
+	@apt-get -y install python3.8-dev
+	
+	@echo "Install Python Virtual Env..."
+	@apt-get install python3.8-venv
+	
+	@echo "Updating python alternatives list..."
+	@update-alternatives --install /usr/bin/python python /usr/bin/python3.8 2
+	@update-alternatives --config python
+	
+	@echo "Installing Python3 pip..."
+	@apt-get install python3-pip
+
+	@echo "Update Python version:"
+	@python3 --version
+	@python --version
+
+
+install-curl:
+	@apt-get update 
+	@echo "Installing curl..."
+	apt-get -y install curl
+
+
+# sudo is default package in most Linux distributions. 
+# install-sudo:
+# 	@echo "Installing sudo..."
+# 	@apt-get update
+# 	@apt-get -y install sudo
 
 install-docker:
 	@echo "Installing docker..."
+	@apt-get update
 	@curl -fsSL https://get.docker.com -o get-docker.sh
 	@sh get-docker.sh
 	@groupadd docker
 	@usermod -aG docker $$USER
 	@newgrp docker
-
-install-curl:
-	@echo "Installing curl..."
-	apt-get -y install curl
 
 
 check-make:
