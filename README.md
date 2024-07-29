@@ -25,7 +25,7 @@ The Primer3 Designer tool includes filtering and ranking of primers.
             5. [Applying ranking from the designer config file](#2215-applying-ranking-from-the-designer-config-file)
             6. [Specifying column order through the designer config file](#2216-specifying-column-order-through-the-designer-config-file)
             7. [Using the designer config file to set command-line arguments](#2217-using-the-designer-config-file-to-set-command-line-arguments)
-    3. [Primer data collation and output to CSV and JSON (for benchling)](#23-primer-data-collation-and-output-to-csv-and-json-for-benchling) 
+    3. [Primer data collation and output to CSV and JSON (for Benchling)](#23-primer-data-collation-and-output-to-csv-and-json-for-benchling) 
     4. [Post primers to Benchling](#24-post-primers-to-benchling) 
 3. [File formats](#3-file-formats)
    1. [Primer3 and Designer Fasta Input File (Slicer Fasta output)](#31-primer3-and-designer-fasta-input-file-slicer-fasta-output) 
@@ -323,7 +323,7 @@ Once you add the above configuration to `custom_config.json` file, you will be a
 
 **Note:** Where these arguments are specified both in the command line and in the user designer config file, the parameters specified in the command line will take precedence.
 
-### 2.3 Primer data collation and output to CSV and JSON (for benchling)
+### 2.3 Primer data collation and output to CSV and JSON (for Benchling)
 
 To collate the primer and scoring data and output to CSV & JSON file:
 ```sh
