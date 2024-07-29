@@ -62,7 +62,7 @@ install-python3.8-dev:
 	@echo "Installing Python3 pip..."
 	@apt-get install python3-pip
 
-	@echo "Update Python version:"
+	@echo "Updated Python version:"
 	@python3 --version
 	@python --version
 
@@ -70,7 +70,7 @@ install-python3.8-dev:
 install-curl:
 	@apt-get update 
 	@echo "Installing curl..."
-	apt-get -y install curl
+	@apt-get -y install curl
 
 
 # sudo is default package in most Linux distributions. 

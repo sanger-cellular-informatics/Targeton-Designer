@@ -8,7 +8,7 @@ A standalone primer designer tool that takes a sequence of a target region of th
   - [Clone Repository](#clone-repository)
   - [Install Dependencies](#install-dependencies)
   - [Setup Environment](#setup-environment)
-    - [Setting up Python Virtual Environement](#setting-up-python-virtual-environment)
+    - [Setting up Python Virtual Environment](#setting-up-python-virtual-environment)
     - [Downloading kmer lists for primer generation](#downloading-kmer-lists-for-primer-generation)
   - [Running unit tests](#running-unit-tests)
 - [Usage](#usage)
@@ -51,16 +51,30 @@ cd targeton-designer
 
 ### Install Dependencies
 
-Build-essential, BedTools and Python (3.8), Python-venv (3.8).
-Change ```python``` command to point to Python (3.8), Ubuntu expects python3 to be a specific version for compatibility.
-```sh
-sudo apt-get update \
-&& sudo apt-get -y install build-essential bedtools python3.8-dev python3.8-venv \
-&& sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.8 2  \
-&& sudo update-alternatives --config python \
-&& sudo apt-get install python3-pip \
-&& sudo apt install make
+Before we install dependencies, ensure if `make` command is installed on your instance. To check, run the following command:
+
 ```
+make --version
+```
+
+
+If you see `GNU Make x.x`, then you already have installed `make` command on your instance. If not run the following:
+```
+sudo apt install make
+```
+
+You can also check the `make` command desired version for installing essential dependencies for Primer3 Designer Tool using the following command:
+
+```
+make check-make
+```
+
+Once, you have `make` command working you can start installing dependencies such as Build-essential, BedTools and Python (3.8), Python-venv (3.8), Python Virtual Environment and Changing ```python``` command to point to Python (3.8), Ubuntu expects python3 to be a specific version for compatibility. To install all required dependencies run the following command:
+
+```
+sudo make install
+```
+
 
 Check Python3 (base) and Python (updated) version
 ```sh
@@ -74,39 +88,22 @@ Requirements:
  - Python3.8+
  - Python-venv
 
-Run
-
-```sh
-sudo make install
-```
-
-```make install``` installs dependencies and setup environment for running primer designer commands.
-
 
 ##### Setting up Python Virtual Environment
 Install Python virtual environment using the following command:
 ```
-sudo pip3 install virtualenv 
+sudo make setup-venv
 ```
 
-Then, by using following command create a virtual environment and activate it:
+Then, by using following command activate a virtual environment:
 
 ```
-python -m venv venv
 source venv/bin/activate
 ```
 
 To deactivate virtual environment type the following command and hit enter:
 ```
 deactivate
-```
-
-After creating the virtual environment, you need to install python packages from `requirements.txt` using the following commands:
-
-```
-pip install -U pip wheel setuptools 
-pip install -r requirements.txt
-pip install -r sge-primer-scoring/requirements.txt
 ```
 
 ##### Downloading kmer lists for primer generation
