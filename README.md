@@ -51,25 +51,25 @@ cd targeton-designer
 
 ### Install Dependencies
 
-Before we install dependencies, ensure if `make` command is installed on your instance. To check, run the following command:
+Before we install dependencies, check `make` command is installed on your instance needed. To check, run the following command:
 
 ```
 make --version
 ```
 
 
-If you see `GNU Make x.x`, then you already have installed `make` command on your instance. If not run the following:
+If you see `GNU Make x.x`, then you have installed `make` command on your instance. If not run the following:
 ```
 sudo apt install make
 ```
 
-You can also check the `make` command desired version for installing essential dependencies for Primer3 Designer Tool using the following command:
+You can also check the `make` command required version for installing essential dependencies for Primer3 Designer Tool using the following command:
 
 ```
 make check-make
 ```
 
-Once, you have `make` command working you can start installing dependencies such as Build-essential, BedTools and Python (3.8), Python-venv (3.8), Python Virtual Environment and Changing ```python``` command to point to Python (3.8), Ubuntu expects python3 to be a specific version for compatibility. To install all required dependencies run the following command:
+Once, you have `make` command installed you can start installing dependencies such as Build-essential, Bedtools and Python (3.8), Python Virtual Environment and changing ```python``` command to point to Python (3.8), Ubuntu expects Python3 to be a specific version for compatibility. To install all required dependencies run the following command:
 
 ```
 sudo make install
@@ -95,7 +95,7 @@ Install Python virtual environment using the following command:
 sudo make setup-venv
 ```
 
-Then, by using following command activate a virtual environment:
+Then, by using following command activate the virtual environment:
 
 ```
 source venv/bin/activate

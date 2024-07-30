@@ -29,17 +29,17 @@ init: check-make
 install:
 	@echo "Installing..."
 	@apt-get update 
-	$(MAKE) install-build-essential;
-	$(MAKE) install-bedtools;
-	$(MAKE) install-python3.8-dev;
+	$(MAKE) install-build-essential
 	$(MAKE) install-bedtools
-	$(MAKE) install-curl;
+	$(MAKE) install-python3.8-dev
+	$(MAKE) install-bedtools
+	$(MAKE) install-curl
 	
 
 install-build-essential:
 	@apt-get update 
 	@echo "Installing build-essential..."
-	@apt-get -y install build-essential git
+	@apt-get -y install build-essential
 
 
 install-bedtools:
@@ -55,8 +55,11 @@ install-python3.8-dev:
 	@echo "Install Python Virtual Env..."
 	@apt-get install python3.8-venv
 	
+	PYTHONPATH = /usr/bin/python
+	PYTHONPATH38 = /usr/bin/python3.8
+	
 	@echo "Updating python alternatives list..."
-	@update-alternatives --install /usr/bin/python python /usr/bin/python3.8 2
+	@update-alternatives --install $(PYTHONPATH) python $(PYTHONPATH38) 2
 	@update-alternatives --config python
 	
 	@echo "Installing Python3 pip..."
@@ -73,15 +76,8 @@ install-curl:
 	@apt-get -y install curl
 
 
-# sudo is default package in most Linux distributions. 
-# install-sudo:
-# 	@echo "Installing sudo..."
-# 	@apt-get update
-# 	@apt-get -y install sudo
-
 install-docker:
 	@echo "Installing docker..."
-	@apt-get update
 	@curl -fsSL https://get.docker.com -o get-docker.sh
 	@sh get-docker.sh
 	@groupadd docker
@@ -90,11 +86,10 @@ install-docker:
 
 
 check-make:
-	@MAKE_VERSION=$$(make --version | grep '^GNU Make' | sed 's/^.* //g'); \
-	echo "Detected make version: $$MAKE_VERSION"; \
-	if (( $$(echo "$$MAKE_VERSION < 3.82" | bc -l) )); then \
-		echo "make version = $$MAKE_VERSION, minimum version 3.82 required for multiline."; \
-		$(MAKE) install-make; \
+	@MAKE_VERSION=$$(make --version | grep '^GNU Make' | sed 's/^.* //g');
+	echo "Detected make version: $$MAKE_VERSION";
+	if (( $$(echo "$$MAKE_VERSION < 3.82" | bc -l) )); then
+		echo "make version = $$MAKE_VERSION, minimum version 3.82 required for multiline.";
 	fi
 
 install-autopep8: venv/bin/activate
