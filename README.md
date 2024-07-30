@@ -111,13 +111,10 @@ pip install -r sge-primer-scoring/requirements.txt
 
 ##### Downloading kmer lists for primer generation
 
-`kmer` files are required in order to use the Primer3 masker function, which prevents the design of primers using repetitive template regions.
+If masking is desired during the design of primers, `kmer` files will be required by the Primer3 masker function (see [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_TEMPLATE)). You will need to:
 
-The `kmer` files are needed in the project root directory to run the `primer` command and to run the unit tests. (see [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_KMERLIST_PATH)).
-
-1. Set config parameters (in your user-defined designer config file, see [below](
-#designer-config))
-2. Provide 2 files with kmers: `homo_sapiens_11.list` and `homo_sapiens_16.list`
+1. Set config parameters for masking (in your user-defined Primer3 config file, see [below](#primer3-config))
+2. Provide two kmer files: `homo_sapiens_11.list` and `homo_sapiens_16.list`
 
 These kmer lists can be downloaded using:
 
@@ -158,7 +155,7 @@ Primer3 runner uses 2 types of config:
 - Primer3 parameters config
 - Designer config
 
-##### Primer3 parameters config
+##### Primer3 config
 
 This defines the configuration settings for Primer3 (see the [Primer3 Manual](https://primer3.org/manual.html) for more details).
 
