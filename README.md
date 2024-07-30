@@ -569,9 +569,10 @@ Raw file
 ### 3.9 Scoring Tool Input iPCRess file example
 Two files, stnd and err.
 stnd: Space separated text file. Sequence_id contains the chromosome and description can be 'forward', 'revcomp', 'single_A' or 'single_B'.
-| sequence_id | experiment_id | product_length | primer_5 | pos_5 | mismatch_5 | primer_3 | pos_3 | mismatch_3 | description |
-| ----------- | ------------- | -------------- | -------- | ----- | ---------- | -------- | ----- | ---------- | ----------- |
-| 19:filter(unmasked) | ID0001 | 259 | A | 44907726 | 0 | B | 44907967 | 0 | forward |
+
+| sequence_id         | experiment_id | product_length | primer_5 | pos_5    | mismatch_5 | primer_3 | pos_3    | mismatch_3 | description |
+|---------------------|---------------|----------------|----------|----------|------------|----------|----------|------------|-------------|
+| 19:filter(unmasked) | ID0001        | 259            | A        | 44907726 | 0          | B        | 44907967 | 0          | forward     |
 
 Raw file
 ```
