@@ -59,6 +59,10 @@ git clone --recurse-submodule https://gitlab.internal.sanger.ac.uk/sci/targeton-
 cd targeton-designer
 ```
 
+Please note that the repository on GitLab is currently named `targeton-designer` due to the project's previous name, Targeton Designer. 
+The project has since been renamed to Primer Designer, and the repository name will be updated accordingly in the future. 
+We apologise for any confusion this may cause.
+
 ### 1.2 Install Dependencies
 
 Build-essential, BedTools and Python (3.8), Python-venv (3.8).
