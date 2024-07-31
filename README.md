@@ -25,8 +25,6 @@ The Primer3 Designer tool includes filtering and ranking of primers.
             5. [Applying ranking from the designer config file](#2215-applying-ranking-from-the-designer-config-file)
             6. [Specifying column order through the designer config file](#2216-specifying-column-order-through-the-designer-config-file)
             7. [Using the designer config file to set command-line arguments](#2217-using-the-designer-config-file-to-set-command-line-arguments)
-    3. [Primer data collation and output to CSV and JSON (for Benchling)](#23-primer-data-collation-and-output-to-csv-and-json-for-benchling) 
-    4. [Post primers to Benchling](#24-post-primers-to-benchling) 
 3. [File formats](#3-file-formats)
    1. [Primer3 and Designer Fasta Input File (Slicer Fasta output)](#31-primer3-and-designer-fasta-input-file-slicer-fasta-output) 
    2. [Primer3 Output BED file](#32-primer3-output-bed-file) 
@@ -46,6 +44,8 @@ The Primer3 Designer tool includes filtering and ranking of primers.
    2. [Primer Scoring Tool](#52-primer-scoring-tool)
    3. [Slicer Tool](#53-slicer-tool)
    4. [Targeton CSV generation](#54-targeton-csv-generation)
+   5. [Primer data collation and output to CSV and JSON (for Benchling)](#55-primer-data-collation-and-output-to-csv-and-json-for-benchling) 
+   6. [Post primers to Benchling](#56-post-primers-to-benchling) 
 6. [Upcoming releases](#6-upcoming-releases)
 
 
@@ -326,30 +326,6 @@ Once you add the above configuration to `custom_config.json` file, you will be a
 ```
 
 **Note:** Where these arguments are specified both in the command line and in the user designer config file, the parameters specified in the command line will take precedence.
-
-### 2.3 Primer data collation and output to CSV and JSON (for Benchling)
-
-To collate the primer and scoring data and output to CSV & JSON file:
-```sh
-./designer.sh collate_primer_data [--p3_csv Primer3_output.csv] [--score_tsv scoring_output.tsv] [--dir DIR]
-```
-
-Examples of the output can be found below.
-
-This is also run as part of the design command.
-
-### 2.4 Post primers to Benchling
-
-To post the top 3 primer pairs for each targeton from the Primer Designer JSON output:
-```sh
-./designer.sh post_primers [--primer_json PRIMER_JSON]
-```
-Example command:
-```sh
-./designer.sh post_primers --primer_json primer_designer.json
-```
-A message will be printed if there are less than 3 primer pairs for a particular targeton. 
-Please note that some fields on Benchling will have to be updated manually for now.
 
 ## 3. File formats
 
@@ -693,6 +669,30 @@ Example command:
 ./designer.sh generate_targeton_csv --primers example_ipcress_input.txt --bed example.bed --dir example_dir
 ```
 Please note primer pair names in the iPCRess input file must be prefixed by the corresponding region name in the BED file.
+
+### 5.5 Primer data collation and output to CSV and JSON (for Benchling)
+
+To collate the primer and scoring data and output to CSV & JSON file:
+```sh
+./designer.sh collate_primer_data [--p3_csv Primer3_output.csv] [--score_tsv scoring_output.tsv] [--dir DIR]
+```
+
+Examples of the output can be found below.
+
+This is also run as part of the design command.
+
+### 5.6 Post primers to Benchling
+
+To post the top 3 primer pairs for each targeton from the Primer Designer JSON output:
+```sh
+./designer.sh post_primers [--primer_json PRIMER_JSON]
+```
+Example command:
+```sh
+./designer.sh post_primers --primer_json primer_designer.json
+```
+A message will be printed if there are less than 3 primer pairs for a particular targeton. 
+Please note that some fields on Benchling will have to be updated manually for now.
 
 ## 6. Upcoming releases
 
