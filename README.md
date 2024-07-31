@@ -82,13 +82,13 @@ sudo apt-get update \
 && sudo apt install make
 ```
 
-Check Python3 (base) and Python (updated) version
+Check the Python3 (base) and Python (updated) versions.
 ```sh
 python3 --version
 python --version
 ```
 
-### 1.3 Setup Environment
+### 1.3 Set up Environment
 
 Requirements:
  - Python3.8+
@@ -100,10 +100,10 @@ Run
 sudo make install
 ```
 
-```make install``` installs dependencies and setup environment for running primer designer commands.
+```make install``` installs dependencies and sets up environment for running primer designer commands.
 
 
-##### 1.3.1 Setting up Python Virtual Environment
+##### 1.3.1 Setting up a Python Virtual Environment
 Install Python virtual environment using the following command:
 ```
 sudo pip3 install virtualenv 
@@ -121,7 +121,7 @@ To deactivate the virtual environment type the following command and hit enter:
 deactivate
 ```
 
-After creating the virtual environment, you need to install python packages from `requirements.txt` using the following commands:
+After creating the virtual environment, you need to install the python packages from `requirements.txt` using the following commands:
 
 ```
 pip install -U pip wheel setuptools 
@@ -164,7 +164,7 @@ python -m unittest discover --start-directory ./tests --top-level-directory .
 
 ## 2. Usage
 
-### 2.1 Quick start with primer command
+### 2.1 Quick start with the primer command
 To run the `primer` command with minimal configuration, you can follow the steps below to get started. 
 In the project directory there are example files you can use to run the `primer` command. 
 For example, you will need the test `fasta` file from `./examples` as follows:
@@ -481,7 +481,7 @@ LibAmp,STEQ_LibAmpR_3,2.056,1.0,CTTGGTGCTGCAGGTGAGG,44490403,44490421,60.97,63.1
 ```
 
 ### 3.6 Genomic Reference file
-A fasta file of latest GRCh38 genome. This is used for gathering the slice sequences and retrieving primer information. 
+A fasta file of the GRCh38 genome. This is used for gathering the slice sequences and retrieving primer information. 
 Either supply a local genome reference file or download one from EnsEMBL and point to it with the relevant parameters:
 http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/
 
@@ -534,7 +534,7 @@ Running full Designer Workflow:
 ./designer.sh design [-h] [--fasta SLICE_FASTA] [--primer3_params PRIMER_CONFIG_JSON]
 ```
 
-Example Command
+Example Command:
 ```sh
 ./designer.sh design --fasta examples/fasta_example.fa
 ```
@@ -611,7 +611,7 @@ A BED file containing the regions you wish to slice across.
 
 The chromosome column data must match your reference fasta file IDs. If your reference had >chr1 then you must call chromosome 1 'chr1' in this column and vice-versa.
 
-Note: BED effectively are applied tsv files so use tabs to separate the values. 
+**Note:** BED effectively are applied tsv files so use tabs to separate the values. 
 Headers are optional in the BED file and can be a cause of issues if they aren't perfect. 
 Strand is required for the slicer to ensure sequences are output in the correct orientation. 
 Score isn't used but the field must be present for the file format to be read correctly.
