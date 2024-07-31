@@ -500,10 +500,14 @@ gunzip Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
 
 ### 4.1 Git Hooks
 
-Located in  .githooks/
-Follows standard Git hook methodology: https://git-scm.com/docs/githooks
-Currently just "pre-push" that is run on ```git push```
-To run either invoke ```make``` or:
+The Git hooks are located in the `.githooks/` directory and follow the standard Git hook methodology as described in the [Git documentation](https://git-scm.com/docs/githooks).
+
+#### Current Hooks
+- **pre-push**: This hook is executed during `git push`.
+
+#### Running the Hooks
+To enable and run the Git hooks, you can either use the `make` command or manually configure and set permissions as follows:
+
 ```sh
 git config core.hooksPath .githooks
 chmod +x .githooks/*
