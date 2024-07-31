@@ -1,21 +1,21 @@
 # Primer Designer
 
-A standalone primer designer tool that takes a sequence of a target region of the genome (i.e., a targeton) 
+A standalone Primer Designer tool that takes a sequence of a target region of the genome (i.e., a targeton) 
 and identifies the appropriate LibAmp primers at both ends of the targeton. 
-The Primer3 Designer tool includes filtering and ranking of primers.
+The Primer Designer tool includes filtering and ranking of primers.
 
 ## Table of contents
 
 1. [Installation](#1-installation)
    1. [Clone Repository](#11-clone-repository)
    2. [Install Dependencies](#12-install-dependencies)
-   3. [Setup Environment](#13-setup-environment)
-      1. [Setting up Python Virtual Environment](#131-setting-up-python-virtual-environment)
+   3. [Setup Environment](#13-set-up-environment)
+      1. [Setting up Python Virtual Environment](#131-setting-up-a-python-virtual-environment)
       2. [Downloading kmer lists for primer generation](#132-downloading-kmer-lists-for-primer-generation)
       3. [Make the Designer Script Executable and Check Version](#133-make-the-designer-script-executable-and-check-version)
    4. [Running unit tests](#14-running-unit-tests)
 2. [Usage](#2-usage)
-   1. [Quick start with primer command](#21-quick-start-with-primer-command)
+   1. [Quick start with primer command](#21-quick-start-with-the-primer-command)
    2.  [Primer Designer Tool](#22-primer-designer-tool) 
        1. [Primer3 parameters config](#221-primer3-parameters-config)
        2. [Designer config](#222-designer-config)
@@ -100,7 +100,7 @@ Run
 sudo make install
 ```
 
-```make install``` installs dependencies and sets up environment for running primer designer commands.
+```make install``` installs dependencies and sets up environment for running Primer Designer commands.
 
 
 ##### 1.3.1 Setting up a Python Virtual Environment
@@ -349,7 +349,7 @@ CCGCGCTTCAAATTACTGAAGCCATTCTCACAAGCTCAACCCCAGGACACCAGGAAAAGGAGGAAACAGGCTGGGAGAGC
 Genomic locations of the primers and their names. Names are incremented from 0 and given F and R depending on whether they reflect the positive (5'-3') or negative (3'-5') strand, respectively. 
 See example showing the first 10 rows of the file.
 
-Note that all sample output files from the primer designer command (i.e., this BED file and the two following CSV files) 
+Note that all sample output files from the Primer Designer command (i.e., this BED file and the two following CSV files) 
 have been produced using the settings from the default config files and the FASTA file above.
 
 | chrom | chromStart | chromEnd | name           | score | strand |
