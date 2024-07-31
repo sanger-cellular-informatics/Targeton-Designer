@@ -90,16 +90,22 @@ Requirements:
 
 
 ##### Setting up Python Virtual Environment
-Install Python virtual environment using the following command:
+Create a Python virtual environment using the following command:
 ```
-sudo make setup-venv
+make create-venv
 ```
-
 Then, by using following command activate the virtual environment:
 
 ```
 source venv/bin/activate
 ```
+
+After activating the Python virtual environment, setup required Python dependencies using the following command:
+
+```
+make setup-venv
+```
+
 
 To deactivate virtual environment type the following command and hit enter:
 ```
@@ -140,7 +146,7 @@ python -m unittest discover --start-directory ./tests --top-level-directory .
 
 ## Usage
 ### Quick start with primer command
-To run the `primer` command with minimal configuration, you can follow the steps below to get started. In the project directory there are example files you use to run the `primer` command. For example you will need test `Fasta` file from `./examples` as follows:
+To run the `primer` command with minimal configuration, you can follow the steps below to get started. In the project directory there are example files you can use them to run the `primer` command. For example you will need an example `Fasta` file from `./examples` as follows:
 
 ```
 ./designer.sh primer --fasta ./examples/test_example_slice.fa

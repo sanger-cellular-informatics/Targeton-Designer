@@ -29,23 +29,17 @@ init: check-make
 install:
 	@echo "Installing..."
 	@apt-get update 
-	$(MAKE) install-build-essential
-	$(MAKE) install-bedtools
-	$(MAKE) install-python3.8-dev
-	$(MAKE) install-bedtools
-	$(MAKE) install-curl
 	
-
-install-build-essential:
-	@apt-get update 
 	@echo "Installing build-essential..."
 	@apt-get -y install build-essential
-
-
-install-bedtools:
-	@apt-get update 
+	
 	@echo "Installing bedtools..."
 	@apt-get -y install bedtools
+
+	@echo "Installing curl..."
+	@apt-get -y install curl
+
+	$(MAKE) install-python3.8-dev
 
 
 install-python3.8-dev:
@@ -70,11 +64,6 @@ install-python3.8-dev:
 	@python --version
 
 
-install-curl:
-	@apt-get update 
-	@echo "Installing curl..."
-	@apt-get -y install curl
-
 
 install-docker:
 	@echo "Installing docker..."
@@ -96,13 +85,14 @@ install-autopep8: venv/bin/activate
 	@echo "Installing autopep8..."
 	@./venv/bin/pip install autopep8
 
-venv/bin/activate:
+
+create-venv: 
 	@python -m venv venv
 
 setup-venv: venv/requirements_run
 
-venv/requirements_run: venv/bin/activate requirements.txt 
-	@apt-get install python3-setuptools
+venv/requirements_run:
+	@sudo apt-get install python3-setuptools
 	@./venv/bin/pip install --upgrade pip
 	@./venv/bin/pip install --upgrade pip setuptools wheel
 	@./venv/bin/pip install -r requirements.txt
