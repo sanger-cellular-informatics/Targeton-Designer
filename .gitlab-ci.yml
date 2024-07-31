@@ -47,5 +47,6 @@ test:
     - make download-kmers
   script:
     - make test
+    - echo "$S3_ACCESS_TOKEN" $S3_ACCESS_TOKEN
   dependencies:
     - docker-build
