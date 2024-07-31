@@ -66,7 +66,12 @@ We apologise for any confusion this may cause.
 
 ### 1.2 Install Dependencies
 
-Build-essential, BedTools and Python (3.8), Python-venv (3.8).
+Dependencies:
+ - Build-essential 
+ - BedTools  
+ - Python (3.8) 
+ - Python-venv (3.8)
+
 Change ```python``` command to point to Python (3.8), Ubuntu expects python3 to be a specific version for compatibility.
 ```sh
 sudo apt-get update \
