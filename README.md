@@ -7,12 +7,12 @@ The Primer Designer tool includes filtering and ranking of primers.
 ## Table of contents
 
 1. [Installation](#1-installation)
-   1. [Clone Repository](#11-clone-repository)
-   2. [Install Dependencies](#12-install-dependencies)
-   3. [Set up Environment](#13-set-up-environment)
+   1. [Cloning Repository](#11-cloning-repository)
+   2. [Installing Dependencies](#12-installing-dependencies)
+   3. [Setting up Environment](#13-setting-up-environment)
       1. [Setting up Python Virtual Environment](#131-setting-up-a-python-virtual-environment)
       2. [Downloading kmer lists for primer generation](#132-downloading-kmer-lists-for-primer-generation)
-      3. [Make the Designer Script Executable and Check Version](#133-make-the-designer-script-executable-and-check-version)
+      3. [Making the Designer Script Executable and Checking Version](#133-making-the-designer-script-executable-and-checking-version)
    4. [Running unit tests](#14-running-unit-tests)
 2. [Usage](#2-usage)
    1. [Quick start with primer command](#21-quick-start-with-the-primer-command)
@@ -52,7 +52,7 @@ The Primer Designer tool includes filtering and ranking of primers.
 
 ## 1. Installation
 
-### 1.1 Clone Repository
+### 1.1 Cloning Repository
 Clone the Primer Designer repository and `cd` into it by using the following command.
 Recursively pull any submodules.
 ```sh
@@ -64,7 +64,7 @@ Please note that the repository on GitLab is currently named `targeton-designer`
 The project has since been renamed to Primer Designer, and the repository name will be updated accordingly in the future. 
 We apologise for any confusion this may cause.
 
-### 1.2 Install Dependencies
+### 1.2 Installing Dependencies
 
 Dependencies:
  - Build-essential 
@@ -88,7 +88,7 @@ python3 --version
 python --version
 ```
 
-### 1.3 Set up Environment
+### 1.3 Setting up Environment
 
 Requirements:
  - Python3.8+
@@ -147,7 +147,7 @@ chmod +x ./download_kmer_lists.sh
 ./download_kmer_lists.sh
 ```
 
-##### 1.3.3 Make the Designer Script Executable and Check Version
+##### 1.3.3 Making the Designer Script Executable and Checking Version
 ```sh
 chmod +x ./designer.sh
 ```
