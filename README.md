@@ -72,7 +72,7 @@ Dependencies:
  - Python (3.8) 
  - Python-venv (3.8)
 
-Change ```python``` command to point to Python (3.8), Ubuntu expects python3 to be a specific version for compatibility.
+Change the ```python``` command to point to Python (3.8), as Ubuntu expects python3 to be a specific version for compatibility.
 ```sh
 sudo apt-get update \
 && sudo apt-get -y install build-essential bedtools python3.8-dev python3.8-venv \
