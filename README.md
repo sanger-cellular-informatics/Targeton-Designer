@@ -25,7 +25,7 @@ The Primer3 Designer tool includes filtering and ranking of primers.
        6. [Specifying column order through the designer config file](#226-specifying-column-order-through-the-designer-config-file)
        7. [Using the designer config file to set command-line arguments](#227-using-the-designer-config-file-to-set-command-line-arguments)
 3. [File formats](#3-file-formats)
-   1. [Primer3 and Designer Fasta Input File (Slicer Fasta output)](#31-primer3-and-designer-fasta-input-file-slicer-fasta-output) 
+   1. [Primer3 and Designer FASTA Input File (Slicer FASTA output)](#31-primer3-and-designer-fasta-input-file-slicer-fasta-output) 
    2. [Primer3 Output BED file](#32-primer3-output-bed-file) 
    3. [Primer3 Output CSV file](#33-primer3-output-csv-file) 
    4. [Primer3 Output Optimal Primer Pairs CSV file](#34-primer3-output-optimal-primer-pairs-csv-file) 
@@ -167,7 +167,7 @@ python -m unittest discover --start-directory ./tests --top-level-directory .
 ### 2.1 Quick start with the primer command
 To run the `primer` command with minimal configuration, you can follow the steps below to get started. 
 In the project directory there are example files you can use to run the `primer` command. 
-For example, you will need the test `fasta` file from `./examples` as follows:
+For example, you will need the test FASTA file from `./examples` as follows:
 
 ```
 ./designer.sh primer --fasta ./examples/test_example_slice.fa
@@ -335,7 +335,7 @@ Once you add the above configuration to `custom_config.json` file, you will be a
 
 File formats for data input and output files used by the Primer Designer Tool are listed and described with examples below.
 
-### 3.1 Primer3 and Designer Fasta Input File (Slicer Fasta output)
+### 3.1 Primer3 and Designer FASTA Input File (Slicer FASTA output)
 Contains the slice sequence, with its ID, coordinates and strand in the header.
 If multiple slices are provided in this file, only the first slice will be processed. 
 The remaining slices will be ignored, and the user will be notified.
@@ -481,7 +481,7 @@ LibAmp,STEQ_LibAmpR_3,2.056,1.0,CTTGGTGCTGCAGGTGAGG,44490403,44490421,60.97,63.1
 ```
 
 ### 3.6 Genomic Reference file
-A fasta file of the GRCh38 genome. This is used for gathering the slice sequences and retrieving primer information. 
+A FASTA file of the GRCh38 genome. This is used for gathering the slice sequences and retrieving primer information. 
 Either supply a local genome reference file or download one from EnsEMBL and point to it with the relevant parameters:
 http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/
 
@@ -609,7 +609,7 @@ Please note that some fields on Benchling will have to be updated manually for n
 #### 5.7.1 Slicer Input BED File
 A BED file containing the regions you wish to slice across. 
 
-The chromosome column data must match your reference fasta file IDs. If your reference had >chr1 then you must call chromosome 1 'chr1' in this column and vice-versa.
+The chromosome column data must match your reference FASTA file IDs. If your reference had >chr1 then you must call chromosome 1 'chr1' in this column and vice-versa.
 
 **Note:** BED effectively are applied tsv files so use tabs to separate the values. 
 Headers are optional in the BED file and can be a cause of issues if they aren't perfect. 
