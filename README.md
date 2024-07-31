@@ -15,16 +15,15 @@ The Primer3 Designer tool includes filtering and ranking of primers.
       3. [Make the Designer Script Executable and Check Version](#133-make-the-designer-script-executable-and-check-version)
    4. [Running unit tests](#14-running-unit-tests)
 2. [Usage](#2-usage)
-    1. [Quick start with primer command](#21-quick-start-with-primer-command)
-    2.  [Primer Designer Tool](#22-primer-designer-tool) 
-        1.  [Primer3 Runner](#221-primer3-runner)
-            1. [Primer3 parameters config](#2211-primer3-parameters-config)
-            2. [Designer config](#2212-designer-config)
-            3. [Running Primer3](#2213-running-primer3)
-            4. [Applying filters from the designer config file](#2214-applying-filters-from-the-designer-config-file)
-            5. [Applying ranking from the designer config file](#2215-applying-ranking-from-the-designer-config-file)
-            6. [Specifying column order through the designer config file](#2216-specifying-column-order-through-the-designer-config-file)
-            7. [Using the designer config file to set command-line arguments](#2217-using-the-designer-config-file-to-set-command-line-arguments)
+   1. [Quick start with primer command](#21-quick-start-with-primer-command)
+   2.  [Primer Designer Tool](#22-primer-designer-tool) 
+       1. [Primer3 parameters config](#221-primer3-parameters-config)
+       2. [Designer config](#222-designer-config)
+       3. [Running Primer3](#223-running-primer3)
+       4. [Applying filters from the designer config file](#224-applying-filters-from-the-designer-config-file)
+       5. [Applying ranking from the designer config file](#225-applying-ranking-from-the-designer-config-file)
+       6. [Specifying column order through the designer config file](#226-specifying-column-order-through-the-designer-config-file)
+       7. [Using the designer config file to set command-line arguments](#227-using-the-designer-config-file-to-set-command-line-arguments)
 3. [File formats](#3-file-formats)
    1. [Primer3 and Designer Fasta Input File (Slicer Fasta output)](#31-primer3-and-designer-fasta-input-file-slicer-fasta-output) 
    2. [Primer3 Output BED file](#32-primer3-output-bed-file) 
@@ -131,7 +130,7 @@ The `kmer` files are needed in the project root directory to run the `primer` co
 (see [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_KMERLIST_PATH)).
 
 1. Set config parameters (in your user-defined designer config file, see [below](
-#2212-designer-config))
+#222-designer-config))
 2. Provide 2 files with kmers: `homo_sapiens_11.list` and `homo_sapiens_16.list`
 
 These kmer lists can be downloaded using:
@@ -171,13 +170,11 @@ By running the above command, you will see output files are generated in the `td
 
 ### 2.2 Primer Designer Tool
 
-#### 2.2.1 Primer3 Runner
-
-Primer3 runner uses 2 types of config:
+Primer Designer uses 2 types of config:
 - Primer3 parameters config
 - Designer config
 
-##### 2.2.1.1 Primer3 parameters config
+##### 2.2.1 Primer3 parameters config
 
 This defines the configuration settings for Primer3 (see the [Primer3 Manual](https://primer3.org/manual.html) for more details).
 
@@ -187,14 +184,14 @@ This file contains the default configuration that will be applied if no user con
 To provide your own config parameters, please copy the default file into a new file, rename it, and edit it. 
 You can pass your own user Primer3 config file to the `primer` command using the  `--primer3_params` argument indicating the file path.
 
-##### 2.2.1.2 Designer config
+##### 2.2.2 Designer config
 
 This specifies parameters specific to the Primer Designer tool. You can specify:
 1. A vector of different stringencies to be applied when running Primer3,
 2. Any filters that should be applied to the list of primer pairs provided by Primer3 (see [below](
-#2214-applying-filters-from-the-designer-config-file)),
+#224-applying-filters-from-the-designer-config-file)),
 3. The order in which primer pairs should be ranked in the output CSV files (see [below](
-#2215-applying-ranking-from-the-designer-config-file)),
+#225-applying-ranking-from-the-designer-config-file)),
 4. The column order for the output CSV files.
 
 Note that, in the Designer config, `stringency_vector` corresponds to 'PRIMER_MASK_FAILURE_RATE' in the [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_FAILURE_RATE). 
@@ -207,7 +204,7 @@ This file contains the default configuration that will be applied if no user con
  You can pass your own user designer config file to the `primer` command using the  `--conf` argument indicating the file path. 
  For any fields missing in the user-defined config file, the default settings from `config/default_designer.config.json` will be applied.
 
-##### 2.2.1.3 Running Primer3
+##### 2.2.3 Running Primer3
 
 ```sh
 ./designer.sh primer [--fasta SLICE_FASTA] [--dir OUTPUT_FOLDER] [--primer3_params PRIMER_CONFIG_JSON] [--conf DESIGNER_CONFIG_JSON]
@@ -218,11 +215,11 @@ Example command:
 ./designer.sh primer --fasta slice.fa --dir p3_output
 ```
 
-##### 2.2.1.4 Applying filters from the designer config file
+##### 2.2.4 Applying filters from the designer config file
 
 You can set your own filtering parameters using your user designer config file (see [above](
-#2212-designer-config)).
- * The `duplicates` filter will discard any duplicated primer pairs that have an equivalent pair with a lower primer mask failure rate (see [above](#2212-designer-config)).
+#222-designer-config)).
+ * The `duplicates` filter will discard any duplicated primer pairs that have an equivalent pair with a lower primer mask failure rate (see [above](#222-designer-config)).
  * The `HAP1_variant` filter will discard all primer pairs with at least one primer containing SNPs (variants) that differ between the HAP1 genome and the GRCh38 reference genome.
  These filters can be turned on (`true`) or off (`false`) as follows:
 
@@ -243,10 +240,10 @@ If no user config file is passed, then the default `config/default_designer.conf
 If a user config file is passed, but it does not contain a `filters` key, then the filters from `config/default_designer.config.json` will be applied. 
 If the user config file contains a `filters` key and no filters are defined, i.e. `"filters": {},`, then the `duplicates` filter will be applied by default.
 
-##### 2.2.1.5 Applying ranking from the designer config file
+##### 2.2.5 Applying ranking from the designer config file
 
 You can set your own ranking parameters using your user designer config file (see [above](
-#2212-designer-config)). Ranking parameters can be turned on (`true`) or off (`false`) as follows:
+#222-designer-config)). Ranking parameters can be turned on (`true`) or off (`false`) as follows:
 
 ```
 {
@@ -267,7 +264,7 @@ If a name is missing, it will not be used for ranking. If no user config file is
 If a user config file is passed, but it does not contain a `ranking` key, then the ranking parameters from `config/default_designer.config.json` will be applied. 
 If the user config file contains a `ranking` key and no ranking is defined, i.e. `"ranking": {},`, no ranking will be applied.
 
-##### 2.2.1.6 Specifying column order through the designer config file
+##### 2.2.6 Specifying column order through the designer config file
 
 Column order can be specified through the user designer config file:
 
@@ -296,7 +293,7 @@ Column order can be specified through the user designer config file:
 
 All available columns are indicated in the example above. Note that any columns with names missing in the user designer config file will not be present in the output CSV files.
 
-##### 2.2.1.7 Using the designer config file to set command-line arguments
+##### 2.2.7 Using the designer config file to set command-line arguments
 
 Command-line arguments (`--dir`, `--fasta`, and `--primer3_params`) can, alternatively, be specified in the user designer config file. 
 Note that, as no command line arguments are specified in `config/default_designer.config.json`, 
