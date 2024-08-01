@@ -24,56 +24,46 @@ DOCKER_IMAGE_NAME ?= ${DOCKER_REPO}/${DOCKER_NAME}:${DOCKER_TAG}
 init: check-make
 	git config core.hooksPath .githooks
 	chmod +x .githooks/*
-	
+
 
 install:
 	@echo "Installing..."
 	@apt-get update 
-	@if [ "$(shell which build-essential)" = "" ]; then
-		$(MAKE) install-build-essential;
-	fi
-	@if [ "$(shell which bedtools)" = "" ]; then
-		$(MAKE) install-bedtools;
-	fi
-	@if [ "$(shell which python3.8-dev)" = "" ]; then
-		$(MAKE) install-python3.8-dev;
-	fi
-	@if [ "$(shell which curl)" = "" ]; then
-		$(MAKE) install-curl;
-	fi
-
-install-bedtools:
+	
+	@echo "Installing build-essential..."
+	@apt-get -y install build-essential
+	
 	@echo "Installing bedtools..."
 	@apt-get -y install bedtools
 
-install-build-essential:
-	@echo "Installing build-essential..."
-	@apt-get -y install build-essential git
+	@echo "Installing curl..."
+	@apt-get -y install curl
+
+	$(MAKE) install-python3.8-dev
 
 
 install-python3.8-dev:
-	@if [ "$(shell which python3)" = "" ]; then
-		# Python3 not installed.
-		@echo "Installing python3.8-dev..."
-		@apt-get -y install python3.8-dev
-	else
-		@PYTHONPATH = which python
-		@ver=$$(python3 -V 2>&1 | sed 's/.* \([0-9]\).\([0-9]\).*/\1\2/')
-		@if [ "$$ver" -eq 38 ]; then
-			PYTHONPATH38 = which python3
-		else
-			@echo "Installing python3.8-dev..."
-			@apt-get -y install python3.8-dev
-			PYTHONPATH38 = which python3.8
-		fi
-		@update-alternatives --install ${PYTHONPATH} python ${PYTHONPATH38} 2 
-		@update-alternatives --config python 
-	fi
+	@echo "Installing python3.8-dev..."
+	@apt-get -y install python3.8-dev
+	
+	@echo "Install Python Virtual Env..."
+	@apt-get install python3.8-venv
+	
+	PYTHONPATH = /usr/bin/python
+	PYTHONPATH38 = /usr/bin/python3.8
+	
+	@echo "Updating python alternatives list..."
+	@update-alternatives --install $(PYTHONPATH) python $(PYTHONPATH38) 2
+	@update-alternatives --config python
+	
+	@echo "Installing Python3 pip..."
+	@apt-get install python3-pip
 
-install-sudo:
-	@echo "Installing sudo..."
-	@apt-get update
-	@apt-get -y install sudo
+	@echo "Updated Python version:"
+	@python3 --version
+	@python --version
+
+
 
 install-docker:
 	@echo "Installing docker..."
@@ -83,32 +73,32 @@ install-docker:
 	@usermod -aG docker $$USER
 	@newgrp docker
 
-install-curl:
-	@echo "Installing curl..."
-	apt-get -y install curl
-
-install-make:
-	@echo "Installing make..."
-	apt-get -y install make
 
 check-make:
-	@MAKE_VERSION = $$(make --version | grep '^GNU Make' | sed 's/^.* //g')
-	if (( $(echo "3.82 > $$MAKE_VERSION" |bc -l) )); then
-	echo "make version = ${MAKE_VERSION}, minimum version 3.82 required for multiline."
-		$(MAKE) install-make
+	@MAKE_VERSION=$$(make --version | grep '^GNU Make' | sed 's/^.* //g');
+	echo "Detected make version: $$MAKE_VERSION";
+	if (( $$(echo "$$MAKE_VERSION < 3.82" | bc -l) )); then
+		echo "make version = $$MAKE_VERSION, minimum version 3.82 required for multiline.";
 	fi
 
 install-autopep8: venv/bin/activate
 	@echo "Installing autopep8..."
 	@./venv/bin/pip install autopep8
 
-venv/bin/activate:
+
+create-venv: 
 	@python -m venv venv
 
 setup-venv: venv/requirements_run
 
-venv/requirements_run: venv/bin/activate requirements.txt 
-	@apt-get install python3-setuptools
+venv/requirements_run: 
+	# In docker image if venv is not present it will create a venv and then
+	# followed by pip install commands below.
+	@if [ ! -d "venv/bin/" ]; then \
+		echo "Creating Virtual Env..."; \
+		python -m venv venv; \
+	fi
+	@sudo apt-get install python3-setuptools
 	@./venv/bin/pip install --upgrade pip
 	@./venv/bin/pip install --upgrade pip setuptools wheel
 	@./venv/bin/pip install -r requirements.txt
