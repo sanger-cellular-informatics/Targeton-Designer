@@ -91,7 +91,13 @@ create-venv:
 
 setup-venv: venv/requirements_run
 
-venv/requirements_run:
+venv/requirements_run: 
+	# In docker image if venv is not present it will create a venv and then
+	# followed by pip install commands below.
+	@if [ ! -d "venv/bin/" ]; then \
+		echo "Creating Virtual Env..."; \
+		python -m venv venv; \
+	fi
 	@sudo apt-get install python3-setuptools
 	@./venv/bin/pip install --upgrade pip
 	@./venv/bin/pip install --upgrade pip setuptools wheel

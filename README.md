@@ -100,14 +100,14 @@ Then, by using following command activate the virtual environment:
 source venv/bin/activate
 ```
 
-After activating the Python virtual environment, setup required Python dependencies using the following command:
+After activating the Python virtual environment, setup the required Python dependencies using the following command:
 
 ```
 make setup-venv
 ```
 
 
-To deactivate virtual environment type the following command and hit enter:
+If you want to deactivate the virtual environment, type the following command and hit enter:
 ```
 deactivate
 ```
