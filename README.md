@@ -4,6 +4,20 @@ A standalone primer designer tool that takes a sequence of a target region of th
 
 ## Table of contents
 
+<ol>
+  <li><a href="#installation">Installation</a>
+    <ol>
+      <li><a href="#clone-repository">Clone Repository</a></li>
+      <li><a href="#install-dependencies">Install Dependencies</a></li>
+      <li><a href="#setup-environment">Setup Environment</a>
+        <ol>
+          <li><a href="#setting-up-python-virtual-environment">Setting up Python Virtual Environment</a></li>
+        </ol>
+      </li>
+    </ol>
+  </li>
+</ol>
+
 - [Installation](#installation)
   - [Clone Repository](#clone-repository)
   - [Install Dependencies](#install-dependencies)
