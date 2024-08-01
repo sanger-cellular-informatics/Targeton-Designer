@@ -10,7 +10,7 @@ The Primer Designer tool includes filtering and ranking of primers.
    1. [Cloning Repository](#11-cloning-repository)
    2. [Installing Dependencies](#12-installing-dependencies)
    3. [Setting up Environment](#13-setting-up-environment)
-      1. [Setting up Python Virtual Environment](#131-setting-up-a-python-virtual-environment)
+      1. [Setting up a Python Virtual Environment](#131-setting-up-a-python-virtual-environment)
       2. [Downloading kmer lists for primer generation](#132-downloading-kmer-lists-for-primer-generation)
       3. [Making the Designer Script Executable and Checking Version](#133-making-the-designer-script-executable-and-checking-version)
    4. [Running unit tests](#14-running-unit-tests)
