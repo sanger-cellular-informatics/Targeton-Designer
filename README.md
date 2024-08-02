@@ -132,7 +132,7 @@ pip install -r sge-primer-scoring/requirements.txt
 ##### 1.3.2 Downloading kmer lists for primer generation
 
 If masking is desired during the design of primers, kmer files will be required by the Primer3 masker function (see [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_TEMPLATE)). You will need to:
-f
+
 1. Set config parameters for masking (in your user-defined Primer3 config file, see [below](#primer3-config))
 2. Provide two kmer files: `homo_sapiens_11.list` and `homo_sapiens_16.list`
 
