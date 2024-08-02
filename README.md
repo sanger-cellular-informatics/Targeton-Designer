@@ -137,6 +137,7 @@ Check Designer Version:
 ```sh
 python -m unittest discover --start-directory ./tests --top-level-directory .
 ```
+Please note that, while the Primer Designer tool can be used without masking (and thus without kmers), one integration test will fail if the kmer lists are missing.
 
 ## Usage
 ### Quick start with primer command
@@ -173,7 +174,7 @@ This specifies parameters specific to the Primer Designer tool. You can specify:
 #applying-ranking-from-the-designer-config-file)),
 4. The column order for the output CSV files.
 
-Note that, in the Designer config, `stringency_vector` corresponds to 'PRIMER_MASK_FAILURE_RATE' in the [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_FAILURE_RATE). This means that a value of 0.1 will apply more stringent settings for the masking algorithm than a value of 1.
+Note that, in the Designer config, `stringency_vector` corresponds to 'PRIMER_MASK_FAILURE_RATE' in the [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_FAILURE_RATE). This means that a value of 0.1 will apply more stringent settings for the masking algorithm than a value of 1. Please also note that, when PRIMER_MASK_TEMPLATE is off,  we recommendd setting the `stringency_vector` to a single "dummy" value (as the `stringency_vector` is currently a mandatory field that always needs to be passed).
 
 The default configuration can be found in `config/default_designer.config.json` (which should NOT be moved, deleted or edited). This file contains the default configuration that will be applied if no user config file is provided.
 
