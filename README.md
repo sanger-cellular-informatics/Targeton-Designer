@@ -132,7 +132,7 @@ pip install -r sge-primer-scoring/requirements.txt
 ##### 1.3.2 Downloading kmer lists for primer generation
 
 If masking is desired during the design of primers, kmer files will be required by the Primer3 masker function (see [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_TEMPLATE)). You will need to:
-
+f
 1. Set config parameters for masking (in your user-defined Primer3 config file, see [below](#primer3-config))
 2. Provide two kmer files: `homo_sapiens_11.list` and `homo_sapiens_16.list`
 
@@ -198,7 +198,7 @@ This specifies parameters specific to the Primer Designer tool. You can specify:
 #225-applying-ranking-from-the-designer-config-file)),
 4. The column order for the output CSV files.
 
-Note that, in the Designer config, `stringency_vector` corresponds to 'PRIMER_MASK_FAILURE_RATE' in the [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_FAILURE_RATE). This means that a value of 0.1 will apply more stringent settings for the masking algorithm than a value of 1. Please also note that, when PRIMER_MASK_TEMPLATE is off,  we recommendd setting the `stringency_vector` to a single "dummy" value (as the `stringency_vector` is currently a mandatory field that always needs to be passed).
+Note that, in the Designer config, `stringency_vector` corresponds to 'PRIMER_MASK_FAILURE_RATE' in the [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_FAILURE_RATE). This means that a value of 0.1 will apply more stringent settings for the masking algorithm than a value of 1. Please also note that, when PRIMER_MASK_TEMPLATE is off,  we recommend setting the `stringency_vector` to a single "dummy" value (as the `stringency_vector` is currently a mandatory field that always needs to be passed).
 
 The default configuration can be found in `config/default_designer.config.json` (which should NOT be moved, deleted or edited). 
 This file contains the default configuration that will be applied if no user config file is provided.
