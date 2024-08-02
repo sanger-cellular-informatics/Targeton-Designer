@@ -48,17 +48,17 @@ install:
 
 install-python3.8-dev:
 	@echo "Installing python3.8-dev..."
-	@sudo apt-get -y install python3.8-dev
+	@sudo apt-get install --yes python3.8-dev
 	
 	@echo "Install Python Virtual Env..."
-	@sudo apt-get install python3.8-venv
+	@sudo apt-get install --yes python3.8-venv
 	
 	@echo "Updating python alternatives list..."
 	@update-alternatives --install $(PYTHONPATH) python $(PYTHONPATH38) 2
 	@update-alternatives --config python
 	
 	@echo "Installing Python3 pip..."
-	@apt-get install python3-pip
+	@apt-get install --yes python3-pip
 
 	@echo "Updated Python version:"
 	@python3 --version
@@ -90,15 +90,16 @@ install-autopep8: venv/bin/activate
 create-venv: 
 	@python -m venv venv
 
-setup-venv: venv/requirements_run
 
-venv/requirements_run: 
-	# In docker image if venv is not present it will create a venv and then
-	# followed by pip install commands below.
+check-venv:
+# In docker image if venv is not present it will create a venv and then
+# followed by pip install commands below.
 	@if [ ! -d "venv/bin/" ]; then \
 		echo "Creating Virtual Env..."; \
 		python -m venv venv; \
 	fi
+
+setup-venv: check-venv
 	@sudo apt-get install python3-setuptools
 	@./venv/bin/pip install --upgrade pip
 	@./venv/bin/pip install --upgrade pip setuptools wheel
@@ -106,6 +107,7 @@ venv/requirements_run:
 	@./venv/bin/pip install -r sge-primer-scoring/requirements.txt
 	@echo "Python requirements installed."
 	@touch venv/requirements_run
+	
 
 clean-venv/requirements_run:
 	@rm -f venv/requirements_run
