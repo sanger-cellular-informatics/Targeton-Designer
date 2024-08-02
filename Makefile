@@ -4,6 +4,10 @@ SHELL := /bin/bash
 
 VENV = venv
 PYTHON = $(VENV)/bin/python
+
+PYTHONPATH ?= /usr/bin/python
+PYTHONPATH38 ?= /usr/bin/python3.8
+
 PIP = $(VENV)/bin/pip
 ENVIRONMENTAL_VARIABLE_FILE := .env
 
@@ -44,13 +48,10 @@ install:
 
 install-python3.8-dev:
 	@echo "Installing python3.8-dev..."
-	@apt-get -y install python3.8-dev
+	@sudo apt-get -y install python3.8-dev
 	
 	@echo "Install Python Virtual Env..."
-	@apt-get install python3.8-venv
-	
-	PYTHONPATH = /usr/bin/python
-	PYTHONPATH38 = /usr/bin/python3.8
+	@sudo apt-get install python3.8-venv
 	
 	@echo "Updating python alternatives list..."
 	@update-alternatives --install $(PYTHONPATH) python $(PYTHONPATH38) 2
