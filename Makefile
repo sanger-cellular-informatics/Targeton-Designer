@@ -110,7 +110,6 @@ setup-venv: create-venv check-venv
 	@./venv/bin/pip install -r requirements.txt
 	@./venv/bin/pip install -r sge-primer-scoring/requirements.txt
 	@echo "Python requirements installed."
-	@touch venv/requirements_run
 
 	
 test: setup-venv
