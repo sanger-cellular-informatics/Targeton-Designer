@@ -98,14 +98,6 @@ create-venv:
 	@python -m venv venv
 
 
-check-venv:
-# In docker image if venv is not present it will create a venv and then
-# followed by pip install commands below.
-	@if [ ! -d "venv/bin/" ]; then \
-		echo "Creating Virtual Env..."; \
-		python -m venv venv; \
-	fi
-
 setup-venv:
 	@./venv/bin/pip install --upgrade pip
 	@./venv/bin/pip install --upgrade pip setuptools wheel
