@@ -44,14 +44,15 @@ install:
 	@apt-get -y install curl
 
 	$(MAKE) install-python3.8-dev
+	$(MAKE) install-python-setuptools
 
 
 install-python3.8-dev:
 	@echo "Installing python3.8-dev..."
-	@sudo apt-get install --yes python3.8-dev
+	@apt-get install --yes python3.8-dev
 	
 	@echo "Install Python Virtual Env..."
-	@sudo apt-get install --yes python3.8-venv
+	@apt-get install --yes python3.8-venv
 	
 	@echo "Updating python alternatives list..."
 	@update-alternatives --install $(PYTHONPATH) python $(PYTHONPATH38) 2
@@ -63,6 +64,12 @@ install-python3.8-dev:
 	@echo "Updated Python version:"
 	@python3 --version
 	@python --version
+
+
+
+install-python-setuptools:
+	@echo "Installing Python Setup Tools..."
+	@apt-get install python3-setuptools
 
 
 
@@ -99,21 +106,13 @@ check-venv:
 		python -m venv venv; \
 	fi
 
-setup-venv: check-venv
-	@sudo apt-get install python3-setuptools
+setup-venv:
 	@./venv/bin/pip install --upgrade pip
 	@./venv/bin/pip install --upgrade pip setuptools wheel
 	@./venv/bin/pip install -r requirements.txt
 	@./venv/bin/pip install -r sge-primer-scoring/requirements.txt
 	@echo "Python requirements installed."
-	@touch venv/requirements_run
 	
-
-clean-venv/requirements_run:
-	@rm -f venv/requirements_run
-
-clean-venv:
-	@rm -rf venv
 	
 test: setup-venv
 	@. venv/bin/activate

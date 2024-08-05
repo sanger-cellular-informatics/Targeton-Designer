@@ -131,19 +131,13 @@ After activating the Python virtual environment, setup the required Python depen
 make setup-venv
 ```
 
+##### How to deactivate Python Virtual Environment?
 
-If you want to deactivate the virtual environment, type the following command and hit enter:
+To deactivate the virtual environment, type the following command and hit enter:
 ```
 deactivate
 ```
 
-After creating the virtual environment, you need to install the python packages from `requirements.txt` using the following commands:
-
-```
-pip install -U pip wheel setuptools 
-pip install -r requirements.txt
-pip install -r sge-primer-scoring/requirements.txt
-```
 
 ##### 1.3.2 Downloading kmer lists for primer generation
 
