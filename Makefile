@@ -98,11 +98,17 @@ create-venv:
 	@python -m venv venv
 
 
-setup-venv:
-	@./venv/bin/pip install --upgrade pip
-	@./venv/bin/pip install --upgrade pip setuptools wheel
-	@./venv/bin/pip install -r requirements.txt
-	@./venv/bin/pip install -r sge-primer-scoring/requirements.txt
+check-venv:
+	@if [ ! -d "venv/bin/" ]; then \
+		echo "Creating Virtual Env..."; \
+		python -m venv venv; \
+	fi
+
+setup-venv: check-venv
+	@pip install --upgrade pip
+	@pip install --upgrade pip setuptools wheel
+	@pip install -r requirements.txt
+	@pip install -r sge-primer-scoring/requirements.txt
 	@echo "Python requirements installed."
 	
 	
