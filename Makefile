@@ -49,17 +49,17 @@ install:
 
 install-python3.8-dev:
 	@echo "Installing python3.8-dev..."
-	@apt-get install --yes python3.8-dev
+	@apt-get install -y python3.8-dev
 	
 	@echo "Install Python Virtual Env..."
-	@apt-get install --yes python3.8-venv
+	@apt-get install -y python3.8-venv
 	
 	@echo "Updating python alternatives list..."
 	@update-alternatives --install $(PYTHONPATH) python $(PYTHONPATH38) 2
 	@update-alternatives --config python
 	
 	@echo "Installing Python3 pip..."
-	@apt-get install --yes python3-pip
+	@apt-get install -y python3-pip
 
 	@echo "Updated Python version:"
 	@python3 --version
@@ -87,6 +87,7 @@ check-make:
 	echo "Detected make version: $$MAKE_VERSION";
 	if (( $$(echo "$$MAKE_VERSION < 3.82" | bc -l) )); then
 		echo "make version = $$MAKE_VERSION, minimum version 3.82 required for multiline.";
+		sudo apt install make;
 	fi
 
 install-autopep8: venv/bin/activate
@@ -95,13 +96,14 @@ install-autopep8: venv/bin/activate
 
 
 create-venv: 
+	@echo "Creating Virtual Env..."
 	@python -m venv venv
 
 
 check-venv:
 	@if [ ! -d "venv/bin/" ]; then \
 		echo "Creating Virtual Env..."; \
-		python -m venv venv; \
+		create-venv; \
 	fi
 
 setup-venv: create-venv check-venv 

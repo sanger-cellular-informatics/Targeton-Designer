@@ -78,7 +78,7 @@ If you see `GNU Make x.x`, then you have installed `make` command on your instan
 sudo apt install make
 ```
 
-You can also check the `make` command required version for installing essential dependencies for Primer3 Designer Tool using the following command:
+You can also check the required version of the `make` command used for installing essential dependencies for Primer3 Designer Tool using the following command:
 
 ```
 make check-make
@@ -113,7 +113,6 @@ sudo make install
 
 
 ##### 1.3.1 Setting up a Python Virtual Environment
-Install Python virtual environment using the following command:
 ##### Setting up Python Virtual Environment
 Create a Python virtual environment using the following command:
 ```
