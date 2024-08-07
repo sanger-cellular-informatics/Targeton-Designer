@@ -103,7 +103,7 @@ create-venv:
 check-venv:
 	@if [ ! -d "venv/bin/" ]; then \
 		echo "Creating Virtual Env..."; \
-		create-venv; \
+		python -m venv venv; \
 	fi
 
 setup-venv: create-venv check-venv 

@@ -113,7 +113,7 @@ sudo make install
 
 
 ##### 1.3.1 Setting up a Python Virtual Environment
-##### Setting up Python Virtual Environment
+
 Create a Python virtual environment using the following command:
 ```
 make create-venv
