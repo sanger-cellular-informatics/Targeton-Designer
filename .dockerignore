@@ -6,4 +6,6 @@
 .gitignore
 .gitlab-ci.yml
 .gitmodules
+.dockerignore
 docker-compose.yml
+Dockerfile

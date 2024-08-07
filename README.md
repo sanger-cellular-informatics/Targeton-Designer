@@ -705,3 +705,52 @@ This consistency arises because the `design` command workflow follows the same p
 ## 6. Upcoming releases
 
 Docker image in upcoming feature in later release.
+
+
+#### Running Primer Designer Tool in Docker Container
+
+The Primer Desginer Tool can be run inside a Docker container by creating a Docker image and volumes. To create the Primer Designer Tool Docker image, follow the steps below:
+
+##### Step 1: Build Docker Image
+
+To build a docker image for Primer Designer Tool follow the command below:
+
+```sh
+docker build -t <docker_image_name> .
+```
+
+Note: Remember to be in your project root directory. Dot (`.`) in above docker command represents current working directory, that is where your `Dockerfile` resides.  
+
+##### Step 2: Create a volume
+
+Create a `volume` for data generated inside a Docker container so we can have a persistent data container from which we can copy the data from the container to our local machine. To create the `volume`, follow the command below. Remember to be in your project root directory while creating the `volume`. :
+
+```sh
+docker volume create <your_volume_name>
+```
+
+##### Step 3: Make docker_run file executable
+Once you create the volume make the `./docker_run.sh` file executable using the following command:
+
+```sh
+chmod +x docker_run.sh
+```
+
+##### Step 4: Run Docker Container
+
+To run the docker image we use `./docker_run.sh` shell script. The following command shows how to run docker container: 
+
+**Usage**
+
+```sh
+./docker_run.sh -v <your_volume_name> -c <docker_image_name>
+```
+
+The `./docker_run.sh` script takes two arguments with flags and they are as follows:
+
+```sh
+-v for specifying volume you created in step 2
+-c for specifiying container name created in step 1
+```
+
+After running the command, you will be directed to an interactive Docker container shell where you can run Primer Designer Tool commands.
