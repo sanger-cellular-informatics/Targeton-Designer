@@ -66,21 +66,30 @@ We apologise for any confusion this may cause.
 
 ### 1.2 Installing Dependencies
 
-Dependencies:
- - Build-essential 
- - BedTools  
- - Python (3.8) 
- - Python-venv (3.8)
+Before we install dependencies, check `make` command is installed on your instance needed. To check, run the following command:
 
-Change the ```python``` command to point to Python (3.8), as Ubuntu expects python3 to be a specific version for compatibility.
-```sh
-sudo apt-get update \
-&& sudo apt-get -y install build-essential bedtools python3.8-dev python3.8-venv \
-&& sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.8 2  \
-&& sudo update-alternatives --config python \
-&& sudo apt-get install python3-pip \
-&& sudo apt install make
 ```
+make --version
+```
+
+
+If you see `GNU Make x.x`, then you have installed `make` command on your instance. If not run the following:
+```
+sudo apt install make
+```
+
+You can also check the required version of the `make` command used for installing essential dependencies for Primer3 Designer Tool using the following command:
+
+```
+make check-make
+```
+
+Once, you have `make` command installed you can start installing dependencies such as Build-essential, Bedtools and Python (3.8), Python Virtual Environment and changing ```python``` command to point to Python (3.8), Ubuntu expects Python3 to be a specific version for compatibility. To install all required dependencies run the following command:
+
+```
+sudo make install
+```
+
 
 Check the Python3 (base) and Python (updated) versions.
 ```sh
@@ -104,41 +113,37 @@ sudo make install
 
 
 ##### 1.3.1 Setting up a Python Virtual Environment
-Install Python virtual environment using the following command:
-```
-sudo pip3 install virtualenv 
-```
 
-Then, by using the following command, create a virtual environment and activate it:
+Create a Python virtual environment using the following command:
+```
+make create-venv
+```
+Then, by using following command activate the virtual environment:
 
 ```
-python -m venv venv
 source venv/bin/activate
 ```
 
-To deactivate the virtual environment type the following command and hit enter:
+After activating the Python virtual environment, setup the required Python dependencies using the following command:
+
+```
+make setup-venv
+```
+
+##### How to deactivate Python Virtual Environment?
+
+To deactivate the virtual environment, type the following command and hit enter:
 ```
 deactivate
 ```
 
-After creating the virtual environment, you need to install the python packages from `requirements.txt` using the following commands:
-
-```
-pip install -U pip wheel setuptools 
-pip install -r requirements.txt
-pip install -r sge-primer-scoring/requirements.txt
-```
 
 ##### 1.3.2 Downloading kmer lists for primer generation
 
-`kmer` files are required in order to use the Primer3 masker function, which prevents the design of primers using repetitive template regions.
+If masking is used during the design of primers, kmer files will be required by the Primer3 masker function (see [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_TEMPLATE)). You will need to:
 
-The `kmer` files are needed in the project root directory to run the `primer` command and to run the unit tests. 
-(see [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_KMERLIST_PATH)).
-
-1. Set config parameters (in your user-defined designer config file, see [below](
-#222-designer-config))
-2. Provide 2 files with kmers: `homo_sapiens_11.list` and `homo_sapiens_16.list`
+1. Set config parameters for masking (in your user-defined Primer3 config file, see [below](#primer3-config))
+2. Provide two kmer files: `homo_sapiens_11.list` and `homo_sapiens_16.list`
 
 These kmer lists can be downloaded using:
 
@@ -161,6 +166,7 @@ Check the Designer Version:
 ```sh
 python -m unittest discover --start-directory ./tests --top-level-directory .
 ```
+Please note that, while the Primer Designer tool can be used without masking (and thus without kmers), one integration test will fail if the kmer lists are missing.
 
 ## 2. Usage
 
@@ -201,8 +207,7 @@ This specifies parameters specific to the Primer Designer tool. You can specify:
 #225-applying-ranking-from-the-designer-config-file)),
 4. The column order for the output CSV files.
 
-Note that, in the Designer config, `stringency_vector` corresponds to 'PRIMER_MASK_FAILURE_RATE' in the [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_FAILURE_RATE). 
-This means that a value of 0.1 will apply more stringent settings for the masking algorithm than a value of 1.
+Note that, in the Designer config, `stringency_vector` corresponds to 'PRIMER_MASK_FAILURE_RATE' in the [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_FAILURE_RATE). This means that a value of 0.1 will apply more stringent settings for the masking algorithm than a value of 1. Please also note that, when PRIMER_MASK_TEMPLATE is off,  we recommend setting the `stringency_vector` to a single "dummy" value, e.g., `"stringency_vector": [1]` (as the `stringency_vector` is currently a mandatory field that always needs to be passed).
 
 The default configuration can be found in `config/default_designer.config.json` (which should NOT be moved, deleted or edited). 
 This file contains the default configuration that will be applied if no user config file is provided.
