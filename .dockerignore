@@ -1,0 +1,9 @@
+*.md
+/venv
+/.githooks
+/td_output
+/kmer
+.gitignore
+.gitlab-ci.yml
+.gitmodules
+docker-compose.yml
