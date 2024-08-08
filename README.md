@@ -707,7 +707,7 @@ This consistency arises because the `design` command workflow follows the same p
 Docker image in upcoming feature in later release.
 
 
-#### Running Primer Designer Tool in Docker Container
+#### Running Primer Designer Tool with Docker
 
 The Primer Desginer Tool can be run inside a Docker container by creating a Docker image and volumes. To create the Primer Designer Tool Docker image, follow the steps below:
 
@@ -719,14 +719,14 @@ To build a docker image for Primer Designer Tool follow the command below:
 docker build -t <docker_image_name> .
 ```
 
-Note: Remember to be in your project root directory. Dot (`.`) in above docker command represents current working directory, that is where your `Dockerfile` resides.  
+Note: Remember to be in the project root directory. Dot (`.`) in above docker command represents current working directory, that is where your `Dockerfile` resides. Or you could use `-f` to specify path to Dockerfile.  
 
-##### Step 2: Create a volume
+##### Step 2: Create a local volume
 
-Create a `volume` for data generated inside a Docker container so we can have a persistent data container from which we can copy the data from the container to our local machine. To create the `volume`, follow the command below. Remember to be in your project root directory while creating the `volume`. :
+Create a local `volume` directory for data generated inside a Docker container so we can have a persistent data container from which we can copy the data from the container to our local(host) machine. To create the `volume`, follow the command below. Remember create the local volume directory in the project root directory while creating the `volume`. :
 
 ```sh
-docker volume create <your_volume_name>
+mkdir <preferred_local_volume_name>
 ```
 
 ##### Step 3: Make docker_run file executable
@@ -743,14 +743,12 @@ To run the docker image we use `./docker_run.sh` shell script. The following com
 **Usage**
 
 ```sh
-./docker_run.sh -v <your_volume_name> -c <docker_image_name>
+./docker_run.sh --vol <preferred_local_volume_name> --img <docker_image_name>
 ```
 
 The `./docker_run.sh` script takes two arguments with flags and they are as follows:
 
-```sh
--v for specifying volume you created in step 2
--c for specifiying container name created in step 1
-```
+`--vol` for specifiying local volume name creatd in [step 2](#step-2-create-a-local-volume)
+`--img` for specifiying container name created in [step 1](#step-1-build-docker-image)
 
 After running the command, you will be directed to an interactive Docker container shell where you can run Primer Designer Tool commands.

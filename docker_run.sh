@@ -1,37 +1,41 @@
 #!/bin/bash
 
+# Function to display usage information
 usage() {
-  echo "Usage: $0 -v <volume_name> -c <container_name>"
+  echo "Usage: $0 --vol <volume_name> --img <image_name>"
   exit 1
 }
 
-vol_name=""
-container_name=""
+# Initialize variables
+pd_vol=""
+image_name=""
 
-while getopts ":v:c:" opt; do
-  case ${opt} in
-    v )
-      vol_name=$OPTARG
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --vol)
+      pd_vol="$2"
+      shift 2
       ;;
-    c )
-      container_name=$OPTARG
+    --img)
+      image_name="$2"
+      shift 2
       ;;
-    \? )
-      echo "Invalid option: -$OPTARG" 1>&2
+    --help)
       usage
       ;;
-    : )
-      echo "Option -$OPTARG requires an argument." 1>&2
+    *)
+      echo "Invalid option: $1" 1>&2
       usage
       ;;
   esac
 done
 
 # Check if the required flags were provided
-if [ -z "$vol_name" ] || [ -z "$container_name" ]; then
-  echo "Error: Both -v and -c flags are required."
+if [ -z "$pd_vol" ] || [ -z "$image_name" ]; then
+  echo "Error: Both --vol and --img options are required."
   usage
 fi
 
-# Run the docker command with the specified volume and container name
-docker run -v $(pwd)/kmer/:/kmer -v ${vol_name}:/td_output --rm -it --entrypoint bash ${container_name}
+# Run the docker command with the specified volume and image name
+docker run -v $(pwd)/kmer/:/kmer -v $(pwd)/${pd_vol}/:/td_output --rm -it --entrypoint bash ${image_name}
