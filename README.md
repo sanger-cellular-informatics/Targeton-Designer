@@ -716,7 +716,7 @@ The Primer Desginer Tool can be run inside a Docker container by creating a Dock
 To build a docker image for Primer Designer Tool follow the command below:
 
 ```sh
-docker build -t <docker_image_name> .
+docker build --no-cache -t <docker_image_name> .
 ```
 
 Note: Remember to be in the project root directory. Dot (`.`) in above docker command represents current working directory, that is where your `Dockerfile` resides. Or you could use `-f` to specify path to Dockerfile.  
