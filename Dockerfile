@@ -6,6 +6,12 @@ COPY . /
 
 RUN apt-get update
 
-RUN make install
-RUN make setup-venv
+RUN apt-get -y install build-essential && \
+    apt-get -y install bedtools && \
+    apt-get -y install curl && \
+    apt-get -y install python3-setuptools
+
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir -r sge-primer-scoring/requirements.txt
 
