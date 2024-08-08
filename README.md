@@ -748,7 +748,7 @@ To run the docker image we use `./docker_run.sh` shell script. The following com
 
 The `./docker_run.sh` script takes two arguments with flags and they are as follows:
 
-`--vol` for specifiying local volume name creatd in [step 2](#step-2-create-a-local-volume)
+`--vol` for specifiying local volume name creatd in [step 2](#step-2-create-a-local-volume) \
 `--img` for specifiying container name created in [step 1](#step-1-build-docker-image)
 
 After running the command, you will be directed to an interactive Docker container shell where you can run Primer Designer Tool commands.
