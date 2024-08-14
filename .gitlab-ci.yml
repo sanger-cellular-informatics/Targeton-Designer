@@ -34,14 +34,6 @@ docker-build:
       - Dockerfile
       - Makefile
 
-push_image:
-  stage: .pre
-  script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-    - docker push $DOCKER_IMAGE_NAME:$CI_COMMIT_SHA
-  dependencies:
-    - docker-build
-
 test:
   # Reuse built container.
   image: $DOCKER_IMAGE_NAME
@@ -57,3 +49,12 @@ test:
     - make test
   dependencies:
     - docker-build
+
+
+push_image:
+  stage: test
+  script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker push $DOCKER_IMAGE_NAME:$CI_COMMIT_SHA
+  dependencies:
+    - test
