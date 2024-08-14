@@ -1,5 +1,6 @@
 stages:
   - .pre
+  - push_image
   - test
 
 docker-build:
@@ -33,6 +34,16 @@ docker-build:
       - requirements.txt
       - Dockerfile
       - Makefile
+
+push_image:
+  stage: .pre
+  script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker push $DOCKER_IMAGE_NAME:$CI_COMMIT_SHA
+  only:
+    - main  # Run only on merge to main branch
+  dependencies:
+    - docker-build
 
 test:
   # Reuse built container.
