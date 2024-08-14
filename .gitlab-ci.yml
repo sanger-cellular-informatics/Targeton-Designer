@@ -1,6 +1,6 @@
 stages:
   - .pre
-  # - test
+  - test
 
 variables:
   # IMAGE_NAME: 
@@ -38,26 +38,26 @@ docker-build:
       - Dockerfile
       - Makefile
 
-# test:
-#   # Reuse built container.
-#   image: $DOCKER_IMAGE_NAME
-#   stage: test
-#   tags:
-#     - openstack-autoscale
-#     - autoscale-docker-in-docker
-#   variables:
-#     GIT_SUBMODULE_STRATEGY: recursive
-#   before_script:
-#     - make download-kmers
-#   script:
-#     - make test
-#   dependencies:
-#     - docker-build
+test:
+  # Reuse built container.
+  image: $DOCKER_IMAGE_NAME
+  stage: test
+  tags:
+    - openstack-autoscale
+    - autoscale-docker-in-docker
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+  # before_script:
+  #   - make download-kmers
+  script:
+    - make test
+  dependencies:
+    - docker-build
 
 
 push_image:
-  stage: .pre
-  needs: ['docker-build']
+  stage: test
+  needs: ['test']
   script:
     - echo "$CI_REGISTRY_USER"
     - echo "$CI_REGISTRY"
@@ -65,5 +65,5 @@ push_image:
     - echo "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" 
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" $CI_REGISTRY --password-stdin
     # - docker push :$IMAGE_TAG
-  # dependencies:
-  #   - docker-build
+  dependencies:
+    - docker-build
