@@ -9,7 +9,7 @@ usage() {
 # Initialize variables
 pd_vol=""
 image_name=""
-container_cmd=""
+primer_cmd=""
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
@@ -24,7 +24,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     --cmd)
       shift
-      container_cmd="$@"
+      primer_cmd="$@"
       break
       ;;
     --help)
@@ -38,11 +38,10 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Check if the required flags were provided
-if [ -z "$pd_vol" ] || [ -z "$image_name" ] || [ -z "$container_cmd" ]; then
+if [ -z "$pd_vol" ] || [ -z "$image_name" ] || [ -z "$primer_cmd" ]; then
   echo "Error: Arguments --vol, --img, and --cmd options are required."
   usage
 fi
 
 # Run the docker command with the specified volume and image name
-docker run -v $(pwd)/kmer/:/kmer -v $(pwd)/${pd_vol}/:/td_output -it ${image_name} $container_cmd
-
+docker run -v $(pwd)/kmer/:/kmer -v $(pwd)/${pd_vol}/:/td_output -it ${image_name} $primer_cmd

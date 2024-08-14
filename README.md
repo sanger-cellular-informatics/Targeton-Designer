@@ -719,11 +719,11 @@ To build a docker image for Primer Designer Tool follow the command below:
 docker build --no-cache -t <docker_image_name> .
 ```
 
-Note: Remember to be in the project root directory. Dot (`.`) in above docker command represents current working directory, that is where your `Dockerfile` resides. Or you could use `-f` to specify path to Dockerfile.  
+**Note**: Remember to be in the project root directory. Dot (`.`) in above docker command represents current working directory, that is where your `Dockerfile` resides. Or you could use `-f` to specify path to Dockerfile.  
 
 ##### Step 2: Create a local volume
 
-Create a local `volume` directory for data generated inside a Docker container so we can have a persistent data container from which we can copy the data from the container to our local(host) machine. To create the `volume`, follow the command below. Remember create the local volume directory in the project root directory while creating the `volume`. :
+Create a local `volume` directory for data generated inside a Docker container so we can have a persistent data container from which we can copy the data from the container to our local (host) machine. To create the `volume`, follow the command below. Remember create the local volume directory in the project root directory while creating the `volume`. :
 
 ```sh
 mkdir <preferred_local_volume_name>
@@ -743,12 +743,13 @@ To run the docker image we use `./docker_run.sh` shell script. The following com
 **Usage**
 
 ```sh
-./docker_run.sh --vol <preferred_local_volume_name> --img <docker_image_name>
+./docker_run.sh --vol <preferred_local_volume_name> --img <docker_image_name> --cmd ./designer.sh primer --fasta ./examples/test_example_slice.fa
 ```
 
-The `./docker_run.sh` script takes two arguments with flags and they are as follows:
+The `./docker_run.sh` script takes three arguments with flags and they are as follows:
 
-`--vol` for specifiying local volume name creatd in [step 2](#step-2-create-a-local-volume) \
-`--img` for specifiying container name created in [step 1](#step-1-build-docker-image)
+`--vol` for specifiying local volume name creatd in [step 2](#step-2-create-a-local-volume). \
+`--img` for specifiying container name created in [step 1](#step-1-build-docker-image). \
+`--cmd` after this you can put primer designer command.
 
 After running the command, you will be directed to an interactive Docker container shell where you can run Primer Designer Tool commands.
