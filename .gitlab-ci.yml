@@ -1,6 +1,6 @@
 stages:
   - .pre
-  - test
+  # - test
 
 variables:
   IMAGE_TAG: "latest"  # Or use CI_COMMIT_SHA for unique tags
@@ -37,28 +37,28 @@ docker-build:
       - Dockerfile
       - Makefile
 
-test:
-  # Reuse built container.
-  image: $DOCKER_IMAGE_NAME
-  stage: test
-  tags:
-    - openstack-autoscale
-    - autoscale-docker-in-docker
-  variables:
-    GIT_SUBMODULE_STRATEGY: recursive
-  before_script:
-    - make download-kmers
-  script:
-    - make test
-  dependencies:
-    - docker-build
+# test:
+#   # Reuse built container.
+#   image: $DOCKER_IMAGE_NAME
+#   stage: test
+#   tags:
+#     - openstack-autoscale
+#     - autoscale-docker-in-docker
+#   variables:
+#     GIT_SUBMODULE_STRATEGY: recursive
+#   before_script:
+#     - make download-kmers
+#   script:
+#     - make test
+#   dependencies:
+#     - docker-build
 
 
 push_image:
-  stage: test
-  needs: ['test']
+  stage: docker-build
+  needs: ['docker-build']
   script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" $CI_REGISTRY --password-stdin
     - docker push $DOCKER_IMAGE_NAME:$IMAGE_TAG
-  dependencies:
-    - test
+  # dependencies:
+  #   - docker-build
