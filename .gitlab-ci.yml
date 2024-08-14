@@ -57,7 +57,7 @@ test:
 
 push_image:
   stage: test
-  needs: ['test']
+  needs: ['test','docker-build']
   script:
     - echo "$CI_REGISTRY_USER"
     - echo "$CI_REGISTRY"
