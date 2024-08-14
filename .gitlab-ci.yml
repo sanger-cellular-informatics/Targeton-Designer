@@ -47,8 +47,8 @@ test:
     - autoscale-docker-in-docker
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
-  # before_script:
-  #   - make download-kmers
+  before_script:
+    - make download-kmers
   script:
     - make test
   dependencies:
