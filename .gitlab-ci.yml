@@ -1,6 +1,5 @@
 stages:
   - .pre
-  - push_image
   - test
 
 docker-build:
