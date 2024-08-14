@@ -56,8 +56,9 @@ test:
 
 push_image:
   stage: test
+  needs: ['test']
   script:
-    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin
     - docker push $DOCKER_IMAGE_NAME:$IMAGE_TAG
   dependencies:
     - test
