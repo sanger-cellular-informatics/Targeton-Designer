@@ -2,6 +2,9 @@ stages:
   - .pre
   - test
 
+variables:
+  IMAGE_TAG: "latest"  # Or use CI_COMMIT_SHA for unique tags
+
 docker-build:
   # Use the official docker image.
   image: docker:23.0.6
@@ -54,7 +57,9 @@ test:
 push_image:
   stage: test
   script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-    - docker push $DOCKER_IMAGE_NAME:$CI_COMMIT_SHA
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+    - docker push $DOCKER_IMAGE_NAME:$IMAGE_TAG
+  only:
+  - main  # Run only on merge to main branch
   dependencies:
     - test
