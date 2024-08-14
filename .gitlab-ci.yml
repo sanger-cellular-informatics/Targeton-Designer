@@ -3,6 +3,7 @@ stages:
   # - test
 
 variables:
+  IMAGE_NAME: 
   IMAGE_TAG: "latest"  # Or use CI_COMMIT_SHA for unique tags
 
 docker-build:
@@ -58,7 +59,11 @@ push_image:
   stage: docker-build
   needs: ['docker-build']
   script:
+    - echo "$CI_REGISTRY_USER"
+    - echo "$CI_REGISTRY"
+    - echo "$CI_DEFAULT_BRANCH"
+    - echo "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME" 
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" $CI_REGISTRY --password-stdin
-    - docker push $DOCKER_IMAGE_NAME:$IMAGE_TAG
+    - docker push :$IMAGE_TAG
   # dependencies:
   #   - docker-build
