@@ -2,22 +2,25 @@
 
 # Function to display usage information
 usage() {
-  echo "Usage: $0 --vol <volume_name> --img <image_name> --cmd <command_to_exectute_inside_container>"
+  echo "Usage: $0 --img <image_name> --cmd <command_to_exectute_inside_container>"
   exit 1
 }
 
 # Initialize variables
-pd_vol=""
+pd_vol="docker_pd_output"
 image_name=""
 primer_cmd=""
+
+
+if [ ! -d "docker_pd_output/" ]; then \
+    echo "$pd_vol local volume is created..."
+		mkdir $pd_vol
+    mkdir $pd_vol/logs/
+fi
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --vol)
-      pd_vol="$2"
-      shift 2
-      ;;
     --img)
       image_name="$2"
       shift 2
@@ -38,10 +41,19 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Check if the required flags were provided
-if [ -z "$pd_vol" ] || [ -z "$image_name" ] || [ -z "$primer_cmd" ]; then
-  echo "Error: Arguments --vol, --img, and --cmd options are required."
+if [ -z "$image_name" ] || [ -z "$primer_cmd" ]; then
+  echo "Error: Arguments --img and --cmd options are required."
   usage
 fi
 
 # Run the docker command with the specified volume and image name
-docker run -v $(pwd)/kmer/:/kmer -v $(pwd)/${pd_vol}/:/td_output -it ${image_name} $primer_cmd
+docker run -v $(pwd)/kmer/:/kmer \
+           -v $(pwd)/${pd_vol}/:/td_output \
+           -v $(pwd)/${pd_vol}/logs/:/logs \
+           --user $(id -u):$(id -g) \
+           -it ${image_name} $primer_cmd
+
+echo "Primer Designer output is generated in $pd_vol local volume."
+ls -1 $pd_vol
+
+
