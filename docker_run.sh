@@ -55,5 +55,3 @@ docker run -v $(pwd)/kmer/:/kmer \
 
 echo "Primer Designer output is generated in $pd_vol local volume."
 ls -1 $pd_vol
-
-
