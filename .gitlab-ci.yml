@@ -69,6 +69,8 @@ generate_pdf:
     - ls -l build.env
     - cat build.env
   artifacts:
+    reports:
+      dotenv: build.env
     paths:
       - documentation.pdf
 
