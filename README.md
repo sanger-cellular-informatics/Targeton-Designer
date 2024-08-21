@@ -4,6 +4,9 @@ A standalone Primer Designer tool that takes a sequence of a target region of th
 and identifies the appropriate LibAmp primers at both ends of the targeton. 
 The Primer Designer tool includes filtering and ranking of primers.
 
+You can download this README file as a PDF with a table of contents and numbered sections 
+[here](https://gitlab.internal.sanger.ac.uk/api/v4/projects/3264/jobs/0000/artifacts/documentation.pdf).
+
 ## Installation
 
 ### Cloning Repository

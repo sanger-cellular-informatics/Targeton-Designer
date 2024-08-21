@@ -1,6 +1,7 @@
 stages:
   - .pre
   - test
+  - generate-documentation
 
 docker-build:
   # Use the official docker image.
@@ -49,3 +50,38 @@ test:
     - make test
   dependencies:
     - docker-build
+
+generate_pdf:
+  stage: generate-documentation
+  when: manual
+  image:
+    name: pandoc/latex
+    entrypoint: ["/bin/sh", "-c"]
+  script:
+    - pandoc README.md --variable colorlinks=true -V geometry:margin=1in --toc --toc-depth=4 -N -o documentation.pdf
+    - echo "GENERATE_PDF_JOB_ID=$CI_JOB_ID" > build.env
+  artifacts:
+    reports:
+      dotenv: build.env
+    paths:
+      - documentation.pdf
+
+update_readme_with_documentation_link:
+  stage: generate-documentation
+  image: ubuntu:latest
+  needs: [generate_pdf]
+  script:
+    - apt-get update -qq
+    - apt-get install -qq git
+    - git config --global user.email "htgt@sanger.ac.uk"
+    - git config --global user.name "Cellular Informatics"
+    - git remote set-url origin https://write_repository_token:${WRITE_TOKEN}@gitlab.internal.sanger.ac.uk:sci/targeton-designer.git
+    - git checkout ${CI_COMMIT_REF_NAME}
+    - ARTIFACT_URL="https://gitlab.internal.sanger.ac.uk/api/v4/projects/3264/jobs/${GENERATE_PDF_JOB_ID}/artifacts/documentation.pdf"
+    - sed -i "s|https://gitlab.internal.sanger.ac.uk/api/v4/projects/3264/jobs/[0-9]\+/artifacts/documentation.pdf|${ARTIFACT_URL}|g" README.md
+    - git status
+    - git add README.md
+    - git commit -m "Update README with latest artifact URL"
+    - git push origin ${CI_COMMIT_REF_NAME}
+  dependencies:
+    - generate_pdf
