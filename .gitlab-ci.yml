@@ -57,6 +57,7 @@ test:
 generate_pdf:
   stage: generate-documentation
   when: manual
+  needs: [test]
   image:
     name: pandoc/latex
     entrypoint: ["/bin/sh", "-c"]
@@ -68,8 +69,6 @@ generate_pdf:
     - ls -l build.env
     - cat build.env
   artifacts:
-    reports:
-      dotenv: build.env
     paths:
       - documentation.pdf
 
