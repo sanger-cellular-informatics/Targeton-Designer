@@ -65,6 +65,8 @@ generate_pdf:
     - pandoc --version
     - pandoc README.md --variable colorlinks=true -V geometry:margin=1in --toc --toc-depth=4 -N -o documentation.pdf
     - echo "GENERATE_PDF_JOB_ID=$CI_JOB_ID" > build.env
+    - ls -l build.env
+    - cat build.env
   artifacts:
     reports:
       dotenv: build.env
