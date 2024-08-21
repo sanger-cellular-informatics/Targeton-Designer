@@ -61,6 +61,8 @@ generate_pdf:
     name: pandoc/latex
     entrypoint: ["/bin/sh", "-c"]
   script:
+    - which pandoc
+    - pandoc --version
     - pandoc README.md --variable colorlinks=true -V geometry:margin=1in --toc --toc-depth=4 -N -o documentation.pdf
     - echo "GENERATE_PDF_JOB_ID=$CI_JOB_ID" > build.env
   artifacts:
