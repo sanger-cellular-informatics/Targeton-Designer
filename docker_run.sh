@@ -10,7 +10,7 @@ usage() {
 pd_vol="docker_pd_output"
 image_name=""
 primer_cmd=""
-
+args_flag_set=0
 
 if [ ! -d "docker_pd_output/" ]; then \
     echo "$pd_vol local volume is created..."
@@ -18,14 +18,25 @@ if [ ! -d "docker_pd_output/" ]; then \
     mkdir $pd_vol/logs/
 fi
 
+
+
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --img)
+      if [ "$args_flag_set" -eq 1 ]; then
+        echo "Error: --img must be provided before --cmd." 1>&2
+        usage
+      fi
       image_name="$2"
       shift 2
       ;;
     --cmd)
+      if [ -z "$pd_vol" ] || [ -z "$image_name" ]; then
+        echo "Error: --cmd must come after --img." 1>&2
+        usage
+      fi
+      args_flag_set=1
       shift
       primer_cmd="$@"
       break
