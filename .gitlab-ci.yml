@@ -7,8 +7,7 @@ docker-build:
   image: docker:23.0.6
   stage: .pre
   tags: 
-    - openstack-autoscale
-    - autoscale-docker-in-docker
+    - autoscale
   services:
     - name: docker:23.0.6-dind
       alias: thedockerhost
@@ -39,8 +38,7 @@ test:
   image: $DOCKER_IMAGE_NAME
   stage: test
   tags:
-    - openstack-autoscale
-    - autoscale-docker-in-docker
+    - autoscale
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   before_script:
