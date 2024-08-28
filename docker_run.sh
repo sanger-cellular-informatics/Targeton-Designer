@@ -14,7 +14,7 @@ args_flag_set=0
 
 if [ ! -d "docker_pd_output/" ]; then \
     echo "$pd_vol local volume is created..."
-		mkdir $pd_vol
+    mkdir $pd_vol
     mkdir $pd_vol/logs/
 fi
 
