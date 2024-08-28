@@ -58,10 +58,10 @@ if [ -z "$image_name" ] || [ -z "$primer_cmd" ]; then
 fi
 
 # Run the docker command with the specified volume and image name
-docker run --rm -v $(pwd)/kmer/:/kmer \
-           -v $(pwd)/${pd_vol}/:/td_output \
-           -v $(pwd)/${pd_vol}/logs/:/logs \
-           --user $(id -u):$(id -g) \
+docker run -u primerdesigner \
+           --rm -v $(pwd)/kmer/:/targeton-designer/kmer \
+           -v $(pwd)/${pd_vol}/:/targeton-designer/td_output \
+           -v $(pwd)/${pd_vol}/logs/:/targeton-designer/logs \
            -it ${image_name} $primer_cmd
 
 echo "Primer Designer output is generated in $pd_vol local volume."
