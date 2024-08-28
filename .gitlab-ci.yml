@@ -44,6 +44,6 @@ test:
   before_script:
     - make download-kmers
   script:
-    - make test
+    - python -m unittest discover --start-directory ./tests --top-level-directory .
   dependencies:
     - docker-build

@@ -1,0 +1,13 @@
+*.md
+/venv
+/.githooks
+/td_output
+/kmer
+.gitignore
+.gitlab-ci.yml
+.gitmodules
+.dockerignore
+docker-compose.yml
+Dockerfile
+run_primer3.py
+run_slicer.py
