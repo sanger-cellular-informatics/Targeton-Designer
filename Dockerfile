@@ -1,4 +1,6 @@
-FROM python:3.8.0 as base
+FROM python:3.8.0
+
+ARG USER_ID=1000
 
 RUN apt-get update && \
     apt-get -y install build-essential && \
@@ -6,16 +8,15 @@ RUN apt-get update && \
     apt-get -y install curl && \
     apt-get -y install python3-setuptools
 
-RUN groupadd -g 1001 primerdesigner && \
-    useradd -m -u 1001 -g primerdesigner primerdesigner
+USER root
+
+RUN groupadd -g $USER_ID primerdesigner && \
+    useradd -m -u $USER_ID -g primerdesigner primerdesigner && \
+    usermod -u $USER_ID primerdesigner
 
 WORKDIR /targeton-designer
 
-COPY . /targeton-designer
-
-RUN mkdir /targeton-designer/td_output
-RUN chown -hR primerdesigner:primerdesigner /targeton-designer/logs /targeton-designer/td_output && \
-    chmod 770 /targeton-designer/td_output
+COPY --chown=primerdesigner:primerdesigner . /targeton-designer
 
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
     pip install --no-cache-dir -r requirements.txt && \
