@@ -1,6 +1,6 @@
 FROM python:3.8.0
 
-# Creat varaibles for a docker user with numerical id and named user
+# Creat variables for a docker user with numerical id and named user
 ARG USER_ID=1001
 ARG USER_NAME=primerdesigner
 
