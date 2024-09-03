@@ -12,13 +12,8 @@ RUN apt-get update && \
     apt-get -y install curl && \
     apt-get -y install python3-setuptools
 
-# Switch to root user and execute following command which requires root permissions.
-USER root
-
 # Add new user to a new group
-RUN groupadd -g $GROUP_ID $GROUP_NAME && \
-    useradd -m -u $USER_ID -g $GROUP_NAME $USER_NAME && \
-    usermod -u $USER_ID $USER_NAME
+RUN groupadd $GROUP_NAME && useradd -g $GROUP_NAME $USER_NAME
 
 WORKDIR /targeton-designer
 
