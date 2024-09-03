@@ -1,8 +1,10 @@
 FROM python:3.8.0
 
-# Creat variables for a docker user with numerical id and named user
-ARG USER_ID=1001
+# Creat variables for a docker user with numerical id and named user and group
+ARG GROUP_NAME=primerdesigner
+ARG GROUP_ID=1001
 ARG USER_NAME=primerdesigner
+ARG USER_ID=1001
 
 RUN apt-get update && \
     apt-get -y install build-essential && \
@@ -14,14 +16,14 @@ RUN apt-get update && \
 USER root
 
 # Add new user to a new group
-RUN groupadd -g $USER_ID $USER_NAME && \
-    useradd -m -u $USER_ID -g $USER_NAME $USER_NAME && \
+RUN groupadd -g $GROUP_ID $GROUP_NAME && \
+    useradd -m -u $USER_ID -g $GROUP_NAME $USER_NAME && \
     usermod -u $USER_ID $USER_NAME
 
 WORKDIR /targeton-designer
 
 # Give access to the work directory to the new user
-COPY --chown=$USER_NAME:$USER_NAME . /targeton-designer
+COPY --chown=$USER_NAME:$GROUP_NAME . /targeton-designer
 
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
     pip install --no-cache-dir -r requirements.txt && \
