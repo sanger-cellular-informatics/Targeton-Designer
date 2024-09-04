@@ -61,7 +61,6 @@ fi
 docker run --rm -v $(pwd)/kmer/:/targeton-designer/kmer \
            -v $(pwd)/${pd_vol}/:/targeton-designer/td_output \
            -v $(pwd)/${pd_vol}/logs/:/targeton-designer/logs \
-           -u primerdesigner \
            -it ${image_name} $primer_cmd
 
 echo "Primer Designer output is generated in $pd_vol local volume."
