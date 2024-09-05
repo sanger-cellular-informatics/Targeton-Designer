@@ -1,9 +1,9 @@
 FROM python:3.8.0
 
 # Creat variables for a docker user with numerical id and named user and group
-ARG GROUP_NAME=pd_user
+ARG GROUP_NAME=pd_group
 ARG GROUP_ID=1001
-ARG USER_NAME=pd_group
+ARG USER_NAME=pd_user
 ARG USER_ID=1001
 
 RUN apt-get update && \
