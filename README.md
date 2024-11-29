@@ -6,48 +6,74 @@ The Primer Designer tool includes filtering and ranking of primers.
 
 ## Table of contents
 
-1. [Installation](#1-installation)
-   1. [Cloning Repository](#11-cloning-repository)
-   2. [Installing Dependencies](#12-installing-dependencies)
-   3. [Setting up Environment](#13-setting-up-environment)
-      1. [Setting up a Python Virtual Environment](#131-setting-up-a-python-virtual-environment)
-      2. [Downloading kmer lists for primer generation](#132-downloading-kmer-lists-for-primer-generation)
-      3. [Making the Designer Script Executable and Checking Version](#133-making-the-designer-script-executable-and-checking-version)
-   4. [Running unit tests](#14-running-unit-tests)
-2. [Usage](#2-usage)
-   1. [Quick start with primer command](#21-quick-start-with-the-primer-command)
-   2.  [Primer Designer Tool](#22-primer-designer-tool) 
-       1. [Primer3 parameters config](#221-primer3-parameters-config)
-       2. [Designer config](#222-designer-config)
-       3. [Running Primer3](#223-running-primer3)
-       4. [Applying filters from the designer config file](#224-applying-filters-from-the-designer-config-file)
-       5. [Applying ranking from the designer config file](#225-applying-ranking-from-the-designer-config-file)
-       6. [Specifying column order through the designer config file](#226-specifying-column-order-through-the-designer-config-file)
-       7. [Using the designer config file to set command-line arguments](#227-using-the-designer-config-file-to-set-command-line-arguments)
-3. [File formats](#3-file-formats)
-   1. [Primer3 and Designer FASTA Input File (Slicer FASTA output)](#31-primer3-and-designer-fasta-input-file-slicer-fasta-output) 
-   2. [Primer3 Output BED file](#32-primer3-output-bed-file) 
-   3. [Primer3 Output CSV file](#33-primer3-output-csv-file) 
-   4. [Primer3 Output Optimal Primer Pairs CSV file](#34-primer3-output-optimal-primer-pairs-csv-file) 
-   5. [Primer3 Output Discarded Primer Pairs CSV file](#35-primer3-output-discarded-primer-pairs-csv-file) 
-   6. [Genomic Reference file](#36-genomic-reference-file)
-4. [For Developers](#4-for-developers)
-   1. [Git Hooks](#41-git-hooks)
-   2. [Python debugger](#42-python-debugger)
-5. [Tools and commands no longer in use](#5-tools-and-commands-no-longer-in-use)
-   1. [Designer Workflow (Primer3)](#51-designer-workflow-primer3)
-   2. [Primer Scoring Tool](#52-primer-scoring-tool)
-   3. [Slicer Tool](#53-slicer-tool)
-   4. [Targeton CSV generation](#54-targeton-csv-generation)
-   5. [Primer data collation and output to CSV and JSON (for Benchling)](#55-primer-data-collation-and-output-to-csv-and-json-for-benchling) 
-   6. [Post primers to Benchling](#56-post-primers-to-benchling) 
-   7. [File formats](#57-file-formats)
-      1. [Slicer Input BED File](#571-slicer-input-bed-file) 
-      2. [Slicer BED output](#572-slicer-bed-output)  
-      3. [Scoring Tool Input iPCRess file example](#573-scoring-tool-input-ipcress-file-example) 
-      4. [Targeton CSV example](#574-targeton-csv-example)
-      5. [Primer Designer Output example](#575-primer-designer-output-example)
-6. [Upcoming releases](#6-upcoming-releases)
+<ul style="list-style-type:none;">
+  <li><a href="#1-installation">1. Installation</a>
+    <ul style="list-style-type:none;">
+      <li><a href="#11-cloning-repository">1.1. Cloning Repository</a></li>
+      <li><a href="#12-installing-dependencies">1.2. Installing Dependencies</a></li>
+      <li><a href="#13-setting-up-environment">1.3. Setting up Environment</a>
+        <ul style="list-style-type:none;">
+          <li><a href="#131-setting-up-a-python-virtual-environment">1.3.1. Setting up a Python Virtual Environment</a></li>
+          <li><a href="#132-downloading-kmer-lists-for-primer-generation">1.3.2. Downloading kmer lists for primer generation</a></li>
+          <li><a href="#133-making-the-designer-script-executable-and-checking-version">1.3.3. Making the Designer Script Executable and Checking Version</a></li>
+        </ul>
+      </li>
+      <li><a href="#14-running-unit-tests">1.4. Running unit tests</a></li>
+    </ul>
+  </li>
+  <li><a href="#2-usage">2. Usage</a>
+    <ul style="list-style-type:none;">
+      <li><a href="#21-quick-start-with-the-primer-command">2.1. Quick start with primer command</a></li>
+      <li><a href="#22-primer-designer-tool">2.2. Primer Designer Tool</a>
+        <ul style="list-style-type:none;">
+          <li><a href="#221-primer3-parameters-config">2.2.1. Primer3 parameters config</a></li>
+          <li><a href="#222-designer-config">2.2.2. Designer config</a></li>
+          <li><a href="#223-running-primer3">2.2.3. Running Primer3</a></li>
+          <li><a href="#224-applying-filters-from-the-designer-config-file">2.2.4. Applying filters from the designer config file</a></li>
+          <li><a href="#225-applying-ranking-from-the-designer-config-file">2.2.5. Applying ranking from the designer config file</a></li>
+          <li><a href="#226-specifying-column-order-through-the-designer-config-file">2.2.6. Specifying column order through the designer config file</a></li>
+          <li><a href="#227-using-the-designer-config-file-to-set-command-line-arguments">2.2.7. Using the designer config file to set command-line arguments</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#3-file-formats">3. File formats</a>
+    <ul style="list-style-type:none;">
+      <li><a href="#31-primer3-and-designer-fasta-input-file-slicer-fasta-output">3.1. Primer3 and Designer FASTA Input File (Slicer FASTA output)</a></li>
+      <li><a href="#32-primer3-output-bed-file">3.2. Primer3 Output BED file</a></li>
+      <li><a href="#33-primer3-output-csv-file">3.3. Primer3 Output CSV file</a></li>
+      <li><a href="#34-primer3-output-optimal-primer-pairs-csv-file">3.4. Primer3 Output Optimal Primer Pairs CSV file</a></li>
+      <li><a href="#35-primer3-output-discarded-primer-pairs-csv-file">3.5. Primer3 Output Discarded Primer Pairs CSV file</a></li>
+      <li><a href="#36-genomic-reference-file">3.6. Genomic Reference file</a></li>
+    </ul>
+  </li>
+  <li><a href="#4-for-developers">4. For Developers</a>
+    <ul style="list-style-type:none;">
+      <li><a href="#41-git-hooks">4.1. Git Hooks</a></li>
+      <li><a href="#42-python-debugger">4.2. Python debugger</a></li>
+    </ul>
+  </li>
+  <li><a href="#5-tools-and-commands-no-longer-in-use">5. Tools and commands no longer in use</a>
+    <ul style="list-style-type:none;">
+      <li><a href="#51-designer-workflow-primer3">5.1. Designer Workflow (Primer3)</a></li>
+      <li><a href="#52-primer-scoring-tool">5.2. Primer Scoring Tool</a></li>
+      <li><a href="#53-slicer-tool">5.3. Slicer Tool</a></li>
+      <li><a href="#54-targeton-csv-generation">5.4. Targeton CSV generation</a></li>
+      <li><a href="#55-primer-data-collation-and-output-to-csv-and-json-for-benchling">5.5. Primer data collation and output to CSV and JSON (for Benchling)</a></li>
+      <li><a href="#56-post-primers-to-benchling">5.6. Post primers to Benchling</a></li>
+      <li><a href="#57-file-formats">5.7. File formats</a>
+        <ul style="list-style-type:none;">
+          <li><a href="#571-slicer-input-bed-file">5.7.1. Slicer Input BED File</a></li>
+          <li><a href="#572-slicer-bed-output">5.7.2. Slicer BED output</a></li>
+          <li><a href="#573-scoring-tool-input-ipcress-file-example">5.7.3. Scoring Tool Input iPCRess file example</a></li>
+          <li><a href="#574-targeton-csv-example">5.7.4. Targeton CSV example</a></li>
+          <li><a href="#575-primer-designer-output-example">5.7.5. Primer Designer Output example</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#6-upcoming-releases">6. Upcoming releases</a></li>
+</ul>
 
 
 ## 1. Installation
