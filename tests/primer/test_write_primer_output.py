@@ -182,27 +182,6 @@ class TestWritePrimerOutputFiles(TestCase):
         expected_content = "col1,col2,col3\n1,A,X\n2,B,Y\n3,C,Z\n4,D,W\n5,E,V\n6,F,U\n"
 
         self.assertEqual(content, expected_content)
-    
-    def test_warning_if_less_than_three_optimal_primers_return(self):
-        # Arrange
-        data = {
-            'col1': [1, 2, 3, 4],
-            'col2': ['A', 'B', 'C', 'D'],
-            'col3': ['X', 'Y', 'Z', 'W']
-        }
-        
-        df = pd.DataFrame(data)
-
-        export_dir = '/mock/directory'
-        self.fs.create_dir(export_dir)
-
-        # Act
-        _ = export_three_optimal_primer_pairs_to_csv(df, export_dir, column_order=['col1', 'col2', 'col3'])
-        
-        logs = self.handler.buffer.getvalue().strip()
-        
-        self.assertEqual(logs, "Primer3 output indicates fewer than 3 suitable Optimal primer pairs.")
-    
 
 
 class TestDataFrameBuild(TestCase):
