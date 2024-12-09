@@ -201,7 +201,7 @@ class TestWritePrimerOutputFiles(TestCase):
         
         logs = self.handler.buffer.getvalue().strip()
         
-        self.assertEqual(logs, "Primer3 output indicates fewer than 3 suitable Optimal primer pairs.")
+        self.assertEqual(logs, "less than 3 primer pairs returned by Primer3")
     
 
 
