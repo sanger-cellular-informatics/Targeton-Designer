@@ -78,6 +78,9 @@ def export_three_optimal_primer_pairs_to_csv(df: pd.DataFrame, export_dir: str, 
     primers_csv_output_path = path.join(export_dir, OPTIMAL_PRIMERS_CSV)
 
     optimal_primers_df = df.head(6)
+    
+    if len(optimal_primers_df.index) < 6:
+        logger.warning("Less than 3 primer pairs returned by Primer3")
 
     write_dataframe_to_csv(optimal_primers_df, column_order, primers_csv_output_path)
 
