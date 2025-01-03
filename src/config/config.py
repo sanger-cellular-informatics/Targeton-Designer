@@ -26,6 +26,11 @@ class DesignerConfig:
                        'filters': config['filters'],
                        'ranking': config['ranking']}
 
+        self.stringency_vector = config['stringency_vector']
+        self.csv_column_order = config['csv_column_order']
+        self.filters = config['filters']
+        self.ranking = config['ranking']
+
         self.prefix_output_dir = args.get('dir', None) or config.get('dir', None)
         self.fasta = args.get('fasta', None) or config.get('fasta', None)
 

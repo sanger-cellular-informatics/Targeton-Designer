@@ -59,9 +59,9 @@ def primer_command(
 
     primers = Primer3(config.params, config.primer3_params).get_primers(slice_data)
 
-    filters_response = FilterManager(config.params['filters']).apply_filters(primers)
+    filters_response = FilterManager(config.filters).apply_filters(primers)
 
-    ranked_primer_pairs_df = (Ranker(config.params['ranking'])
+    ranked_primer_pairs_df = (Ranker(config.ranking)
                               .rank(primer_type=PRIMER_TYPE, primer_pairs=filters_response.primer_pairs_to_keep))
 
     primer_result = write_primer_output(
@@ -70,7 +70,7 @@ def primer_command(
         discarded_primer_pairs=filters_response.primer_pairs_to_discard,
         prefix=config.prefix_output_dir,
         primer_type=PRIMER_TYPE,
-        column_order=config.params['csv_column_order']
+        column_order=config.csv_column_order
     )
 
     return primer_result

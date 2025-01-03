@@ -17,7 +17,7 @@ class TestDesignerConfigClass(TestCase):
 
         designer_config = DesignerConfig(args={'conf': self.config_path})
 
-        self.assertEqual(designer_config.params['stringency_vector'], expected)
+        self.assertEqual(designer_config.stringency_vector, expected)
 
     def test_column_order_is_provided(self):
         expected = ["primer_type", "primer", "penalty", "stringency", "sequence", "primer_start", 
@@ -27,7 +27,7 @@ class TestDesignerConfigClass(TestCase):
 
         designer_config = DesignerConfig(args={'conf': self.config_path})
 
-        self.assertEqual(designer_config.params['csv_column_order'], expected)
+        self.assertEqual(designer_config.csv_column_order, expected)
 
     def test_read_config(self):
         expected = {'stringency_vector': [1, 0.5, 0.1],

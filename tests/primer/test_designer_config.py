@@ -33,5 +33,5 @@ class TestDesignerConfig(unittest.TestCase):
         expected_config["filters"] = {"duplicates": True}
         config = DesignerConfig(self.mock_config_with_no_filters_section)
 
-        self.assertEqual(config.params["filters"], expected_config["filters"])
+        self.assertEqual(config.filters, expected_config["filters"])
 
