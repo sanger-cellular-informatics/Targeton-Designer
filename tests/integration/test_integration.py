@@ -89,7 +89,7 @@ class TestPrimerIntegration(TestCase):
                 self.assertGreater(path_primer_bed.stat().st_size, 0)
                 self.assertGreater(path_primer_csv.stat().st_size, 0)
 
-                expected_csv_headers = DesignerConfig(args={'conf': self.designer_config}).params['csv_column_order']
+                expected_csv_headers = DesignerConfig(args={'conf': self.designer_config}).csv_column_order
                 df_primers = pd.read_csv(path_primer_csv)
                 csv_headers = list(df_primers.columns)
                 self.assertEqual(set(csv_headers), set(expected_csv_headers))
