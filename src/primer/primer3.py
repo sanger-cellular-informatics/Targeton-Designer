@@ -18,13 +18,13 @@ logger = CustomLogger(__name__)
 class Primer3:
     def __init__(
             self,
-            designer_config: dict,
+            stringency_vector: list,
             p3_config: dict
     ) -> None:
 
         self._p3_config = p3_config
         self._kmer_lists_exist()
-        self._stringency_vector = designer_config.get('stringency_vector', [""])
+        self._stringency_vector = stringency_vector or [""]
 
     def get_primers(self, slice_data: SliceData) -> List[PrimerPair]:
         logger.info('The pre-targeton used to generate primer pairs is:\n'

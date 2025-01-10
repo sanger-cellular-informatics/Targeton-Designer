@@ -21,11 +21,6 @@ class DesignerConfig:
         if not config.get("ranking"):
             config["ranking"] = {}
 
-        self.params = {'stringency_vector': config['stringency_vector'],
-                       'csv_column_order': config['csv_column_order'],
-                       'filters': config['filters'],
-                       'ranking': config['ranking']}
-
         self.stringency_vector = config['stringency_vector']
         self.csv_column_order = config['csv_column_order']
         self.filters = config['filters']

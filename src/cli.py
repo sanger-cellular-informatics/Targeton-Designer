@@ -57,7 +57,7 @@ def primer_command(
     validate_fasta_format(config.fasta)
     slice_data = SliceData.get_first_slice_data(config.fasta)
 
-    primers = Primer3(config.params, config.primer3_params).get_primers(slice_data)
+    primers = Primer3(config.stringency_vector, config.primer3_params).get_primers(slice_data)
 
     filters_response = FilterManager(config.filters).apply_filters(primers)
 
