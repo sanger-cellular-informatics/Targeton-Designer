@@ -32,8 +32,6 @@ class IntegrationTestPrimer3(TestCase):
             strand="-"
         )
 
-        designer_config = {"stringency_vector": [stringency]}
-
         p3_config = {
              "PRIMER_TASK": "pick_cloning_primers",
              "PRIMER_PICK_LEFT_PRIMER": 1,
@@ -48,7 +46,7 @@ class IntegrationTestPrimer3(TestCase):
              }
 
         # act
-        result = Primer3(designer_config, p3_config).get_primers(slice)
+        result = Primer3(stringency_vector=[stringency], p3_config=p3_config).get_primers(slice)
 
         # assert
         expected_primer_pair = PrimerPair(
@@ -119,8 +117,6 @@ class IntegrationTestPrimer3(TestCase):
             strand="+"
         )
 
-        designer_config = {"stringency_vector": [1]}
-
         p3_config = {
              "PRIMER_TASK": "generic",
              "PRIMER_PICK_LEFT_PRIMER": 1,
@@ -136,7 +132,7 @@ class IntegrationTestPrimer3(TestCase):
 
         # act
         with self.assertRaises(Primer3Error) as primer_error:
-            Primer3(designer_config, p3_config).get_primers(slice)
+            Primer3(stringency_vector=[1], p3_config=p3_config).get_primers(slice)
 
         # assert
         expected_msg = """\
@@ -167,8 +163,6 @@ class IntegrationTestPrimer3(TestCase):
 
         mock_build_primer_pairs.return_value = []
 
-        designer_config = {"stringency_vector": [1]}
-
         p3_config = {
              "PRIMER_TASK": "pick_cloning_primers",
              "PRIMER_PICK_LEFT_PRIMER": 1,
@@ -184,7 +178,7 @@ class IntegrationTestPrimer3(TestCase):
 
         # act
         with self.assertRaises(ValueError) as value_error:
-            Primer3(designer_config, p3_config).get_primers(slice)
+            Primer3(stringency_vector=[1], p3_config=p3_config).get_primers(slice)
 
         # assert
         self.assertEqual(str(value_error.exception), "No primer pairs returned")
@@ -195,18 +189,16 @@ class IntegrationTestPrimer3(TestCase):
             "PRIMER_MASK_TEMPLATE": 1,
             "PRIMER_MASK_KMERLIST_PATH": "kmers/",
             }
-        designer_config = {"stringency_vector": [1]}
 
         self.fs.create_dir("kmers/")
         self.fs.create_file("kmers/homo_sapiens_11.list", contents="list of 11-mers")
         self.fs.create_file("kmers/homo_sapiens_16.list", contents="list of 16-mers")
 
         # act
-        result = Primer3(designer_config, p3_config)._kmer_lists_exist()
+        result = Primer3(stringency_vector=[1], p3_config=p3_config)._kmer_lists_exist()
 
         # assert
-        self.assertEqual(result, None)
-
+        self.assertIsNone(result)
 
     def test_kmer_lists_exist_no_path(self):
         # arrange
@@ -214,17 +206,15 @@ class IntegrationTestPrimer3(TestCase):
             "PRIMER_MASK_TEMPLATE": 1,
             "PRIMER_MASK_KMERLIST_PATH": "kmers/",
             }
-        designer_config = {"stringency_vector": [1]}
 
         # act
         with self.assertRaises(ValueError) as kmer_dir_error:
-            Primer3(designer_config, p3_config)._kmer_lists_exist()
+            Primer3(stringency_vector=[1], p3_config=p3_config)._kmer_lists_exist()
 
         # assert
         expected_result = "Missing directory with kmer lists required for masking. Expected path: 'kmers/'"
         result = str(kmer_dir_error.exception)
         self.assertEqual(result, expected_result)
-
 
     def test_kmer_lists_exist_no_lists(self):
         # arrange
@@ -232,13 +222,12 @@ class IntegrationTestPrimer3(TestCase):
             "PRIMER_MASK_TEMPLATE": 1,
             "PRIMER_MASK_KMERLIST_PATH": "kmers/",
             }
-        designer_config = {"stringency_vector": [1]}
 
         self.fs.create_dir("kmers/")
 
         # act
         with self.assertRaises(ValueError) as kmer_lists_error:
-            Primer3(designer_config, p3_config)._kmer_lists_exist()
+            Primer3(stringency_vector=[1], p3_config=p3_config)._kmer_lists_exist()
 
         # assert
         expected_result = "Missing kmer list file(s) required for masking: 'kmers/homo_sapiens_11.list', 'kmers/homo_sapiens_16.list'"
