@@ -10,9 +10,13 @@ class TestSliceData(TestCase):
     def setUp(self):
         self.setUpPyfakefs()
 
-    def test_p3_input(self):
+    @patch('primer.slice_data.get_seq_from_ensembl_by_coords')
+    def test_p3_input(self, mock_get_seq):
+
+        mock_get_seq.return_value = 'mocked_surrounding_region'
+
         slice_sample = SliceData('slice_name', 100, 200, 'strand', 'chromosome', 'slice_bases')
-        expected_p3_input = {'SEQUENCE_ID': 'slice_name', 'SEQUENCE_TEMPLATE': 'slice_bases'}
+        expected_p3_input = {'SEQUENCE_ID': 'slice_name', 'SEQUENCE_TEMPLATE': 'mocked_surrounding_region'}
 
         result = slice_sample.p3_input
 

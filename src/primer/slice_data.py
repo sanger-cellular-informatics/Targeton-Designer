@@ -10,7 +10,7 @@ logger = CustomLogger(__name__)
 
 
 class SliceData:
-    def __init__(self, name: str, start: int, end: int, strand: str, chromosome: str, bases: str):
+    def __init__(self, name: str, start: int, end: int, strand: str, chromosome: str, bases: str, region_padding: int):
         self.name = name
         self.start = start
         self.end = end
@@ -18,6 +18,7 @@ class SliceData:
         self.chromosome = chromosome
         self.bases = bases
         self.targeton_id = name[0:4]
+        self.region_padding = region_padding
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, SliceData):
@@ -38,23 +39,32 @@ class SliceData:
 
     @property
     def p3_input(self):
+        print("surrounding", self.surrounding_region)
         return {
             'SEQUENCE_ID': self.name,
-            'SEQUENCE_TEMPLATE': self.bases,
+            'SEQUENCE_TEMPLATE': self.surrounding_region,
         }
 
     @property
     def surrounding_region(self) -> str:
-        surrounding_band = 1000
+        padding = self.region_padding
 
         return get_seq_from_ensembl_by_coords(
             chromosome=self.chromosome,
-            start=self.start - surrounding_band,
-            end=self.end + surrounding_band
+            start=self.start - padding,
+            end=self.end + padding
         )
+    
+    @property
+    def padded_start_coordinate(self) -> int:
+        return self.start - self.region_padding
+    
+    @property
+    def padded_end_coordinate(self) -> int:
+        return self.end + self.region_padding
 
     @staticmethod
-    def get_first_slice_data(fasta: str) -> 'SliceData':
+    def get_first_slice_data(fasta: str, padding: int) -> 'SliceData':
         with open(fasta) as fasta_data:
             rows = SeqIO.parse(fasta_data, 'fasta')
             first_row = next(rows, None)
@@ -78,6 +88,7 @@ class SliceData:
                 strand=match.group(5),
                 chromosome=chromosome,
                 bases=str(first_row.seq),
+                region_padding=padding
             )
 
             if next(rows, None) is not None:

@@ -21,6 +21,7 @@ class DesignerConfig:
         if not config.get("ranking"):
             config["ranking"] = {}
 
+        self.region_padding = config['region_padding']
         self.stringency_vector = config['stringency_vector']
         self.csv_column_order = config['csv_column_order']
         self.filters = config['filters']

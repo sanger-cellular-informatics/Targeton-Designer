@@ -55,7 +55,7 @@ def primer_command(
     config = DesignerConfig(args)
 
     validate_fasta_format(config.fasta)
-    slice_data = SliceData.get_first_slice_data(config.fasta)
+    slice_data = SliceData.get_first_slice_data(config.fasta, config.region_padding)
 
     primers = Primer3(config.stringency_vector, config.primer3_params).get_primers(slice_data)
 

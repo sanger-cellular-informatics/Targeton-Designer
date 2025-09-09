@@ -85,8 +85,8 @@ def build_primer_loci(
         primer_coords = calculate_primer_coords(
             primer_details['side'],
             design[key],
-            slice_data.start,
-            slice_data.end,
+            slice_data.padded_start_coordinate,
+            slice_data.padded_end_coordinate,
             slice_data.strand
         )
 
