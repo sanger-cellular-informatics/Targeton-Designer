@@ -42,7 +42,6 @@ test:
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   before_script:
-    - pip3 install keeper-secrets-manager-cli --user
     - export KSM_CONFIG=$KSM_CONFIG
     - ksm secret get -u PopgF2zvaLo04WGNrwNVuQ --field "login"
   script:
