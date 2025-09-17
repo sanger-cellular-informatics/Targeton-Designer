@@ -51,7 +51,7 @@ test:
       secret_key = $(ksm secret get -u $SECRET_UID --field "Secret Key")
       host_base = cog.sanger.ac.uk
       host_bucket = %(bucket)s.cog.sanger.ac.uk
-      use_https = True" > ~/.s3cfg
+      use_https = True" > ./.s3cfg
     - mkdir -p kmer 
     - s3cmd get s3://primer-designer/ci-cd-test-data/kmer-lists/homo_sapiens_11.list kmer/
     - ls -la kmer
