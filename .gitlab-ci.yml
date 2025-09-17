@@ -50,7 +50,8 @@ test:
     - s3cmd get \
         s3://primer-designer/ci-cd-test-data/kmer-lists/homo_sapiens_11.list \
         kmer/ \
-        --no-encrypt 
+        --no-encrypt \
+        --no-config \
         --access_key=$S3_ACCESS_KEY \
         --secret_key=$S3_SECRET_KEY \
         --host=cog.sanger.ac.uk \
