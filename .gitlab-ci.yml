@@ -59,7 +59,7 @@ test:
       EOF
     - s3cmd get s3://primer-designer/ci-cd-test-data/kmer-lists/homo_sapiens_11.list kmer/
     - s3cmd get s3://primer-designer/ci-cd-test-data/kmer-lists/homo_sapiens_16.list kmer/
-    - ls -la kmer
+    - ls kmer
   script:
     - python -m unittest discover --start-directory ./tests --top-level-directory .
   dependencies:
