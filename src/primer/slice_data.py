@@ -10,7 +10,15 @@ logger = CustomLogger(__name__)
 
 
 class SliceData:
-    def __init__(self, name: str, start: int, end: int, strand: str, chromosome: str, bases: str, region_padding: int):
+    def __init__(self,
+                 name: str,
+                 start: int,
+                 end: int,
+                 strand: str,
+                 chromosome: str,
+                 bases: str,
+                 region_padding: int,
+                 region_avoid: int):
         self.name = name
         self.start = start
         self.end = end
@@ -19,6 +27,7 @@ class SliceData:
         self.bases = bases
         self.targeton_id = name[0:4]
         self.region_padding = region_padding
+        self.region_avoid = region_avoid
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, SliceData):
@@ -39,32 +48,34 @@ class SliceData:
 
     @property
     def p3_input(self):
-        print("surrounding", self.surrounding_region)
-        return {
-            'SEQUENCE_ID': self.name,
-            'SEQUENCE_TEMPLATE': self.surrounding_region,
-        }
+            primer_region_len = self.region_padding - self.region_avoid
+            return {
+                'SEQUENCE_ID': self.name,
+                'SEQUENCE_TEMPLATE': self.bases,
+                'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST': [0, primer_region_len,
+                                                        len(self.bases) - primer_region_len + 1, primer_region_len - 1]
+            }
 
-    @property
-    def surrounding_region(self) -> str:
-        padding = self.region_padding
+    # @property
+    # def surrounding_region(self) -> str:
+    #     padding = self.region_padding
 
-        return get_seq_from_ensembl_by_coords(
-            chromosome=self.chromosome,
-            start=self.start - padding,
-            end=self.end + padding
-        )
+    #     return get_seq_from_ensembl_by_coords(
+    #         chromosome=self.chromosome,
+    #         start=self.start - padding,
+    #         end=self.end + padding
+    #     )
     
-    @property
-    def padded_start_coordinate(self) -> int:
-        return self.start - self.region_padding
+    # @property
+    # def padded_start_coordinate(self) -> int:
+    #     return self.start - self.region_padding
     
-    @property
-    def padded_end_coordinate(self) -> int:
-        return self.end + self.region_padding
+    # @property
+    # def padded_end_coordinate(self) -> int:
+    #     return self.end + self.region_padding
 
     @staticmethod
-    def get_first_slice_data(fasta: str, padding: int) -> 'SliceData':
+    def get_first_slice_data(fasta: str, padding: int, region_avoid: int) -> 'SliceData':
         with open(fasta) as fasta_data:
             rows = SeqIO.parse(fasta_data, 'fasta')
             first_row = next(rows, None)
@@ -88,7 +99,8 @@ class SliceData:
                 strand=match.group(5),
                 chromosome=chromosome,
                 bases=str(first_row.seq),
-                region_padding=padding
+                region_padding=padding,
+                region_avoid=region_avoid
             )
 
             if next(rows, None) is not None:

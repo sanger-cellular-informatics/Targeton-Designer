@@ -22,6 +22,7 @@ class DesignerConfig:
             config["ranking"] = {}
 
         self.region_padding = config['region_padding']
+        self.region_avoid = config['region_avoid']
         self.stringency_vector = config['stringency_vector']
         self.csv_column_order = config['csv_column_order']
         self.filters = config['filters']
