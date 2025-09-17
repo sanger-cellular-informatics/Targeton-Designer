@@ -31,3 +31,6 @@ RUN pip install -r requirements.txt
 
 # Switch to the new user inside docker container
 USER $USER_NAME
+
+ENV HOME=/home/$USER_NAME
+WORKDIR /home/$USER_NAME
