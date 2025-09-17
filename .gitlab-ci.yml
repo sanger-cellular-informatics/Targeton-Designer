@@ -43,10 +43,16 @@ test:
     GIT_SUBMODULE_STRATEGY: recursive
   before_script:
     - export KSM_CONFIG=$KSM_CONFIG
-    - export AWS_ACCESS_KEY_ID=$(ksm secret get -u $SECRET_KEY_UID --field "Access Key")
-    - export AWS_SECRET_ACCESS_KEY=$(ksm secret get -u $SECRET_KEY_UID --field "Secret Key")
+    - export SECRET_UID=$SECRET_KEY_UID
+    - >
+      echo "[default]
+      encrypt = False
+      access_key = $(ksm secret get -u $SECRET_UID --field "Access Key")
+      secret_key = $(ksm secret get -u $SECRET_UID --field "Secret Key")
+      host_base = cog.sanger.ac.uk
+      host_bucket = %(bucket)s.cog.sanger.ac.uk
+      use_https = True" > ~/.s3cfg
     - mkdir -p kmer 
-    - s3cmd --configure
     - s3cmd get s3://primer-designer/ci-cd-test-data/kmer-lists/homo_sapiens_11.list kmer/
     - ls -la kmer
   script:
