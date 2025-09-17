@@ -45,6 +45,7 @@ test:
     - export KSM_CONFIG=$KSM_CONFIG
     - export SECRET_UID=$SECRET_KEY_UID
     - export PATH=$PATH:$HOME/.local/bin
+    - mkdir -p $HOME
     - |
       cat > ~/.s3cfg <<EOF
       [default]
