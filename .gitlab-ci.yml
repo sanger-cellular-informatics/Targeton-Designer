@@ -44,22 +44,17 @@ test:
   before_script:
     - export KSM_CONFIG=$KSM_CONFIG
     - export SECRET_UID=$SECRET_KEY_UID
-    - export PATH=$PATH:$HOME/.local/bin
-    - mkdir -p $HOME
-    - |
-      cat > ~/.s3cfg <<EOF
-      [default]
-      encrypt = False
-      host_base = cog.sanger.ac.uk
-      host_bucket = %(bucket)s.cog.sanger.ac.uk
-      progress_meter = False
-      use_https = True
-      access_key = $(ksm secret get -u $SECRET_UID --field "Access Key")
-      secret_key = $(ksm secret get -u $SECRET_UID --field "Secret Key")
-      EOF
-    - ls -a
+    - export S3_ACCESS_KEY=$(ksm secret get -u $SECRET_UID --field "Access Key")
+    - export S3_SECRET_KEY=$(ksm secret get -u $SECRET_UID --field "Secret Key")
     - mkdir -p kmer 
-    - s3cmd get s3://primer-designer/ci-cd-test-data/kmer-lists/homo_sapiens_11.list kmer/
+    - s3cmd get \
+        s3://primer-designer/ci-cd-test-data/kmer-lists/homo_sapiens_11.list \
+        kmer/ \
+        --no-encrypt 
+        --access_key=$S3_ACCESS_KEY \
+        --secret_key=$S3_SECRET_KEY \
+        --host=cog.sanger.ac.uk \
+        --host-bucket=%(bucket)s.cog.sanger.ac.uk \
     - ls -la kmer
   script:
     - python -m unittest discover --start-directory ./tests --top-level-directory .
