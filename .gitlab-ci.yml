@@ -42,7 +42,9 @@ test:
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   before_script:
-    - make download-kmers
+    - python3 -m pip install keeper-secrets-manager-cli
+    - export KSM_CONFIG=$KSM_CONFIG
+    - ksm secret get -u PopgF2zvaLo04WGNrwNVuQ --field "login"
   script:
     - python -m unittest discover --start-directory ./tests --top-level-directory .
   dependencies:
