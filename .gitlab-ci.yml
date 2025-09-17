@@ -43,7 +43,11 @@ test:
     GIT_SUBMODULE_STRATEGY: recursive
   before_script:
     - export KSM_CONFIG=$KSM_CONFIG
-    - ksm secret get -u PopgF2zvaLo04WGNrwNVuQ --field "login"
+    - export AWS_ACCESS_KEY_ID=$(ksm secret get -u $SECRET_KEY_UID --field "Access Key")
+    - export AWS_SECRET_ACCESS_KEY=$(ksm secret get -u $SECRET_KEY_UID --field "Secret Key")
+    - mkdir -p kmer 
+    - s3cmd get s3://primer-designer/ci-cd-test-data/kmer-lists/homo_sapiens_11.list kmer/
+    - ls -la kmer
   script:
     - python -m unittest discover --start-directory ./tests --top-level-directory .
   dependencies:
