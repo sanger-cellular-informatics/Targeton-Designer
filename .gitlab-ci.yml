@@ -44,7 +44,9 @@ test:
   before_script:
     - export KSM_CONFIG=$KSM_CONFIG
     - export SECRET_UID=$SECRET_KEY_UID
-    - touch ./.s3cfg
+    - export PATH=$PATH:$HOME/.local/bin
+    - s3cmd --configure
+    - ls -a
     - >
       echo "[default]
       encrypt = False
@@ -52,7 +54,8 @@ test:
       secret_key = $(ksm secret get -u $SECRET_UID --field "Secret Key")
       host_base = cog.sanger.ac.uk
       host_bucket = %(bucket)s.cog.sanger.ac.uk
-      use_https = True" > ./.s3cfg
+      use_https = True" > .s3cfg
+    - ls -a
     - mkdir -p kmer 
     - s3cmd get s3://primer-designer/ci-cd-test-data/kmer-lists/homo_sapiens_11.list kmer/
     - ls -la kmer
