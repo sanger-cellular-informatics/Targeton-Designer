@@ -54,7 +54,7 @@ test:
         --access_key=$S3_ACCESS_KEY \
         --secret_key=$S3_SECRET_KEY \
         --host=cog.sanger.ac.uk \
-        --host-bucket=%(bucket)s.cog.sanger.ac.uk \
+        --host-bucket="%(bucket)s.cog.sanger.ac.uk" \
     - ls -la kmer
   script:
     - python -m unittest discover --start-directory ./tests --top-level-directory .
