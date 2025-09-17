@@ -44,6 +44,7 @@ test:
   before_script:
     - export KSM_CONFIG=$KSM_CONFIG
     - export SECRET_UID=$SECRET_KEY_UID
+    - touch ./.s3cfg
     - >
       echo "[default]
       encrypt = False
