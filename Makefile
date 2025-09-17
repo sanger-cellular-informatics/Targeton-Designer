@@ -110,7 +110,6 @@ setup-venv: create-venv check-venv
 	@./venv/bin/pip install --upgrade pip
 	@./venv/bin/pip install --upgrade pip setuptools wheel
 	@./venv/bin/pip install -r requirements.txt
-	@./venv/bin/pip install keeper-secrets-manager-cli
 	@./venv/bin/pip install -r sge-primer-scoring/requirements.txt
 	@echo "Python requirements installed."
 
