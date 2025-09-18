@@ -32,5 +32,6 @@ RUN pip install -r requirements.txt
 # Switch to the new user inside docker container
 USER $USER_NAME
 
+# Create Home Directory to utilize s3cmd config
 ENV HOME=/home/$USER_NAME
 WORKDIR /home/$USER_NAME
