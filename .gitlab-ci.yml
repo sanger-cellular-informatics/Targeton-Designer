@@ -6,7 +6,7 @@ docker-build:
   # Use the official docker image.
   image: docker:23.0.6
   stage: .pre
-  tags: 
+  tags:
     - autoscale
   services:
     - name: docker:23.0.6-dind
@@ -42,10 +42,24 @@ test:
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   before_script:
-    - python3 -m pip install keeper-secrets-manager-cli
     - export KSM_CONFIG=$KSM_CONFIG
-    - ksm secret get -u PopgF2zvaLo04WGNrwNVuQ --field "login"
-
+    - export SECRET_UID=$SECRET_KEY_UID
+    - export S3_ACCESS_KEY=$(ksm secret get -u $SECRET_UID --field "Access Key")
+    - export S3_SECRET_KEY=$(ksm secret get -u $SECRET_UID --field "Secret Key")
+    - mkdir -p kmer
+    - |
+      cat > ~/.s3cfg <<EOF
+      [default]
+      encrypt = False
+      access_key = $S3_ACCESS_KEY
+      secret_key = $S3_SECRET_KEY
+      host_base = cog.sanger.ac.uk
+      host_bucket = %(bucket)s.cog.sanger.ac.uk
+      use_https = True
+      EOF
+    - s3cmd get s3://primer-designer/ci-cd-test-data/kmer-lists/homo_sapiens_11.list kmer/
+    - s3cmd get s3://primer-designer/ci-cd-test-data/kmer-lists/homo_sapiens_16.list kmer/
+    - ls kmer
   script:
     - python -m unittest discover --start-directory ./tests --top-level-directory .
   dependencies:
