@@ -53,8 +53,8 @@ test:
       encrypt = False
       access_key = $S3_ACCESS_KEY
       secret_key = $S3_SECRET_KEY
-      host_base = cog.sanger.ac.uk
-      host_bucket = %(bucket)s.cog.sanger.ac.uk
+      host_base = $HOST_BASE
+      host_bucket = $HOST_BUCKET
       use_https = True
       EOF
     - s3cmd get s3://primer-designer/ci-cd-test-data/kmer-lists/homo_sapiens_11.list kmer/
