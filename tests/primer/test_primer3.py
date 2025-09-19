@@ -190,6 +190,63 @@ class IntegrationTestPrimer3(TestCase):
         # assert
         self.assertEqual(str(value_error.exception), "No primer pairs returned")
 
+    def test_primer_pairs_within_constrained_region_and_right_product_size(self):
+        # arrange
+        bases = "GCTCGGGACCCGCACCGAGCCAGGCTCGGAGAGGCGCGCGGCCCGCCCCGGGCGCACAGCGCAGCGGGGCGGCGGGGGAGGCCCTGGCCGGCGTAAGGCGGGCAGGAGTCTGCGCCTTTGTTCCTGGCGGGAGGGCCCGCGGGCGCGCGACTCACCTTGCTGCTGGGCTCCATGGCAGCGCTGCGCTGGTGGCTCTGGCTGCGCCGGGTACGCGGGTGGCGACGGGCGTGCGAGCGGCGCTCTCCCGCTCAGGCTCGTGCTCCGGTCCGGGGACTCCCACTGCGACTCTGACTCCGACCCCCGTCGTTTGGTCTCCTGCTCCCTGGCG"
+
+        expected_product_range = [100, 230]
+        
+        region_start = 42958479
+        region_end = 42958806
+        
+        # generated primers should be within first and last 145 bases
+        padding = 150
+        avoid = 5
+        expected_primer_region_size = padding - avoid
+
+        slice = SliceData(
+            name="ARTY",
+            chromosome="1",
+            start=region_start,
+            end=region_end,
+            bases=bases,
+            strand="+",
+            region_padding=padding,
+            region_avoid=avoid
+        )
+
+        p3_config = {
+             "PRIMER_TASK": "generic",
+             "PRIMER_PICK_LEFT_PRIMER": 1,
+             "PRIMER_PICK_RIGHT_PRIMER": 1,
+             "PRIMER_OPT_SIZE": 20,
+             "PRIMER_MIN_SIZE": 18,
+             "PRIMER_MAX_SIZE": 30,
+             "P3_FILE_FLAG": 1,
+             "PRIMER_PRODUCT_SIZE_RANGE": f"{expected_product_range[0]}-{expected_product_range[1]}",
+             "PRIMER_EXPLAIN_FLAG": 1,
+             "PRIMER_MASK_TEMPLATE": 0
+             }
+
+        # act
+        result = Primer3(stringency_vector=[1], p3_config=p3_config).get_primers(slice)
+
+        product_sizes = [pair.product_size for pair in result]
+        
+        forward_end_pos = [pair.forward.primer_end for pair in result]
+        forward_size = [pos - region_start for pos in forward_end_pos]
+
+        reverse_start_pos = [pair.reverse.primer_start for pair in result]
+        reverse_size = [region_end - pos for pos in reverse_start_pos]
+
+        # assert
+        self.assertTrue(all([expected_product_range[0] <= size <= expected_product_range[1] for size in product_sizes]),
+                        f"Product sizes are out of desired range: {expected_product_range}")
+        self.assertTrue(all([size < expected_primer_region_size for size in forward_size]),
+                        f"Forward primer of desired start {expected_product_range} bp region")
+        self.assertTrue(all([size < expected_primer_region_size for size in reverse_size]),
+                        f"Reverse primer of desired end {expected_product_range} bp region")
+
     def test_kmer_lists_exist_success(self):
         # arrange
         p3_config = {

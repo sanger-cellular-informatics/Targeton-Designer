@@ -15,15 +15,15 @@ class TestSliceData(TestCase):
 
         slice_sample = SliceData(name = 'slice_name',
                                  start = 100,
-                                 end = 200,
+                                 end = 110,
                                  strand = 'strand',
                                  chromosome = 'chromosome',
                                  bases = 'slice_bases',
-                                 region_padding = 0,
-                                 region_avoid = 0)
+                                 region_padding = 5,
+                                 region_avoid = 2)
 
         expected_p3_input = {'SEQUENCE_ID': 'slice_name', 'SEQUENCE_TEMPLATE': 'slice_bases',
-                             'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST': [0, 0, len('slice_bases') + 1, -1]}
+                             'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST': [0, 3, 9, 2]}
 
         result = slice_sample.p3_input
 
