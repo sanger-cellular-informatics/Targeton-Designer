@@ -36,7 +36,7 @@ docker-build:
 
 # Job to build the development image
 docker-build-dev:
-  stage: build
+  stage: test
   image: docker:23.0.6
   services:
     - docker:23.0.6-dind
