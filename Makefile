@@ -119,6 +119,8 @@ test: setup-venv
 	pip list
 	python -m unittest discover --start-directory ./tests --top-level-directory .
 
+download-kmers:
+	bash download_kmer_lists.sh
 
 build-docker:
 	@ver=$$(docker version --format '{{.Server.Version}}' 2>&1 | sed -E 's/([0-9]+).*/\1/')
