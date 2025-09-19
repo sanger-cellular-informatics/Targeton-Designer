@@ -33,9 +33,6 @@ docker-build:
       - Dockerfile
       - Makefile
 
-stages:
-  - build
-  - test
 
 # Job to build the development image
 docker-build-dev:

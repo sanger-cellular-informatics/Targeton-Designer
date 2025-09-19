@@ -43,8 +43,8 @@ RUN groupadd $GROUP_NAME && useradd -g $GROUP_NAME $USER_NAME
 WORKDIR /targeton-designer
 
 # Copy only the necessary files and installed dependencies from the builder stage
-COPY --from=builder --chown=$USER_NAME:$GROUP_NAME /targeton-designer /targeton-designer
-COPY --from=builder --chown=$USER_NAME:$GROUP_NAME /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
+COPY --from=build-stage --chown=$USER_NAME:$GROUP_NAME /targeton-designer /targeton-designer
+COPY --from=build-stage --chown=$USER_NAME:$GROUP_NAME /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
 
 RUN pip install --no-cache-dir keeper-secrets-manager-cli
 RUN pip install s3cmd
