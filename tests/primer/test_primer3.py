@@ -29,7 +29,9 @@ class IntegrationTestPrimer3(TestCase):
             start=pre_targeton_start,
             end=pre_targeton_end,
             bases=bases,
-            strand="-"
+            strand="-",
+            region_padding=210,
+            region_avoid=0
         )
 
         p3_config = {
@@ -38,11 +40,12 @@ class IntegrationTestPrimer3(TestCase):
              "PRIMER_PICK_RIGHT_PRIMER": 1,
              "PRIMER_OPT_SIZE": 20,
              "PRIMER_MIN_SIZE": 18,
-             "PRIMER_MAX_SIZE": 23,
+             "PRIMER_MAX_SIZE": 30,
              "P3_FILE_FLAG": 1,
-             "SEQUENCE_INCLUDED_REGION": [0, 200],
+             "PRIMER_PRODUCT_SIZE_RANGE": "100-210",
              "PRIMER_EXPLAIN_FLAG": 1,
-             "PRIMER_MASK_TEMPLATE": 0
+             "PRIMER_MASK_TEMPLATE": 0,
+             "PRIMER_NUM_RETURN": 1
              }
 
         # act
@@ -50,31 +53,31 @@ class IntegrationTestPrimer3(TestCase):
 
         # assert
         expected_primer_pair = PrimerPair(
-            uid="bc09fcac-07c0-11ef-b244-fa163e9abfe1",
+            uid="24ef4f66-9491-11f0-8314-8773ed291a1b",
             pair_id=f"{pre_targeton_name}_0_str1",
             chromosome=chromosome,
             pre_targeton_start=pre_targeton_start,
             pre_targeton_end=pre_targeton_end,
-            product_size=200,
+            product_size=210,
             stringency=stringency,
             targeton_id="ENSE"
         )
 
         expected_forward = DesignedPrimer(
             name=f"{pre_targeton_name}_LibAmpF_0",
-            penalty=2.7456977357412597,
+            penalty=2.0371361439404154,
             pair_id=f"{pre_targeton_name}_0_str1",
-            sequence="CAGACAGCTGCTGGGACA",
-            coords=Interval(start=199, end=18),
-            primer_start=42929604,
-            primer_end=42929621,
+            sequence="GCGTTGATGCCAGACAGCT",
+            coords=Interval(start=209, end=19),
+            primer_start=42929594,
+            primer_end=42929612,
             strand="+",
-            tm=59.25430226425874,
-            gc_percent=61.111111111111114,
-            self_any_th=30.996860910464648,
+            tm=61.037136143940415,
+            gc_percent=57.89473684210526,
+            self_any_th=0.0,
             self_end_th=0.0,
-            hairpin_th=35.513327628973116,
-            end_stability=4.02
+            hairpin_th=35.057108503623226,
+            end_stability=4.24
         )
 
         expected_reverse = DesignedPrimer(
@@ -114,7 +117,9 @@ class IntegrationTestPrimer3(TestCase):
             start=42958479,
             end=42958806,
             bases=bases,
-            strand="+"
+            strand="+",
+            region_padding=328,
+            region_avoid=0
         )
 
         p3_config = {
@@ -125,7 +130,7 @@ class IntegrationTestPrimer3(TestCase):
              "PRIMER_MIN_SIZE": 18,
              "PRIMER_MAX_SIZE": 30,
              "P3_FILE_FLAG": 1,
-             "SEQUENCE_INCLUDED_REGION": [0, 212],
+             "PRIMER_PRODUCT_SIZE_RANGE": "250-328",
              "PRIMER_EXPLAIN_FLAG": 1,
              "PRIMER_MASK_TEMPLATE": 0
              }
@@ -158,7 +163,9 @@ class IntegrationTestPrimer3(TestCase):
             start=42929593,
             end=42929803,
             bases=bases,
-            strand="-"
+            strand="-",
+            region_padding=210,
+            region_avoid=0
         )
 
         mock_build_primer_pairs.return_value = []
@@ -169,9 +176,9 @@ class IntegrationTestPrimer3(TestCase):
              "PRIMER_PICK_RIGHT_PRIMER": 1,
              "PRIMER_OPT_SIZE": 20,
              "PRIMER_MIN_SIZE": 18,
-             "PRIMER_MAX_SIZE": 23,
+             "PRIMER_MAX_SIZE": 30,
              "P3_FILE_FLAG": 1,
-             "SEQUENCE_INCLUDED_REGION": [0, 200],
+             "PRIMER_PRODUCT_SIZE_RANGE": "100-210",
              "PRIMER_EXPLAIN_FLAG": 1,
              "PRIMER_MASK_TEMPLATE": 0
              }

@@ -30,8 +30,8 @@ class TestWriteOutputFiles(TestCase):
         )
         self.fs.create_file('test.bed', contents=contents)
         self.slices = [
-            SliceData('region_1', 100, 200, 'strand', 'chromosome', 'bases'),
-            SliceData('region_2', 300, 400, 'strand', 'chromosome', 'bases'),
+            SliceData('region_1', 100, 200, 'strand', 'chromosome', 'bases', 0, 0),
+            SliceData('region_2', 300, 400, 'strand', 'chromosome', 'bases', 0, 0),
         ]
 
     @patch('builtins.print')

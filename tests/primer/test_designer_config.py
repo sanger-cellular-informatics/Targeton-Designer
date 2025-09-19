@@ -17,7 +17,9 @@ class TestDesignerConfig(unittest.TestCase):
         self.mock_config_with_no_filters_section = {
                     "stringency_vector": [1, 2, 3],
                     "csv_column_order": ["col1", "col2", "col3"],
-                    "ranking": {}
+                    "ranking": {},
+                    "region_padding": 0,
+                    "region_avoid": 0
                 }
 
     def tearDown(self):

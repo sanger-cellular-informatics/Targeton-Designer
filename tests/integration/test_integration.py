@@ -53,6 +53,8 @@ class TestPrimerIntegration(TestCase):
 
         self.mock_config = {
             "stringency_vector": [1, 2, 3],
+            "region_padding": 150,
+            "region_avoid": 5,
             "csv_column_order": ["col1", "col2", "col3"],
             "filters": {
                         "duplicates": True,
@@ -76,7 +78,6 @@ class TestPrimerIntegration(TestCase):
             ):
                 parsed_input = ParsedInputArguments()
                 args = parsed_input.get_args()
-
                 # Act
                 primer_result = primer_command(args=args)
 
@@ -138,7 +139,7 @@ class TestPrimerIntegration(TestCase):
 class TestTargetonCSVIntegration(TestCase):
     def setUp(self):
         self.ipcress_input_path = r"./tests/integration/fixtures/ipcress_primer_input.txt"
-        self.slices = [SliceData('exon1', 100, 250, '+', 'chr1', 'bases')]
+        self.slices = [SliceData('exon1', 100, 250, '+', 'chr1', 'bases', 0, 0)]
 
     def test_write_targeton_csv_output(self):
         with TemporaryDirectory() as tmpdir:
