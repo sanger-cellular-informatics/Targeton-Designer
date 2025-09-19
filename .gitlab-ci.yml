@@ -33,33 +33,19 @@ docker-build:
       - Dockerfile
       - Makefile
 
-
-# Job to build the development image
-docker-build-dev:
+test:
+  # Reuse built container.
+  image: $DOCKER_IMAGE_NAME
   stage: test
-  image: docker:23.0.6
   tags:
     - autoscale
-  services:
-    - name: docker:23.0.6-dind
-      alias: thedockerhost
   variables:
-    DOCKER_HOST: tcp://thedockerhost:2375/
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: ""
-  before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-  script:
-    - docker build --target dev-stage -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA .
-    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
-
-test:
-  stage: test
-  # Use the image built in the previous stage. This is the correct way.
-  image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+    GIT_SUBMODULE_STRATEGY: recursive
   before_script:
     - export KSM_CONFIG=$KSM_CONFIG
     - export SECRET_UID=$SECRET_KEY_UID
+    - export S3_ACCESS_KEY=$(ksm secret get -u $SECRET_UID --field "Access Key")
+    - export S3_SECRET_KEY=$(ksm secret get -u $SECRET_UID --field "Secret Key")
     - mkdir -p kmer
     - |
       cat > ~/.s3cfg <<EOF
@@ -77,5 +63,4 @@ test:
   script:
     - python -m unittest discover --start-directory ./tests --top-level-directory .
   dependencies:
-    - docker-build-dev
-  needs: [docker-build-dev]
+    - docker-build
