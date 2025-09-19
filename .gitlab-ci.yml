@@ -38,8 +38,11 @@ docker-build:
 docker-build-dev:
   stage: test
   image: docker:23.0.6
+  tags:
+    - autoscale
   services:
-    - docker:23.0.6-dind
+    - name: docker:23.0.6-dind
+      alias: thedockerhost
   variables:
     DOCKER_HOST: tcp://thedockerhost:2375/
     DOCKER_DRIVER: overlay2
