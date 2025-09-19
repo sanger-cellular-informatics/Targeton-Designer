@@ -78,3 +78,4 @@ test:
     - python -m unittest discover --start-directory ./tests --top-level-directory .
   dependencies:
     - docker-build-dev
+  needs: [docker-build-dev]
