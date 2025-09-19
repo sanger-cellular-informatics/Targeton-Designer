@@ -14,5 +14,4 @@ pyfakefs==5.2.2
 pysam==0.21.0
 redis==4.3.3
 requests==2.30.0
-s3cmd==2.2.0
 typing==3.7.4.3
