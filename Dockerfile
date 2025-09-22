@@ -23,9 +23,14 @@ WORKDIR /targeton-designer
 COPY --chown=$USER_NAME:$GROUP_NAME . /targeton-designer
 
 RUN pip install --upgrade pip setuptools wheel
-RUN pip install numpy==1.26.4
-RUN pip install pandas==2.0.3
+RUN pip install --no-cache-dir keeper-secrets-manager-cli
+RUN pip install s3cmd
 RUN pip install -r requirements.txt
 
 # Switch to the new user inside docker container
 USER $USER_NAME
+
+
+# Set home and work directories to utilize s3cmd
+ENV HOME=/home/$USER_NAME
+WORKDIR /home/$USER_NAME
