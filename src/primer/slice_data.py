@@ -56,23 +56,16 @@ class SliceData:
                                                         len(self.bases) - primer_region_len + 1, primer_region_len - 1]
             }
 
-    # @property
-    # def surrounding_region(self) -> str:
-    #     padding = self.region_padding
+    # Not currently in use
+    @property
+    def surrounding_region(self) -> str:
+        padding = self.region_padding
 
-    #     return get_seq_from_ensembl_by_coords(
-    #         chromosome=self.chromosome,
-    #         start=self.start - padding,
-    #         end=self.end + padding
-    #     )
-    
-    # @property
-    # def padded_start_coordinate(self) -> int:
-    #     return self.start - self.region_padding
-    
-    # @property
-    # def padded_end_coordinate(self) -> int:
-    #     return self.end + self.region_padding
+        return get_seq_from_ensembl_by_coords(
+            chromosome=self.chromosome,
+            start=self.start - padding,
+            end=self.end + padding
+        )
 
     @staticmethod
     def get_first_slice_data(fasta: str, padding: int, region_avoid: int) -> 'SliceData':
