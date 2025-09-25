@@ -1,5 +1,6 @@
 import re
 from Bio import SeqIO
+import sys
 
 from primer.ensembl import get_seq_from_ensembl_by_coords
 
@@ -48,13 +49,17 @@ class SliceData:
 
     @property
     def p3_input(self):
-            primer_region_len = self.region_padding - self.region_avoid
-            return {
-                'SEQUENCE_ID': self.name,
-                'SEQUENCE_TEMPLATE': self.bases,
-                'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST': [0, primer_region_len,
-                                                        len(self.bases) - primer_region_len + 1, primer_region_len - 1]
-            }
+        primer_pair_region = []
+        if self.region_padding:
+            primer_region_length = self.region_padding - self.region_avoid
+            primer_pair_region = [0, primer_region_length,
+                                      len(self.bases) - primer_region_length + 1, primer_region_length - 1]
+
+        return {
+            'SEQUENCE_ID': self.name,
+            'SEQUENCE_TEMPLATE': self.bases,
+            'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST': primer_pair_region
+        }
 
     # Not currently in use
     @property
@@ -93,8 +98,7 @@ class SliceData:
                 chromosome=chromosome,
                 bases=str(first_row.seq),
                 region_padding=padding,
-                region_avoid=region_avoid
-            )
+                region_avoid=region_avoid)
 
             if next(rows, None) is not None:
                 logger.warning(f"The FASTA file '{fasta}' contains more than one pre-targeton. "

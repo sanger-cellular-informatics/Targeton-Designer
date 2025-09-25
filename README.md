@@ -200,8 +200,8 @@ You can pass your own user Primer3 config file to the `primer` command using the
 ##### 2.2.2 Designer config
 
 This file specifies the configuration parameters specific to Primer Designer:
-1. `"region_padding"`: The length of the sequences up- and downstream of the target region, where primers will be generated.
-2. `"region_avoid"`: The length of the up- and downstream sequences immediately adjacent to the target region where primers must not be placed. This is contained within the `"region_padding"` region.
+1. `"region_padding"`: The length of the sequences up- and downstream of the target region, where primers will be generated. Set to 0 to allow primer placement anywhere in the sequence (any `region_avoid` values will be ignored).
+2. `"region_avoid"`: The length of the up- and downstream sequences immediately adjacent to the target region where primers must not be placed. This is contained within the `"region_padding"` region. The difference between `region_padding` and `region_avoid` cannot be less than `PRIMER_MIN_LEN` (see [Primer3 config](#221-primer3-parameters-config)).
 3. `"stringency_vector"`: A vector of different stringencies to be applied when running Primer3.
 4. `"filters"`: Any filters that should be applied to the list of primer pairs provided by Primer3 (see [below](
 #224-applying-filters-from-the-designer-config-file)).
