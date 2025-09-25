@@ -31,8 +31,7 @@ class IntegrationTestPrimer3(TestCase):
             bases=bases,
             strand="-",
             region_padding=210,
-            region_avoid=0
-        )
+            region_avoid=0)
 
         p3_config = {
              "PRIMER_TASK": "pick_cloning_primers",
@@ -119,8 +118,7 @@ class IntegrationTestPrimer3(TestCase):
             bases=bases,
             strand="+",
             region_padding=328,
-            region_avoid=0
-        )
+            region_avoid=0)
 
         p3_config = {
              "PRIMER_TASK": "generic",
@@ -165,8 +163,7 @@ class IntegrationTestPrimer3(TestCase):
             bases=bases,
             strand="-",
             region_padding=210,
-            region_avoid=0
-        )
+            region_avoid=0)
 
         mock_build_primer_pairs.return_value = []
 

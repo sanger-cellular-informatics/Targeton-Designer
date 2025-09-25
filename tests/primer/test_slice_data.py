@@ -1,6 +1,8 @@
+import logging
 from unittest.mock import patch
 
 from pyfakefs.fake_filesystem_unittest import TestCase
+from tests.utils.utils import CapturingStreamHandler
 
 from primer.slice_data import SliceData
 
@@ -9,6 +11,14 @@ class TestSliceData(TestCase):
 
     def setUp(self):
         self.setUpPyfakefs()
+        # Create a custom stream handler to capture logs
+        self.handler = CapturingStreamHandler()
+        self.logger = self.handler.get_logger(self.handler)
+
+    def tearDown(self):
+        # Remove the handler after each test to reset logging
+        logger = logging.getLogger()
+        logger.removeHandler(self.handler)
 
     @patch('primer.slice_data.get_seq_from_ensembl_by_coords')
     def test_p3_input(self, mock_get_seq):
@@ -28,6 +38,24 @@ class TestSliceData(TestCase):
         result = slice_sample.p3_input
 
         self.assertEqual(result, expected_p3_input)
+
+    def test_p3_input_when_padding_zero(self):
+
+            slice_sample = SliceData(name = 'slice_name',
+                                    start = 100,
+                                    end = 110,
+                                    strand = 'strand',
+                                    chromosome = 'chromosome',
+                                    bases = 'slice_bases',
+                                    region_padding = 0,
+                                    region_avoid = 200)
+
+            expected_p3_input = {'SEQUENCE_ID': 'slice_name', 'SEQUENCE_TEMPLATE': 'slice_bases',
+                                'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST': []}
+
+            result = slice_sample.p3_input
+
+            self.assertEqual(result, expected_p3_input)
 
     def test_get_first_slice(self):
         slices_fasta_file = 'one_slice.fa'

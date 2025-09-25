@@ -57,8 +57,13 @@ class TestPrimerPair(TestCase):
     def setUp(self):
         self.setUpPyfakefs()
         self.input_slice_data = SliceData(
-            name='slice_name', start=100, end=200, strand='+', chromosome='1', bases='bases',
-            region_padding=[0,5,0,5],region_avoid=0
+            name='slice_name',
+            start=100, end=200,
+            strand='+',
+            chromosome='1',
+            bases='bases',
+            region_padding=[0, 5, 0, 5],
+            region_avoid=0
         )
 
     @patch('primer.primer_pair.map_to_designed_primer')
