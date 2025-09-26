@@ -1,5 +1,6 @@
 from utils.file_system import parse_json
 
+import sys
 from custom_logger.custom_logger import CustomLogger
 
 # Initialize logger
@@ -18,8 +19,22 @@ class DesignerConfig:
             # Because we want to run duplicates filter even there's no filter added in configuration.
             config["filters"] = {"duplicates": True}
 
+        # Check ranking
         if not config.get("ranking"):
             config["ranking"] = {}
+
+        # Check primer region restriction parameters
+        self.region_padding = config['region_padding'] or 0
+        self.region_avoid = config['region_avoid'] or 0
+        if not isinstance(self.region_padding, int) or self.region_padding < 0:
+            logger.error("region_padding must be a non-negative integer")
+            sys.exit(1)
+        if not self.region_padding:
+            logger.info(("region_padding set to 0, so primer placement will not be restricted by padding, and "
+                        "region_avoid will be ignored."))
+        if not isinstance(self.region_avoid, int) or self.region_avoid < 0:
+            logger.error("region_avoid must be a non-negative integer")
+            sys.exit(1)
 
         self.stringency_vector = config['stringency_vector']
         self.csv_column_order = config['csv_column_order']

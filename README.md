@@ -199,15 +199,18 @@ You can pass your own user Primer3 config file to the `primer` command using the
 
 ##### 2.2.2 Designer config
 
-This specifies parameters specific to the Primer Designer tool. You can specify:
-1. A vector of different stringencies to be applied when running Primer3,
-2. Any filters that should be applied to the list of primer pairs provided by Primer3 (see [below](
-#224-applying-filters-from-the-designer-config-file)),
-3. The order in which primer pairs should be ranked in the output CSV files (see [below](
-#225-applying-ranking-from-the-designer-config-file)),
-4. The column order for the output CSV files.
+This file specifies the configuration parameters specific to Primer Designer:
+1. `"region_padding"`: The length of the sequences up- and downstream of the target region, where primers will be generated. Set to 0 to allow primer placement anywhere in the sequence (any `region_avoid` values will be ignored).
+2. `"region_avoid"`: The length of the up- and downstream sequences immediately adjacent to the target region where primers must not be placed. This is contained within the `"region_padding"` region. The difference between `region_padding` and `region_avoid` cannot be less than `PRIMER_MIN_LEN` (see [Primer3 config](#221-primer3-parameters-config)).
+3. `"stringency_vector"`: A vector of different stringencies to be applied when running Primer3.
+4. `"filters"`: Any filters that should be applied to the list of primer pairs provided by Primer3 (see [below](
+#224-applying-filters-from-the-designer-config-file)).
+5. `"ranking"`: The order in which primer pairs should be ranked in the output CSV files (see [below](
+#225-applying-ranking-from-the-designer-config-file)).
+6. `"csv_column_order"`: The column order for the output CSV files (see [below](
+#226-specifying-column-order-through-the-designer-config-file)).
 
-Note that, in the Designer config, `stringency_vector` corresponds to 'PRIMER_MASK_FAILURE_RATE' in the [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_FAILURE_RATE). This means that a value of 0.1 will apply more stringent settings for the masking algorithm than a value of 1. Please also note that, when PRIMER_MASK_TEMPLATE is off,  we recommend setting the `stringency_vector` to a single "dummy" value, e.g., `"stringency_vector": [1]` (as the `stringency_vector` is currently a mandatory field that always needs to be passed).
+Note: `stringency_vector` corresponds to 'PRIMER_MASK_FAILURE_RATE' in the [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_FAILURE_RATE). This means that a value of 0.1 will apply more stringent settings for the masking algorithm than a value of 1. Please When PRIMER_MASK_TEMPLATE is off,  we recommend setting the `stringency_vector` to a single "dummy" value, e.g., `"stringency_vector": [1]` (as `stringency_vector` is a mandatory field).
 
 The default configuration can be found in `config/default_designer.config.json` (which should NOT be moved, deleted or edited). 
 This file contains the default configuration that will be applied if no user config file is provided.

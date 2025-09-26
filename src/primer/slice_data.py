@@ -1,5 +1,6 @@
 import re
 from Bio import SeqIO
+import sys
 
 from primer.ensembl import get_seq_from_ensembl_by_coords
 
@@ -10,7 +11,15 @@ logger = CustomLogger(__name__)
 
 
 class SliceData:
-    def __init__(self, name: str, start: int, end: int, strand: str, chromosome: str, bases: str):
+    def __init__(self,
+                 name: str,
+                 start: int,
+                 end: int,
+                 strand: str,
+                 chromosome: str,
+                 bases: str,
+                 region_padding: int,
+                 region_avoid: int):
         self.name = name
         self.start = start
         self.end = end
@@ -18,6 +27,8 @@ class SliceData:
         self.chromosome = chromosome
         self.bases = bases
         self.targeton_id = name[0:4]
+        self.region_padding = region_padding
+        self.region_avoid = region_avoid
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, SliceData):
@@ -38,23 +49,31 @@ class SliceData:
 
     @property
     def p3_input(self):
+        primer_pair_region = []
+        if self.region_padding:
+            primer_region_length = self.region_padding - self.region_avoid
+            primer_pair_region = [0, primer_region_length,
+                                      len(self.bases) - primer_region_length + 1, primer_region_length - 1]
+
         return {
             'SEQUENCE_ID': self.name,
             'SEQUENCE_TEMPLATE': self.bases,
+            'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST': primer_pair_region
         }
 
+    # Not currently in use
     @property
     def surrounding_region(self) -> str:
-        surrounding_band = 1000
+        padding = self.region_padding
 
         return get_seq_from_ensembl_by_coords(
             chromosome=self.chromosome,
-            start=self.start - surrounding_band,
-            end=self.end + surrounding_band
+            start=self.start - padding,
+            end=self.end + padding
         )
 
     @staticmethod
-    def get_first_slice_data(fasta: str) -> 'SliceData':
+    def get_first_slice_data(fasta: str, padding: int, region_avoid: int) -> 'SliceData':
         with open(fasta) as fasta_data:
             rows = SeqIO.parse(fasta_data, 'fasta')
             first_row = next(rows, None)
@@ -78,7 +97,8 @@ class SliceData:
                 strand=match.group(5),
                 chromosome=chromosome,
                 bases=str(first_row.seq),
-            )
+                region_padding=padding,
+                region_avoid=region_avoid)
 
             if next(rows, None) is not None:
                 logger.warning(f"The FASTA file '{fasta}' contains more than one pre-targeton. "

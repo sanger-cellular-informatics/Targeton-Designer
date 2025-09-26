@@ -1,4 +1,6 @@
 {
+  "region_padding": 150,
+  "region_avoid": 5,
   "stringency_vector": [1, 0.5, 0.1],
   "filters": {
     "duplicates": true,
