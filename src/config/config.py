@@ -24,16 +24,16 @@ class DesignerConfig:
             config["ranking"] = {}
 
         # Check primer region restriction parameters
-        self.region_padding = config['region_padding'] or 0
-        self.region_avoid = config['region_avoid'] or 0
-        if not isinstance(self.region_padding, int) or self.region_padding < 0:
-            logger.error("region_padding must be a non-negative integer")
+        self.flanking_region = config['flanking_region'] or 0
+        self.exclusion_region = config['exclusion_region'] or 0
+        if not isinstance(self.flanking_region, int) or self.flanking_region < 0:
+            logger.error("flanking_region must be a non-negative integer")
             sys.exit(1)
-        if not self.region_padding:
-            logger.info(("region_padding set to 0, so primer placement will not be restricted by padding, and "
-                        "region_avoid will be ignored."))
-        if not isinstance(self.region_avoid, int) or self.region_avoid < 0:
-            logger.error("region_avoid must be a non-negative integer")
+        if not self.flanking_region:
+            logger.info(("flanking_region set to 0, so primer placement will not be restricted the flanking_region, "
+                        "and exclusion_region will be ignored."))
+        if not isinstance(self.exclusion_region, int) or self.exclusion_region < 0:
+            logger.error("exclusion_region must be a non-negative integer")
             sys.exit(1)
 
         self.stringency_vector = config['stringency_vector']

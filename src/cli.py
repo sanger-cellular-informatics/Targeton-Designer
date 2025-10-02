@@ -56,8 +56,8 @@ def primer_command(
 
     validate_fasta_format(config.fasta)
     slice_data = SliceData.get_first_slice_data(config.fasta,
-                                                config.region_padding,
-                                                config.region_avoid)
+                                                config.flanking_region,
+                                                config.exclusion_region)
 
     primers = Primer3(config.stringency_vector, config.primer3_params).get_primers(slice_data)
 

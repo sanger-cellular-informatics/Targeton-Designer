@@ -53,8 +53,8 @@ class TestPrimerIntegration(TestCase):
 
         self.mock_config = {
             "stringency_vector": [1, 2, 3],
-            "region_padding": 150,
-            "region_avoid": 5,
+            "flanking_region": 150,
+            "exclusion_region": 5,
             "csv_column_order": ["col1", "col2", "col3"],
             "filters": {
                         "duplicates": True,

@@ -31,10 +31,10 @@ class TestDesignerConfigClass(TestCase):
 
     @patch.object(DesignerConfig, 'read_config')
     @patch('config.config.logger.error')
-    def test_region_padding_negative_number_error(self, mock_logger_error, mock_read_config):
+    def test_flanking_region_negative_number_error(self, mock_logger_error, mock_read_config):
         mock_read_config.return_value = {
-            'region_padding': -5,
-            'region_avoid': 5,
+            'flanking_region': -5,
+            'exclusion_region': 5,
             'stringency_vector': [],
             'csv_column_order': [],
             'filters': {},
@@ -44,15 +44,15 @@ class TestDesignerConfigClass(TestCase):
         with self.assertRaises(SystemExit):
             DesignerConfig(args={})
 
-        expected_error_message = "region_padding must be a non-negative integer"
+        expected_error_message = "flanking_region must be a non-negative integer"
         mock_logger_error.assert_called_once_with(expected_error_message)
 
     @patch.object(DesignerConfig, 'read_config')
     @patch('config.config.logger.error')
-    def test_region_padding_non_integer_error(self, mock_logger_error, mock_read_config):
+    def test_flanking_region_non_integer_error(self, mock_logger_error, mock_read_config):
         mock_read_config.return_value = {
-            'region_padding': "padding",
-            'region_avoid': 5,
+            'flanking_region': "flanking",
+            'exclusion_region': 5,
             'stringency_vector': [],
             'csv_column_order': [],
             'filters': {},
@@ -62,15 +62,15 @@ class TestDesignerConfigClass(TestCase):
         with self.assertRaises(SystemExit):
             DesignerConfig(args={})
 
-        expected_error_message = "region_padding must be a non-negative integer"
+        expected_error_message = "flanking_region must be a non-negative integer"
         mock_logger_error.assert_called_once_with(expected_error_message)
 
     @patch.object(DesignerConfig, 'read_config')
     @patch('config.config.logger.info')
-    def test_region_padding_no_value(self, mock_logger_info, mock_read_config):
+    def test_flanking_region_no_value(self, mock_logger_info, mock_read_config):
         mock_read_config.return_value = {
-            'region_padding': 0,
-            'region_avoid': 5,
+            'flanking_region': 0,
+            'exclusion_region': 5,
             'stringency_vector': [],
             'csv_column_order': [],
             'filters': {},
@@ -80,17 +80,17 @@ class TestDesignerConfigClass(TestCase):
         DesignerConfig(args={})
 
         expected_info_message = (
-            "region_padding set to 0, so primer placement will not be restricted by padding, and "
-            "region_avoid will be ignored."
+            "flanking_region set to 0, so primer placement will not be restricted the flanking_region, and "
+            "exclusion_region will be ignored."
         )
         mock_logger_info.assert_called_once_with(expected_info_message)
 
     @patch.object(DesignerConfig, 'read_config')
     @patch('config.config.logger.error')
-    def test_region_avoid_negative_error(self, mock_logger_error, mock_read_config):
+    def test_exclusion_region_negative_error(self, mock_logger_error, mock_read_config):
         mock_read_config.return_value = {
-            'region_padding': 5,
-            'region_avoid': -5,
+            'flanking_region': 5,
+            'exclusion_region': -5,
             'stringency_vector': [],
             'csv_column_order': [],
             'filters': {},
@@ -100,15 +100,15 @@ class TestDesignerConfigClass(TestCase):
         with self.assertRaises(SystemExit):
             DesignerConfig(args={})
 
-        expected_error_message = "region_avoid must be a non-negative integer"
+        expected_error_message = "exclusion_region must be a non-negative integer"
         mock_logger_error.assert_called_once_with(expected_error_message)
 
     @patch.object(DesignerConfig, 'read_config')
     @patch('config.config.logger.error')
-    def test_region_avoid_non_integer_error(self, mock_logger_error, mock_read_config):
+    def test_exclusion_region_non_integer_error(self, mock_logger_error, mock_read_config):
         mock_read_config.return_value = {
-            'region_padding': 5,
-            'region_avoid': "avoid",
+            'flanking_region': 5,
+            'exclusion_region': "exclude",
             'stringency_vector': [],
             'csv_column_order': [],
             'filters': {},
@@ -118,12 +118,12 @@ class TestDesignerConfigClass(TestCase):
         with self.assertRaises(SystemExit):
             DesignerConfig(args={})
 
-        expected_error_message = "region_avoid must be a non-negative integer"
+        expected_error_message = "exclusion_region must be a non-negative integer"
         mock_logger_error.assert_called_once_with(expected_error_message)
 
     def test_read_config(self):
-        expected = {'padding_region': 150,
-                    'avoid_region': 5,
+        expected = {'flanking_region': 150,
+                    'exclusion_region': 5,
                     'stringency_vector': [1, 0.5, 0.1],
                     'csv_column_order': ["primer_type", "primer", "penalty", "stringency", "sequence", "primer_start", 
                                          "primer_end", "tm", "gc_percent", "self_any_th", "self_end_th", "hairpin_th", 
