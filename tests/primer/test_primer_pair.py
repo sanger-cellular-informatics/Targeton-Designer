@@ -62,8 +62,8 @@ class TestPrimerPair(TestCase):
             strand='+',
             chromosome='1',
             bases='bases',
-            region_padding=[0, 5, 0, 5],
-            region_avoid=0
+            flanking_region=[0, 5, 0, 5],
+            exclusion_region=0
         )
 
     @patch('primer.primer_pair.map_to_designed_primer')

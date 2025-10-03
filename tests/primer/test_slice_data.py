@@ -29,8 +29,8 @@ class TestSliceData(TestCase):
                                  strand = 'strand',
                                  chromosome = 'chromosome',
                                  bases = 'slice_bases',
-                                 region_padding = 5,
-                                 region_avoid = 2)
+                                 flanking_region = 5,
+                                 exclusion_region = 2)
 
         expected_p3_input = {'SEQUENCE_ID': 'slice_name', 'SEQUENCE_TEMPLATE': 'slice_bases',
                              'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST': [0, 3, 9, 2]}
@@ -39,7 +39,7 @@ class TestSliceData(TestCase):
 
         self.assertEqual(result, expected_p3_input)
 
-    def test_p3_input_when_padding_zero(self):
+    def test_p3_input_when_flanking_zero(self):
 
             slice_sample = SliceData(name = 'slice_name',
                                     start = 100,
@@ -47,8 +47,8 @@ class TestSliceData(TestCase):
                                     strand = 'strand',
                                     chromosome = 'chromosome',
                                     bases = 'slice_bases',
-                                    region_padding = 0,
-                                    region_avoid = 200)
+                                    flanking_region = 0,
+                                    exclusion_region = 200)
 
             expected_p3_input = {'SEQUENCE_ID': 'slice_name', 'SEQUENCE_TEMPLATE': 'slice_bases',
                                 'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST': []}
@@ -67,9 +67,9 @@ class TestSliceData(TestCase):
                              strand = '+',
                              chromosome = '1',
                              bases='GTGATCGAGGAGTTCTA',
-                             region_padding = 0,
-                             region_avoid = 0)
-        result = SliceData.get_first_slice_data(slices_fasta_file, padding = 0, region_avoid = 0)
+                             flanking_region = 0,
+                             exclusion_region = 0)
+        result = SliceData.get_first_slice_data(slices_fasta_file, flanking = 0, exclusion_region = 0)
 
         self.assertEqual(result.name, expected.name)
         self.assertEqual(result.start, expected.start)
@@ -91,10 +91,10 @@ class TestSliceData(TestCase):
                              strand = '+',
                              chromosome = '1',
                              bases = 'GTGATCGAGGAGTTCTA',
-                             region_padding = 0,
-                             region_avoid = 0)
+                             flanking_region = 0,
+                             exclusion_region = 0)
 
-        result = SliceData.get_first_slice_data(slices_fasta_file, padding = 0, region_avoid = 0)
+        result = SliceData.get_first_slice_data(slices_fasta_file, flanking = 0, exclusion_region = 0)
 
         self.assertEqual(result.name, expected.name)
         self.assertEqual(result.start, expected.start)
@@ -111,7 +111,7 @@ class TestSliceData(TestCase):
         self.fs.create_file(wrong_fasta_file, contents='WRONG_SEQUENCE_PATTERN\nGTGATCGAGGAGTTCTA')
 
         with self.assertRaises(ValueError) as error:
-            SliceData.get_first_slice_data(wrong_fasta_file, padding = 0, region_avoid = 0)
+            SliceData.get_first_slice_data(wrong_fasta_file, flanking = 0, exclusion_region = 0)
 
         self.assertEqual(str(error.exception), f"Unable to parse the FASTA file '{wrong_fasta_file}'")
 
@@ -120,7 +120,7 @@ class TestSliceData(TestCase):
         self.fs.create_file(empty_fasta, contents='')
 
         with self.assertRaises(ValueError) as error:
-            SliceData.get_first_slice_data(empty_fasta, padding = 0, region_avoid = 0)
+            SliceData.get_first_slice_data(empty_fasta, flanking = 0, exclusion_region = 0)
 
         self.assertEqual(str(error.exception), f"Unable to parse the FASTA file '{empty_fasta}'")
 
@@ -144,21 +144,21 @@ class TestSliceData(TestCase):
                              strand = '+',
                              chromosome = '1',
                              bases = 'GTGATCGAGGAGTTCTA',
-                             region_padding = 0,
-                             region_avoid = 0)
+                             flanking_region = 0,
+                             exclusion_region = 0)
 
-        result_1 = SliceData.get_first_slice_data(mocked_fasta_1, padding = 0, region_avoid = 0)
+        result_1 = SliceData.get_first_slice_data(mocked_fasta_1, flanking = 0, exclusion_region = 0)
 
         # check with chr parsed correctly
         self.assertEqual(result_1, expected)
 
-        result_2 = SliceData.get_first_slice_data(mocked_fasta_2, padding = 0, region_avoid = 0)
+        result_2 = SliceData.get_first_slice_data(mocked_fasta_2, flanking = 0, exclusion_region = 0)
 
         # check with ch parsed correctly
         self.assertEqual(result_2, expected)
 
         # check with numerical chromosome
-        result_3 = SliceData.get_first_slice_data(mocked_fasta_3, padding = 0, region_avoid = 0)
+        result_3 = SliceData.get_first_slice_data(mocked_fasta_3, flanking = 0, exclusion_region = 0)
 
         self.assertEqual(result_3, expected)
 
@@ -167,6 +167,6 @@ class TestSliceData(TestCase):
         self.fs.create_file(mocked_fasta, contents='>region1_1::xyz$#r1:5-10(+)\nGTGATCGAGGAGTTCTA')
 
         with self.assertRaises(ValueError) as ex:
-            _ = SliceData.get_first_slice_data(mocked_fasta, padding = 0, region_avoid = 0)
+            _ = SliceData.get_first_slice_data(mocked_fasta, flanking = 0, exclusion_region = 0)
 
         self.assertTrue("does not match the expected format" in str(ex.exception))

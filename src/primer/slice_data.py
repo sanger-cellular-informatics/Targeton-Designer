@@ -18,8 +18,8 @@ class SliceData:
                  strand: str,
                  chromosome: str,
                  bases: str,
-                 region_padding: int,
-                 region_avoid: int):
+                 flanking_region: int,
+                 exclusion_region: int):
         self.name = name
         self.start = start
         self.end = end
@@ -27,8 +27,8 @@ class SliceData:
         self.chromosome = chromosome
         self.bases = bases
         self.targeton_id = name[0:4]
-        self.region_padding = region_padding
-        self.region_avoid = region_avoid
+        self.flanking_region = flanking_region
+        self.exclusion_region = exclusion_region
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, SliceData):
@@ -50,8 +50,8 @@ class SliceData:
     @property
     def p3_input(self):
         primer_pair_region = []
-        if self.region_padding:
-            primer_region_length = self.region_padding - self.region_avoid
+        if self.flanking_region:
+            primer_region_length = self.flanking_region - self.exclusion_region
             primer_pair_region = [0, primer_region_length,
                                       len(self.bases) - primer_region_length + 1, primer_region_length - 1]
 
@@ -64,16 +64,16 @@ class SliceData:
     # Not currently in use
     @property
     def surrounding_region(self) -> str:
-        padding = self.region_padding
+        flanking = self.flanking_region
 
         return get_seq_from_ensembl_by_coords(
             chromosome=self.chromosome,
-            start=self.start - padding,
-            end=self.end + padding
+            start=self.start - flanking,
+            end=self.end + flanking
         )
 
     @staticmethod
-    def get_first_slice_data(fasta: str, padding: int, region_avoid: int) -> 'SliceData':
+    def get_first_slice_data(fasta: str, flanking: int, exclusion_region: int) -> 'SliceData':
         with open(fasta) as fasta_data:
             rows = SeqIO.parse(fasta_data, 'fasta')
             first_row = next(rows, None)
@@ -97,8 +97,8 @@ class SliceData:
                 strand=match.group(5),
                 chromosome=chromosome,
                 bases=str(first_row.seq),
-                region_padding=padding,
-                region_avoid=region_avoid)
+                flanking_region=flanking,
+                exclusion_region=exclusion_region)
 
             if next(rows, None) is not None:
                 logger.warning(f"The FASTA file '{fasta}' contains more than one pre-targeton. "

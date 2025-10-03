@@ -18,8 +18,8 @@ class TestDesignerConfig(unittest.TestCase):
                     "stringency_vector": [1, 2, 3],
                     "csv_column_order": ["col1", "col2", "col3"],
                     "ranking": {},
-                    "region_padding": 0,
-                    "region_avoid": 0
+                    "flanking_region": 0,
+                    "exclusion_region": 0
                 }
 
     def tearDown(self):

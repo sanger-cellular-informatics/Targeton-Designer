@@ -30,8 +30,8 @@ class IntegrationTestPrimer3(TestCase):
             end=pre_targeton_end,
             bases=bases,
             strand="-",
-            region_padding=210,
-            region_avoid=0)
+            flanking_region=210,
+            exclusion_region=0)
 
         p3_config = {
              "PRIMER_TASK": "pick_cloning_primers",
@@ -117,8 +117,8 @@ class IntegrationTestPrimer3(TestCase):
             end=42958806,
             bases=bases,
             strand="+",
-            region_padding=328,
-            region_avoid=0)
+            flanking_region=328,
+            exclusion_region=0)
 
         p3_config = {
              "PRIMER_TASK": "generic",
@@ -162,8 +162,8 @@ class IntegrationTestPrimer3(TestCase):
             end=42929803,
             bases=bases,
             strand="-",
-            region_padding=210,
-            region_avoid=0)
+            flanking_region=210,
+            exclusion_region=0)
 
         mock_build_primer_pairs.return_value = []
 
@@ -195,9 +195,9 @@ class IntegrationTestPrimer3(TestCase):
         region_end = 42958806
         
         # generated primers should be within first and last 145 bases
-        padding = 150
-        avoid = 5
-        expected_primer_region_size = padding - avoid
+        flanking = 150
+        exclude = 5
+        expected_primer_region_size = flanking - exclude
 
         slice = SliceData(
             name="ARTY",
@@ -206,8 +206,8 @@ class IntegrationTestPrimer3(TestCase):
             end=region_end,
             bases=bases,
             strand="+",
-            region_padding=padding,
-            region_avoid=avoid
+            flanking_region=flanking,
+            exclusion_region=exclude
         )
 
         p3_config = {
@@ -253,8 +253,8 @@ class IntegrationTestPrimer3(TestCase):
                 end=42958806,
                 bases=bases,
                 strand="+",
-                region_padding=150,
-                region_avoid=5
+                flanking_region=150,
+                exclusion_region=5
             )
 
             p3_config = {
