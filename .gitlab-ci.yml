@@ -1,6 +1,24 @@
 stages:
   - .pre
   - test
+  - sast
+
+include:
+  - template: Security/SAST.gitlab-ci.yml
+
+variables:
+  # Limit analyzers to relevant ones
+  SAST_DEFAULT_ANALYZERS: "bandit,semgrep,shellcheck"
+
+  SAST_EXCLUDED_PATHS: "__pycache__/"
+  SAST_TIMEOUT: "10m"
+  GIT_DEPTH: "50"  # Shallow clone for speed
+  
+  SECURE_LOG_LEVEL: "info"
+
+  # Ensure reproducible results
+  SAST_ANALYZER_IMAGE_TAG: "latest"
+
 
 docker-build:
   # Use the official docker image.
@@ -64,3 +82,19 @@ test:
     - python -m unittest discover --start-directory ./tests --top-level-directory .
   dependencies:
     - docker-build
+
+
+
+sast:
+  stage: sast
+  allow_failure: false
+  rules:
+    - if: '$CI_COMMIT_BRANCH != "main"'
+      when: always
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: always
+  cache:
+    key: "sast-cache"
+    paths:
+      - .cache/pip
+      - .semgrep/
