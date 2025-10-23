@@ -93,8 +93,3 @@ sast:
       when: always
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: always
-  cache:
-    key: "sast-cache"
-    paths:
-      - .cache/pip
-      - .semgrep/
