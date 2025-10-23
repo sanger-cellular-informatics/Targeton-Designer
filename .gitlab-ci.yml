@@ -93,6 +93,7 @@ test:
 
 
 sast:
+  image: $DOCKER_IMAGE_NAME
   stage: sast
   allow_failure: false
   rules:
