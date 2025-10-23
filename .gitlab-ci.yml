@@ -1,66 +1,75 @@
+# You can override the included template(s) by including variable overrides
+# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
+# Secret Detection customization: https://docs.gitlab.com/user/application_security/secret_detection/pipeline/configure
+# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
+# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
+# Note that environment variables can be set in several places
+# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
+:stages:
+- ".pre"
+- test
+:docker-build:
+  :image: docker:23.0.6
+  :stage: ".pre"
+  :tags:
+  - autoscale
+  :services:
+  - :name: docker:23.0.6-dind
+    :alias: thedockerhost
+  :variables:
+    :DOCKER_HOST: tcp://thedockerhost:2375/
+    :DOCKER_DRIVER: overlay2
+    :DOCKER_TLS_CERTDIR: ''
+    :GIT_SUBMODULE_STRATEGY: recursive
+  :before_script:
+  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  :script:
+  - apk add --update make && apk add --update bash && apk add --update sudo && apk
+    add --update git && apk add --update curl
+  - make build-docker
+  :rules:
+  - :if: "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH"
+    :exists:
+    - Dockerfile
+  - :changes:
+    - requirements.txt
+    - Dockerfile
+    - Makefile
+:test:
+  :image: "$DOCKER_IMAGE_NAME"
+  :stage: test
+  :tags:
+  - autoscale
+  :variables:
+    :GIT_SUBMODULE_STRATEGY: recursive
+  :before_script:
+  - export KSM_CONFIG=$KSM_CONFIG
+  - export SECRET_UID=$SECRET_KEY_UID
+  - export S3_ACCESS_KEY=$(ksm secret get -u $SECRET_UID --field "Access Key")
+  - export S3_SECRET_KEY=$(ksm secret get -u $SECRET_UID --field "Secret Key")
+  - mkdir -p kmer
+  - |
+    cat > ~/.s3cfg <<EOF
+    [default]
+    encrypt = False
+    access_key = $S3_ACCESS_KEY
+    secret_key = $S3_SECRET_KEY
+    host_base = $HOST_BASE
+    host_bucket = $HOST_BUCKET
+    use_https = True
+    EOF
+  - s3cmd get s3://primer-designer/ci-cd-test-data/kmer-lists/homo_sapiens_11.list
+    kmer/
+  - s3cmd get s3://primer-designer/ci-cd-test-data/kmer-lists/homo_sapiens_16.list
+    kmer/
+  - ls kmer
+  :script:
+  - python -m unittest discover --start-directory ./tests --top-level-directory .
+  :dependencies:
+  - docker-build
 stages:
-  - .pre
-  - test
-
-docker-build:
-  # Use the official docker image.
-  image: docker:23.0.6
-  stage: .pre
-  tags:
-    - autoscale
-  services:
-    - name: docker:23.0.6-dind
-      alias: thedockerhost
-  variables:
-    DOCKER_HOST: tcp://thedockerhost:2375/
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: ""
-    GIT_SUBMODULE_STRATEGY: recursive
-  before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-  # Default branch leaves tag empty (= latest tag)
-  # All other branches are tagged with the escaped branch name (commit ref slug)
-  script:
-      - apk add --update make && apk add --update bash && apk add --update sudo && apk add --update git && apk add --update curl
-      - make build-docker
-  # Run this job in a branch where a Dockerfile exists
-  rules:
-    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
-      exists:
-        - Dockerfile
-    - changes:
-      - requirements.txt
-      - Dockerfile
-      - Makefile
-
-test:
-  # Reuse built container.
-  image: $DOCKER_IMAGE_NAME
+- test
+sast:
   stage: test
-  tags:
-    - autoscale
-  variables:
-    GIT_SUBMODULE_STRATEGY: recursive
-  before_script:
-    - export KSM_CONFIG=$KSM_CONFIG
-    - export SECRET_UID=$SECRET_KEY_UID
-    - export S3_ACCESS_KEY=$(ksm secret get -u $SECRET_UID --field "Access Key")
-    - export S3_SECRET_KEY=$(ksm secret get -u $SECRET_UID --field "Secret Key")
-    - mkdir -p kmer
-    - |
-      cat > ~/.s3cfg <<EOF
-      [default]
-      encrypt = False
-      access_key = $S3_ACCESS_KEY
-      secret_key = $S3_SECRET_KEY
-      host_base = $HOST_BASE
-      host_bucket = $HOST_BUCKET
-      use_https = True
-      EOF
-    - s3cmd get s3://primer-designer/ci-cd-test-data/kmer-lists/homo_sapiens_11.list kmer/
-    - s3cmd get s3://primer-designer/ci-cd-test-data/kmer-lists/homo_sapiens_16.list kmer/
-    - ls kmer
-  script:
-    - python -m unittest discover --start-directory ./tests --top-level-directory .
-  dependencies:
-    - docker-build
+include:
+- template: Security/SAST.gitlab-ci.yml
