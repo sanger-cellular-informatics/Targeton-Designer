@@ -105,3 +105,34 @@ class SliceData:
                                "Only the first pre-targeton is taken.")
 
         return slice_data
+
+    @staticmethod
+    def get_slice_from_region(targeton_id: str,
+                              region: str,
+                              strand: str,
+                              flanking: int,
+                              exclusion_region: int) -> 'SliceData':
+
+        # region chr19:54100-541200
+        match = re.search(r'^chr([1-9]|1[0-9]|2[0-2]|X|Y|MT):(\d+)\-(\d+)$', region)
+        if not match:
+            msg = f"region '{region}' does not match the expected format e.g. chr19:54100-54200"
+            raise ValueError(msg)
+
+        chromosome = match.group(1)
+        start = int(match.group(2))
+        end = int(match.group(3))
+
+        seq = get_seq_from_ensembl_by_coords(chromosome, start, end, strand)
+
+        slice_data = SliceData(
+            name=targeton_id,
+            start=start,
+            end=end,
+            strand=strand,
+            chromosome=chromosome,
+            bases=seq,
+            flanking_region=flanking,
+            exclusion_region=exclusion_region)
+
+        return slice_data

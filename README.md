@@ -179,7 +179,13 @@ For example, you will need the test FASTA file from `./examples` as follows:
 ./designer.sh primer --fasta ./examples/test_example_slice.fa
 ```
 
-By running the above command, you will see output files are generated in the `td_output` folder in the necessary file formats. 
+By running the above command, you will see output files are generated in the `td_output` folder in the necessary file formats.
+
+To run the `primer` command using region as input instead of a FASTA file use:
+
+```
+./designer.sh primer --region chr7:44490254-44490755 --targeton_id STEQ
+```
 
 ### 2.2 Primer Designer Tool
 
@@ -221,6 +227,10 @@ This file contains the default configuration that will be applied if no user con
 
 ##### 2.2.3 Running Primer3
 
+Primer3 can be run using a FASTA file as input or region as input.
+
+Using a FASTA file:
+
 ```sh
 ./designer.sh primer [--fasta SLICE_FASTA] [--dir OUTPUT_FOLDER] [--primer3_params PRIMER_CONFIG_JSON] [--conf DESIGNER_CONFIG_JSON]
 ```
@@ -228,6 +238,17 @@ This file contains the default configuration that will be applied if no user con
 Example command:
 ```sh
 ./designer.sh primer --fasta slice.fa --dir p3_output
+```
+
+Using a region:
+
+```sh
+./designer.sh primer [--targeton_id TARGETON_ID] [--region REGION] [--strand STRAND] [--dir OUTPUT_FOLDER] [--primer3_params PRIMER_CONFIG_JSON] [--conf DESIGNER_CONFIG_JSON]
+```
+
+Example command:
+```sh
+./designer.sh primer -targeton_id ABCD --region chr1:10000-20000 --strand - --dir p3_output
 ```
 
 ##### 2.2.4 Applying filters from the designer config file
@@ -315,6 +336,8 @@ Note that, as no command line arguments are specified in `config/default_designe
 if no user designer config file is provided, `--fasta` (mandatory parameter), `--dir` and `--primer3_params` 
 (both optional) will have to be passed as command-line arguments.
 
+Note: input can either be specified as a FASTA file or a region.
+
 ```
 {
   "stringency_vector": [...],
@@ -364,12 +387,16 @@ chmod +x docker_run.sh
 
 ##### Step 3: Run Docker Container
 
-To run the docker image we use `./docker_run.sh` shell script. The following command shows how to run docker container: 
+To run the docker image we use `./docker_run.sh` shell script. The following commands shows how to run docker container:
 
 **Usage**
 
 ```sh
 ./docker_run.sh --img <docker_image_name> --cmd ./designer.sh primer --fasta ./examples/test_example_slice.fa
+```
+or
+```
+./docker_run.sh --img <docker_image_name> --cmd ./designer.sh primer --targeton_id ABCD --region chr1:1000-2000
 ```
 
 The `./docker_run.sh` script takes two arguments with flags and they are as follows:

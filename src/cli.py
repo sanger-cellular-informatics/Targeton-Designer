@@ -54,10 +54,18 @@ def primer_command(
     PRIMER_TYPE = 'LibAmp'
     config = DesignerConfig(args)
 
-    validate_fasta_format(config.fasta)
-    slice_data = SliceData.get_first_slice_data(config.fasta,
-                                                config.flanking_region,
-                                                config.exclusion_region)
+    # Check input for primer is a FASTA file or a region
+    if (config.fasta):
+        validate_fasta_format(config.fasta)
+        slice_data = SliceData.get_first_slice_data(config.fasta,
+                                                    config.flanking_region,
+                                                    config.exclusion_region)
+    else:
+        slice_data = SliceData.get_slice_from_region(args['targeton_id'],
+                                                     args['region'],
+                                                     args['strand'],
+                                                     config.flanking_region,
+                                                     config.exclusion_region)
 
     primers = Primer3(config.stringency_vector, config.primer3_params).get_primers(slice_data)
 
