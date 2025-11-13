@@ -34,3 +34,35 @@ class TestEnsemble(TestCase):
 
         mock_get.assert_called_once_with('https://rest.ensembl.org/sequence/region/human/X:1000..2000:1',
                                          headers={'Content-type': 'text/plain'})
+
+    @patch("requests.get")
+    @patch('time.sleep', return_value=None)
+    def test_get_seq_from_ensembl_by_coords_pos_strand(self, mock_sleep, mock_get):
+        """Ensure '+' strand requests use '1' in the URL."""
+        mock_response = MagicMock()
+        mock_response.status_code = requests.codes.ok
+        mock_response.text = "TTTTAAAA"
+        mock_get.return_value = mock_response
+
+        result = get_seq_from_ensembl_by_coords("X", 1000, 2000, "+")
+
+        mock_get.assert_called_once_with(
+            'https://rest.ensembl.org/sequence/region/human/X:1000..2000:1',
+            headers={'Content-type': 'text/plain'}
+        )
+
+    @patch("requests.get")
+    @patch('time.sleep', return_value=None)
+    def test_get_seq_from_ensembl_by_coords_neg_strand(self, mock_sleep, mock_get):
+        """Ensure '-' strand requests use '-1' in the URL."""
+        mock_response = MagicMock()
+        mock_response.status_code = requests.codes.ok
+        mock_response.text = "TTTTAAAA"
+        mock_get.return_value = mock_response
+
+        result = get_seq_from_ensembl_by_coords("X", 1000, 2000, "-")
+
+        mock_get.assert_called_once_with(
+            'https://rest.ensembl.org/sequence/region/human/X:1000..2000:-1',
+            headers={'Content-type': 'text/plain'}
+        )
