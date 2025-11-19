@@ -250,6 +250,12 @@ Example command:
 ```sh
 ./designer.sh primer -targeton_id ABCD --region chr1:10000-20000 --strand - --dir p3_output
 ```
+The **region**  must follow the format:  `chr<value>:<start>-<end>`
+
+where
+- `<value>` is 1-22, X, Y or MT
+- `<start>` and `<end>` are integer genomic coordinates
+- `<start>` <= `<end>`
 
 ##### 2.2.4 Applying filters from the designer config file
 
