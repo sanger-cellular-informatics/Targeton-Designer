@@ -4,10 +4,7 @@ import requests
 
 
 def get_seq_from_ensembl_by_coords(chromosome: str, start: int, end: int, strand: str = '+'):
-    if (strand == '-'):
-        ens_strand = '-1'
-    else:
-        ens_strand = '1'
+    ens_strand = '-1' if strand == '-' else '1'
 
     url = (
         f'https://rest.ensembl.org/sequence/region/human/'
