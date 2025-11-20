@@ -82,20 +82,18 @@ class SliceData:
 
             # Name::Chr:Start-End(Strand)
             # ENSE00000769557_HG8_1::1:42929543-42929753
-            # Only matches with numerical chromosome, not X, Y, and MT.
-            match = re.search(r'^(\w+)::(chr\d+|ch\d+|\d+):(\d+)\-(\d+)\(([+-\.]{1})\)$', first_row.id)
-
+            # Chromosomes 1-22, X, Y and MT
+            # Prefix for chromosome (chr or ch) is optional
+            match = re.search(r'^(\w+)::(?:chr|ch|)([1-9]|1[0-9]|2[0-2]|X|Y|MT):(\d+)\-(\d+)\(([+-\.]{1})\)$', first_row.id)
             if not match:
                 raise ValueError(f"The sequence ID '{first_row.id}' does not match the expected format.")
-
-            chromosome = ''.join(filter(str.isdigit, match.group(2)))
 
             slice_data = SliceData(
                 name=match.group(1),
                 start=int(match.group(3)),
                 end=int(match.group(4)),
                 strand=match.group(5),
-                chromosome=chromosome,
+                chromosome=match.group(2),
                 bases=str(first_row.seq),
                 flanking_region=flanking,
                 exclusion_region=exclusion_region)
