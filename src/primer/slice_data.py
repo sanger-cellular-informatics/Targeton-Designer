@@ -82,9 +82,9 @@ class SliceData:
 
             # Name::Chr:Start-End(Strand)
             # ENSE00000769557_HG8_1::1:42929543-42929753
-            # Chromosomes 1-22, X, Y and MT
+            # Chromosomes 1-22, X, Y
             # Prefix for chromosome (chr or ch) is optional
-            match = re.search(r'^(\w+)::(?:chr|ch|)([1-9]|1[0-9]|2[0-2]|X|Y|MT):(\d+)\-(\d+)\(([+-\.]{1})\)$', first_row.id)
+            match = re.search(r'^(\w+)::(?:chr|ch|)([1-9]|1[0-9]|2[0-2]|X|Y):(\d+)\-(\d+)\(([+-\.]{1})\)$', first_row.id)
             if not match:
                 raise ValueError(f"The sequence ID '{first_row.id}' does not match the expected format.")
 
@@ -112,7 +112,7 @@ class SliceData:
                               exclusion_region: int) -> 'SliceData':
 
         # region chr19:54100-541200
-        match = re.search(r'^chr([1-9]|1[0-9]|2[0-2]|X|Y|MT):(\d+)\-(\d+)$', region)
+        match = re.search(r'^chr([1-9]|1[0-9]|2[0-2]|X|Y):(\d+)\-(\d+)$', region)
         if not match:
             msg = f"region '{region}' does not match the expected format e.g. chr19:54100-54200"
             raise ValueError(msg)
