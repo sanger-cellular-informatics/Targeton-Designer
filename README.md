@@ -253,7 +253,7 @@ Example command:
 The **region**  must follow the format:  `chr<value>:<start>-<end>`
 
 where
-- `<value>` is 1-22, X or Y
+- `<value>` is 1-22, X, Y or MT
 - `<start>` and `<end>` are integer genomic coordinates
 - `<start>` <= `<end>`
 
