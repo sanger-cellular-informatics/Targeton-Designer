@@ -27,6 +27,7 @@ class ParsedInputArguments:
         parser = add_input_args(parser)
 
         self.set_args(vars(parser.parse_args()))
+        self.check_args(parser)
 
     def get_command(self) -> str:
         return self.command
@@ -35,8 +36,28 @@ class ParsedInputArguments:
         self.arguments = values
         self.command = self.arguments['command']
 
+    def check_args(self, parser) -> None:
+        if self.command in ('design', 'primer'):
+            self.check_design_args(parser)
+
     def get_args(self) -> dict:
         return self.arguments
+
+    def check_design_args(self, parser) -> None:
+        args = self.arguments
+        fasta = args.get('fasta', None)
+        region = args.get('region', None)
+        strand = args.get('strand', None)
+        targeton_id = args.get('targeton_id', None)
+
+        group_region = all([region, targeton_id])
+        group_region_partial = any([region, targeton_id]) and not group_region
+
+        if group_region_partial:
+            parser.error("If you use --region or --targeton_id, you must provide both")
+
+        if fasta and group_region:
+            parser.error("--fasta cannot be used together with --region and --targeton_id")
 
 
 def positive_int(arg: str) -> int:
@@ -161,6 +182,23 @@ def add_input_args(parser):
         '--scoring_mismatch',
         help='Mismatch number used for Exonerate iPCRess',
         type=positive_int,
+    )
+    parser.add_argument(
+        '--targeton_id',
+        help='targeton_id e.g ABCD',
+        type=str
+    )
+    parser.add_argument(
+        '--region',
+        help='Region chr19:50398851-50399053',
+        type=str
+    )
+    parser.add_argument(
+        '--strand',
+        choices=['+', '-'],
+        default='+',
+        help="strand '+' (default) or '-'",
+        type=str
     )
 
     # OUTPUTS
