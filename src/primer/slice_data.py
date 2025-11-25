@@ -57,11 +57,7 @@ class SliceData:
 
         return {
             'SEQUENCE_ID': self.name,
-            'SEQUENCE_TEMPLATE': (
-                self.surrounding_region
-                if self.flanking_region and self.flanking_region > 0
-                else self.bases
-            ),
+            'SEQUENCE_TEMPLATE':self.bases,
             'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST': primer_pair_region
         }
 
