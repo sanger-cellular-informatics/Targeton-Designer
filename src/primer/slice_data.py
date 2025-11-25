@@ -57,18 +57,21 @@ class SliceData:
 
         return {
             'SEQUENCE_ID': self.name,
-            'SEQUENCE_TEMPLATE': self.bases,
+            'SEQUENCE_TEMPLATE': (
+                self.surrounding_region
+                if self.flanking_region and self.flanking_region > 0
+                else self.bases
+            ),
             'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST': primer_pair_region
         }
 
-    # Not currently in use
     @property
     def surrounding_region(self) -> str:
         flanking = self.flanking_region
 
         return get_seq_from_ensembl_by_coords(
             chromosome=self.chromosome,
-            start=self.start - flanking,
+            start = max(1, self.start - flanking),
             end=self.end + flanking
         )
 
@@ -118,19 +121,50 @@ class SliceData:
             raise ValueError(msg)
 
         chromosome = match.group(1)
-        start = int(match.group(2))
-        end = int(match.group(3))
+        target_start = int(match.group(2))
+        target_end = int(match.group(3))
 
-        seq = get_seq_from_ensembl_by_coords(chromosome, start, end, strand)
+        if flanking and flanking > 0:
+            extended_start = max(1, target_start - flanking)
+            extended_end = target_end + flanking
+        else:
+            extended_start = target_start
+            extended_end = target_end
+            flanking = 0
+
+        seq = get_seq_from_ensembl_by_coords(
+            chromosome=chromosome,
+            start=extended_start,
+            end=extended_end,
+            strand=strand
+        )
+
+        # Logging: internal vs extended region & sequences
+        logger.info(
+            f"Target region (internal): chr{chromosome}:{target_start}-{target_end} (strand {strand})"
+        )
+        logger.info(
+            f"Flanking region (bp): {flanking}"
+        )
+        logger.info(
+            f"Extended region used for template: chr{chromosome}:{extended_start}-{extended_end}"
+        )
+        logger.info(
+            f"Internal sequence length: {target_end - target_start + 1}"
+        )
+        logger.info(
+            f"Extended sequence length: {len(seq)}"
+        )
 
         slice_data = SliceData(
             name=targeton_id,
-            start=start,
-            end=end,
+            start=extended_start,
+            end=extended_end,
             strand=strand,
             chromosome=chromosome,
             bases=seq,
             flanking_region=flanking,
-            exclusion_region=exclusion_region)
+            exclusion_region=exclusion_region
+        )
 
         return slice_data
