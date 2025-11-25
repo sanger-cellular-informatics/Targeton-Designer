@@ -170,3 +170,83 @@ class TestSliceData(TestCase):
             _ = SliceData.get_first_slice_data(mocked_fasta, flanking = 0, exclusion_region = 0)
 
         self.assertTrue("does not match the expected format" in str(ex.exception))
+
+
+class TestGetSliceFromRegion(TestCase):
+
+    @patch('primer.slice_data.get_seq_from_ensembl_by_coords')
+    def test_get_slice_from_region_valid(self, mock_get_seq):
+        """Test successful parsing of region string and creation of SliceData."""
+        mock_get_seq.return_value = 'ACTGACTG'
+
+        expected = SliceData(name='ABCD',
+                             start=54100,
+                             end=54200,
+                             strand='+',
+                             chromosome='19',
+                             bases='ACTGACTG',
+                             flanking_region=50,
+                             exclusion_region=20)
+
+        result = SliceData.get_slice_from_region(
+            targeton_id='ABCD',
+            region='chr19:54100-54200',
+            strand='+',
+            flanking=50,
+            exclusion_region=20
+        )
+
+        # Check that sequence function was called correctly
+        mock_get_seq.assert_called_once_with('19', 54100, 54200, '+')
+
+        # Check returned SliceData object
+        self.assertIsInstance(result, SliceData)
+        self.assertEqual(result.name, expected.name)
+        self.assertEqual(result.start, expected.start)
+        self.assertEqual(result.end, expected.end)
+        self.assertEqual(result.strand, expected.strand)
+        self.assertEqual(result.chromosome, expected.chromosome)
+        self.assertEqual(result.bases, expected.bases)
+        self.assertEqual(result.flanking_region, expected.flanking_region)
+        self.assertEqual(result.exclusion_region, expected.exclusion_region)
+
+    @patch('primer.slice_data.get_seq_from_ensembl_by_coords')
+    def test_get_slice_from_region_valid_neg(self, mock_get_seq):
+        """Test that strand '-' is set"""
+        mock_get_seq.return_value = 'ACTGACTG'
+
+        expected = SliceData(name='ABCD',
+                             start=54100,
+                             end=54200,
+                             strand='-',
+                             chromosome='19',
+                             bases='ACTGACTG',
+                             flanking_region=50,
+                             exclusion_region=20)
+
+        result = SliceData.get_slice_from_region(
+            targeton_id='ABCD',
+            region='chr19:54100-54200',
+            strand='-',
+            flanking=50,
+            exclusion_region=20
+        )
+
+        # Check that sequence function was called correctly
+        mock_get_seq.assert_called_once_with('19', 54100, 54200, '-')
+
+        self.assertEqual(result.strand, expected.strand)
+        self.assertEqual(result.bases, expected.bases)
+
+    def test_get_slice_from_region_invalid_region(self):
+        """Test that incorrectly formatted region raises ValueError."""
+        with self.assertRaises(ValueError) as ex:
+            SliceData.get_slice_from_region(
+                targeton_id='ABCD',
+                region='chr19_54100-54200',  # invalid format
+                strand='+',
+                flanking=50,
+                exclusion_region=20
+            )
+
+        self.assertTrue("does not match the expected format" in str(ex.exception))
