@@ -163,6 +163,13 @@ class SliceData:
         extended_start = max(1, extended_start_raw)
         extended_end = extended_end_raw
 
+        if extended_start_raw < 1:
+            logger.warning(
+                f"Flanking region extends beyond start of chromosome. "
+                f"Requested extended_start={extended_start_raw}, clamped to 1. "
+                "Left flank length will be reduced. "
+            )
+
         if chr_len is not None and extended_end_raw > chr_len:
             logger.warning(
                 f"Flanking region expands beyond chromosome {chromosome} end "
@@ -225,9 +232,19 @@ class SliceData:
             extended_start_raw = target_start - flanking
             extended_end_raw = target_end + flanking
 
-            extended_start = max(1, extended_start_raw)
-            extended_end = extended_end_raw
+            # Left clamp
+            if extended_start_raw < 1:
+                logger.warning(
+                    f"Flanking region extends beyond start of chromosome. "
+                    f"Requested extended_start={extended_start_raw}, clamped to 1. "
+                    "Left flank length will be reduced. "
+                )
+                extended_start = 1
+            else:
+                extended_start = extended_start_raw
 
+            # Right clamp
+            extended_end = extended_end_raw
             if chr_len is not None and extended_end_raw > chr_len:
                 logger.warning(
                     f"Flanking region expands beyond chromosome {chromosome} end "
@@ -235,7 +252,9 @@ class SliceData:
                     "Extended end has been clamped to the chromosome boundary. "
                 )
                 extended_end = chr_len
+
         else:
+            # No flanking
             extended_start = target_start
             extended_end = target_end
             flanking = 0
