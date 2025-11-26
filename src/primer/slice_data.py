@@ -57,17 +57,18 @@ class SliceData:
 
         return {
             'SEQUENCE_ID': self.name,
-            'SEQUENCE_TEMPLATE':self.bases,
+            'SEQUENCE_TEMPLATE': self.bases,
             'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST': primer_pair_region
         }
 
+    # Not currently in use
     @property
     def surrounding_region(self) -> str:
         flanking = self.flanking_region
 
         return get_seq_from_ensembl_by_coords(
             chromosome=self.chromosome,
-            start = max(1, self.start - flanking),
+            start=self.start - flanking,
             end=self.end + flanking
         )
 
