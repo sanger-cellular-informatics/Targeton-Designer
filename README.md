@@ -227,30 +227,45 @@ This file contains the default configuration that will be applied if no user con
 
 ##### 2.2.3 Running Primer3
 
-Primer3 can be run using a FASTA file as input or region as input.
+Primer3 can be run using either a FASTA file or a genomic region. Both modes now follow the same interpretation of the `flanking_region` value from the designer config.
 
-Using a FASTA file:
+**Using a FASTA file:**
 
 ```sh
 ./designer.sh primer [--fasta SLICE_FASTA] [--dir OUTPUT_FOLDER] [--primer3_params PRIMER_CONFIG_JSON] [--conf DESIGNER_CONFIG_JSON]
 ```
+
+**If `flanking_region` == 0**  
+The FASTA sequence is treated as the full template sequence (legacy mode).  
+No Ensembl call is made.  
+Primer placement may occur anywhere in the sequence (subject to exclusion region).  
+
+**If `flanking_region` > 0**  
+The FASTA header must contain genomic coordinates in the format:`<name>::<chr>:<start>-<end>(<strand>)`
+The coordinates are interpreted as the internal (target) region.  
+Primer Designer automatically extends this region by `flanking_region` bases on each side and retrieves the extended sequence from Ensembl.  
+The final extended sequence becomes the Primer3 template.  
 
 Example command:
 ```sh
 ./designer.sh primer --fasta slice.fa --dir p3_output
 ```
 
-Using a region:
+**Using a genomic region:**
 
 ```sh
 ./designer.sh primer [--targeton_id TARGETON_ID] [--region REGION] [--strand STRAND] [--dir OUTPUT_FOLDER] [--primer3_params PRIMER_CONFIG_JSON] [--conf DESIGNER_CONFIG_JSON]
 ```
 
+The region is always treated as the **internal target region**.  
+Primer Designer automatically extends the region by `flanking_region` bases upstream and downstream.  
+The extended sequence is fetched from Ensembl and used as the Primer3 template.  
+
 Example command:
 ```sh
 ./designer.sh primer -targeton_id ABCD --region chr1:10000-20000 --strand - --dir p3_output
 ```
-The **region**  must follow the format:  `chr<value>:<start>-<end>`
+The **region**  must follow the format:`chr<value>:<start>-<end>`
 
 where
 - `<value>` is 1-22, X, Y or MT
