@@ -244,12 +244,16 @@ Primer placement may occur anywhere in the sequence (subject to exclusion region
 The FASTA header must contain genomic coordinates in the format:`<name>::<chr>:<start>-<end>(<strand>)`
 The coordinates are interpreted as the internal (target) region.  
 Primer Designer automatically extends this region by `flanking_region` bases on each side and retrieves the extended sequence from Ensembl.  
-The final extended sequence becomes the Primer3 template.  
+The final extended sequence becomes the Primer3 template.
 
 Example command:
 ```sh
 ./designer.sh primer --fasta slice.fa --dir p3_output
 ```
+
+Note: If auto-flanking requests coordinates beyond the chromosome end, the region is clamped safely and a clear error is logged:  
+
+“Flanking regions expand beyond end of chromosome. Extended end has been clamped to the chromosome boundary”
 
 **Using a genomic region:**
 

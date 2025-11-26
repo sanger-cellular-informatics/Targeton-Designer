@@ -212,6 +212,58 @@ class TestSliceData(TestCase):
 
         self.assertTrue("does not match the expected format" in str(ex.exception))
 
+    @patch("primer.slice_data.logger")
+    @patch("primer.slice_data.get_seq_from_ensembl_by_coords")
+    @patch("primer.slice_data.get_chromosome_length")
+    def test_fasta_file_flanking_exceeds_chrom_end(
+        self,
+        mock_get_chr_len,
+        mock_get_seq,
+        mock_logger,
+    ):
+        """
+        When flanking pushes the extended region beyond the chromosome end,
+        get_first_slice_data should clamp extended_end to chrom length and log an error.
+        """
+
+        mock_get_chr_len.return_value = 1000
+
+        fasta_path = "one_slice_exceed.fa"
+        self.fs.create_file(
+            fasta_path,
+            contents=">region1_1::chr1:900-950(+)\n"
+                     "ACGTACGTACGTACGTACGT\n"
+        )
+
+        fake_extended_seq = "N" * (1000 - 800 + 1)
+        mock_get_seq.return_value = fake_extended_seq
+
+        result = SliceData.get_first_slice_data(
+            fasta=fasta_path,
+            flanking=100,
+            exclusion_region=0,
+        )
+
+        mock_get_chr_len.assert_called_once_with("1")
+
+        mock_get_seq.assert_called_once_with(
+            chromosome="1",
+            start=800,
+            end=1000,
+            strand="+",
+        )
+
+        self.assertEqual(result.chromosome, "1")
+        self.assertEqual(result.start, 800)
+        self.assertEqual(result.end, 1000)
+        self.assertEqual(result.bases, fake_extended_seq)
+
+        warning_calls = [c for c in mock_logger.warning.call_args_list]
+        self.assertTrue(
+            any("Flanking region expands beyond chromosome 1 end" in str(c) for c in warning_calls),
+            "Expected an error log about flanking beyond chromosome end"
+        )
+
 
 class TestGetSliceFromRegion(TestCase):
 
@@ -237,7 +289,6 @@ class TestGetSliceFromRegion(TestCase):
             exclusion_region=20
         )
 
-        # Check that sequence function was called correctly
         mock_get_seq.assert_called_once_with(
             chromosome='19',
             start=54050,
@@ -245,7 +296,6 @@ class TestGetSliceFromRegion(TestCase):
             strand='+',
         )
 
-        # Check returned SliceData object
         self.assertIsInstance(result, SliceData)
         self.assertEqual(result.name, expected.name)
         self.assertEqual(result.start, expected.start)
@@ -278,7 +328,6 @@ class TestGetSliceFromRegion(TestCase):
             exclusion_region=20
         )
 
-        # Check that sequence function was called correctly
         mock_get_seq.assert_called_once_with(
             chromosome='19',
             start=54050,
@@ -301,3 +350,53 @@ class TestGetSliceFromRegion(TestCase):
             )
 
         self.assertTrue("does not match the expected format" in str(ex.exception))
+
+    @patch("primer.slice_data.logger")
+    @patch("primer.slice_data.get_seq_from_ensembl_by_coords")
+    @patch("primer.slice_data.get_chromosome_length")
+    def test_get_slice_from_region_flanking_exceeds_chrom_end(
+        self,
+        mock_get_chr_len,
+        mock_get_seq,
+        mock_logger,
+    ):
+
+        mock_get_chr_len.return_value = 1000
+
+        targeton_id = "REG1"
+        region = "chr1:900-950"
+        strand = "+"
+        flanking = 100
+        exclusion_region = 0
+
+        fake_extended_seq = "N" * (1000 - 800 + 1)
+        mock_get_seq.return_value = fake_extended_seq
+
+        result = SliceData.get_slice_from_region(
+            targeton_id=targeton_id,
+            region=region,
+            strand=strand,
+            flanking=flanking,
+            exclusion_region=exclusion_region,
+        )
+
+        mock_get_chr_len.assert_called_once_with("1")
+
+        mock_get_seq.assert_called_once_with(
+            chromosome="1",
+            start=800,
+            end=1000,
+            strand="+",
+        )
+
+        self.assertEqual(result.name, targeton_id)
+        self.assertEqual(result.chromosome, "1")
+        self.assertEqual(result.start, 800)
+        self.assertEqual(result.end, 1000)
+        self.assertEqual(result.bases, fake_extended_seq)
+
+        warning_calls = [c for c in mock_logger.warning.call_args_list]
+        self.assertTrue(
+            any("Flanking region expands beyond chromosome 1 end" in str(c) for c in warning_calls),
+            "Expected an error log about flanking beyond chromosome end"
+        )

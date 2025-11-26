@@ -1,14 +1,44 @@
+from typing import Optional
 import re
 from Bio import SeqIO
 import sys
 
 from primer.ensembl import get_seq_from_ensembl_by_coords
-
 from custom_logger.custom_logger import CustomLogger
 
 # Initialize logger
 logger = CustomLogger(__name__)
 
+_chr_length_cache: dict[str, int] = {}
+
+def get_chromosome_length(chromosome: str) -> Optional[int]:
+    """Returns chromosome length using Ensembl metadata."""
+    if chromosome in _chr_length_cache:
+        return _chr_length_cache[chromosome]
+
+    import requests
+    url = "https://rest.ensembl.org/info/assembly/homo_sapiens?content-type=application/json"
+
+    try:
+        response = requests.get(url, timeout=5)
+        response.raise_for_status()
+        data = response.json()
+
+        lengths = {
+            region["name"]: region["length"]
+            for region in data.get("top_level_region", [])
+            if region.get("coord_system") == "chromosome"
+        }
+
+        _chr_length_cache.update(lengths)
+
+        return lengths.get(chromosome)
+
+    except Exception as e:
+        logger.warning(
+            f"Could not retrieve chromosome length metadata from Ensembl: {e}"
+        )
+        return None
 
 class SliceData:
     def __init__(self,
@@ -84,7 +114,7 @@ class SliceData:
             # ENSE00000769557_HG8_1::1:42929543-42929753
             # Chromosomes 1-22, X, Y and MT
             # Prefix for chromosome (chr or ch) is optional
-            match = re.search(r'^(\w+)::(?:chr|ch|)([1-9]|1[0-9]|2[0-2]|X|Y|MT):(\d+)\-(\d+)\(([+-\.]{1})\)$',first_row.id)
+            match = re.search(r'^(\w+)::(?:chr|ch|)([1-9]|1[0-9]|2[0-2]|X|Y|MT):(\d+)\-(\d+)\(([+-\.]{1})\)$', first_row.id)
             if not match:
                 raise ValueError(f"The sequence ID '{first_row.id}' does not match the expected format.")
 
@@ -125,9 +155,23 @@ class SliceData:
                 flanking_region=flanking,
                 exclusion_region=exclusion_region)
 
-        extended_start = max(1, internal_start - flanking)
-        extended_end = internal_end + flanking  # right-side clamping added later
+        chr_len = get_chromosome_length(chromosome)
 
+        extended_start_raw = internal_start - flanking
+        extended_end_raw = internal_end + flanking
+
+        extended_start = max(1, extended_start_raw)
+        extended_end = extended_end_raw
+
+        if chr_len is not None and extended_end_raw > chr_len:
+            logger.warning(
+                f"Flanking region expands beyond chromosome {chromosome} end "
+                f"({extended_end_raw} > {chr_len}). "
+                "Extended end has been clamped to the chromosome boundary. "
+            )
+            extended_end = chr_len
+
+        #check if new flanked sequence matches pre-flanked FASTA sequence
         logger.info(
             "FASTA mode with auto-flanking: "
             f"internal={chromosome}:{internal_start}-{internal_end}({strand}), "
@@ -141,14 +185,13 @@ class SliceData:
             strand=strand,
         )
 
-        #check if new flanked sequence matches pre-flanked FASTA sequence
         logger.info(
             "FASTA mode with auto-flanking: "
             f"len_internal={internal_end - internal_start + 1}, "
             f"{_format_seq_for_log(extended_seq, 'extended')}"
         )
 
-        slice_data = SliceData(
+        return SliceData(
             name=name,
             start=extended_start,
             end=extended_end,
@@ -156,10 +199,8 @@ class SliceData:
             chromosome=chromosome,
             bases=extended_seq,
             flanking_region=flanking,
-            exclusion_region=exclusion_region)
-
-        return slice_data
-
+            exclusion_region=exclusion_region
+        )
 
     @staticmethod
     def get_slice_from_region(targeton_id: str,
@@ -179,8 +220,21 @@ class SliceData:
         target_end = int(match.group(3))
 
         if flanking and flanking > 0:
-            extended_start = max(1, target_start - flanking)
-            extended_end = target_end + flanking
+            chr_len = get_chromosome_length(chromosome)
+
+            extended_start_raw = target_start - flanking
+            extended_end_raw = target_end + flanking
+
+            extended_start = max(1, extended_start_raw)
+            extended_end = extended_end_raw
+
+            if chr_len is not None and extended_end_raw > chr_len:
+                logger.warning(
+                    f"Flanking region expands beyond chromosome {chromosome} end "
+                    f"({extended_end_raw} > {chr_len}). "
+                    "Extended end has been clamped to the chromosome boundary. "
+                )
+                extended_end = chr_len
         else:
             extended_start = target_start
             extended_end = target_end
@@ -209,7 +263,7 @@ class SliceData:
             f"Extended sequence length: {len(seq)}"
         )
 
-        slice_data = SliceData(
+        return SliceData(
             name=targeton_id,
             start=extended_start,
             end=extended_end,
@@ -217,6 +271,5 @@ class SliceData:
             chromosome=chromosome,
             bases=seq,
             flanking_region=flanking,
-            exclusion_region=exclusion_region)
-
-        return slice_data
+            exclusion_region=exclusion_region
+        )
