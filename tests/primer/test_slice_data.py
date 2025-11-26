@@ -57,7 +57,7 @@ class TestSliceData(TestCase):
 
             self.assertEqual(result, expected_p3_input)
 
-    def test_get_first_slice(self):
+    def test_get_first_slice_no_flank_calls(self):
         slices_fasta_file = 'one_slice.fa'
         self.fs.create_file(slices_fasta_file, contents='>region1_1::chr1:5-10(+)\nGTGATCGAGGAGTTCTA')
 
@@ -77,6 +77,47 @@ class TestSliceData(TestCase):
         self.assertEqual(result.strand, expected.strand)
         self.assertEqual(result.bases, expected.bases)
         self.assertEqual(result.chromosome, expected.chromosome)
+
+    @patch('primer.slice_data.get_seq_from_ensembl_by_coords')
+    def test_get_first_slice_data_with_flanking_calls(self, mock_get_seq):
+
+        slices_fasta_file = 'one_slice_no_flank.fa'
+        self.fs.create_file(
+            slices_fasta_file,
+            contents='>region1_1::chr1:5-10(+)\nGTGATCGAGGAGTTCTA'
+        )
+
+        flanking = 2
+        exclusion_region = 7
+
+        expected_start = 3
+        expected_end = 12
+
+        fake_extended_seq = 'ACTGACTG'
+        mock_get_seq.return_value = fake_extended_seq
+
+        result = SliceData.get_first_slice_data(
+            slices_fasta_file,
+            flanking=flanking,
+            exclusion_region=exclusion_region,
+        )
+
+        mock_get_seq.assert_called_once_with(
+            chromosome='1',
+            start=expected_start,
+            end=expected_end,
+            strand='+',
+        )
+
+        self.assertIsInstance(result, SliceData)
+        self.assertEqual(result.name, 'region1_1')
+        self.assertEqual(result.chromosome, '1')
+        self.assertEqual(result.strand, '+')
+        self.assertEqual(result.start, expected_start)
+        self.assertEqual(result.end, expected_end)
+        self.assertEqual(result.bases, fake_extended_seq)
+        self.assertEqual(result.flanking_region, flanking)
+        self.assertEqual(result.exclusion_region, exclusion_region)
 
     @patch('custom_logger.custom_logger.CustomLogger.warning')
     def test_get_first_slice_when_more_than_one_slice(self, logger_warning):
@@ -180,8 +221,8 @@ class TestGetSliceFromRegion(TestCase):
         mock_get_seq.return_value = 'ACTGACTG'
 
         expected = SliceData(name='ABCD',
-                             start=54100,
-                             end=54200,
+                             start=54050,
+                             end=54250,
                              strand='+',
                              chromosome='19',
                              bases='ACTGACTG',
@@ -197,7 +238,12 @@ class TestGetSliceFromRegion(TestCase):
         )
 
         # Check that sequence function was called correctly
-        mock_get_seq.assert_called_once_with('19', 54100, 54200, '+')
+        mock_get_seq.assert_called_once_with(
+            chromosome='19',
+            start=54050,
+            end=54250,
+            strand='+',
+        )
 
         # Check returned SliceData object
         self.assertIsInstance(result, SliceData)
@@ -216,8 +262,8 @@ class TestGetSliceFromRegion(TestCase):
         mock_get_seq.return_value = 'ACTGACTG'
 
         expected = SliceData(name='ABCD',
-                             start=54100,
-                             end=54200,
+                             start=54050,
+                             end=54250,
                              strand='-',
                              chromosome='19',
                              bases='ACTGACTG',
@@ -233,7 +279,12 @@ class TestGetSliceFromRegion(TestCase):
         )
 
         # Check that sequence function was called correctly
-        mock_get_seq.assert_called_once_with('19', 54100, 54200, '-')
+        mock_get_seq.assert_called_once_with(
+            chromosome='19',
+            start=54050,
+            end=54250,
+            strand='-',
+        )
 
         self.assertEqual(result.strand, expected.strand)
         self.assertEqual(result.bases, expected.bases)

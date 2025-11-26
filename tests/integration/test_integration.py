@@ -164,7 +164,7 @@ class TestPrimerIntegrationRegion(BasePrimerIntegrationTest):
         super().setUp()
         self.targeton_id = "STEQ"
         self.strand = "+"
-        self.region = "chr7:44490254-44490755"
+        self.region = "chr7:44490404-44490605"
 
     def test_primer_output_from_region(self):
         self.run_primer_test(lambda tmpdir: [
