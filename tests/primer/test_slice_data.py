@@ -57,6 +57,7 @@ class TestSliceData(TestCase):
 
             self.assertEqual(result, expected_p3_input)
 
+    #when flanking_region is = 0
     def test_get_first_slice_no_flank_calls(self):
         slices_fasta_file = 'one_slice.fa'
         self.fs.create_file(slices_fasta_file, contents='>region1_1::chr1:5-10(+)\nGTGATCGAGGAGTTCTA')
@@ -78,6 +79,7 @@ class TestSliceData(TestCase):
         self.assertEqual(result.bases, expected.bases)
         self.assertEqual(result.chromosome, expected.chromosome)
 
+    #when flanking_region is > 0
     @patch('primer.slice_data.get_seq_from_ensembl_by_coords')
     def test_get_first_slice_data_with_flanking_calls(self, mock_get_seq):
 
@@ -223,7 +225,7 @@ class TestSliceData(TestCase):
     ):
         """
         When flanking pushes the extended region beyond the chromosome end,
-        get_first_slice_data should clamp extended_end to chrom length and log an error.
+        get_first_slice_data should clamp extended_end to chrom length and log an warning.
         """
 
         mock_get_chr_len.return_value = 1000
@@ -261,7 +263,7 @@ class TestSliceData(TestCase):
         warning_calls = [c for c in mock_logger.warning.call_args_list]
         self.assertTrue(
             any("Flanking region expands beyond chromosome 1 end" in str(c) for c in warning_calls),
-            "Expected an error log about flanking beyond chromosome end"
+            "Expected an warning log about flanking beyond chromosome end"
         )
 
 
@@ -398,5 +400,5 @@ class TestGetSliceFromRegion(TestCase):
         warning_calls = [c for c in mock_logger.warning.call_args_list]
         self.assertTrue(
             any("Flanking region expands beyond chromosome 1 end" in str(c) for c in warning_calls),
-            "Expected an error log about flanking beyond chromosome end"
+            "Expected a warning log about flanking beyond chromosome end"
         )
