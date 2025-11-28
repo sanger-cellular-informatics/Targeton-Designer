@@ -227,7 +227,7 @@ This file contains the default configuration that will be applied if no user con
 
 ##### 2.2.3 Running Primer3
 
-Primer3 can be run using either a FASTA file or a genomic region. Both modes now follow the same interpretation of the `flanking_region` value from the designer config.
+Primer3 can be run using either a FASTA file or a chromosome region.
 
 **Using a FASTA file:**
 
@@ -236,9 +236,9 @@ Primer3 can be run using either a FASTA file or a genomic region. Both modes now
 ```
 
 **If `flanking_region` == 0**  
-The FASTA sequence is treated as the full template sequence (legacy mode).  
+The FASTA sequence is treated as the full template sequence.  
 No Ensembl call is made.  
-Primer placement may occur anywhere in the sequence (subject to exclusion region).  
+Primer placement may occur anywhere in the sequence.  
 
 **If `flanking_region` > 0**  
 The FASTA header must contain genomic coordinates in the format:`<name>::<chr>:<start>-<end>(<strand>)`
@@ -251,11 +251,9 @@ Example command:
 ./designer.sh primer --fasta slice.fa --dir p3_output
 ```
 
-Note: If auto-flanking requests coordinates beyond the chromosome end, the region is clamped safely and a clear warning is logged:  
+Note: If auto-flanking requests coordinates beyond the chromosome end, the region is clamped safely.
 
-“Flanking regions expand beyond end of chromosome. Extended end has been clamped to the chromosome boundary”
-
-**Using a genomic region:**
+**Using a chromosome region:**
 
 ```sh
 ./designer.sh primer [--targeton_id TARGETON_ID] [--region REGION] [--strand STRAND] [--dir OUTPUT_FOLDER] [--primer3_params PRIMER_CONFIG_JSON] [--conf DESIGNER_CONFIG_JSON]
@@ -269,7 +267,10 @@ Example command:
 ```sh
 ./designer.sh primer -targeton_id ABCD --region chr1:10000-20000 --strand - --dir p3_output
 ```
-The **region**  must follow the format:`chr<value>:<start>-<end>`
+
+Note: If auto-flanking requests coordinates beyond the chromosome end, the region is clamped safely.
+
+The **region**  must follow the format: `chr<value>:<start>-<end>`
 
 where
 - `<value>` is 1-22, X, Y or MT
