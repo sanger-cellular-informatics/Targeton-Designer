@@ -39,7 +39,7 @@ def clamp_extended_region(
     if raw_start < 1:
         logger.warning(
             f"Flanking region extends beyond start of chromosome. "
-            f"Requested extended_start={raw_start}, clamped to 1. "
+            f"Requested flank start={raw_start}, clamped to 1. "
             "Left flank length will be reduced. "
         )
         clamped_start = 1
@@ -175,21 +175,21 @@ class SliceData:
 
         chr_len = get_chromosome_length(chromosome)
 
-        extended_start_raw = target_region_start - flanking
-        extended_end_raw = target_region_end + flanking
+        flanked_start_raw = target_region_start - flanking
+        flanked_end_raw = target_region_end + flanking
 
-        extended_start, extended_end = clamp_extended_region(
+        flanked_start, flanked_end = clamp_extended_region(
             chromosome=chromosome,
-            raw_start=extended_start_raw,
-            raw_end=extended_end_raw,
+            raw_start=flanked_start_raw,
+            raw_end=flanked_end_raw,
             chr_len=chr_len,
         )
 
 
         extended_seq = get_seq_from_ensembl_by_coords(
             chromosome=chromosome,
-            start=extended_start,
-            end=extended_end,
+            start=flanked_start,
+            end=flanked_end,
             strand=strand,
         )
 
@@ -198,7 +198,7 @@ class SliceData:
             f"\tinternal_region:     {chromosome}:{target_region_start}-{target_region_end} ({strand})\n"
             f"\tinternal_length:     {target_region_end - target_region_start + 1} bp\n"
             f"\tflanking_region:     {flanking} bp\n"
-            f"\textended_region:     {chromosome}:{extended_start}-{extended_end} ({strand})\n"
+            f"\textended_region:     {chromosome}:{flanked_start}-{flanked_end} ({strand})\n"
             f"\textended_length:     {len(extended_seq)} bp\n"
             f"\tnote:                original FASTA template discarded; "
             "sequence retrieved from Ensembl\n"
@@ -207,8 +207,8 @@ class SliceData:
 
         return SliceData(
             name=name,
-            start=extended_start,
-            end=extended_end,
+            start=flanked_start,
+            end=flanked_end,
             strand=strand,
             chromosome=chromosome,
             bases=extended_seq,
@@ -236,26 +236,26 @@ class SliceData:
         if flanking and flanking > 0:
             chr_len = get_chromosome_length(chromosome)
 
-            extended_start_raw = target_region_start - flanking
-            extended_end_raw = target_region_end + flanking
+            flanked_start_raw = target_region_start - flanking
+            flanked_end_raw = target_region_end + flanking
 
-            extended_start, extended_end = clamp_extended_region(
+            flanked_start, flanked_end = clamp_extended_region(
                 chromosome=chromosome,
-                raw_start=extended_start_raw,
-                raw_end=extended_end_raw,
+                raw_start=flanked_start_raw,
+                raw_end=flanked_end_raw,
                 chr_len=chr_len,
             )
 
         else:
             # No flanking
-            extended_start = target_region_start
-            extended_end = target_region_end
+            flanked_start = target_region_start
+            flanked_end = target_region_end
             flanking = 0
 
         seq = get_seq_from_ensembl_by_coords(
             chromosome=chromosome,
-            start=extended_start,
-            end=extended_end,
+            start=flanked_start,
+            end=flanked_end,
             strand=strand
         )
 
@@ -264,14 +264,14 @@ class SliceData:
             f"\ttarget_region:       chr{chromosome}:{target_region_start}-{target_region_end} ({strand})\n"
             f"\tinternal_length:     {target_region_end - target_region_start + 1} bp\n"
             f"\tflanking_region:     {flanking} bp\n"
-            f"\textended_region:     chr{chromosome}:{extended_start}-{extended_end}\n"
+            f"\textended_region:     chr{chromosome}:{flanked_start}-{flanked_end}\n"
             f"\textended_length:     {len(seq)} bp"
         )
 
         return SliceData(
             name=targeton_id,
-            start=extended_start,
-            end=extended_end,
+            start=flanked_start,
+            end=flanked_end,
             strand=strand,
             chromosome=chromosome,
             bases=seq,
