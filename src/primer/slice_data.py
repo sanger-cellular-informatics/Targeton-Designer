@@ -9,6 +9,135 @@ from chr_lengths_grch38 import CHR_LENGTHS_GRCh38
 # Initialize logger
 logger = CustomLogger(__name__)
 
+def _clamp_flanked_region(flanked_start_unclamped: int,
+                          flanked_end_unclamped: int,
+                          chr_len: Optional[int]) -> tuple[int, int,bool,bool]:
+    """
+    Clamp flanked region [flanked_start_unclamped, flanked_end_unclamped] to valid chromosome bounds [1, chr_len].
+
+    Returns (flanked_start_clamped, flanked_end_clamped), logging any adjustments.
+    """
+    left_clamped = False
+    right_clamped = False
+
+    if flanked_start_unclamped < 1:
+        flanked_start_clamped = 1
+        left_clamped = True
+    else:
+        flanked_start_clamped = flanked_start_unclamped
+
+    flanked_end_clamped = flanked_end_unclamped
+    if chr_len is not None and flanked_end_unclamped > chr_len:
+        flanked_end_clamped = chr_len
+        right_clamped = True
+
+    return flanked_start_clamped, flanked_end_clamped, left_clamped, right_clamped
+
+def _build_flanked_slice(chromosome: str,
+                         target_region_start: int,
+                         target_region_end: int,
+                         strand: str,
+                         flanking: int) -> tuple[int, int, str]:
+    """
+    Compute flanked coordinates, clamp to chromosome bounds, and fetch sequence.
+
+    Returns (flanked_start, flanked_end, sequence).
+    """
+    if flanking == 0:
+        flanked_start = target_region_start
+        flanked_end = target_region_end
+    else:
+        chr_len = get_chromosome_length(chromosome)
+
+        flanked_start_unclamped = target_region_start - flanking
+        flanked_end_unclamped = target_region_end + flanking
+
+        flanked_start, flanked_end, left_clamped, right_clamped = _clamp_flanked_region(
+            flanked_start_unclamped=flanked_start_unclamped,
+            flanked_end_unclamped=flanked_end_unclamped,
+            chr_len=chr_len,
+        )
+
+        if left_clamped:
+            logger.warning(
+                "Flanking region extends beyond start of chromosome. "
+                f"Requested flank start={flanked_start_unclamped}, clamped to 1. "
+                "Left flank length will be reduced. "
+            )
+
+        if right_clamped and chr_len is not None:
+            logger.warning(
+                f"Flanking region expands beyond chromosome {chromosome} end "
+                f"({flanked_end_unclamped} > {chr_len}). "
+                "Flanked end has been clamped to the chromosome boundary. "
+            )
+
+    seq = get_seq_from_ensembl_by_coords(
+        chromosome=chromosome,
+        start=flanked_start,
+        end=flanked_end,
+        strand=strand,
+    )
+
+    return flanked_start, flanked_end, seq
+
+
+def _format_seq_for_log(seq: str, label: str) -> str:
+    """
+    Return a compact representation of a sequence for logging.
+    """
+    max_len = 50  # number of bp to show from each end
+    if len(seq) <= 2 * max_len:
+        return f"{label}_len={len(seq)}, {label}_seq={seq}"
+    return (
+        f"{label}_len={len(seq)}, "
+        f"{label}_seq={seq[:max_len]}...{seq[-max_len:]} "
+        f"(first {max_len}bp ... last {max_len}bp)"
+    )
+
+def _log_fasta_auto_flanking(chromosome: str,
+                             target_region_start: int,
+                             target_region_end: int,
+                             strand: str,
+                             flanking: int,
+                             flanked_start: int,
+                             flanked_end: int,
+                             flanked_seq: str) -> None:
+    """
+    Log details of FASTA-mode auto flanking (internal + flanked region and sequence preview).
+    """
+    logger.info(
+        "FASTA mode with auto-flanking:\n"
+        f"\tinternal_region:     {chromosome}:{target_region_start}-{target_region_end} ({strand})\n"
+        f"\tinternal_length:     {target_region_end - target_region_start + 1} bp\n"
+        f"\tflanking_region:     {flanking} bp\n"
+        f"\tflanked_region:      {chromosome}:{flanked_start}-{flanked_end} ({strand})\n"
+        f"\tflanked_length:      {len(flanked_seq)} bp\n"
+        f"\tnote:                original FASTA template discarded; "
+        "sequence retrieved from Ensembl\n"
+        f"\tsequence_preview: {_format_seq_for_log(flanked_seq, 'flanked')}"
+    )
+
+def _log_region_mode(chromosome: str,
+                     target_region_start: int,
+                     target_region_end: int,
+                     strand: str,
+                     flanking: int,
+                     flanked_start: int,
+                     flanked_end: int,
+                     seq: str) -> None:
+    """
+    Log details of region-mode slicing (target + flanked region).
+    """
+    logger.info(
+        "Region mode:\n"
+        f"\ttarget_region:       chr{chromosome}:{target_region_start}-{target_region_end} ({strand})\n"
+        f"\tinternal_length:     {target_region_end - target_region_start + 1} bp\n"
+        f"\tflanking_region:     {flanking} bp\n"
+        f"\tflanked_region:      chr{chromosome}:{flanked_start}-{flanked_end}\n"
+        f"\tflanked_length:      {len(seq)} bp"
+    )
+
 def get_chromosome_length(chromosome: str) -> Optional[int]:
     """
     Returns chromosome length for GRCh38 primary assembly (homo_sapiens).
@@ -23,40 +152,6 @@ def get_chromosome_length(chromosome: str) -> Optional[int]:
             "Length-based clamping will be skipped for this chromosome."
         )
     return length
-
-def clamp_extended_region(
-    chromosome: str,
-    raw_start: int,
-    raw_end: int,
-    chr_len: Optional[int],
-) -> tuple[int, int]:
-    """
-    Clamp an extended region [raw_start, raw_end] to valid chromosome bounds [1, chr_len].
-
-    Returns (clamped_start, clamped_end), logging any adjustments.
-    """
-    # Left clamp
-    if raw_start < 1:
-        logger.warning(
-            f"Flanking region extends beyond start of chromosome. "
-            f"Requested flank start={raw_start}, clamped to 1. "
-            "Left flank length will be reduced. "
-        )
-        clamped_start = 1
-    else:
-        clamped_start = raw_start
-
-    # Right clamp
-    clamped_end = raw_end
-    if chr_len is not None and raw_end > chr_len:
-        logger.warning(
-            f"Flanking region expands beyond chromosome {chromosome} end "
-            f"({raw_end} > {chr_len}). "
-            "Extended end has been clamped to the chromosome boundary. "
-        )
-        clamped_end = chr_len
-
-    return clamped_start, clamped_end
 
 class SliceData:
     def __init__(self,
@@ -121,7 +216,10 @@ class SliceData:
         )
 
     @staticmethod
-    def get_first_slice_data(fasta: str, flanking: int, exclusion_region: int) -> 'SliceData':
+    def get_first_slice_data(fasta: str,
+                             flanking: int,
+                             exclusion_region:int) -> 'SliceData':
+
         with open(fasta) as fasta_data:
             rows = SeqIO.parse(fasta_data, 'fasta')
             first_row = next(rows, None)
@@ -147,16 +245,6 @@ class SliceData:
                 logger.warning(f"The FASTA file '{fasta}' contains more than one pre-targeton. "
                                "Only the first pre-targeton is taken.")
 
-        def _format_seq_for_log(seq: str, label: str) -> str:
-            max_len = 50  # number of bp to show from each end
-            if len(seq) <= 2 * max_len:
-                return f"{label}_len={len(seq)}, {label}_seq={seq}"
-            return (
-                f"{label}_len={len(seq)}, "
-                f"{label}_seq={seq[:max_len]}...{seq[-max_len:]} "
-                f"(first {max_len}bp ... last {max_len}bp)"
-            )
-
         if flanking == 0:
             logger.info(
                 "FASTA mode: flanking_region=0, using FASTA sequence as template. "
@@ -172,37 +260,25 @@ class SliceData:
                 bases=fasta_seq,
                 flanking_region=flanking,
                 exclusion_region=exclusion_region)
-
-        chr_len = get_chromosome_length(chromosome)
-
-        flanked_start_raw = target_region_start - flanking
-        flanked_end_raw = target_region_end + flanking
-
-        flanked_start, flanked_end = clamp_extended_region(
+        
+        # flanking > 0
+        flanked_start, flanked_end, flanked_seq = _build_flanked_slice(
             chromosome=chromosome,
-            raw_start=flanked_start_raw,
-            raw_end=flanked_end_raw,
-            chr_len=chr_len,
-        )
-
-
-        extended_seq = get_seq_from_ensembl_by_coords(
-            chromosome=chromosome,
-            start=flanked_start,
-            end=flanked_end,
+            target_region_start=target_region_start,
+            target_region_end=target_region_end,
             strand=strand,
+            flanking=flanking,
         )
 
-        logger.info(
-            "FASTA mode with auto-flanking:\n"
-            f"\tinternal_region:     {chromosome}:{target_region_start}-{target_region_end} ({strand})\n"
-            f"\tinternal_length:     {target_region_end - target_region_start + 1} bp\n"
-            f"\tflanking_region:     {flanking} bp\n"
-            f"\textended_region:     {chromosome}:{flanked_start}-{flanked_end} ({strand})\n"
-            f"\textended_length:     {len(extended_seq)} bp\n"
-            f"\tnote:                original FASTA template discarded; "
-            "sequence retrieved from Ensembl\n"
-            f"\textended_preview:    {_format_seq_for_log(extended_seq, 'extended')}"
+        _log_fasta_auto_flanking(
+            chromosome=chromosome,
+            target_region_start=target_region_start,
+            target_region_end=target_region_end,
+            strand=strand,
+            flanking=flanking,
+            flanked_start=flanked_start,
+            flanked_end=flanked_end,
+            flanked_seq=flanked_seq,
         )
 
         return SliceData(
@@ -211,7 +287,7 @@ class SliceData:
             end=flanked_end,
             strand=strand,
             chromosome=chromosome,
-            bases=extended_seq,
+            bases=flanked_seq,
             flanking_region=flanking,
             exclusion_region=exclusion_region
         )
@@ -233,39 +309,23 @@ class SliceData:
         target_region_start = int(match.group(2))
         target_region_end = int(match.group(3))
 
-        if flanking and flanking > 0:
-            chr_len = get_chromosome_length(chromosome)
-
-            flanked_start_raw = target_region_start - flanking
-            flanked_end_raw = target_region_end + flanking
-
-            flanked_start, flanked_end = clamp_extended_region(
-                chromosome=chromosome,
-                raw_start=flanked_start_raw,
-                raw_end=flanked_end_raw,
-                chr_len=chr_len,
-            )
-
-        else:
-            # No flanking
-            flanked_start = target_region_start
-            flanked_end = target_region_end
-            flanking = 0
-
-        seq = get_seq_from_ensembl_by_coords(
+        flanked_start, flanked_end, seq = _build_flanked_slice(
             chromosome=chromosome,
-            start=flanked_start,
-            end=flanked_end,
-            strand=strand
+            target_region_start=target_region_start,
+            target_region_end=target_region_end,
+            strand=strand,
+            flanking=flanking,
         )
 
-        logger.info(
-            "Region mode:\n"
-            f"\ttarget_region:       chr{chromosome}:{target_region_start}-{target_region_end} ({strand})\n"
-            f"\tinternal_length:     {target_region_end - target_region_start + 1} bp\n"
-            f"\tflanking_region:     {flanking} bp\n"
-            f"\textended_region:     chr{chromosome}:{flanked_start}-{flanked_end}\n"
-            f"\textended_length:     {len(seq)} bp"
+        _log_region_mode(
+            chromosome=chromosome,
+            target_region_start=target_region_start,
+            target_region_end=target_region_end,
+            strand=strand,
+            flanking=flanking,
+            flanked_start=flanked_start,
+            flanked_end=flanked_end,
+            seq=seq,
         )
 
         return SliceData(
@@ -275,6 +335,6 @@ class SliceData:
             strand=strand,
             chromosome=chromosome,
             bases=seq,
-            flanking_region=flanking,
-            exclusion_region=exclusion_region
+            flanking_region=flanking if flanking > 0 else 0,
+            exclusion_region=exclusion_region,
         )
