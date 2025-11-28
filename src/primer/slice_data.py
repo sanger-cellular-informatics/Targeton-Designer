@@ -1,45 +1,28 @@
 from typing import Optional
 import re
 from Bio import SeqIO
-import sys
 
 from primer.ensembl import get_seq_from_ensembl_by_coords
 from custom_logger.custom_logger import CustomLogger
-
-import requests
+from chr_lengths_grch38 import CHR_LENGTHS_GRCh38
 
 # Initialize logger
 logger = CustomLogger(__name__)
 
-_chr_length_cache: dict[str, int] = {}
-
 def get_chromosome_length(chromosome: str) -> Optional[int]:
-    """Returns chromosome length using Ensembl metadata."""
-    if chromosome in _chr_length_cache:
-        return _chr_length_cache[chromosome]
+    """
+    Returns chromosome length for GRCh38 primary assembly (homo_sapiens).
 
-    url = "https://rest.ensembl.org/info/assembly/homo_sapiens?content-type=application/json"
-
-    try:
-        response = requests.get(url, timeout=5)
-        response.raise_for_status()
-        data = response.json()
-
-        lengths = {
-            region["name"]: region["length"]
-            for region in data.get("top_level_region", [])
-            if region.get("coord_system") == "chromosome"
-        }
-
-        _chr_length_cache.update(lengths)
-
-        return lengths.get(chromosome)
-
-    except Exception as e:
+    Uses a static dictionary (CHR_LENGTHS_GRCh38) generated from Ensembl metadata.
+    No network calls are made at runtime.
+    """
+    length = CHR_LENGTHS_GRCh38.get(chromosome)
+    if length is None:
         logger.warning(
-            f"Could not retrieve chromosome length metadata from Ensembl: {e}"
+            f"Chromosome '{chromosome}' not found in CHR_LENGTHS_GRCh38. "
+            "Length-based clamping will be skipped for this chromosome."
         )
-        return None
+    return length
 
 def clamp_extended_region(
     chromosome: str,
