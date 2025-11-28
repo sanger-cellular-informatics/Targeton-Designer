@@ -6,6 +6,8 @@ import sys
 from primer.ensembl import get_seq_from_ensembl_by_coords
 from custom_logger.custom_logger import CustomLogger
 
+import requests
+
 # Initialize logger
 logger = CustomLogger(__name__)
 
@@ -16,7 +18,6 @@ def get_chromosome_length(chromosome: str) -> Optional[int]:
     if chromosome in _chr_length_cache:
         return _chr_length_cache[chromosome]
 
-    import requests
     url = "https://rest.ensembl.org/info/assembly/homo_sapiens?content-type=application/json"
 
     try:
@@ -39,6 +40,40 @@ def get_chromosome_length(chromosome: str) -> Optional[int]:
             f"Could not retrieve chromosome length metadata from Ensembl: {e}"
         )
         return None
+
+def clamp_extended_region(
+    chromosome: str,
+    raw_start: int,
+    raw_end: int,
+    chr_len: Optional[int],
+) -> tuple[int, int]:
+    """
+    Clamp an extended region [raw_start, raw_end] to valid chromosome bounds [1, chr_len].
+
+    Returns (clamped_start, clamped_end), logging any adjustments.
+    """
+    # Left clamp
+    if raw_start < 1:
+        logger.warning(
+            f"Flanking region extends beyond start of chromosome. "
+            f"Requested extended_start={raw_start}, clamped to 1. "
+            "Left flank length will be reduced. "
+        )
+        clamped_start = 1
+    else:
+        clamped_start = raw_start
+
+    # Right clamp
+    clamped_end = raw_end
+    if chr_len is not None and raw_end > chr_len:
+        logger.warning(
+            f"Flanking region expands beyond chromosome {chromosome} end "
+            f"({raw_end} > {chr_len}). "
+            "Extended end has been clamped to the chromosome boundary. "
+        )
+        clamped_end = chr_len
+
+    return clamped_start, clamped_end
 
 class SliceData:
     def __init__(self,
@@ -120,8 +155,8 @@ class SliceData:
 
             name = match.group(1)
             chromosome = match.group(2)
-            internal_start = int(match.group(3))
-            internal_end = int(match.group(4))
+            target_region_start = int(match.group(3))
+            target_region_end = int(match.group(4))
             strand = match.group(5)
             fasta_seq = str(first_row.seq)
 
@@ -142,13 +177,13 @@ class SliceData:
         if flanking == 0:
             logger.info(
                 "FASTA mode: flanking_region=0, using FASTA sequence as template. "
-                f"Header internal region: {chromosome}:{internal_start}-{internal_end}({strand}). "
+                f"Header internal region: {chromosome}:{target_region_start}-{target_region_end}({strand}). "
             )
 
             return SliceData(
                 name=name,
-                start=internal_start,
-                end=internal_end,
+                start=target_region_start,
+                end=target_region_end,
                 strand=strand,
                 chromosome=chromosome,
                 bases=fasta_seq,
@@ -157,33 +192,16 @@ class SliceData:
 
         chr_len = get_chromosome_length(chromosome)
 
-        extended_start_raw = internal_start - flanking
-        extended_end_raw = internal_end + flanking
+        extended_start_raw = target_region_start - flanking
+        extended_end_raw = target_region_end + flanking
 
-        extended_start = max(1, extended_start_raw)
-        extended_end = extended_end_raw
-
-        if extended_start_raw < 1:
-            logger.warning(
-                f"Flanking region extends beyond start of chromosome. "
-                f"Requested extended_start={extended_start_raw}, clamped to 1. "
-                "Left flank length will be reduced. "
-            )
-
-        if chr_len is not None and extended_end_raw > chr_len:
-            logger.warning(
-                f"Flanking region expands beyond chromosome {chromosome} end "
-                f"({extended_end_raw} > {chr_len}). "
-                "Extended end has been clamped to the chromosome boundary. "
-            )
-            extended_end = chr_len
-
-        #check if new flanked sequence matches pre-flanked FASTA sequence
-        logger.info(
-            "FASTA mode with auto-flanking: "
-            f"internal={chromosome}:{internal_start}-{internal_end}({strand}), "
-            f"flanking_region={flanking}, extended={extended_start}-{extended_end}"
+        extended_start, extended_end = clamp_extended_region(
+            chromosome=chromosome,
+            raw_start=extended_start_raw,
+            raw_end=extended_end_raw,
+            chr_len=chr_len,
         )
+
 
         extended_seq = get_seq_from_ensembl_by_coords(
             chromosome=chromosome,
@@ -193,9 +211,15 @@ class SliceData:
         )
 
         logger.info(
-            "FASTA mode with auto-flanking: "
-            f"len_internal={internal_end - internal_start + 1}, "
-            f"{_format_seq_for_log(extended_seq, 'extended')}"
+            "FASTA mode with auto-flanking:\n"
+            f"\tinternal_region:     {chromosome}:{target_region_start}-{target_region_end} ({strand})\n"
+            f"\tinternal_length:     {target_region_end - target_region_start + 1} bp\n"
+            f"\tflanking_region:     {flanking} bp\n"
+            f"\textended_region:     {chromosome}:{extended_start}-{extended_end} ({strand})\n"
+            f"\textended_length:     {len(extended_seq)} bp\n"
+            f"\tnote:                original FASTA template discarded; "
+            "sequence retrieved from Ensembl\n"
+            f"\textended_preview:    {_format_seq_for_log(extended_seq, 'extended')}"
         )
 
         return SliceData(
@@ -223,40 +247,26 @@ class SliceData:
             raise ValueError(msg)
 
         chromosome = match.group(1)
-        target_start = int(match.group(2))
-        target_end = int(match.group(3))
+        target_region_start = int(match.group(2))
+        target_region_end = int(match.group(3))
 
         if flanking and flanking > 0:
             chr_len = get_chromosome_length(chromosome)
 
-            extended_start_raw = target_start - flanking
-            extended_end_raw = target_end + flanking
+            extended_start_raw = target_region_start - flanking
+            extended_end_raw = target_region_end + flanking
 
-            # Left clamp
-            if extended_start_raw < 1:
-                logger.warning(
-                    f"Flanking region extends beyond start of chromosome. "
-                    f"Requested extended_start={extended_start_raw}, clamped to 1. "
-                    "Left flank length will be reduced. "
-                )
-                extended_start = 1
-            else:
-                extended_start = extended_start_raw
-
-            # Right clamp
-            extended_end = extended_end_raw
-            if chr_len is not None and extended_end_raw > chr_len:
-                logger.warning(
-                    f"Flanking region expands beyond chromosome {chromosome} end "
-                    f"({extended_end_raw} > {chr_len}). "
-                    "Extended end has been clamped to the chromosome boundary. "
-                )
-                extended_end = chr_len
+            extended_start, extended_end = clamp_extended_region(
+                chromosome=chromosome,
+                raw_start=extended_start_raw,
+                raw_end=extended_end_raw,
+                chr_len=chr_len,
+            )
 
         else:
             # No flanking
-            extended_start = target_start
-            extended_end = target_end
+            extended_start = target_region_start
+            extended_end = target_region_end
             flanking = 0
 
         seq = get_seq_from_ensembl_by_coords(
@@ -267,19 +277,12 @@ class SliceData:
         )
 
         logger.info(
-            f"Target region (internal): chr{chromosome}:{target_start}-{target_end} (strand {strand})"
-        )
-        logger.info(
-            f"Flanking region (bp): {flanking}"
-        )
-        logger.info(
-            f"Extended region used for template: chr{chromosome}:{extended_start}-{extended_end}"
-        )
-        logger.info(
-            f"Internal sequence length: {target_end - target_start + 1}"
-        )
-        logger.info(
-            f"Extended sequence length: {len(seq)}"
+            "Region mode:\n"
+            f"\ttarget_region:       chr{chromosome}:{target_region_start}-{target_region_end} ({strand})\n"
+            f"\tinternal_length:     {target_region_end - target_region_start + 1} bp\n"
+            f"\tflanking_region:     {flanking} bp\n"
+            f"\textended_region:     chr{chromosome}:{extended_start}-{extended_end}\n"
+            f"\textended_length:     {len(seq)} bp"
         )
 
         return SliceData(

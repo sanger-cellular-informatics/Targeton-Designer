@@ -251,7 +251,7 @@ Example command:
 ./designer.sh primer --fasta slice.fa --dir p3_output
 ```
 
-Note: If auto-flanking requests coordinates beyond the chromosome end, the region is clamped safely and a clear error is logged:  
+Note: If auto-flanking requests coordinates beyond the chromosome end, the region is clamped safely and a clear warning is logged:  
 
 “Flanking regions expand beyond end of chromosome. Extended end has been clamped to the chromosome boundary”
 
