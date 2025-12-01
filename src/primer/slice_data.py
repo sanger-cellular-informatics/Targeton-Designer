@@ -2,7 +2,7 @@ import re
 from Bio import SeqIO
 
 from primer.ensembl import get_seq_from_ensembl_by_coords
-from primer.flanking import build_flanked_slice, log_flanking_summary
+from primer.flanking import build_flanked_slice
 from custom_logger.custom_logger import CustomLogger
 
 # Initialize logger
@@ -118,20 +118,9 @@ class SliceData:
             target_region_start=target_region_start,
             target_region_end=target_region_end,
             strand=strand,
-            flanking=flanking
-        )
-
-        log_flanking_summary(
-            mode="FASTA",
-            chromosome=chromosome,
-            target_region_start=target_region_start,
-            target_region_end=target_region_end,
-            strand=strand,
             flanking=flanking,
-            flanked_start=flanked_start,
-            flanked_end=flanked_end,
-            flanked_seq=flanked_seq,
-            note="original FASTA template discarded; sequence retrieved from Ensembl"
+            mode="FASTA",
+            note="original FASTA template discarded; sequence retrieved from Ensembl",
         )
 
         return SliceData(
@@ -167,19 +156,8 @@ class SliceData:
             target_region_start=target_region_start,
             target_region_end=target_region_end,
             strand=strand,
-            flanking=flanking
-        )
-
-        log_flanking_summary(
-            mode="REGION",
-            chromosome=chromosome,
-            target_region_start=target_region_start,
-            target_region_end=target_region_end,
-            strand=strand,
             flanking=flanking,
-            flanked_start=flanked_start,
-            flanked_end=flanked_end,
-            flanked_seq=flanked_seq
+            mode="REGION",
         )
 
         return SliceData(
