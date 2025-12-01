@@ -52,8 +52,7 @@ def _get_flanked_coordinates(
     Returns:
         flanked_start_clamped, flanked_end_clamped
     """
-    if flanking == 0:
-        return target_region_start, target_region_end
+    assert flanking > 0
 
     chr_len = get_chromosome_length(chromosome)
 
