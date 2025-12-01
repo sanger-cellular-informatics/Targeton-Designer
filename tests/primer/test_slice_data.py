@@ -80,7 +80,7 @@ class TestSliceData(TestCase):
         self.assertEqual(result.chromosome, expected.chromosome)
 
     #when flanking_region is > 0
-    @patch('primer.slice_data.get_seq_from_ensembl_by_coords')
+    @patch('primer.flanking.get_seq_from_ensembl_by_coords')
     def test_get_first_slice_data_with_flanking_calls(self, mock_get_seq):
 
         slices_fasta_file = 'one_slice_no_flank.fa'
@@ -214,9 +214,9 @@ class TestSliceData(TestCase):
 
         self.assertTrue("does not match the expected format" in str(ex.exception))
 
-    @patch("primer.slice_data.logger")
-    @patch("primer.slice_data.get_seq_from_ensembl_by_coords")
-    @patch("primer.slice_data.get_chromosome_length")
+    @patch("primer.flanking.logger")
+    @patch("primer.flanking.get_seq_from_ensembl_by_coords")
+    @patch("primer.flanking.get_chromosome_length")
     def test_fasta_file_flanking_exceeds_chrom_end(
         self,
         mock_get_chr_len,
@@ -269,7 +269,7 @@ class TestSliceData(TestCase):
 
 class TestGetSliceFromRegion(TestCase):
 
-    @patch('primer.slice_data.get_seq_from_ensembl_by_coords')
+    @patch('primer.flanking.get_seq_from_ensembl_by_coords')
     def test_get_slice_from_region_valid(self, mock_get_seq):
         """Test successful parsing of region string and creation of SliceData."""
         mock_get_seq.return_value = 'ACTGACTG'
@@ -308,7 +308,7 @@ class TestGetSliceFromRegion(TestCase):
         self.assertEqual(result.flanking_region, expected.flanking_region)
         self.assertEqual(result.exclusion_region, expected.exclusion_region)
 
-    @patch('primer.slice_data.get_seq_from_ensembl_by_coords')
+    @patch('primer.flanking.get_seq_from_ensembl_by_coords')
     def test_get_slice_from_region_valid_neg(self, mock_get_seq):
         """Test that strand '-' is set"""
         mock_get_seq.return_value = 'ACTGACTG'
@@ -353,9 +353,9 @@ class TestGetSliceFromRegion(TestCase):
 
         self.assertTrue("does not match the expected format" in str(ex.exception))
 
-    @patch("primer.slice_data.logger")
-    @patch("primer.slice_data.get_seq_from_ensembl_by_coords")
-    @patch("primer.slice_data.get_chromosome_length")
+    @patch("primer.flanking.logger")
+    @patch("primer.flanking.get_seq_from_ensembl_by_coords")
+    @patch("primer.flanking.get_chromosome_length")
     def test_get_slice_from_region_flanking_exceeds_chrom_end(
         self,
         mock_get_chr_len,
