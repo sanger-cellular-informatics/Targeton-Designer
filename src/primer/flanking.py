@@ -149,3 +149,4 @@ def log_flanking_summary(
     sequence_len:        {len(flanked_seq)}
     sequence:            {flanked_seq}"""
     )
+    
