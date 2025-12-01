@@ -15,6 +15,10 @@ CHR_LENGTHS_PATH = Path(__file__).resolve().parents[1] / "chr_lengths_grch38.jso
 with CHR_LENGTHS_PATH.open() as f:
     CHR_LENGTHS_GRCh38 = json.load(f)
 
+# ---------------------------------------------------------------------------
+# Flanking helpers
+# ---------------------------------------------------------------------------
+
 def _clamp_flanked_region(flanked_start_unclamped: int,
                           flanked_end_unclamped: int,
                           chr_len: Optional[int]) -> tuple[int, int,bool,bool]:
