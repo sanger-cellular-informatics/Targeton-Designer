@@ -216,7 +216,7 @@ class TestSliceData(TestCase):
 
     @patch("primer.flanking.logger")
     @patch("primer.flanking.get_seq_from_ensembl_by_coords")
-    @patch("primer.flanking.get_chromosome_length")
+    @patch("primer.flanking._get_chromosome_length")
     def test_fasta_file_flanking_exceeds_chrom_end(
         self,
         mock_get_chr_len,
@@ -355,7 +355,7 @@ class TestGetSliceFromRegion(TestCase):
 
     @patch("primer.flanking.logger")
     @patch("primer.flanking.get_seq_from_ensembl_by_coords")
-    @patch("primer.flanking.get_chromosome_length")
+    @patch("primer.flanking._get_chromosome_length")
     def test_get_slice_from_region_flanking_exceeds_chrom_end(
         self,
         mock_get_chr_len,

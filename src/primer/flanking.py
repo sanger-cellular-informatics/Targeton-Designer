@@ -13,7 +13,7 @@ CHR_LENGTHS_PATH = Path(__file__).resolve().parents[1] / "utils" / "chr_lengths_
 with CHR_LENGTHS_PATH.open() as f:
     CHR_LENGTHS_GRCh38 = json.load(f)
 
-def get_chromosome_length(chromosome: str) -> Optional[int]:
+def _get_chromosome_length(chromosome: str) -> Optional[int]:
     length = CHR_LENGTHS_GRCh38.get(chromosome)
     if length is None:
         logger.warning(
@@ -22,7 +22,7 @@ def get_chromosome_length(chromosome: str) -> Optional[int]:
         )
     return length
 
-def get_flanked_coordinates(
+def _get_flanked_coordinates(
     chromosome: str,
     target_region_start: int,
     target_region_end: int,
@@ -35,7 +35,7 @@ def get_flanked_coordinates(
     if flanking == 0:
         return target_region_start, target_region_end
 
-    chr_len = get_chromosome_length(chromosome)
+    chr_len = _get_chromosome_length(chromosome)
 
     flanked_start_unclamped = target_region_start - flanking
     flanked_end_unclamped = target_region_end + flanking
@@ -103,7 +103,7 @@ def build_flanked_slice(
     Returns:
         flanked_start, flanked_end, flanked_seq
     """
-    flanked_start, flanked_end = get_flanked_coordinates(
+    flanked_start, flanked_end = _get_flanked_coordinates(
         chromosome=chromosome,
         target_region_start=target_region_start,
         target_region_end=target_region_end,
@@ -149,4 +149,3 @@ def log_flanking_summary(
     sequence_len:        {len(flanked_seq)}
     sequence:            {flanked_seq}"""
     )
-    
