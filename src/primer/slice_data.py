@@ -112,16 +112,6 @@ class SliceData:
             primer_region_length = self.flanking_region - self.exclusion_region
             primer_pair_region = [0, primer_region_length,
                                       len(self.bases) - primer_region_length + 1, primer_region_length - 1]
-            # left_start = 0
-            # left_len = primer_region_length
-
-            # right_start = len(self.bases) - primer_region_length
-            # right_len = primer_region_length
-
-            # primer_pair_region = [
-            #     left_start, left_len,
-            #     right_start, right_len,
-            # ]
         return {
             'SEQUENCE_ID': self.name,
             'SEQUENCE_TEMPLATE': self.bases,
