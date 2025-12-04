@@ -167,7 +167,7 @@ class TestSliceData(TestCase):
 
         self.assertEqual(str(error.exception), f"Unable to parse the FASTA file '{empty_fasta}'")
 
-    def test_fasta_file_parsing_chromosome_with_characters(self):
+    def test_get_first_slice_parsing_chromosome_with_characters(self):
         mocked_fasta_1 = 'mocked_fasta_1.fa'
         mocked_fasta_2 = 'mocked_fasta_2.fa'
         mocked_fasta_3 = 'mocked_fasta_3.fa'
@@ -205,7 +205,7 @@ class TestSliceData(TestCase):
 
         self.assertEqual(result_3, expected)
 
-    def test_fasta_file_parsing_chromosome_with_invalid_characters(self):
+    def test_get_first_slice_parsing_chromosome_with_invalid_characters(self):
         mocked_fasta = 'mocked_fasta.fa'
         self.fs.create_file(mocked_fasta, contents='>region1_1::xyz$#r1:5-10(+)\nGTGATCGAGGAGTTCTA')
 
@@ -217,7 +217,7 @@ class TestSliceData(TestCase):
     @patch("primer.flanking.logger")
     @patch("primer.flanking.get_seq_from_ensembl_by_coords")
     @patch("primer.flanking._get_chromosome_length")
-    def test_fasta_file_flanking_exceeds_chrom_end(
+    def test_get_first_slice_flanking_exceeds_chrom_end(
         self,
         mock_get_chr_len,
         mock_get_seq,
@@ -352,6 +352,46 @@ class TestGetSliceFromRegion(TestCase):
             )
 
         self.assertTrue("does not match the expected format" in str(ex.exception))
+
+    @patch("primer.flanking.logger")
+    @patch("primer.flanking.get_seq_from_ensembl_by_coords")
+    @patch("primer.flanking._get_chromosome_length")
+    def test_get_slice_from_region_flanking_exceeds_chrom_start(
+        self,
+        mock_get_chr_len,
+        mock_get_seq,
+        mock_logger,
+    ):
+        mock_get_chr_len.return_value = 1000
+
+        targeton_id = "REG1"
+        region = "chr1:5-50"
+        strand = "+"
+        flanking = 100
+        exclusion_region = 0
+
+        expected_start = 1
+        expected_end = 50 + 100
+
+        fake_extended_seq = "N" * (expected_end - expected_start + 1)
+        mock_get_seq.return_value = fake_extended_seq
+
+        result = SliceData.get_slice_from_region(
+            targeton_id=targeton_id,
+            region=region,
+            strand=strand,
+            flanking=flanking,
+            exclusion_region=exclusion_region,
+        )
+
+        self.assertEqual(result.start, expected_start)
+        self.assertEqual(result.end, expected_end)
+
+        warning_calls = [str(c) for c in mock_logger.warning.call_args_list]
+        self.assertTrue(
+            any("extends beyond start of chromosome" in w for w in warning_calls),
+            "Expected a warning about flanking beyond chromosome start"
+        )
 
     @patch("primer.flanking.logger")
     @patch("primer.flanking.get_seq_from_ensembl_by_coords")
