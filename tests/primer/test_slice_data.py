@@ -4,7 +4,7 @@ from unittest.mock import patch
 from pyfakefs.fake_filesystem_unittest import TestCase
 from tests.utils.utils import CapturingStreamHandler
 
-from primer.slice_data import SliceData
+from primer.slice_data import SliceData, parse_pretargeton_header, parse_region_string
 
 
 class TestSliceData(TestCase):
@@ -402,3 +402,30 @@ class TestGetSliceFromRegion(TestCase):
             any("Flanking region expands beyond chromosome 1 end" in str(c) for c in warning_calls),
             "Expected a warning log about flanking beyond chromosome end"
         )
+
+class TestParsingHelpers(TestCase):
+    def test_parse_pretargeton_header_valid(self):
+        header = "ENSE00000769557_HG8_1::chr1:42929543-42929753(+)"
+        fields = parse_pretargeton_header(header)
+
+        self.assertEqual(fields["name"], "ENSE00000769557_HG8_1")
+        self.assertEqual(fields["chromosome"], "1")
+        self.assertEqual(fields["start"], 42929543)
+        self.assertEqual(fields["end"], 42929753)
+        self.assertEqual(fields["strand"], "+")
+
+    def test_parse_pretargeton_header_invalid(self):
+        with self.assertRaises(ValueError) as cm:
+            parse_pretargeton_header("BAD_HEADER")
+        self.assertIn("does not match the expected format", str(cm.exception))
+
+    def test_parse_region_string_valid(self):
+        fields = parse_region_string("chr19:54100-54200")
+        self.assertEqual(fields["chromosome"], "19")
+        self.assertEqual(fields["start"], 54100)
+        self.assertEqual(fields["end"], 54200)
+
+    def test_parse_region_string_invalid(self):
+        with self.assertRaises(ValueError) as cm:
+            parse_region_string("chr19_54100-54200")
+        self.assertIn("does not match the expected format", str(cm.exception))
