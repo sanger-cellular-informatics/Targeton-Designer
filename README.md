@@ -229,7 +229,7 @@ This file contains the default configuration that will be applied if no user con
 
 Primer3 can be run using either a FASTA file or a chromosome region.
 
-**Using a FASTA file:**
+**Using a FASTA file (FASTA MODE):**
 
 ```sh
 ./designer.sh primer [--fasta SLICE_FASTA] [--dir OUTPUT_FOLDER] [--primer3_params PRIMER_CONFIG_JSON] [--conf DESIGNER_CONFIG_JSON]
@@ -251,9 +251,9 @@ Example command:
 ./designer.sh primer --fasta slice.fa --dir p3_output
 ```
 
-Note: If auto-flanking requests coordinates beyond the chromosome end, the region is clamped safely.
+Note: If auto-flanking requests coordinates beyond the chromosome start or end, the region is clamped safely.
 
-**Using a chromosome region:**
+**Using a chromosome region (REGION MODE):**
 
 ```sh
 ./designer.sh primer [--targeton_id TARGETON_ID] [--region REGION] [--strand STRAND] [--dir OUTPUT_FOLDER] [--primer3_params PRIMER_CONFIG_JSON] [--conf DESIGNER_CONFIG_JSON]
@@ -268,7 +268,7 @@ Example command:
 ./designer.sh primer -targeton_id ABCD --region chr1:10000-20000 --strand - --dir p3_output
 ```
 
-Note: If auto-flanking requests coordinates beyond the chromosome end, the region is clamped safely.
+Note: If auto-flanking requests coordinates beyond the chromosome start or end, the region is clamped safely.
 
 The **region**  must follow the format: `chr<value>:<start>-<end>`
 

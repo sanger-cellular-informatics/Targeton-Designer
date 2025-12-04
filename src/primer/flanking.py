@@ -20,8 +20,7 @@ def build_flanked_slice(
     target_region_end: int,
     strand: str,
     flanking: int,
-    *,
-    mode: str | None = None,
+    mode: str,
     note: str = "",
 ) -> tuple[int, int, str]:
     """
@@ -110,16 +109,13 @@ def _clamp_flanked_region(
 
     if left_clamped:
         logger.warning(
-            "Flanking region extends beyond start of chromosome. "
-            f"Requested flank start={flanked_start_unclamped}, clamped to 1. "
-            "Left flank length will be reduced. "
+            "Flanking region extends beyond start of chromosome; start clamped to 1 and left flank length shortened."
         )
 
     if right_clamped and chr_len is not None:
         logger.warning(
-            f"Flanking region expands beyond chromosome {chromosome} end "
-            f"({flanked_end_unclamped} > {chr_len}). "
-            "Flanked end has been clamped to the chromosome boundary. "
+            f"Flanking region expands beyond chromosome {chromosome} end;"
+            f"end clamped to chromosome boundary {chr_len}. "
         )
 
     flanked_start_clamped = max(flanked_start_unclamped, 1)
@@ -134,7 +130,7 @@ def _get_chromosome_length(chromosome: str) -> Optional[int]:
     length = CHR_LENGTHS_GRCh38.get(chromosome)
     if length is None:
         logger.warning(
-            f"Chromosome '{chromosome}' not found in CHR_LENGTHS_GRCh38. "
+            f"Chromosome '{chromosome}' not found in CHR_LENGTHS_GRCh38."
             "Flanking positions will not be restricted by chromosome bounds."
         )
     return length
@@ -154,7 +150,7 @@ def _log_flanking_summary(
 ) -> None:
 
     header = {
-        "FASTA": "FASTA mode with auto-flanking",
+        "FASTA": "FASTA mode",
         "REGION": "Region mode",
     }.get(mode, mode)
 
