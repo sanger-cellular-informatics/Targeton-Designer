@@ -262,7 +262,7 @@ class TestSliceData(TestCase):
 
         warning_calls = [c for c in mock_logger.warning.call_args_list]
         self.assertTrue(
-            any("Flanking region expands beyond chromosome 1 end" in str(c) for c in warning_calls),
+            any("Flanking region extends beyond end of chromosome" in str(c) for c in warning_calls),
             "Expected an warning log about flanking beyond chromosome end"
         )
 
@@ -439,7 +439,7 @@ class TestGetSliceFromRegion(TestCase):
 
         warning_calls = [c for c in mock_logger.warning.call_args_list]
         self.assertTrue(
-            any("Flanking region expands beyond chromosome 1 end" in str(c) for c in warning_calls),
+            any("Flanking region extends beyond end of chromosome 1" in str(c) for c in warning_calls),
             "Expected a warning log about flanking beyond chromosome end"
         )
 

@@ -109,12 +109,12 @@ def _clamp_flanked_region(
 
     if left_clamped:
         logger.warning(
-            "Flanking region extends beyond start of chromosome; start clamped to 1 and left flank length shortened."
+            "Flanking region extends beyond start of chromosome; start clamped to 1."
         )
 
     if right_clamped and chr_len is not None:
         logger.warning(
-            f"Flanking region expands beyond chromosome {chromosome} end;"
+            f"Flanking region extends beyond end of chromosome {chromosome};"
             f"end clamped to chromosome boundary. "
         )
 

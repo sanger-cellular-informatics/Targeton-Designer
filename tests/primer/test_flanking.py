@@ -90,7 +90,7 @@ class TestClamping(TestCase):
 
         warnings = [str(c) for c in mock_logger.warning.call_args_list]
         self.assertTrue(
-            any("expands beyond chromosome" in w for w in warnings),
+            any("extends beyond end of chromosome" in w for w in warnings),
             "Expected a warning about flanking expanding beyond chromosome end",
         )
 
