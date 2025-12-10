@@ -205,8 +205,17 @@ You can pass your own user Primer3 config file to the `primer` command using the
 
 ##### 2.2.2 Designer config
 
+<p align="center">
+  <a href="primer-region.jpg" target="_blank">
+    <img src="primer-region.jpg" width="600">
+  </a><br>
+  <em>Figure 1. The pre-targeton (top) shows the target region with flanking and exclusion zones;  
+  the targeton (bottom) shows valid primer placement within these allowed regions.</em>
+</p>
+
+
 This file specifies the configuration parameters specific to Primer Designer:
-1. `"flanking_region"`: The length of the sequences up- and downstream of the target region, where primers will be generated. Set to 0 to allow primer placement anywhere in the sequence (any `exclusion_region` values will be ignored).
+1. `"flanking_region"`: The *total* length of the sequences up- and downstream of the target region, where primers will be generated. Set to 0 to allow primer placement anywhere in the sequence (any `exclusion_region` values will be ignored).
 2. `"exclusion_region"`: The length of the up- and downstream sequences immediately adjacent to the target region where primers must not be placed. This is contained within the `"flanking_region"` region. The difference between `flanking_region` and `exclusion_region` cannot be less than `PRIMER_MIN_LEN` (see [Primer3 config](#221-primer3-parameters-config)).
 3. `"stringency_vector"`: A vector of different stringencies to be applied when running Primer3.
 4. `"filters"`: Any filters that should be applied to the list of primer pairs provided by Primer3 (see [below](
@@ -227,30 +236,50 @@ This file contains the default configuration that will be applied if no user con
 
 ##### 2.2.3 Running Primer3
 
-Primer3 can be run using a FASTA file as input or region as input.
+Primer3 can be run using either a FASTA file or a chromosome region.
 
-Using a FASTA file:
+**Using a FASTA file (FASTA MODE):**
 
 ```sh
 ./designer.sh primer [--fasta SLICE_FASTA] [--dir OUTPUT_FOLDER] [--primer3_params PRIMER_CONFIG_JSON] [--conf DESIGNER_CONFIG_JSON]
 ```
+
+**If `flanking_region` == 0**  
+The FASTA sequence is treated as the full template sequence.  
+No Ensembl call is made.  
+Primer placement may occur anywhere in the sequence.  
+
+**If `flanking_region` > 0**  
+The FASTA header must contain genomic coordinates in the format:`<name>::<chr>:<start>-<end>(<strand>)`
+The coordinates are interpreted as the internal (target) region.  
+Primer Designer automatically extends this region by `flanking_region` bases on each side and retrieves the extended sequence from Ensembl.  
+The final extended sequence becomes the Primer3 template.
 
 Example command:
 ```sh
 ./designer.sh primer --fasta slice.fa --dir p3_output
 ```
 
-Using a region:
+Note: If auto-flanking requests coordinates beyond the chromosome start or end, the region is clamped safely.
+
+**Using a chromosome region (REGION MODE):**
 
 ```sh
 ./designer.sh primer [--targeton_id TARGETON_ID] [--region REGION] [--strand STRAND] [--dir OUTPUT_FOLDER] [--primer3_params PRIMER_CONFIG_JSON] [--conf DESIGNER_CONFIG_JSON]
 ```
 
+The region is always treated as the **internal target region**.  
+Primer Designer automatically extends the region by `flanking_region` bases upstream and downstream.  
+The extended sequence is fetched from Ensembl and used as the Primer3 template.  
+
 Example command:
 ```sh
 ./designer.sh primer -targeton_id ABCD --region chr1:10000-20000 --strand - --dir p3_output
 ```
-The **region**  must follow the format:  `chr<value>:<start>-<end>`
+
+Note: If auto-flanking requests coordinates beyond the chromosome start or end, the region is clamped safely.
+
+The **region**  must follow the format: `chr<value>:<start>-<end>`
 
 where
 - `<value>` is 1-22, X, Y or MT
