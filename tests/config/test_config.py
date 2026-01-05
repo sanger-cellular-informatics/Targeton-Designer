@@ -131,7 +131,7 @@ class TestDesignerConfigClass(TestCase):
                                          "product_size", "targeton_id", "pair_uid"]}
 
         result = DesignerConfig.read_config(
-            default_config_file=self.default_config_path, config_file=self.config_path
+            default_config_path=self.default_config_path, config_path=self.config_path
         )
         self.assertEqual(result, expected)
 
@@ -148,7 +148,7 @@ class TestDesignerConfigClass(TestCase):
                                          "end_stability", "chromosome", "pre_targeton_start", "pre_targeton_end", 
                                          "product_size", "targeton_id", "pair_uid"]}
 
-        result = DesignerConfig.read_config(default_config_file=self.default_config_path)
+        result = DesignerConfig.read_config(default_config_path=self.default_config_path)
         self.assertEqual(result, expected)
 
     def test_no_default_config_file_found(self):
@@ -156,7 +156,7 @@ class TestDesignerConfigClass(TestCase):
 
         with self.assertRaises(FileNotFoundError):
             DesignerConfig.read_config(
-                default_config_file=incorrect_default_path, config_file=self.config_path
+                default_config_path=incorrect_default_path, config_path=self.config_path
             )
 
     @patch('config.config.parse_json')
@@ -212,3 +212,62 @@ class TestDesignerConfigClass(TestCase):
         self.assertEqual(config.fasta, json_config_expected["fasta"])
         self.assertEqual(config.primer3_params, primer3_params)
         self.assertEqual(mock_parse_json.call_args_list[2], call(json_config_expected["primer3_params"]))
+
+
+class TestIpcressOutputDesignerConfig(TestCase):
+    def setUp(self):
+        self.config_path = 'tests/config_files/test_user_designer.config.json'
+        self.starting_config = {
+            'flanking_region': 150,
+            'exclusion_region': 5,
+            'stringency_vector': [],
+            'csv_column_order': [],
+            'filters': {},
+            'ranking': {}
+        }
+
+    @patch.object(DesignerConfig, 'read_config')
+    def test_write_ipcress_file_false_if_ipcress_parameters_missing(self, mock_read_config):
+        mock_read_config.return_value = self.starting_config
+
+        designer_config = DesignerConfig(args={'conf': self.config_path})
+
+        self.assertEqual(designer_config.ipcress_params_write_file, False)
+
+    
+    @patch.object(DesignerConfig, 'read_config')    
+    def test_get_write_ipcress_file_from_ipcress_parameters_false(self, mock_read_config):
+        ipcress_parameters = {
+            "write_ipcress_file": False,
+            "min_size": 5,
+            "max_size": 300
+        }
+
+        config = self.starting_config.copy()
+        config["ipcress_parameters"] = ipcress_parameters
+        mock_read_config.return_value = config
+
+        designer_config = DesignerConfig(args={'conf': self.config_path})
+
+        self.assertEqual(designer_config.ipcress_params_write_file, False)
+
+
+    @patch.object(DesignerConfig, 'read_config')
+    def test_get_ipcress_parameters_from_config(self, mock_read_config):
+        ipcress_parameters = {
+            "write_ipcress_file": True,
+            "min_size": 5,
+            "max_size": 300
+        }
+
+        config = self.starting_config.copy()
+        config["ipcress_parameters"] = ipcress_parameters
+        mock_read_config.return_value = config
+
+        designer_config = DesignerConfig(args={'conf': self.config_path})
+
+        self.assertEqual(designer_config.ipcress_params_write_file, True)
+        self.assertEqual(designer_config.ipcress_params_min_size, 5)
+        self.assertEqual(designer_config.ipcress_params_max_size, 300)
+
+

@@ -9,9 +9,9 @@ logger = CustomLogger(__name__)
 
 class DesignerConfig:
     def __init__(self, args: dict):
-        default_config_file = 'config/default_designer.config.json'
+        default_config_path = 'config/default_designer.config.json'
 
-        config = DesignerConfig.read_config(default_config_file, args.get('conf', None))
+        config = DesignerConfig.read_config(default_config_path, args.get('conf', None))
 
         # Check if filters exist in configuration.
         if not config.get("filters"):
@@ -36,6 +36,20 @@ class DesignerConfig:
             logger.error("exclusion_region must be a non-negative integer")
             sys.exit(1)
 
+        # Check Ipcress output file parameters
+        ipcress_params = config.get("ipcress_parameters") or {}
+        self.ipcress_params_write_file = False
+
+        if ipcress_params.get("write_ipcress_file"):
+            if not isinstance(ipcress_params.get("min_size"), int) or ipcress_params.get("min_size") < 0:
+                logger.error("Designer config error: ipcress_parameters.min_size must be a non-negative integer")
+            if not isinstance(ipcress_params.get("max_size"), int) or ipcress_params.get("max_size") < 0:
+                logger.error("Designer config error: ipcress_parameters.max_size must be a non-negative integer")
+  
+            self.ipcress_params_write_file = ipcress_params["write_ipcress_file"] 
+            self.ipcress_params_min_size = ipcress_params.get("min_size")
+            self.ipcress_params_max_size = ipcress_params.get("max_size")
+
         self.stringency_vector = config['stringency_vector']
         self.csv_column_order = config['csv_column_order']
         self.filters = config['filters']
@@ -50,16 +64,16 @@ class DesignerConfig:
 
     @staticmethod
     def read_config(
-            default_config_file: str,
-            config_file: str = None,
+            default_config_path: str,
+            config_path: str = None,
     ) -> dict:
-        default_config = parse_json(default_config_file)
+        default_config = parse_json(default_config_path)
         keys = default_config.keys()
 
-        if config_file is None or config_file == default_config_file:
+        if config_path is None or config_path == default_config_path:
             return default_config
         else:
-            config = parse_json(config_file)
+            config = parse_json(config_path)
 
             for field in keys:
                 config.setdefault(field, default_config[field])
