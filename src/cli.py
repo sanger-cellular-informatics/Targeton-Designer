@@ -80,7 +80,8 @@ def primer_command(
         discarded_primer_pairs=filters_response.primer_pairs_to_discard,
         prefix=config.prefix_output_dir,
         primer_type=PRIMER_TYPE,
-        column_order=config.csv_column_order
+        column_order=config.csv_column_order,
+        slice_data=slice_data
     )
 
     return primer_result

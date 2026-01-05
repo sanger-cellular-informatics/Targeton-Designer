@@ -4,6 +4,10 @@ from typing import List
 import pandas as pd
 from os import path
 
+from Bio.SeqRecord import SeqRecord
+from Bio import SeqIO
+from Bio.Seq import Seq
+
 from designer.output_data_classes import PrimerOutputData
 from primer.designed_primer import DesignedPrimer
 from primer.primer_pair import PrimerPair
@@ -23,7 +27,8 @@ def write_primer_output(
     primer_pairs=[],
     discarded_primer_pairs=[],
     existing_dir='',
-    primer_type='LibAmp'
+    primer_type='LibAmp',
+    slice_data=None
 ) -> PrimerOutputData:
     export_dir = existing_dir or timestamped_dir(prefix)
     result = PrimerOutputData(export_dir)
@@ -48,6 +53,10 @@ def write_primer_output(
         logger.info(f"Discarded primer file saved: {result.discarded_csv}")
     else:
         logger.info("No discarded primers")
+
+    if slice_data:
+        result.retrieved_fa = export_retrieved_fasta(slice_data, export_dir)
+        logger.info(f"Retrieved FASTA file saved: {result.retrieved_fa}")
 
     return result
 
@@ -191,3 +200,17 @@ def create_bed_row_for_primer(primer: DesignedPrimer, chromosome: str) -> list:
     ]
 
     return primer_row
+
+
+def export_retrieved_fasta(slice_data, export_dir: str) -> str:
+    targeton_id = slice_data.name
+    filename = f"{targeton_id}_retrieved.fa"
+    fasta_path = path.join(export_dir, filename)
+    
+    header_id = f"{targeton_id}:extended:GRCh38:{slice_data.chromosome}:{slice_data.start}-{slice_data.end}({slice_data.strand}):{slice_data.flanking_region}"
+    sequence = slice_data.bases
+    
+    record = SeqRecord(Seq(sequence), id=header_id, description="")
+    SeqIO.write(record, fasta_path, "fasta")
+    
+    return fasta_path
