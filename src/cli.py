@@ -71,11 +71,11 @@ def primer_command(
 
     filters_response = FilterManager(config.filters).apply_filters(primers)
 
-    ranked_primer_pairs_df = (Ranker(config.ranking)
-                              .rank(primer_type=PRIMER_TYPE, primer_pairs=filters_response.primer_pairs_to_keep))
+    ranked_primer_pairs = (Ranker(config.ranking)
+                              .rank(primer_pairs=filters_response.primer_pairs_to_keep))
 
     primer_result = write_primer_output(
-        primer_pairs_df=ranked_primer_pairs_df,
+        sorted_primer_pairs=ranked_primer_pairs,
         primer_pairs=filters_response.primer_pairs_to_keep,
         discarded_primer_pairs=filters_response.primer_pairs_to_discard,
         prefix=config.prefix_output_dir,

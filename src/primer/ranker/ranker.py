@@ -2,7 +2,6 @@ from typing import List
 import pandas as pd
 import sys
 
-from primer.write_primer_output import _get_primers_dataframe
 from primer.ranker.rank_criteria import RankingCriteria, ProductSizeCriteria, StringencyCriteria
 
 from custom_logger.custom_logger import CustomLogger
@@ -12,12 +11,13 @@ logger = CustomLogger(__name__)
 
 
 class Ranker:
-    def __init__(self, ranking_config: dict):
+    def __init__(self, ranking_config: dict):  
 
         self._ranking_criteria: List[RankingCriteria] = [StringencyCriteria, ProductSizeCriteria]
+        self._ranking_order: List[RankingCriteria] = []
+
         _ranking_criteria_names: List[str] = [criterion.name for criterion
                                               in self._ranking_criteria]
-        self._ranking_order: List[RankingCriteria] = []
 
         ranking_retained: List[str] = [key for key, value in ranking_config.items()
                                        if value is True]
@@ -54,25 +54,26 @@ class Ranker:
             criterion_index: int = _ranking_criteria_names.index(criterion)
             self._ranking_order.append(self._ranking_criteria[criterion_index])
 
-    def rank(self, primer_type: str, primer_pairs=list) -> pd.DataFrame:
-
-        # Primer pairs dataframe are grouped together.
-        primers_df = _get_primers_dataframe(primer_pairs, primer_type)
-
-        if primers_df.empty:
+    def rank(self, primer_pairs=list) -> list:
+        if primer_pairs is None:
             logger.warning("No primer pairs to rank.")
-            return primers_df
+            return []
 
-        if self._ranking_order:
-            logger.info(f"Ranking is being applied by {', '.join([column.name for column in self._ranking_order])}")
-            columns_to_sort = [column.column for column in self._ranking_order]
-            is_ascending = [column.is_ascending for column in self._ranking_order]
-
-            # kind = "stable" added to ensure stable sorting when sorting on one column
-            primers_df.sort_values(by=columns_to_sort, ascending=is_ascending, inplace=True,
-                                   kind="stable")
-
-        else:
+        if not self._ranking_order:
             logger.info("No ranking applied")
+            return list(primer_pairs)
 
-        return primers_df
+        logger.info(f"Ranking is being applied by {', '.join([column.name for column in self._ranking_order])}")
+
+        sorted_pairs = list(primer_pairs)
+
+        # Apply stable sorts in reverse priority order.
+        for criterion in reversed(self._ranking_order):
+            sorted_pairs.sort(
+                key=lambda pair, 
+                attr=criterion.column: getattr(pair, attr),
+                reverse=not criterion.is_ascending,
+            )
+
+        return sorted_pairs
+

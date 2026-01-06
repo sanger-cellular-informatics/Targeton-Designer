@@ -1,9 +1,6 @@
 import logging
-from io import StringIO
 from unittest import TestCase
-import pandas as pd
 
-from pandas.testing import assert_frame_equal
 from primer.ranker.ranker import Ranker
 from primer.primer_pair import PrimerPair
 from primer.designed_primer import DesignedPrimer, Interval
@@ -159,51 +156,6 @@ class RankerTest(TestCase):
 
         self.mocked_same_stringency_same_product_size = [self.mocked_pair_4 , self.mocked_pair_5]
 
-        self.expected_ranked_primers = """
-primer_type,primer,penalty,sequence,primer_start,primer_end,tm,gc_percent,self_any_th,self_end_th,hairpin_th,end_stability,pair_uid,stringency,chromosome,pre_targeton_start,pre_targeton_end,product_size,targeton_id
-mockType,primer_fr,0.5,ATCGATCG,11540,11545,60.0,50.0,30.0,10.0,20.0,25.0,uid1,0.1,ch1,11540,11645,3,targeton_id
-mockType,primer_rv,0.5,CTCGATCG,11640,11645,60.0,50.0,30.0,10.0,20.0,25.0,uid1,0.1,ch1,11540,11645,3,targeton_id
-mockType,primer_fr,0.5,ATCGATCG,11540,11545,60.0,50.0,30.0,10.0,20.0,25.0,uid3,0.3,ch1,11540,11645,3,targeton_id
-mockType,primer_rv,0.5,CTCGATCG,11640,11645,60.0,50.0,30.0,10.0,20.0,25.0,uid3,0.3,ch1,11540,11645,3,targeton_id
-mockType,primer_fr,0.5,ATCGATCG,11540,11545,60.0,50.0,30.0,10.0,20.0,25.0,uid2,0.2,ch1,11540,11645,1,targeton_id
-mockType,primer_rv,0.5,CTCGATCG,11640,11645,60.0,50.0,30.0,10.0,20.0,25.0,uid2,0.2,ch1,11540,11645,1,targeton_id
-"""
-
-        self.expected_same_stringency_primer_pairs = """
-primer_type,primer,penalty,sequence,primer_start,primer_end,tm,gc_percent,self_any_th,self_end_th,hairpin_th,end_stability,pair_uid,stringency,chromosome,pre_targeton_start,pre_targeton_end,product_size,targeton_id
-mockType,primer_fr,0.5,ATCGATCG,11540,11545,60.0,50.0,30.0,10.0,20.0,25.0,uid5,0.4,ch1,11540,11545,7,targeton_id
-mockType,primer_rv,0.5,CTCGATCG,11640,11645,60.0,50.0,30.0,10.0,20.0,25.0,uid5,0.4,ch1,11540,11545,7,targeton_id
-mockType,primer_fr,0.5,ATCGATCG,11540,11545,60.0,50.0,30.0,10.0,20.0,25.0,uid4,0.4,ch1,11540,11545,6,targeton_id
-mockType,primer_rv,0.5,CTCGATCG,11640,11645,60.0,50.0,30.0,10.0,20.0,25.0,uid4,0.4,ch1,11540,11545,6,targeton_id
-"""
-
-        self.expected_same_stringency_same_product_size = """
-primer_type,primer,penalty,sequence,primer_start,primer_end,tm,gc_percent,self_any_th,self_end_th,hairpin_th,end_stability,pair_uid,stringency,chromosome,pre_targeton_start,pre_targeton_end,product_size,targeton_id
-mockType,primer_fr,0.5,ATCGATCG,11540,11545,60.0,50.0,30.0,10.0,20.0,25.0,uid6,0.1,ch1,11540,11545,1,targeton_id
-mockType,primer_rv,0.5,CTCGATCG,11640,11645,60.0,50.0,30.0,10.0,20.0,25.0,uid6,0.1,ch1,11540,11545,1,targeton_id
-mockType,primer_fr,0.5,ATCGATCG,11540,11545,60.0,50.0,30.0,10.0,20.0,25.0,uid7,0.1,ch1,11540,11545,1,targeton_id
-mockType,primer_rv,0.5,CTCGATCG,11640,11645,60.0,50.0,30.0,10.0,20.0,25.0,uid7,0.1,ch1,11540,11545,1,targeton_id
-"""
-        self.expected_unranked = """
-primer_type,primer,penalty,sequence,primer_start,primer_end,tm,gc_percent,self_any_th,self_end_th,hairpin_th,end_stability,pair_uid,stringency,chromosome,pre_targeton_start,pre_targeton_end,product_size,targeton_id
-mockType,primer_fr,0.5,ATCGATCG,11540,11545,60.0,50.0,30.0,10.0,20.0,25.0,uid1,0.1,ch1,11540,11645,3,targeton_id
-mockType,primer_rv,0.5,CTCGATCG,11640,11645,60.0,50.0,30.0,10.0,20.0,25.0,uid1,0.1,ch1,11540,11645,3,targeton_id
-mockType,primer_fr,0.5,ATCGATCG,11540,11545,60.0,50.0,30.0,10.0,20.0,25.0,uid2,0.2,ch1,11540,11645,1,targeton_id
-mockType,primer_rv,0.5,CTCGATCG,11640,11645,60.0,50.0,30.0,10.0,20.0,25.0,uid2,0.2,ch1,11540,11645,1,targeton_id
-mockType,primer_fr,0.5,ATCGATCG,11540,11545,60.0,50.0,30.0,10.0,20.0,25.0,uid3,0.3,ch1,11540,11645,3,targeton_id
-mockType,primer_rv,0.5,CTCGATCG,11640,11645,60.0,50.0,30.0,10.0,20.0,25.0,uid3,0.3,ch1,11540,11645,3,targeton_id
-"""
-        self.expected_product_size_true = """
-primer_type,primer,penalty,sequence,primer_start,primer_end,tm,gc_percent,self_any_th,self_end_th,hairpin_th,end_stability,pair_uid,stringency,chromosome,pre_targeton_start,pre_targeton_end,product_size,targeton_id
-mockType,primer_fr,0.5,ATCGATCG,11540,11545,60.0,50.0,30.0,10.0,20.0,25.0,uid1,0.1,ch1,11540,11645,3,targeton_id
-mockType,primer_rv,0.5,CTCGATCG,11640,11645,60.0,50.0,30.0,10.0,20.0,25.0,uid1,0.1,ch1,11540,11645,3,targeton_id
-mockType,primer_fr,0.5,ATCGATCG,11540,11545,60.0,50.0,30.0,10.0,20.0,25.0,uid3,0.3,ch1,11540,11645,3,targeton_id
-mockType,primer_rv,0.5,CTCGATCG,11640,11645,60.0,50.0,30.0,10.0,20.0,25.0,uid3,0.3,ch1,11540,11645,3,targeton_id
-mockType,primer_fr,0.5,ATCGATCG,11540,11545,60.0,50.0,30.0,10.0,20.0,25.0,uid2,0.2,ch1,11540,11645,1,targeton_id
-mockType,primer_rv,0.5,CTCGATCG,11640,11645,60.0,50.0,30.0,10.0,20.0,25.0,uid2,0.2,ch1,11540,11645,1,targeton_id
-"""
-
-
     def tearDown(self):
         # Remove the handler after each test to reset logging
         logger = logging.getLogger()
@@ -212,54 +164,78 @@ mockType,primer_rv,0.5,CTCGATCG,11640,11645,60.0,50.0,30.0,10.0,20.0,25.0,uid2,0
 
     def test_ranker_all_true(self):
 
-        expected_ranked_df = _create_dataframe(self.expected_ranked_primers)
+        ranked_pairs = Ranker(self.mocked_ranking_config_all_true).rank(
+            self.mocked_primer_pairs,
+        )
 
-        ranked_df = Ranker(self.mocked_ranking_config_all_true).rank("mockType", self.mocked_primer_pairs)
-
-        # index being dropped to make comparison as ranking does not reset the index
-        assert_frame_equal(ranked_df.reset_index(drop=True), expected_ranked_df)
+        expected_pairs = [
+            ("pair1", 0.1, 3),
+            ("pair3", 0.3, 3),
+            ("pair2", 0.2, 1),
+        ]
+        self.assertEqual(
+            [(pair.id, pair.stringency, pair.product_size) for pair in ranked_pairs],
+            expected_pairs,
+        )
 
 
     def test_ranker_with_same_stringency_rank_by_product_size_all_true(self):
-        expected_ranked_with_same_stringency_df = _create_dataframe(self.expected_same_stringency_primer_pairs)
+        ranked_pairs = Ranker(self.mocked_ranking_config_all_true).rank(
+            self.mocked_primer_data_with_stringency,
+        )
 
-        ranked_df = Ranker(self.mocked_ranking_config_all_true).rank("mockType",  self.mocked_primer_data_with_stringency)
-
-        # index being dropped to make comparison as ranking does not reset the index
-        assert_frame_equal(ranked_df.reset_index(drop=True), expected_ranked_with_same_stringency_df)
+        expected_pairs = [
+            ("pair5", 0.4, 7),
+            ("pair4", 0.4, 6),
+        ]
+        self.assertEqual(
+            [(pair.id, pair.stringency, pair.product_size) for pair in ranked_pairs],
+            expected_pairs,
+        )
 
 
     def test_ranker_with_same_stringency_same_product_size_all_true(self):
-        expected_ranked_with_same_stringency_same_product_size_df = _create_dataframe(self.expected_same_stringency_same_product_size)
+        ranked_pairs = Ranker(self.mocked_ranking_config_all_true).rank(
+            self.mocked_same_stringency_same_product_size,
+        )
 
-        unranked_df = Ranker(self.mocked_ranking_config_all_true).rank("mockType", self.mocked_same_stringency_same_product_size)
-        # designer_config.params['ranking']
-
-        # index being dropped to make comparison as ranking does not reset the index
-        assert_frame_equal(unranked_df.reset_index(drop=True), expected_ranked_with_same_stringency_same_product_size_df)
+        expected_pairs = [
+            ("pair4", 0.1, 1),
+            ("pair5", 0.1, 1),
+        ]
+        self.assertEqual(
+            [(pair.id, pair.stringency, pair.product_size) for pair in ranked_pairs],
+            expected_pairs,
+        )
 
 
     def test_empty_df_when_no_primer_pairs_provided(self):
 
-        ranked_df = Ranker(self.mocked_ranking_config_all_true).rank("mockType", [])
+        ranked_pairs = Ranker(self.mocked_ranking_config_all_true).rank([])
 
-        self.assertTrue(ranked_df.empty)
+        self.assertEqual(ranked_pairs, [])
 
     def test_ranker_when_config_empty(self):
 
         # Arrange
-        expected_unranked_df = _create_dataframe(self.expected_unranked)
         expected_warning = "No ranking criteria defined in config file under the ranking key"\
                            "\nNo ranking applied"
 
         # Act
-        result = Ranker(self.mocked_ranking_config_empty).rank("mockType",
-                                                                        self.mocked_primer_pairs)
+        result = Ranker(self.mocked_ranking_config_empty).rank(self.mocked_primer_pairs)
         logs = self.handler.buffer.getvalue().strip()
 
         # Assert
         self.assertEqual(logs, expected_warning)
-        assert_frame_equal(result.reset_index(drop = True), expected_unranked_df)
+        expected_pairs = [
+            ("pair1", 0.1, 3),
+            ("pair2", 0.2, 1),
+            ("pair3", 0.3, 3),
+        ]
+        self.assertEqual(
+            [(pair.id, pair.stringency, pair.product_size) for pair in result],
+            expected_pairs,
+        )
 
 
     def test_ranker_when_wrong_key(self):
@@ -272,7 +248,7 @@ mockType,primer_rv,0.5,CTCGATCG,11640,11645,60.0,50.0,30.0,10.0,20.0,25.0,uid2,0
 
         # Act
         with self.assertRaises(SystemExit):
-            Ranker(self.mocked_ranking_wrong_key).rank("mockType", self.mocked_primer_pairs)
+            Ranker(self.mocked_ranking_wrong_key).rank(self.mocked_primer_pairs)
         logs = self.handler.buffer.getvalue().strip()
 
         # Assert
@@ -287,7 +263,7 @@ mockType,primer_rv,0.5,CTCGATCG,11640,11645,60.0,50.0,30.0,10.0,20.0,25.0,uid2,0
 
         # Act
         with self.assertRaises(SystemExit):
-            Ranker(self.mocked_ranking_wrong_value).rank("mockType", self.mocked_primer_pairs)
+            Ranker(self.mocked_ranking_wrong_value).rank(self.mocked_primer_pairs)
         logs = self.handler.buffer.getvalue().strip()
 
         # Assert
@@ -296,32 +272,31 @@ mockType,primer_rv,0.5,CTCGATCG,11640,11645,60.0,50.0,30.0,10.0,20.0,25.0,uid2,0
 
     def test_ranker_when_all_false(self):
 
-        # Arrange
-        expected_unranked_df = _create_dataframe(self.expected_unranked)
-
         # Act
-        result = Ranker(self.mocked_ranking_config_all_false).rank("mockType",
-                                                                   self.mocked_primer_pairs)
+        result = Ranker(self.mocked_ranking_config_all_false).rank(self.mocked_primer_pairs)
 
         # Assert
-        assert_frame_equal(result.reset_index(drop = True), expected_unranked_df)
-
+        expected_pairs = [
+            ("pair1", 0.1, 3),
+            ("pair2", 0.2, 1),
+            ("pair3", 0.3, 3),
+        ]
+        self.assertEqual(
+            [(pair.id, pair.stringency, pair.product_size) for pair in result],
+            expected_pairs,
+        )
 
     def test_ranker_when_one_true(self):
-
-        # Arrange
-        expected_ranked_df = _create_dataframe(self.expected_product_size_true)
-
         # Act
-        result = Ranker(self.mocked_ranking_config_one_true).rank("mockType",
-                                                                  self.mocked_primer_pairs)
+        result = Ranker(self.mocked_ranking_config_one_true).rank(self.mocked_primer_pairs)
 
         # Assert
-        assert_frame_equal(result.reset_index(drop = True), expected_ranked_df)
-
-
-def _create_dataframe(data: str) -> pd.DataFrame:
-    data_io = StringIO(data)
-    df = pd.read_csv(data_io, delim_whitespace=False)
-    df["chromosome"] = df["chromosome"].astype(str)
-    return df
+        expected_pairs = [
+            ("pair1", 0.1, 3),
+            ("pair3", 0.3, 3),
+            ("pair2", 0.2, 1),
+        ]
+        self.assertEqual(
+            [(pair.id, pair.stringency, pair.product_size) for pair in result],
+            expected_pairs,
+        )

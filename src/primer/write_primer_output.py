@@ -7,7 +7,6 @@ from os import path
 from designer.output_data_classes import PrimerOutputData
 from primer.designed_primer import DesignedPrimer
 from primer.primer_pair import PrimerPair
-from config.config import DesignerConfig
 from utils.write_output_files import timestamped_dir, export_to_bed
 from primer.filter.filter_response import PrimerPairDiscarded
 
@@ -17,7 +16,7 @@ from custom_logger.custom_logger import CustomLogger
 logger = CustomLogger(__name__)
 
 def write_primer_output(
-    primer_pairs_df: pd.DataFrame,
+    sorted_primer_pairs: List[PrimerPair],
     column_order: List[str],
     prefix='',
     primer_pairs=[],
@@ -27,6 +26,8 @@ def write_primer_output(
 ) -> PrimerOutputData:
     export_dir = existing_dir or timestamped_dir(prefix)
     result = PrimerOutputData(export_dir)
+
+    primer_pairs_df = _get_primers_dataframe(sorted_primer_pairs, primer_type)
 
     if primer_pairs:
         primer_rows = construct_primer_rows_bed_format(primer_pairs)
@@ -50,7 +51,7 @@ def write_primer_output(
         logger.info("No discarded primers")
 
     return result
-
+    
 
 def export_primers_to_csv(primers_dataframe: pd.DataFrame, export_dir: str, column_order: List[str]) -> str:
     PRIMER3_OUTPUT_CSV = 'p3_output.csv'
