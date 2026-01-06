@@ -168,14 +168,14 @@ class RankerTest(TestCase):
             self.mocked_primer_pairs,
         )
 
-        expected_pairs = [
-            ("pair1", 0.1, 3),
-            ("pair3", 0.3, 3),
-            ("pair2", 0.2, 1),
-        ]
-        self.assertEqual(
-            [(pair.id, pair.stringency, pair.product_size) for pair in ranked_pairs],
-            expected_pairs,
+        _assert_pairs_by_id_stringency_product_size(
+            self,
+            ranked_pairs,
+            [
+                ("pair1", 0.1, 3),
+                ("pair3", 0.3, 3),
+                ("pair2", 0.2, 1),
+            ],
         )
 
 
@@ -184,13 +184,13 @@ class RankerTest(TestCase):
             self.mocked_primer_data_with_stringency,
         )
 
-        expected_pairs = [
-            ("pair5", 0.4, 7),
-            ("pair4", 0.4, 6),
-        ]
-        self.assertEqual(
-            [(pair.id, pair.stringency, pair.product_size) for pair in ranked_pairs],
-            expected_pairs,
+        _assert_pairs_by_id_stringency_product_size(
+            self,
+            ranked_pairs,
+            [
+                ("pair5", 0.4, 7),
+                ("pair4", 0.4, 6),
+            ],
         )
 
 
@@ -199,13 +199,13 @@ class RankerTest(TestCase):
             self.mocked_same_stringency_same_product_size,
         )
 
-        expected_pairs = [
-            ("pair4", 0.1, 1),
-            ("pair5", 0.1, 1),
-        ]
-        self.assertEqual(
-            [(pair.id, pair.stringency, pair.product_size) for pair in ranked_pairs],
-            expected_pairs,
+        _assert_pairs_by_id_stringency_product_size(
+            self,
+            ranked_pairs,
+            [
+                ("pair4", 0.1, 1),
+                ("pair5", 0.1, 1),
+            ],
         )
 
 
@@ -227,14 +227,14 @@ class RankerTest(TestCase):
 
         # Assert
         self.assertEqual(logs, expected_warning)
-        expected_pairs = [
-            ("pair1", 0.1, 3),
-            ("pair2", 0.2, 1),
-            ("pair3", 0.3, 3),
-        ]
-        self.assertEqual(
-            [(pair.id, pair.stringency, pair.product_size) for pair in result],
-            expected_pairs,
+        _assert_pairs_by_id_stringency_product_size(
+            self,
+            result,
+            [
+                ("pair1", 0.1, 3),
+                ("pair2", 0.2, 1),
+                ("pair3", 0.3, 3),
+            ],
         )
 
 
@@ -276,14 +276,14 @@ class RankerTest(TestCase):
         result = Ranker(self.mocked_ranking_config_all_false).rank(self.mocked_primer_pairs)
 
         # Assert
-        expected_pairs = [
-            ("pair1", 0.1, 3),
-            ("pair2", 0.2, 1),
-            ("pair3", 0.3, 3),
-        ]
-        self.assertEqual(
-            [(pair.id, pair.stringency, pair.product_size) for pair in result],
-            expected_pairs,
+        _assert_pairs_by_id_stringency_product_size(
+            self,
+            result,
+            [
+                ("pair1", 0.1, 3),
+                ("pair2", 0.2, 1),
+                ("pair3", 0.3, 3),
+            ],
         )
 
     def test_ranker_when_one_true(self):
@@ -291,12 +291,23 @@ class RankerTest(TestCase):
         result = Ranker(self.mocked_ranking_config_one_true).rank(self.mocked_primer_pairs)
 
         # Assert
-        expected_pairs = [
-            ("pair1", 0.1, 3),
-            ("pair3", 0.3, 3),
-            ("pair2", 0.2, 1),
-        ]
-        self.assertEqual(
-            [(pair.id, pair.stringency, pair.product_size) for pair in result],
-            expected_pairs,
+        _assert_pairs_by_id_stringency_product_size(
+            self,
+            result,
+            [
+                ("pair1", 0.1, 3),
+                ("pair3", 0.3, 3),
+                ("pair2", 0.2, 1),
+            ],
         )
+
+
+def _assert_pairs_by_id_stringency_product_size(
+    test_case: TestCase,
+    pairs: list,
+    expected: list,
+) -> None:
+    test_case.assertEqual(
+        [(pair.id, pair.stringency, pair.product_size) for pair in pairs],
+        expected,
+    )
