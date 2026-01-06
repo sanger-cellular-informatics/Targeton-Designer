@@ -12,7 +12,10 @@ from utils.write_output_files import (
     write_targeton_csv,
     write_scoring_output,
     write_primer_design_output,
+    timestamped_dir,
 )
+
+from primer.write_primer_output import export_retrieved_fasta
 
 from designer.output_data_classes import (
     SlicerOutputData,
@@ -31,6 +34,11 @@ from primer.ranker.ranker import Ranker
 sys.path.append(path.abspath(path.join(path.dirname(__file__), '../sge-primer-scoring/src')))
 from scoring import Scoring
 
+
+from custom_logger.custom_logger import CustomLogger
+
+# Initialize logger
+logger = CustomLogger(__name__)
 
 def version_command():
     python_version = sys.version
@@ -67,6 +75,10 @@ def primer_command(
                                                      config.flanking_region,
                                                      config.exclusion_region)
 
+    export_dir = timestamped_dir(config.prefix_output_dir)
+    fasta_path = export_retrieved_fasta(slice_data, export_dir)
+    logger.info(f"Retrieved FASTA file saved: {fasta_path}")
+
     primers = Primer3(config.stringency_vector, config.primer3_params).get_primers(slice_data)
 
     filters_response = FilterManager(config.filters).apply_filters(primers)
@@ -81,7 +93,7 @@ def primer_command(
         prefix=config.prefix_output_dir,
         primer_type=PRIMER_TYPE,
         column_order=config.csv_column_order,
-        slice_data=slice_data
+        existing_dir=export_dir
     )
 
     return primer_result
