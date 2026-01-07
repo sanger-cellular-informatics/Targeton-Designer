@@ -30,11 +30,15 @@ class TestDesignerConfigClass(TestCase):
 
         self.assertEqual(designer_config.csv_column_order, expected)
 
+    @parameterized.expand([
+        ("flanking_string", "STRING"),
+        ("flanking_min_size_negative", -1),
+    ])
     @patch.object(DesignerConfig, 'read_config')
     @patch('config.config.logger.error')
-    def test_flanking_region_negative_number_error(self, mock_logger_error, mock_read_config):
+    def test_flanking_region_wrong_value_error(self, test_case, flanking_value,mock_logger_error, mock_read_config):
         mock_read_config.return_value = {
-            'flanking_region': -5,
+            'flanking_region': flanking_value,
             'exclusion_region': 5,
             'stringency_vector': [],
             'csv_column_order': [],
@@ -48,31 +52,8 @@ class TestDesignerConfigClass(TestCase):
         expected_error_message = (
             'Invalid config value for "%s": expected non-negative int, got %r (%s)',
             "flanking_region",
-            -5,
-            type(-5).__name__
-        )
-        mock_logger_error.assert_called_once_with(*expected_error_message)
-
-    @patch.object(DesignerConfig, 'read_config')
-    @patch('config.config.logger.error')
-    def test_flanking_region_non_integer_error(self, mock_logger_error, mock_read_config):
-        mock_read_config.return_value = {
-            'flanking_region': "flanking",
-            'exclusion_region': 5,
-            'stringency_vector': [],
-            'csv_column_order': [],
-            'filters': {},
-            'ranking': {}
-        }
-
-        with self.assertRaises(SystemExit):
-            DesignerConfig(args={})
-
-        expected_error_message = (
-            'Invalid config value for "%s": expected non-negative int, got %r (%s)',
-            "flanking_region",
-            "flanking",
-            type("flanking").__name__
+            flanking_value,
+            type(flanking_value).__name__,
         )
         mock_logger_error.assert_called_once_with(*expected_error_message)
 
@@ -96,12 +77,16 @@ class TestDesignerConfigClass(TestCase):
         )
         mock_logger_info.assert_called_once_with(expected_info_message)
 
+    @parameterized.expand([
+        ("exclusion_region_string", "STRING"),
+        ("exclusion_region_min_size_negative", -1),
+    ])
     @patch.object(DesignerConfig, 'read_config')
     @patch('config.config.logger.error')
-    def test_exclusion_region_negative_error(self, mock_logger_error, mock_read_config):
+    def test_exclusion_region_wrong_value_error(self, test_case, exclusion_region_value, mock_logger_error, mock_read_config):
         mock_read_config.return_value = {
             'flanking_region': 5,
-            'exclusion_region': -5,
+            'exclusion_region': exclusion_region_value,
             'stringency_vector': [],
             'csv_column_order': [],
             'filters': {},
@@ -114,31 +99,8 @@ class TestDesignerConfigClass(TestCase):
         expected_error_message = (
             'Invalid config value for "%s": expected non-negative int, got %r (%s)',
             "exclusion_region",
-            -5,
-            type(-5).__name__
-        )
-        mock_logger_error.assert_called_once_with(*expected_error_message)
-
-    @patch.object(DesignerConfig, 'read_config')
-    @patch('config.config.logger.error')
-    def test_exclusion_region_non_integer_error(self, mock_logger_error, mock_read_config):
-        mock_read_config.return_value = {
-            'flanking_region': 5,
-            'exclusion_region': "exclude",
-            'stringency_vector': [],
-            'csv_column_order': [],
-            'filters': {},
-            'ranking': {}
-        }
-
-        with self.assertRaises(SystemExit):
-            DesignerConfig(args={})
-
-        expected_error_message = (
-            'Invalid config value for "%s": expected non-negative int, got %r (%s)',
-            "exclusion_region",
-            "exclude",
-            type("exclude").__name__
+            exclusion_region_value,
+            type(exclusion_region_value).__name__
         )
         mock_logger_error.assert_called_once_with(*expected_error_message)
 
