@@ -1,5 +1,6 @@
 from unittest import TestCase
 
+from parameterized import parameterized
 from unittest.mock import patch, call
 
 from config.config import DesignerConfig
@@ -44,8 +45,13 @@ class TestDesignerConfigClass(TestCase):
         with self.assertRaises(SystemExit):
             DesignerConfig(args={})
 
-        expected_error_message = "flanking_region must be a non-negative integer"
-        mock_logger_error.assert_called_once_with(expected_error_message)
+        expected_error_message = (
+            'Invalid config value for "%s": expected non-negative int, got %r (%s)',
+            "flanking_region",
+            -5,
+            type(-5).__name__
+        )
+        mock_logger_error.assert_called_once_with(*expected_error_message)
 
     @patch.object(DesignerConfig, 'read_config')
     @patch('config.config.logger.error')
@@ -62,8 +68,13 @@ class TestDesignerConfigClass(TestCase):
         with self.assertRaises(SystemExit):
             DesignerConfig(args={})
 
-        expected_error_message = "flanking_region must be a non-negative integer"
-        mock_logger_error.assert_called_once_with(expected_error_message)
+        expected_error_message = (
+            'Invalid config value for "%s": expected non-negative int, got %r (%s)',
+            "flanking_region",
+            "flanking",
+            type("flanking").__name__
+        )
+        mock_logger_error.assert_called_once_with(*expected_error_message)
 
     @patch.object(DesignerConfig, 'read_config')
     @patch('config.config.logger.info')
@@ -100,8 +111,13 @@ class TestDesignerConfigClass(TestCase):
         with self.assertRaises(SystemExit):
             DesignerConfig(args={})
 
-        expected_error_message = "exclusion_region must be a non-negative integer"
-        mock_logger_error.assert_called_once_with(expected_error_message)
+        expected_error_message = (
+            'Invalid config value for "%s": expected non-negative int, got %r (%s)',
+            "exclusion_region",
+            -5,
+            type(-5).__name__
+        )
+        mock_logger_error.assert_called_once_with(*expected_error_message)
 
     @patch.object(DesignerConfig, 'read_config')
     @patch('config.config.logger.error')
@@ -118,8 +134,13 @@ class TestDesignerConfigClass(TestCase):
         with self.assertRaises(SystemExit):
             DesignerConfig(args={})
 
-        expected_error_message = "exclusion_region must be a non-negative integer"
-        mock_logger_error.assert_called_once_with(expected_error_message)
+        expected_error_message = (
+            'Invalid config value for "%s": expected non-negative int, got %r (%s)',
+            "exclusion_region",
+            "exclude",
+            type("exclude").__name__
+        )
+        mock_logger_error.assert_called_once_with(*expected_error_message)
 
     def test_read_config(self):
         expected = {'flanking_region': 150,
@@ -271,3 +292,34 @@ class TestIpcressOutputDesignerConfig(TestCase):
         self.assertEqual(designer_config.ipcress_params_max_size, 300)
 
 
+    @parameterized.expand([
+        ("min_size_unformatted", "min_size", "STRING"),
+        ("min_size_negative", "min_size", -1),
+        ("max_size_string", "max_size", "STRING"),
+        ("max_size_negative", "max_size", -10),
+    ])
+    @patch.object(DesignerConfig, "read_config")
+    @patch("config.config.logger.error")
+    def test_get_ipcress_parameters_from_config_when_wrong_values(
+            self, test_case_name, param_name, param_value, mock_logger_error, mock_read_config
+    ):
+        # Default correct parameters
+        ipcress_parameters = {"write_ipcress_file": True, "min_size": 100, "max_size": 300 }
+        # Override the parameter to an invalid value
+        ipcress_parameters[param_name] = param_value
+
+        config = self.starting_config.copy()
+        config["ipcress_parameters"] = ipcress_parameters
+        mock_read_config.return_value = config
+
+        with self.assertRaises(SystemExit):
+            DesignerConfig(args={"conf": self.config_path})
+
+        expected_error_message = (
+            'Invalid config value for "%s": expected non-negative int, got %r (%s)',
+            f"ipcress_params.{param_name}",
+            param_value,
+            type(param_value).__name__,
+        )
+        mock_logger_error.assert_called_once_with(*expected_error_message)
+        mock_logger_error.reset_mock()
