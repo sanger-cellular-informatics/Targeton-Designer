@@ -35,7 +35,7 @@ class TestDesignerConfigClass(TestCase):
         ("flanking_min_size_negative", -1),
     ])
     @patch.object(DesignerConfig, 'read_config')
-    @patch('config.config.logger.error')
+    @patch('config.config_helpers.logger.error')
     def test_flanking_region_wrong_value_error(self, test_case, flanking_value,mock_logger_error, mock_read_config):
         mock_read_config.return_value = {
             'flanking_region': flanking_value,
@@ -50,12 +50,11 @@ class TestDesignerConfigClass(TestCase):
             DesignerConfig(args={})
 
         expected_error_message = (
-            'Invalid config value for "%s": expected non-negative int, got %r (%s)',
-            "flanking_region",
-            flanking_value,
-            type(flanking_value).__name__,
+            f'Invalid config value for "flanking_region": '
+            f'expected non-negative int, got {flanking_value!r} ({type(flanking_value).__name__})'
         )
-        mock_logger_error.assert_called_once_with(*expected_error_message)
+
+        mock_logger_error.assert_called_once_with(expected_error_message)
 
     @patch.object(DesignerConfig, 'read_config')
     @patch('config.config.logger.info')
@@ -82,7 +81,7 @@ class TestDesignerConfigClass(TestCase):
         ("exclusion_region_min_size_negative", -1),
     ])
     @patch.object(DesignerConfig, 'read_config')
-    @patch('config.config.logger.error')
+    @patch('config.config_helpers.logger.error')
     def test_exclusion_region_wrong_value_error(self, test_case, exclusion_region_value, mock_logger_error, mock_read_config):
         mock_read_config.return_value = {
             'flanking_region': 5,
@@ -97,12 +96,11 @@ class TestDesignerConfigClass(TestCase):
             DesignerConfig(args={})
 
         expected_error_message = (
-            'Invalid config value for "%s": expected non-negative int, got %r (%s)',
-            "exclusion_region",
-            exclusion_region_value,
-            type(exclusion_region_value).__name__
+            f'Invalid config value for "exclusion_region": '
+            f'expected non-negative int, got {exclusion_region_value!r} ({type(exclusion_region_value).__name__})'
         )
-        mock_logger_error.assert_called_once_with(*expected_error_message)
+
+        mock_logger_error.assert_called_once_with(expected_error_message)
 
     def test_read_config(self):
         expected = {'flanking_region': 150,
@@ -261,7 +259,7 @@ class TestIpcressOutputDesignerConfig(TestCase):
         ("max_size_negative", "max_size", -10),
     ])
     @patch.object(DesignerConfig, "read_config")
-    @patch("config.config.logger.error")
+    @patch("config.config_helpers.logger.error")
     def test_get_ipcress_parameters_from_config_when_wrong_values(
             self, test_case_name, param_name, param_value, mock_logger_error, mock_read_config
     ):
@@ -278,10 +276,9 @@ class TestIpcressOutputDesignerConfig(TestCase):
             DesignerConfig(args={"conf": self.config_path})
 
         expected_error_message = (
-            'Invalid config value for "%s": expected non-negative int, got %r (%s)',
-            f"ipcress_params.{param_name}",
-            param_value,
-            type(param_value).__name__,
+            f'Invalid config value for "ipcress_params.{param_name}": '
+            f'expected non-negative int, got {param_value!r} ({type(param_value).__name__})'
         )
-        mock_logger_error.assert_called_once_with(*expected_error_message)
+
+        mock_logger_error.assert_called_once_with(expected_error_message)
         mock_logger_error.reset_mock()

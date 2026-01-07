@@ -1,3 +1,4 @@
+from config.config_helpers import check_non_negative_integer
 from utils.file_system import parse_json
 
 import sys
@@ -27,19 +28,19 @@ class DesignerConfig:
         self.flanking_region = config['flanking_region'] or 0
         self.exclusion_region = config['exclusion_region'] or 0
 
-        self.check_non_negative_integer(name="flanking_region", value=self.flanking_region)
+        check_non_negative_integer(name="flanking_region", value=self.flanking_region)
         if not self.flanking_region:
             logger.info(("flanking_region set to 0, so primer placement will not be restricted the flanking_region, "
                          "and exclusion_region will be ignored."))
-        self.check_non_negative_integer(name="exclusion_region", value=self.exclusion_region)
+        check_non_negative_integer(name="exclusion_region", value=self.exclusion_region)
 
         # Check Ipcress output file parameters
         ipcress_params = config.get("ipcress_parameters") or {}
         self.ipcress_params_write_file = False
 
         if ipcress_params.get("write_ipcress_file"):
-            self.check_non_negative_integer(name="ipcress_params.min_size", value=ipcress_params["min_size"])
-            self.check_non_negative_integer(name="ipcress_params.max_size", value=ipcress_params["max_size"])
+            check_non_negative_integer(name="ipcress_params.min_size", value=ipcress_params["min_size"])
+            check_non_negative_integer(name="ipcress_params.max_size", value=ipcress_params["max_size"])
 
             self.ipcress_params_write_file = ipcress_params["write_ipcress_file"]
             self.ipcress_params_min_size = ipcress_params.get("min_size")
@@ -57,15 +58,15 @@ class DesignerConfig:
                                or 'config/default_primer3.config.json')
         self.primer3_params = parse_json(primer3_params_path)
 
-    def check_non_negative_integer(self, name, value):
-        if not isinstance(value, int) or value < 0:
-            logger.error(
-                'Invalid config value for "%s": expected non-negative int, got %r (%s)',
-                name,
-                value,
-                type(value).__name__,
-            )
-            sys.exit(1)
+    # def check_non_negative_integer(self, name, value):
+    #     if not isinstance(value, int) or value < 0:
+    #         logger.error(
+    #             'Invalid config value for "%s": expected non-negative int, got %r (%s)',
+    #             name,
+    #             value,
+    #             type(value).__name__,
+    #         )
+    #         sys.exit(1)
 
     @staticmethod
     def read_config(
