@@ -16,6 +16,13 @@ from custom_logger.custom_logger import CustomLogger
 # Initialize logger
 logger = CustomLogger(__name__)
 
+# Define constants
+IPCRESS_COLUMN_ORDER = ["id", "forward_sequence", "reverse_sequence", "min_size", "max_size"]
+PRIMER3_OUTPUT_CSV = 'p3_output.csv'
+PRIMER3_DISCARDED_OUTPUT_CSV = 'discarded_pairs.csv'
+OPTIMAL_PRIMERS_CSV = 'optimal_primer_pairs.csv'
+PRIMER_PAIRS_FOR_IPCRESS_CSV = 'primer_pairs_for_ipcress.csv'
+
 
 def write_primer_output(
     sorted_primer_pairs: List[PrimerPair],
@@ -37,16 +44,16 @@ def write_primer_output(
         result.bed = export_to_bed(primer_rows, export_dir)
 
         result.csv = export_primers_to_csv(primers_df, export_dir, column_order)
-        result.optimal_primer_pairs_csv = export_three_optimal_primer_pairs_to_csv(primers_df,
-                                                                                   export_dir,
-                                                                                   column_order)
+        result.optimal_primer_pairs_csv = export_three_optimal_primer_pairs_to_csv(
+            primers_df,
+            export_dir,
+            column_order
+        )
 
         logger.info(f"Primer files saved: {result.bed}, {result.csv}, {result.optimal_primer_pairs_csv}")
 
         if ipcress_params and ipcress_params.get("write_ipcress_file"):
 
-            IPCRESS_COLUMN_ORDER = ["id", "forward_sequence", "reverse_sequence", "min_size", "max_size"]
-                                    
             primer_pairs_df = _get_primer_pairs_dataframe_for_ipcress(
                 sorted_primer_pairs,  
                 ipcress_params["min_size"], 
@@ -63,10 +70,12 @@ def write_primer_output(
 
 
     if discarded_primer_pairs:
+        discarded_df = _get_discarded_primer_dataframe(discarded_primer_pairs, primer_type)
+        column_order.append('discard_reason')
+
         result.discarded_csv = export_discarded_primers_to_csv(
-                                  discarded_primer_pairs,
+                                  discarded_df,
                                   export_dir,
-                                  primer_type,
                                   column_order
                                   )
         logger.info(f"Discarded primer file saved: {result.discarded_csv}")
@@ -76,29 +85,22 @@ def write_primer_output(
     return result
     
 
+
 def export_primers_to_csv(primers_dataframe: pd.DataFrame, export_dir: str, column_order: List[str]) -> str:
-    PRIMER3_OUTPUT_CSV = 'p3_output.csv'
     primers_csv_output_path = path.join(export_dir, PRIMER3_OUTPUT_CSV)
 
     write_dataframe_to_csv(primers_dataframe, column_order, primers_csv_output_path)
 
     return primers_csv_output_path
 
-def export_discarded_primers_to_csv(discarded_pairs: List[PrimerPairDiscarded],
-                                    export_dir: str, primer_type: str, column_order: List[str]) -> str:
-    PRIMER3_DISCARDED_OUTPUT_CSV = 'discarded_pairs.csv'
+def export_discarded_primers_to_csv(discarded_df: pd.DataFrame, export_dir: str, column_order: List[str]) -> str:
     output_path = path.join(export_dir, PRIMER3_DISCARDED_OUTPUT_CSV)
 
-    # create a data frame for output as csv
-    discarded_df = _get_discarded_primer_dataframe(discarded_pairs, primer_type)
-    column_order.append('discard_reason')
     write_dataframe_to_csv(discarded_df, column_order, output_path)
 
     return output_path
 
-
 def export_three_optimal_primer_pairs_to_csv(df: pd.DataFrame, export_dir: str, column_order: List[str]) -> str:
-    OPTIMAL_PRIMERS_CSV = 'optimal_primer_pairs.csv'
     primers_csv_output_path = path.join(export_dir, OPTIMAL_PRIMERS_CSV)
 
     optimal_primers_df = df.head(6)
@@ -111,8 +113,7 @@ def export_three_optimal_primer_pairs_to_csv(df: pd.DataFrame, export_dir: str, 
     return primers_csv_output_path
 
 def export_pairs_for_ipcress_to_csv(df: pd.DataFrame, export_dir: str, column_order: List[str]) -> str:
-    PRIMER_PAIRS_FOR_IPCRESS_OUTPUR_FILE = 'primer_pairs_for_ipcress.csv'
-    primers_csv_output_path = path.join(export_dir, PRIMER_PAIRS_FOR_IPCRESS_OUTPUR_FILE)
+    primers_csv_output_path = path.join(export_dir, PRIMER_PAIRS_FOR_IPCRESS_CSV)
 
     write_dataframe_to_csv(df, column_order, primers_csv_output_path, include_header=False)
 
