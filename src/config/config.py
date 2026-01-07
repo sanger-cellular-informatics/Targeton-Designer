@@ -38,7 +38,15 @@ class DesignerConfig:
         ipcress_params = config.get("ipcress_parameters") or {}
         self.ipcress_params_write_file = False
 
-        if ipcress_params.get("write_ipcress_file"):
+        write_ipcress = ipcress_params.get("write_ipcress_file") or False
+
+        if not isinstance(write_ipcress, bool):
+            logger.error(
+                f"ipcress_params.write_ipcress_file must be a boolean (true/false), got {type(write_ipcress).__name__}"
+            )
+            sys.exit(1)
+
+        if write_ipcress:
             check_non_negative_integer(name="ipcress_params.min_size", value=ipcress_params["min_size"])
             check_non_negative_integer(name="ipcress_params.max_size", value=ipcress_params["max_size"])
 
@@ -57,16 +65,6 @@ class DesignerConfig:
         primer3_params_path = (args.get('primer3_params', None) or config.get('primer3_params', None)
                                or 'config/default_primer3.config.json')
         self.primer3_params = parse_json(primer3_params_path)
-
-    # def check_non_negative_integer(self, name, value):
-    #     if not isinstance(value, int) or value < 0:
-    #         logger.error(
-    #             'Invalid config value for "%s": expected non-negative int, got %r (%s)',
-    #             name,
-    #             value,
-    #             type(value).__name__,
-    #         )
-    #         sys.exit(1)
 
     @staticmethod
     def read_config(
