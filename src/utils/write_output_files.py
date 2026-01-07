@@ -5,6 +5,7 @@ import re
 
 from typing import TYPE_CHECKING, List, Union
 from os import path
+import os
 from pathlib import Path
 
 from pybedtools import BedTool
@@ -17,6 +18,10 @@ from designer.output_data_classes import (
     ScoringOutputData,
     PrimerDesignerOutputData,
 )
+
+from Bio.SeqRecord import SeqRecord
+from Bio import SeqIO
+from Bio.Seq import Seq
 
 if TYPE_CHECKING:  # For avoiding circular import dependencies, only import for type checking.
     from src.primer_designer import PrimerDesigner
@@ -169,3 +174,40 @@ def write_primer_design_output(
     print(f'Primer Designer files saved:{result.csv}, {result.json}')
 
     return result
+
+def export_retrieved_fasta(slice_data, export_dir: str) -> str:
+
+    if not slice_data.bases:
+        raise ValueError("Retrieved sequence is empty")
+
+
+    if slice_data.strand not in {"+", "-"}:
+        raise ValueError(f"Invalid strand value: {slice_data.strand}")
+
+    os.makedirs(export_dir, exist_ok=True)
+
+    targeton_id = slice_data.name
+    filename = f"{targeton_id}_retrieved.fa"
+    fasta_path = path.join(export_dir, filename)
+
+    header_id = (
+                    f"{targeton_id}:extended:GRCh38:"
+                    f"{slice_data.chromosome}:"
+                    f"{slice_data.start}-{slice_data.end}"
+                    f"({slice_data.strand}):"
+                    f"{slice_data.flanking_region}"
+                )
+    sequence = slice_data.bases
+
+    record = SeqRecord(
+                    Seq(sequence),
+                    id=header_id,
+                    description="")
+
+
+    try:
+        SeqIO.write(record, fasta_path, "fasta")
+    except Exception as e:
+        raise IOError(f"Failed to write FASTA file: {fasta_path}") from e
+
+    return fasta_path

@@ -1,17 +1,21 @@
 import unittest
 from io import StringIO
 from os import path
+import os
 from pathlib import Path
 import csv
 
 import pandas as pd
+import tempfile
 from pyfakefs.fake_filesystem_unittest import TestCase
 from unittest.mock import patch, Mock
 from freezegun import freeze_time
+from Bio import SeqIO
 
 from src.utils.write_output_files import write_scoring_output, write_targeton_csv
 from src.utils import write_output_files
 from primer.slice_data import SliceData
+from utils.write_output_files import export_retrieved_fasta
 
 
 class TestWriteOutputFiles(TestCase):
@@ -33,6 +37,22 @@ class TestWriteOutputFiles(TestCase):
             SliceData('region_1', 100, 200, 'strand', 'chromosome', 'bases', 0, 0),
             SliceData('region_2', 300, 400, 'strand', 'chromosome', 'bases', 0, 0),
         ]
+
+        self.slice_data = SliceData(
+            name="TEST",
+            start=100,
+            end=200,
+            strand="+",
+            chromosome="7",
+            bases="ATCGATCG",
+            flanking_region=150,
+            exclusion_region=0
+        )
+
+        self.temp_dir = tempfile.TemporaryDirectory()
+
+    def tearDown(self):
+        self.temp_dir.cleanup()
 
     @patch('builtins.print')
     def test_write_targeton_csv_success_with_timestamped_dir(self, mock_print):
@@ -133,6 +153,55 @@ class TestWriteOutputFiles(TestCase):
         self.assertEqual(test_delimiter, expected_delimiter)
         self.assertTrue(expected_file_path.exists())
         self.assertEqual(test_data, expected_read_data)
+
+    def test_fasta_is_written_with_correct_header_and_sequence(self):
+
+        fasta_path = export_retrieved_fasta(
+            self.slice_data,
+            self.temp_dir.name
+        )
+
+        self.assertTrue(os.path.exists(fasta_path))
+
+        self.assertEqual(
+            os.path.basename(fasta_path),
+            "TEST_retrieved.fa"
+        )
+
+        expected_path = path.join(self.temp_dir.name, "TEST_retrieved.fa")
+        expected_header = 'TEST:extended:GRCh38:7:100-200(+):150'
+
+        result = export_retrieved_fasta(self.slice_data, self.temp_dir.name)
+
+        self.assertEqual(result, expected_path)
+        self.assertTrue(path.exists(expected_path))
+
+        # verify fasta content
+        records = list(SeqIO.parse(expected_path, 'fasta'))
+        self.assertEqual(len(records), 1)
+        record = records[0]
+        self.assertEqual(record.id, expected_header)
+        self.assertEqual(str(record.seq), 'ATCGATCG')
+
+
+    def test_empty_sequence_raises_value_error(self):
+
+        self.slice_data.bases = ""
+
+        with self.assertRaises(ValueError):
+            export_retrieved_fasta(
+                self.slice_data,
+                self.temp_dir.name
+            )
+
+    def test_invalid_strand_raises_value_error(self):
+        self.slice_data.strand = "?"
+
+        with self.assertRaises(ValueError):
+            export_retrieved_fasta(
+                self.slice_data,
+                self.temp_dir.name
+            )
 
 
 

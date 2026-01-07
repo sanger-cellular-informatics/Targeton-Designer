@@ -13,9 +13,8 @@ from utils.write_output_files import (
     write_scoring_output,
     write_primer_design_output,
     timestamped_dir,
+    export_retrieved_fasta,
 )
-
-from primer.write_primer_output import export_retrieved_fasta
 
 from designer.output_data_classes import (
     SlicerOutputData,
@@ -77,7 +76,7 @@ def primer_command(
 
     export_dir = timestamped_dir(config.prefix_output_dir)
     fasta_path = export_retrieved_fasta(slice_data, export_dir)
-    logger.info(f"Retrieved FASTA file saved: {fasta_path}")
+    logger.info(f"Retrieved sequences saved as FASTA: {fasta_path}")
 
     primers = Primer3(config.stringency_vector, config.primer3_params).get_primers(slice_data)
 
