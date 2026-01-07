@@ -300,7 +300,7 @@ class RankerTest(TestCase):
                 ("pair2", 0.2, 1),
             ],
         )
-
+        
 
 def _assert_pairs_by_id_stringency_product_size(
     test_case: TestCase,

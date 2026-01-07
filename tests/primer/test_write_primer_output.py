@@ -3,9 +3,6 @@ import unittest
 from os import path
 from unittest.mock import patch
 
-from os import path
-from unittest.mock import patch
-
 import pandas as pd
 from pyfakefs.fake_filesystem_unittest import TestCase
 
@@ -15,7 +12,7 @@ from collections import defaultdict
 from primer.primer_pair import PrimerPair
 from primer.designed_primer import DesignedPrimer, Interval
 from primer.write_primer_output import _reorder_columns, _add_primer_pair, export_three_optimal_primer_pairs_to_csv, \
-    export_primers_to_csv
+    export_primers_to_csv, export_pairs_for_ipcress_to_csv
 
 
 class TestWritePrimerOutputFiles(TestCase):
@@ -157,6 +154,38 @@ class TestWritePrimerOutputFiles(TestCase):
 
         self.assertEqual(content, expected_content)
 
+    def test_export_pairs_for_ipcress_to_csv(self):
+        # Arrange
+        data = {
+            'id': ['PAIR1', 'PAIR2'],
+            'forward_sequence': ['AAA', 'CCC'],
+            'reverse_sequence': ['TTT', 'GGG'],
+            'min_size': [5, 5],
+            'max_size': [300, 300],
+        }
+        df = pd.DataFrame(data)
+
+        export_dir = '/mock/directory'
+        self.fs.create_dir(export_dir)
+
+        # Act
+        result_path = export_pairs_for_ipcress_to_csv(
+            df,
+            export_dir,
+            column_order=['id', 'forward_sequence', 'reverse_sequence', 'min_size', 'max_size'],
+        )
+
+        # Assert
+        expected_path = path.join(export_dir, 'primer_pairs_for_ipcress.csv')
+        self.assertEqual(result_path, expected_path)
+
+        with open(result_path, 'r') as file:
+            content = file.read()
+
+        expected_content = "PAIR1,AAA,TTT,5,300\nPAIR2,CCC,GGG,5,300\n"
+
+        self.assertEqual(content, expected_content)
+
     def test_export_three_optimal_primers_to_csv(self):
         # Arrange
         data = {
@@ -201,8 +230,7 @@ class TestWritePrimerOutputFiles(TestCase):
         
         logs = self.handler.buffer.getvalue().strip()
         
-        self.assertEqual(logs, "Less than 3 primer pairs returned by Primer3")
-    
+        self.assertEqual(logs, "Less than 3 primer pairs returned by Primer3")   
 
 
 class TestDataFrameBuild(TestCase):

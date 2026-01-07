@@ -1,4 +1,5 @@
 from collections import defaultdict
+from dataclasses import dataclass
 from typing import List
 
 import pandas as pd
@@ -15,6 +16,7 @@ from custom_logger.custom_logger import CustomLogger
 # Initialize logger
 logger = CustomLogger(__name__)
 
+
 def write_primer_output(
     sorted_primer_pairs: List[PrimerPair],
     column_order: List[str],
@@ -22,30 +24,51 @@ def write_primer_output(
     primer_pairs=[],
     discarded_primer_pairs=[],
     existing_dir='',
-    primer_type='LibAmp'
+    primer_type='LibAmp',
+    ipcress_params=dict,
 ) -> PrimerOutputData:
     export_dir = existing_dir or timestamped_dir(prefix)
     result = PrimerOutputData(export_dir)
 
-    primer_pairs_df = _get_primers_dataframe(sorted_primer_pairs, primer_type)
+    primers_df = _get_primers_dataframe(sorted_primer_pairs, primer_type)
 
     if primer_pairs:
         primer_rows = construct_primer_rows_bed_format(primer_pairs)
         result.bed = export_to_bed(primer_rows, export_dir)
 
-        result.csv = export_primers_to_csv(primer_pairs_df, export_dir, column_order)
-        result.optimal_primer_pairs_csv = export_three_optimal_primer_pairs_to_csv(primer_pairs_df,
+        result.csv = export_primers_to_csv(primers_df, export_dir, column_order)
+        result.optimal_primer_pairs_csv = export_three_optimal_primer_pairs_to_csv(primers_df,
                                                                                    export_dir,
                                                                                    column_order)
 
         logger.info(f"Primer files saved: {result.bed}, {result.csv}, {result.optimal_primer_pairs_csv}")
+
+        if ipcress_params and ipcress_params.get("write_ipcress_file"):
+
+            IPCRESS_COLUMN_ORDER = ["id", "forward_sequence", "reverse_sequence", "min_size", "max_size"]
+                                    
+            primer_pairs_df = _get_primer_pairs_dataframe_for_ipcress(
+                sorted_primer_pairs,  
+                ipcress_params["min_size"], 
+                ipcress_params["max_size"],
+            )
+            
+            result.primer_pairs_for_ipcress = export_pairs_for_ipcress_to_csv(
+                primer_pairs_df, 
+                export_dir, 
+                IPCRESS_COLUMN_ORDER
+            )
+        
+            logger.info(f"Primer pairs for ipcress saved: {result.primer_pairs_for_ipcress}")
+
 
     if discarded_primer_pairs:
         result.discarded_csv = export_discarded_primers_to_csv(
                                   discarded_primer_pairs,
                                   export_dir,
                                   primer_type,
-                                  column_order)
+                                  column_order
+                                  )
         logger.info(f"Discarded primer file saved: {result.discarded_csv}")
     else:
         logger.info("No discarded primers")
@@ -87,9 +110,22 @@ def export_three_optimal_primer_pairs_to_csv(df: pd.DataFrame, export_dir: str, 
 
     return primers_csv_output_path
 
-def write_dataframe_to_csv(df: pd.DataFrame, cols: List[str], output_path: str) -> None:
+def export_pairs_for_ipcress_to_csv(df: pd.DataFrame, export_dir: str, column_order: List[str]) -> str:
+    PRIMER_PAIRS_FOR_IPCRESS_OUTPUR_FILE = 'primer_pairs_for_ipcress.csv'
+    primers_csv_output_path = path.join(export_dir, PRIMER_PAIRS_FOR_IPCRESS_OUTPUR_FILE)
+
+    write_dataframe_to_csv(df, column_order, primers_csv_output_path, include_header=False)
+
+    return primers_csv_output_path
+
+def write_dataframe_to_csv(
+    df: pd.DataFrame,
+    cols: List[str],
+    output_path: str,
+    include_header: bool = True,
+) -> None:
     df_ordered = _reorder_columns(cols, df)
-    df_ordered.to_csv(output_path, index=False)
+    df_ordered.to_csv(output_path, index=False, header=include_header)
     return None
 
 def _get_primers_dataframe(pairs: List[PrimerPair], primer_type: str) -> pd.DataFrame:
@@ -135,6 +171,27 @@ def _add_primer_pair(primers_dict: defaultdict(list),
     primers_dict['targeton_id'].extend([pair.targeton_id] * 2)
 
     return None
+
+def _get_primer_pairs_dataframe_for_ipcress(
+        pairs: List[PrimerPair], 
+        min_size: str, 
+        max_size: str,
+    ) -> pd.DataFrame:
+
+    primer_pairs_dict = defaultdict(list)
+
+    for pair in pairs:
+        primer_pairs_dict['id'].append(_strip_stringency_suffix(pair.id))
+        primer_pairs_dict['forward_sequence'].append(pair.forward.sequence)
+        primer_pairs_dict['reverse_sequence'].append(pair.reverse.sequence)
+        primer_pairs_dict['min_size'].append(min_size)
+        primer_pairs_dict['max_size'].append(max_size)
+
+    return pd.DataFrame(primer_pairs_dict).round(decimals=3)
+
+def _strip_stringency_suffix(pair_id: str) -> str:
+    head, sep, _ = pair_id.partition("_str")
+    return head if sep else pair_id
 
 def _reorder_columns(csv_col_order: List[str],
                      dataframe: pd.DataFrame):
