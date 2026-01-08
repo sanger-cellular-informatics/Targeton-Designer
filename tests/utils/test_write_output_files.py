@@ -38,7 +38,7 @@ class TestWriteOutputFiles(TestCase):
             SliceData('region_2', 300, 400, 'strand', 'chromosome', 'bases', 0, 0),
         ]
 
-        self.slice_data = SliceData(
+        self.slice_data_with_flanking = SliceData(
             name="TEST",
             start=100,
             end=200,
@@ -46,6 +46,17 @@ class TestWriteOutputFiles(TestCase):
             chromosome="7",
             bases="ATCGATCG",
             flanking_region=150,
+            exclusion_region=0
+        )
+        
+        self.slice_data_with_no_flanking = SliceData(
+            name="TEST",
+            start=100,
+            end=200,
+            strand="+",
+            chromosome="7",
+            bases="ATCGATCG",
+            flanking_region=0,
             exclusion_region=0
         )
 
@@ -154,24 +165,23 @@ class TestWriteOutputFiles(TestCase):
         self.assertTrue(expected_file_path.exists())
         self.assertEqual(test_data, expected_read_data)
 
-    def test_fasta_is_written_with_correct_header_and_sequence(self):
+    def test_fasta_is_written_flanking_with_correct_header_and_sequence(self):
 
-        fasta_path = export_retrieved_fasta(
-            self.slice_data,
+        result = export_retrieved_fasta(
+            self.slice_data_with_flanking,
             self.temp_dir.name
         )
 
-        self.assertTrue(os.path.exists(fasta_path))
+        self.assertTrue(os.path.exists(result))
 
         self.assertEqual(
-            os.path.basename(fasta_path),
-            "TEST_retrieved.fa"
+            os.path.basename(result),
+            "primer3_input_sequence.fa"
         )
 
-        expected_path = path.join(self.temp_dir.name, "TEST_retrieved.fa")
-        expected_header = 'TEST:extended:GRCh38:7:100-200(+):150'
+        expected_path = path.join(self.temp_dir.name, "primer3_input_sequence.fa")
 
-        result = export_retrieved_fasta(self.slice_data, self.temp_dir.name)
+        expected_header = f'TEST:extended:GRCh38:7:100-200(+):150'
 
         self.assertEqual(result, expected_path)
         self.assertTrue(path.exists(expected_path))
@@ -183,23 +193,49 @@ class TestWriteOutputFiles(TestCase):
         self.assertEqual(record.id, expected_header)
         self.assertEqual(str(record.seq), 'ATCGATCG')
 
+    def test_fasta_is_written_with_no_flanking_correct_header_and_sequence(self):
+
+        result = export_retrieved_fasta(
+            self.slice_data_with_no_flanking,
+            self.temp_dir.name
+        )
+
+        self.assertTrue(os.path.exists(result))
+
+        self.assertEqual(
+            os.path.basename(result),
+            "primer3_input_sequence.fa"
+        )
+
+        expected_path = path.join(self.temp_dir.name, "primer3_input_sequence.fa")
+
+        expected_header = f'TEST::GRCh38:7:100-200(+):0'
+
+        self.assertEqual(result, expected_path)
+        self.assertTrue(path.exists(expected_path))
+
+        # verify fasta content
+        records = list(SeqIO.parse(expected_path, 'fasta'))
+        record = records[0]
+        self.assertEqual(record.id, expected_header)
+        self.assertEqual(str(record.seq), 'ATCGATCG')
 
     def test_empty_sequence_raises_value_error(self):
 
-        self.slice_data.bases = ""
+        self.slice_data_with_flanking.bases = ""
 
         with self.assertRaises(ValueError):
             export_retrieved_fasta(
-                self.slice_data,
+                self.slice_data_with_flanking,
                 self.temp_dir.name
             )
 
     def test_invalid_strand_raises_value_error(self):
-        self.slice_data.strand = "?"
+        self.slice_data_with_flanking.strand = "?"
 
         with self.assertRaises(ValueError):
             export_retrieved_fasta(
-                self.slice_data,
+                self.slice_data_with_flanking,
                 self.temp_dir.name
             )
 
