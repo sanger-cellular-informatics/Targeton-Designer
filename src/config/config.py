@@ -1,4 +1,5 @@
 from config.config_helpers import check_non_negative_integer
+from config.ipcress_params import IpcressParameters
 from utils.file_system import parse_json
 
 import sys
@@ -34,25 +35,11 @@ class DesignerConfig:
                          "and exclusion_region will be ignored."))
         check_non_negative_integer(name="exclusion_region", value=self.exclusion_region)
 
-        # Check Ipcress output file parameters
-        ipcress_params = config.get("ipcress_parameters") or {}
-        self.ipcress_params_write_file = False
-
-        write_ipcress = ipcress_params.get("write_ipcress_file") or False
-
-        if not isinstance(write_ipcress, bool):
-            logger.error(
-                f"ipcress_params.write_ipcress_file must be a boolean (true/false), got {type(write_ipcress).__name__}"
-            )
-            sys.exit(1)
-
-        if write_ipcress:
-            check_non_negative_integer(name="ipcress_params.min_size", value=ipcress_params["min_size"])
-            check_non_negative_integer(name="ipcress_params.max_size", value=ipcress_params["max_size"])
-
-            self.ipcress_params_write_file = ipcress_params["write_ipcress_file"]
-            self.ipcress_params_min_size = ipcress_params.get("min_size")
-            self.ipcress_params_max_size = ipcress_params.get("max_size")
+        ipcress_block = config.get("ipcress_parameters")
+        if ipcress_block is not None:
+            self.ipcress_params = IpcressParameters(ipcress_block)
+        else:
+            self.ipcress_params = None
 
         self.stringency_vector = config['stringency_vector']
         self.csv_column_order = config['csv_column_order']

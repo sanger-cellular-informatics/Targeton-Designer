@@ -213,7 +213,7 @@ class TestIpcressOutputDesignerConfig(TestCase):
 
         designer_config = DesignerConfig(args={'conf': self.config_path})
 
-        self.assertFalse(designer_config.ipcress_params_write_file)
+        self.assertIsNone(designer_config.ipcress_params, None)
 
     
     @patch.object(DesignerConfig, 'read_config')    
@@ -230,7 +230,7 @@ class TestIpcressOutputDesignerConfig(TestCase):
 
         designer_config = DesignerConfig(args={'conf': self.config_path})
 
-        self.assertFalse(designer_config.ipcress_params_write_file)
+        self.assertFalse(designer_config.ipcress_params.write_ipcress_file)
 
 
     @patch.object(DesignerConfig, 'read_config')
@@ -247,60 +247,6 @@ class TestIpcressOutputDesignerConfig(TestCase):
 
         designer_config = DesignerConfig(args={'conf': self.config_path})
 
-        self.assertTrue(designer_config.ipcress_params_write_file)
-        self.assertEqual(designer_config.ipcress_params_min_size, 5)
-        self.assertEqual(designer_config.ipcress_params_max_size, 300)
-
-    @patch.object(DesignerConfig, 'read_config')
-    @patch("config.config.logger.error")
-    def test_get_ipcress_parameters_from_config_when_wrong_write_ipcress_file_value(self, mock_logger_error, mock_read_config):
-        ipcress_parameters = {
-            "write_ipcress_file": 15,
-            "min_size": 5,
-            "max_size": 300
-        }
-
-        config = self.starting_config.copy()
-        config["ipcress_parameters"] = ipcress_parameters
-        mock_read_config.return_value = config
-
-        with self.assertRaises(SystemExit):
-            DesignerConfig(args={"conf": self.config_path})
-
-        expected_error_message = (
-            f"ipcress_params.write_ipcress_file must be a boolean (true/false), got int"
-        )
-
-        mock_logger_error.assert_called_once_with(expected_error_message)
-
-
-    @parameterized.expand([
-        ("min_size_unformatted", "min_size", "STRING"),
-        ("min_size_negative", "min_size", -1),
-        ("max_size_string", "max_size", "STRING"),
-        ("max_size_negative", "max_size", -10),
-    ])
-    @patch.object(DesignerConfig, "read_config")
-    @patch("config.config_helpers.logger.error")
-    def test_get_ipcress_parameters_from_config_when_wrong_values(
-            self, test_case_name, param_name, param_value, mock_logger_error, mock_read_config
-    ):
-        # Default correct parameters
-        ipcress_parameters = {"write_ipcress_file": True, "min_size": 100, "max_size": 300 }
-        # Override the parameter to an invalid value
-        ipcress_parameters[param_name] = param_value
-
-        config = self.starting_config.copy()
-        config["ipcress_parameters"] = ipcress_parameters
-        mock_read_config.return_value = config
-
-        with self.assertRaises(SystemExit):
-            DesignerConfig(args={"conf": self.config_path})
-
-        expected_error_message = (
-            f'Invalid config value for "ipcress_params.{param_name}": '
-            f'expected non-negative int, got {param_value!r} ({type(param_value).__name__})'
-        )
-
-        mock_logger_error.assert_called_once_with(expected_error_message)
-        mock_logger_error.reset_mock()
+        self.assertTrue(designer_config.ipcress_params.write_ipcress_file)
+        self.assertEqual(designer_config.ipcress_params.min_size, 5)
+        self.assertEqual(designer_config.ipcress_params.max_size, 300)
