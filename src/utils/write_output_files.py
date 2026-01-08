@@ -176,7 +176,7 @@ def write_primer_design_output(
     return result
 
 def export_retrieved_fasta(slice_data, export_dir: str) -> str:
-
+    
     if not slice_data.bases:
         raise ValueError("Retrieved sequence is empty")
 
@@ -187,11 +187,13 @@ def export_retrieved_fasta(slice_data, export_dir: str) -> str:
     os.makedirs(export_dir, exist_ok=True)
 
     targeton_id = slice_data.name
-    filename = f"{targeton_id}_retrieved.fa"
+    filename = "primer3_input_sequence.fa"
     fasta_path = path.join(export_dir, filename)
+    
+    extended = 'extended' if slice_data.flanking_region > 0 else ''
 
     header_id = (
-                    f"{targeton_id}:extended:GRCh38:"
+                    f"{targeton_id}:{extended}:GRCh38:"
                     f"{slice_data.chromosome}:"
                     f"{slice_data.start}-{slice_data.end}"
                     f"({slice_data.strand}):"
