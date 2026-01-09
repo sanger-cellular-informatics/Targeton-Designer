@@ -268,13 +268,19 @@ For each target, Primer Designer outputs a FASTA file containing the genomic seq
 
 File name:
 ```
-<TARGETON_ID>_retrieved.fa
+primer3_input_sequence.fa
 ```
 
 FASTA format:
 The file contains a single FASTA record with the following header specification:
 ```
 ><targeton_id>:extended:<reference>:<chromosome>:<flanked_start>-<flanked_end>(<strand>):<flanking_length>
+```
+
+When `flanking_region = 0`, the `extended` field is omitted from the header. For example, with `flanking_region = 0`, the header format is:
+
+```
+><targeton_id>::<reference>:<chromosome>:<flanked_start>-<flanked_end>(<strand>):<flanking_length>
 ```
 
 Header Fields:
