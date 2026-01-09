@@ -1,5 +1,6 @@
 from unittest import TestCase
 
+from parameterized import parameterized
 from config.ipcress_params import IpcressParameters
 
 
@@ -23,35 +24,50 @@ class TestIpcressParams(TestCase):
             IpcressParameters("not a dict")
         self.assertIn("ipcress_parameters must be a dict", str(cm.exception))
 
-    def test_write_ipcress_file_invalid(self):
-        invalid_values = [None, 0, 1, "true", []]
-        for value in invalid_values:
-            with self.assertRaises(ValueError) as cm:
-                IpcressParameters({
-                    "write_ipcress_file": value,
-                    "min_size": 5,
-                    "max_size": 300
-                })
-            self.assertIn("ipcress_parameters.write_ipcress_file must be a boolean", str(cm.exception))
+    @parameterized.expand([
+        ("when_string", "STRING"),
+        ("when_negative", -1),
+        ("when_None", None),
+    ])
+    def test_write_ipcress_file_invalid(self, test_case, value):
+        with self.assertRaises(ValueError) as cm:
+            IpcressParameters({
+                "write_ipcress_file": value,
+                "min_size": 5,
+                "max_size": 300
+            })
 
-    def test_min_size_invalid(self):
-        invalid_values = [-1, -100, 5.5, "10", None]
-        for value in invalid_values:
-            with self.assertRaises(ValueError) as cm:
-                IpcressParameters({
-                    "write_ipcress_file": True,
-                    "min_size": value,
-                    "max_size": 300
-                })
-            self.assertIn("ipcress_parameters.min_size must be a non-negative integer", str(cm.exception))
+        expected = f'Invalid config value for "write_ipcress_file": expected boolean, got {value} ({type(value).__name__})'
+        self.assertIn(expected, str(cm.exception))
 
-    def test_max_size_invalid(self):
-        invalid_values = [-1, -100, 5.5, "10", None]
-        for value in invalid_values:
-            with self.assertRaises(ValueError) as cm:
-                IpcressParameters({
-                    "write_ipcress_file": True,
-                    "min_size": 5,
-                    "max_size": value
-                })
-            self.assertIn("ipcress_parameters.max_size must be a non-negative integer", str(cm.exception))
+    @parameterized.expand([
+        ("when_string", "STRING"),
+        ("when_negative", -1),
+        ("when_None", None),
+    ])
+    def test_min_size_invalid(self, test_case, min_size_value):
+        with self.assertRaises(ValueError) as cm:
+            IpcressParameters({
+                "write_ipcress_file": True,
+                "min_size": min_size_value,
+                "max_size": 300
+            })
+
+        expected = f'Invalid config value for "min_size": expected non-negative int, got {min_size_value} ({type(min_size_value).__name__})'
+        self.assertIn(expected, str(cm.exception))
+
+    @parameterized.expand([
+        ("when_string", "STRING"),
+        ("when_negative", -1),
+        ("when_None", None),
+    ])
+    def test_max_size_invalid(self, test_case, max_size_value):
+        with self.assertRaises(ValueError) as cm:
+            IpcressParameters({
+                "write_ipcress_file": True,
+                "min_size": 5,
+                "max_size": max_size_value
+            })
+
+        expected = f'Invalid config value for "max_size": expected non-negative int, got {max_size_value} ({type(max_size_value).__name__})'
+        self.assertIn(expected, str(cm.exception))

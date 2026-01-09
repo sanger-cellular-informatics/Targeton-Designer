@@ -46,15 +46,14 @@ class TestDesignerConfigClass(TestCase):
             'ranking': {}
         }
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(ValueError) as exc:
             DesignerConfig(args={})
 
         expected_error_message = (
             f'Invalid config value for "flanking_region": '
-            f'expected non-negative int, got {flanking_value!r} ({type(flanking_value).__name__})'
+            f'expected non-negative int, got {flanking_value} ({type(flanking_value).__name__})'
         )
-
-        mock_logger_error.assert_called_once_with(expected_error_message)
+        self.assertEqual(str(exc.exception), expected_error_message)
 
     @patch.object(DesignerConfig, 'read_config')
     @patch('config.config.logger.info')
@@ -92,15 +91,14 @@ class TestDesignerConfigClass(TestCase):
             'ranking': {}
         }
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(ValueError) as exc:
             DesignerConfig(args={})
 
         expected_error_message = (
             f'Invalid config value for "exclusion_region": '
-            f'expected non-negative int, got {exclusion_region_value!r} ({type(exclusion_region_value).__name__})'
+            f'expected non-negative int, got {exclusion_region_value} ({type(exclusion_region_value).__name__})'
         )
-
-        mock_logger_error.assert_called_once_with(expected_error_message)
+        self.assertEqual(str(exc.exception), expected_error_message)
 
     def test_read_config(self):
         expected = {'flanking_region': 150,
