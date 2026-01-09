@@ -29,7 +29,7 @@ class TestIpcressParams(TestCase):
         ("when_negative", -1),
         ("when_None", None),
     ])
-    def test_write_ipcress_file_invalid(self, test_case, value):
+    def test_error_when_write_ipcress_file_invalid(self, test_case, value):
         with self.assertRaises(ValueError) as cm:
             IpcressParameters({
                 "write_ipcress_file": value,
