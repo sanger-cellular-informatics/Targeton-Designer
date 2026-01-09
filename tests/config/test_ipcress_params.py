@@ -61,7 +61,7 @@ class TestIpcressParams(TestCase):
         ("when_negative", -1),
         ("when_None", None),
     ])
-    def test_max_size_invalid(self, test_case, max_size_value):
+    def test_error_when_max_size_invalid(self, test_case, max_size_value):
         with self.assertRaises(ValueError) as cm:
             IpcressParameters({
                 "write_ipcress_file": True,
