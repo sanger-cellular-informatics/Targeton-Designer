@@ -19,7 +19,7 @@ class TestIpcressParams(TestCase):
         self.assertEqual(ipcress_params.min_size, 5)
         self.assertEqual(ipcress_params.max_size, 300)
 
-    def test_params_not_dict(self):
+    def test_error_when_params_not_dict(self):
         with self.assertRaises(TypeError) as cm:
             IpcressParameters("not a dict")
         self.assertIn("ipcress_parameters must be a dict", str(cm.exception))
