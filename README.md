@@ -31,6 +31,7 @@ The Primer Designer tool includes filtering and ranking of primers.
    4. [Primer3 Output Optimal Primer Pairs CSV file](#34-primer3-output-optimal-primer-pairs-csv-file) 
    5. [Primer3 Output Discarded Primer Pairs CSV file](#35-primer3-output-discarded-primer-pairs-csv-file) 
    6. [Genomic Reference file](#36-genomic-reference-file)
+   7. [Flanked Sequence Output FASTA](#37-flanked-sequence-output-fasta)
 4. [For Developers](#4-for-developers)
    1. [Git Hooks](#41-git-hooks)
    2. [Python debugger](#42-python-debugger)
@@ -261,47 +262,6 @@ Example command:
 ```
 
 Note: If auto-flanking requests coordinates beyond the chromosome start or end, the region is clamped safely.
-
-**Flanked Sequence Output FASTA**
-
-For each target, Primer Designer outputs a FASTA file containing the genomic sequence extended by flanking bases around the target region.
-
-File name:
-```
-primer3_input_sequence.fa
-```
-
-FASTA format:
-The file contains a single FASTA record with the following header specification:
-```
-><targeton_id>:extended:<reference>:<chromosome>:<flanked_start>-<flanked_end>(<strand>):<flanking_length>
-```
-
-When `flanking_region = 0`, the `extended` field is omitted from the header. For example, with `flanking_region = 0`, the header format is:
-
-```
-><targeton_id>::<reference>:<chromosome>:<flanked_start>-<flanked_end>(<strand>):<flanking_length>
-```
-
-Header Fields:
-
-| Field             | Description                                           |
-| ----------------- | ----------------------------------------------------- |
-| `targeton_id`     | Unique identifier of the target                       |
-| `extended`        | Indicates that the sequence includes flanking regions |
-| `reference`       | Reference genome (e.g. GRCh38)                        |
-| `chromosome`      | Chromosome identifier                                 |
-| `flanked_start`   | Genomic start coordinate after flanking               |
-| `flanked_end`     | Genomic end coordinate after flanking                 |
-| `strand`          | Target strand (`+` or `-`)                            |
-| `flanking_length` | Number of bases added on each side                    |
-
-
-Usage:
-This FASTA output is intended for downstream tools such as:
-- Ipcress (in-silico PCR)
-- Off-target and specificity analysis
-- Manual inspection of genomic context
 
 **Using a chromosome region (REGION MODE):**
 
@@ -646,6 +606,47 @@ Otherwise, you can download it manually here:
 wget http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
 gunzip Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz 
 ``` 
+
+### 3.7 Flanked Sequence Output FASTA
+
+For each target, Primer Designer outputs a FASTA file containing the genomic sequence extended by flanking bases around the target region.
+
+File name:
+```
+primer3_input_sequence.fa
+```
+
+FASTA format:
+The file contains a single FASTA record with the following header specification:
+```
+><targeton_id>:extended:<reference>:<chromosome>:<flanked_start>-<flanked_end>(<strand>):<flanking_length>
+```
+
+When `flanking_region = 0`, the `extended` field becomes empty in the header. For example, with `flanking_region = 0`, the header format is:
+
+```
+><targeton_id>::<reference>:<chromosome>:<flanked_start>-<flanked_end>(<strand>):<flanking_length>
+```
+
+Header Fields:
+
+| Field             | Description                                           |
+| ----------------- | ----------------------------------------------------- |
+| `targeton_id`     | Unique identifier of the target                       |
+| `extended`        | Indicates that the sequence includes flanking regions. Value of the field either be `extended` or empty |
+| `reference`       | Reference genome (e.g. GRCh38)                        |
+| `chromosome`      | Chromosome identifier                                 |
+| `flanked_start`   | Genomic start coordinate after flanking               |
+| `flanked_end`     | Genomic end coordinate after flanking                 |
+| `strand`          | Target strand (`+` or `-`)                            |
+| `flanking_length` | Number of bases added on each side                    |
+
+
+Usage:
+This FASTA output is intended for downstream tools such as:
+- Ipcress (in-silico PCR)
+- Off-target and specificity analysis
+- Manual inspection of genomic context
 
 ## 4. For Developers
 
