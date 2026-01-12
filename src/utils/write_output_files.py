@@ -175,10 +175,10 @@ def write_primer_design_output(
 
     return result
 
-def export_retrieved_fasta(slice_data, export_dir: str) -> str:
+def export_p3_input_fasta(slice_data, export_dir: str) -> str:
     
     if not slice_data.bases:
-        raise ValueError("Retrieved sequence is empty")
+        raise ValueError("Primer3 input sequence is empty")
 
 
     if slice_data.strand not in {"+", "-"}:

@@ -13,7 +13,7 @@ from utils.write_output_files import (
     write_scoring_output,
     write_primer_design_output,
     timestamped_dir,
-    export_retrieved_fasta,
+    export_p3_input_fasta,
 )
 
 from designer.output_data_classes import (
@@ -75,8 +75,8 @@ def primer_command(
                                                      config.exclusion_region)
 
     export_dir = timestamped_dir(config.prefix_output_dir)
-    fasta_path = export_retrieved_fasta(slice_data, export_dir)
-    logger.info(f"Retrieved sequences saved as FASTA: {fasta_path}")
+    fasta_path = export_p3_input_fasta(slice_data, export_dir)
+    logger.info(f"Primer3 input sequences saved as FASTA: {fasta_path}")
 
     primers = Primer3(config.stringency_vector, config.primer3_params).get_primers(slice_data)
 
