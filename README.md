@@ -643,7 +643,7 @@ Header Fields:
 
 
 Usage:
-This FASTA output is intended for downstream tools such as:
+This FASTA output is intended for downstream usage such as:
 - Off-target and specificity analysis (e.g. Ipcress).
 - Manual inspection of genomic context.
 
