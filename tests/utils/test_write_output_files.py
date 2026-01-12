@@ -15,7 +15,7 @@ from Bio import SeqIO
 from src.utils.write_output_files import write_scoring_output, write_targeton_csv
 from src.utils import write_output_files
 from primer.slice_data import SliceData
-from utils.write_output_files import export_retrieved_fasta
+from utils.write_output_files import export_p3_input_fasta
 
 
 class TestWriteOutputFiles(TestCase):
@@ -167,7 +167,7 @@ class TestWriteOutputFiles(TestCase):
 
     def test_fasta_is_written_flanking_with_correct_header_and_sequence(self):
 
-        result = export_retrieved_fasta(
+        result = export_p3_input_fasta(
             self.slice_data_with_flanking,
             self.temp_dir.name
         )
@@ -195,7 +195,7 @@ class TestWriteOutputFiles(TestCase):
 
     def test_fasta_is_written_with_no_flanking_correct_header_and_sequence(self):
 
-        result = export_retrieved_fasta(
+        result = export_p3_input_fasta(
             self.slice_data_with_no_flanking,
             self.temp_dir.name
         )
@@ -225,7 +225,7 @@ class TestWriteOutputFiles(TestCase):
         self.slice_data_with_flanking.bases = ""
 
         with self.assertRaises(ValueError):
-            export_retrieved_fasta(
+            export_p3_input_fasta(
                 self.slice_data_with_flanking,
                 self.temp_dir.name
             )
@@ -234,7 +234,7 @@ class TestWriteOutputFiles(TestCase):
         self.slice_data_with_flanking.strand = "?"
 
         with self.assertRaises(ValueError):
-            export_retrieved_fasta(
+            export_p3_input_fasta(
                 self.slice_data_with_flanking,
                 self.temp_dir.name
             )
