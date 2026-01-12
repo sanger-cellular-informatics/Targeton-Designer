@@ -35,8 +35,7 @@ class TestDesignerConfigClass(TestCase):
         ("flanking_min_size_negative", -1),
     ])
     @patch.object(DesignerConfig, 'read_config')
-    @patch('config.config_helpers.logger.error')
-    def test_flanking_region_wrong_value_error(self, test_case, flanking_value,mock_logger_error, mock_read_config):
+    def test_flanking_region_wrong_value_error(self, test_case, flanking_value, mock_read_config):
         mock_read_config.return_value = {
             'flanking_region': flanking_value,
             'exclusion_region': 5,
@@ -80,8 +79,7 @@ class TestDesignerConfigClass(TestCase):
         ("exclusion_region_min_size_negative", -1),
     ])
     @patch.object(DesignerConfig, 'read_config')
-    @patch('config.config_helpers.logger.error')
-    def test_exclusion_region_wrong_value_error(self, test_case, exclusion_region_value, mock_logger_error, mock_read_config):
+    def test_exclusion_region_wrong_value_error(self, test_case, exclusion_region_value, mock_read_config):
         mock_read_config.return_value = {
             'flanking_region': 5,
             'exclusion_region': exclusion_region_value,
