@@ -1,3 +1,5 @@
+from config.config_helpers import check_non_negative_integer
+from config.ipcress_params import IpcressParameters
 from utils.file_system import parse_json
 
 import sys
@@ -26,29 +28,18 @@ class DesignerConfig:
         # Check primer region restriction parameters
         self.flanking_region = config['flanking_region'] or 0
         self.exclusion_region = config['exclusion_region'] or 0
-        if not isinstance(self.flanking_region, int) or self.flanking_region < 0:
-            logger.error("flanking_region must be a non-negative integer")
-            sys.exit(1)
+
+        check_non_negative_integer(name="flanking_region", value=self.flanking_region)
         if not self.flanking_region:
             logger.info(("flanking_region set to 0, so primer placement will not be restricted the flanking_region, "
-                        "and exclusion_region will be ignored."))
-        if not isinstance(self.exclusion_region, int) or self.exclusion_region < 0:
-            logger.error("exclusion_region must be a non-negative integer")
-            sys.exit(1)
+                         "and exclusion_region will be ignored."))
+        check_non_negative_integer(name="exclusion_region", value=self.exclusion_region)
 
-        # Check Ipcress output file parameters
-        ipcress_params = config.get("ipcress_parameters") or {}
-        self.ipcress_params_write_file = False
-
-        if ipcress_params.get("write_ipcress_file"):
-            if not isinstance(ipcress_params.get("min_size"), int) or ipcress_params.get("min_size") < 0:
-                logger.error("Designer config error: ipcress_parameters.min_size must be a non-negative integer")
-            if not isinstance(ipcress_params.get("max_size"), int) or ipcress_params.get("max_size") < 0:
-                logger.error("Designer config error: ipcress_parameters.max_size must be a non-negative integer")
-  
-            self.ipcress_params_write_file = ipcress_params["write_ipcress_file"] 
-            self.ipcress_params_min_size = ipcress_params.get("min_size")
-            self.ipcress_params_max_size = ipcress_params.get("max_size")
+        ipcress_block = config.get("ipcress_parameters")
+        if ipcress_block is not None:
+            self.ipcress_params = IpcressParameters(ipcress_block)
+        else:
+            self.ipcress_params = None
 
         self.stringency_vector = config['stringency_vector']
         self.csv_column_order = config['csv_column_order']

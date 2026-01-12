@@ -1,5 +1,6 @@
 from unittest import TestCase
 
+from parameterized import parameterized
 from unittest.mock import patch, call
 
 from config.config import DesignerConfig
@@ -29,11 +30,14 @@ class TestDesignerConfigClass(TestCase):
 
         self.assertEqual(designer_config.csv_column_order, expected)
 
+    @parameterized.expand([
+        ("flanking_string", "STRING"),
+        ("flanking_min_size_negative", -1),
+    ])
     @patch.object(DesignerConfig, 'read_config')
-    @patch('config.config.logger.error')
-    def test_flanking_region_negative_number_error(self, mock_logger_error, mock_read_config):
+    def test_flanking_region_wrong_value_error(self, test_case, flanking_value, mock_read_config):
         mock_read_config.return_value = {
-            'flanking_region': -5,
+            'flanking_region': flanking_value,
             'exclusion_region': 5,
             'stringency_vector': [],
             'csv_column_order': [],
@@ -41,29 +45,14 @@ class TestDesignerConfigClass(TestCase):
             'ranking': {}
         }
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(ValueError) as exc:
             DesignerConfig(args={})
 
-        expected_error_message = "flanking_region must be a non-negative integer"
-        mock_logger_error.assert_called_once_with(expected_error_message)
-
-    @patch.object(DesignerConfig, 'read_config')
-    @patch('config.config.logger.error')
-    def test_flanking_region_non_integer_error(self, mock_logger_error, mock_read_config):
-        mock_read_config.return_value = {
-            'flanking_region': "flanking",
-            'exclusion_region': 5,
-            'stringency_vector': [],
-            'csv_column_order': [],
-            'filters': {},
-            'ranking': {}
-        }
-
-        with self.assertRaises(SystemExit):
-            DesignerConfig(args={})
-
-        expected_error_message = "flanking_region must be a non-negative integer"
-        mock_logger_error.assert_called_once_with(expected_error_message)
+        expected_error_message = (
+            f'Invalid config value for "flanking_region": '
+            f'expected non-negative int, got {flanking_value} ({type(flanking_value).__name__})'
+        )
+        self.assertEqual(str(exc.exception), expected_error_message)
 
     @patch.object(DesignerConfig, 'read_config')
     @patch('config.config.logger.info')
@@ -85,41 +74,29 @@ class TestDesignerConfigClass(TestCase):
         )
         mock_logger_info.assert_called_once_with(expected_info_message)
 
+    @parameterized.expand([
+        ("exclusion_region_string", "STRING"),
+        ("exclusion_region_min_size_negative", -1),
+    ])
     @patch.object(DesignerConfig, 'read_config')
-    @patch('config.config.logger.error')
-    def test_exclusion_region_negative_error(self, mock_logger_error, mock_read_config):
+    def test_exclusion_region_wrong_value_error(self, test_case, exclusion_region_value, mock_read_config):
         mock_read_config.return_value = {
             'flanking_region': 5,
-            'exclusion_region': -5,
+            'exclusion_region': exclusion_region_value,
             'stringency_vector': [],
             'csv_column_order': [],
             'filters': {},
             'ranking': {}
         }
 
-        with self.assertRaises(SystemExit):
+        with self.assertRaises(ValueError) as exc:
             DesignerConfig(args={})
 
-        expected_error_message = "exclusion_region must be a non-negative integer"
-        mock_logger_error.assert_called_once_with(expected_error_message)
-
-    @patch.object(DesignerConfig, 'read_config')
-    @patch('config.config.logger.error')
-    def test_exclusion_region_non_integer_error(self, mock_logger_error, mock_read_config):
-        mock_read_config.return_value = {
-            'flanking_region': 5,
-            'exclusion_region': "exclude",
-            'stringency_vector': [],
-            'csv_column_order': [],
-            'filters': {},
-            'ranking': {}
-        }
-
-        with self.assertRaises(SystemExit):
-            DesignerConfig(args={})
-
-        expected_error_message = "exclusion_region must be a non-negative integer"
-        mock_logger_error.assert_called_once_with(expected_error_message)
+        expected_error_message = (
+            f'Invalid config value for "exclusion_region": '
+            f'expected non-negative int, got {exclusion_region_value} ({type(exclusion_region_value).__name__})'
+        )
+        self.assertEqual(str(exc.exception), expected_error_message)
 
     def test_read_config(self):
         expected = {'flanking_region': 150,
@@ -232,7 +209,7 @@ class TestIpcressOutputDesignerConfig(TestCase):
 
         designer_config = DesignerConfig(args={'conf': self.config_path})
 
-        self.assertEqual(designer_config.ipcress_params_write_file, False)
+        self.assertIsNone(designer_config.ipcress_params, None)
 
     
     @patch.object(DesignerConfig, 'read_config')    
@@ -249,7 +226,7 @@ class TestIpcressOutputDesignerConfig(TestCase):
 
         designer_config = DesignerConfig(args={'conf': self.config_path})
 
-        self.assertEqual(designer_config.ipcress_params_write_file, False)
+        self.assertFalse(designer_config.ipcress_params.write_ipcress_file)
 
 
     @patch.object(DesignerConfig, 'read_config')
@@ -266,8 +243,6 @@ class TestIpcressOutputDesignerConfig(TestCase):
 
         designer_config = DesignerConfig(args={'conf': self.config_path})
 
-        self.assertEqual(designer_config.ipcress_params_write_file, True)
-        self.assertEqual(designer_config.ipcress_params_min_size, 5)
-        self.assertEqual(designer_config.ipcress_params_max_size, 300)
-
-
+        self.assertTrue(designer_config.ipcress_params.write_ipcress_file)
+        self.assertEqual(designer_config.ipcress_params.min_size, 5)
+        self.assertEqual(designer_config.ipcress_params.max_size, 300)

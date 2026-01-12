@@ -28,5 +28,10 @@
                        "pre_targeton_end", 
                        "product_size",
                        "targeton_id",
-                       "pair_uid"]
+                       "pair_uid"],
+  "ipcress_parameters": {
+            "write_ipcress_file": true,
+            "min_size": 5,
+            "max_size": 300
+        }
 }
