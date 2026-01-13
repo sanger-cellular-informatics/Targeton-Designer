@@ -76,7 +76,7 @@ def primer_command(
 
     export_dir = timestamped_dir(config.prefix_output_dir)
     fasta_path = export_p3_input_fasta(slice_data, export_dir)
-    logger.info(f"Primer3 input sequences saved as FASTA: {fasta_path}")
+    logger.info(f"Primer3 input sequence saved as FASTA: {fasta_path}")
 
     primers = Primer3(config.stringency_vector, config.primer3_params).get_primers(slice_data)
 

@@ -176,7 +176,7 @@ def write_primer_design_output(
     return result
 
 def export_p3_input_fasta(slice_data, export_dir: str) -> str:
-    
+
     if not slice_data.bases:
         raise ValueError("Primer3 input sequence is empty")
 
@@ -189,7 +189,7 @@ def export_p3_input_fasta(slice_data, export_dir: str) -> str:
     targeton_id = slice_data.name
     filename = "primer3_input_sequence.fa"
     fasta_path = path.join(export_dir, filename)
-    
+
     extended = 'extended' if slice_data.flanking_region > 0 else ''
 
     header_id = (
