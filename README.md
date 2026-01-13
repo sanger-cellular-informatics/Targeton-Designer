@@ -245,7 +245,7 @@ Primer3 can be run using either a FASTA file or a chromosome region.
 ./designer.sh primer [--fasta SLICE_FASTA] [--dir OUTPUT_FOLDER] [--primer3_params PRIMER_CONFIG_JSON] [--conf DESIGNER_CONFIG_JSON]
 ```
 
-**If `flanking_region` == 0**  
+**If `flanking_region` = 0**  
 The FASTA sequence is treated as the full template sequence.  
 No Ensembl call is made.  
 Primer placement may occur anywhere in the sequence.  
@@ -609,7 +609,7 @@ gunzip Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
 
 ### 3.7 Primer3 Sequence FASTA
 
-For each target, Primer Designer outputs a FASTA file containing the genomic sequence used by Primer3. This take into account the setting for `flanking_region` [Running Primer3](#223-running-primer3).
+For each target, Primer Designer outputs a FASTA file containing the genomic sequence used by Primer3. This takes into account the setting for `flanking_region` [Running Primer3](#223-running-primer3).
 
 File name:
 ```
