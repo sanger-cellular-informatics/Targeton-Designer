@@ -48,7 +48,7 @@ class TestWriteOutputFiles(TestCase):
             flanking_region=150,
             exclusion_region=0
         )
-        
+
         self.slice_data_with_no_flanking = SliceData(
             name="TEST",
             start=100,
@@ -165,7 +165,7 @@ class TestWriteOutputFiles(TestCase):
         self.assertTrue(expected_file_path.exists())
         self.assertEqual(test_data, expected_read_data)
 
-    def test_fasta_is_written_flanking_with_correct_header_and_sequence(self):
+    def test_export_p3_input_fasta_with_flanking(self):
 
         result = export_p3_input_fasta(
             self.slice_data_with_flanking,
@@ -186,14 +186,14 @@ class TestWriteOutputFiles(TestCase):
         self.assertEqual(result, expected_path)
         self.assertTrue(path.exists(expected_path))
 
-        # verify fasta content
+        # verify FASTA content
         records = list(SeqIO.parse(expected_path, 'fasta'))
         self.assertEqual(len(records), 1)
         record = records[0]
         self.assertEqual(record.id, expected_header)
         self.assertEqual(str(record.seq), 'ATCGATCG')
 
-    def test_fasta_is_written_with_no_flanking_correct_header_and_sequence(self):
+    def test_export_p3_input_fasta_without_flanking(self):
 
         result = export_p3_input_fasta(
             self.slice_data_with_no_flanking,
@@ -214,13 +214,13 @@ class TestWriteOutputFiles(TestCase):
         self.assertEqual(result, expected_path)
         self.assertTrue(path.exists(expected_path))
 
-        # verify fasta content
+        # verify FASTA content
         records = list(SeqIO.parse(expected_path, 'fasta'))
         record = records[0]
         self.assertEqual(record.id, expected_header)
         self.assertEqual(str(record.seq), 'ATCGATCG')
 
-    def test_empty_sequence_raises_value_error(self):
+    def test_export_p3_input_fasta_empty_sequence_raises_value_error(self):
 
         self.slice_data_with_flanking.bases = ""
 
@@ -230,7 +230,7 @@ class TestWriteOutputFiles(TestCase):
                 self.temp_dir.name
             )
 
-    def test_invalid_strand_raises_value_error(self):
+    def test_export_p3_input_fasta_invalid_strand_raises_value_error(self):
         self.slice_data_with_flanking.strand = "?"
 
         with self.assertRaises(ValueError):
