@@ -22,7 +22,7 @@ class RankerTest(TestCase):
         self.mocked_ranking_wrong_key = {'product_sizes': True, 'stringency': True}
         self.mocked_ranking_wrong_value = {'product_size': 'True', 'stringency': True}
         self.mocked_ranking_config_all_false = {'product_size': False, 'stringency': False}
-        self.mocked_ranking_config_one_true = {'product_size': True, 'stringency': False}
+        self.mocked_ranking_config_product_size_true_stringency_false = {'product_size': True, 'stringency': False}
 
         # Mock primers and pairs
         self.mocked_primer_forward = DesignedPrimer(
@@ -286,9 +286,9 @@ class RankerTest(TestCase):
             ],
         )
 
-    def test_ranker_when_one_true(self):
+    def test_ranker_when_product_size_true_stringency_false(self):
         # Act
-        result = Ranker(self.mocked_ranking_config_one_true).rank(self.mocked_primer_pairs)
+        result = Ranker(self.mocked_ranking_config_product_size_true_stringency_false).rank(self.mocked_primer_pairs)
 
         # Assert
         _assert_pairs_by_id_stringency_product_size(
