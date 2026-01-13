@@ -609,7 +609,7 @@ gunzip Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
 
 ### 3.7 Primer3 Sequence FASTA
 
-For each target, Primer Designer outputs a FASTA file containing the genomic sequence used by Primer3. This takes into account setting for `flanking_region` [Running Primer3](#223-running-primer3).
+For each target, Primer Designer outputs a FASTA file containing the genomic sequence used by Primer3. This take into account the setting for `flanking_region` [Running Primer3](#223-running-primer3).
 
 File name:
 ```
@@ -633,7 +633,7 @@ Header Fields:
 | Field             | Description                                           |
 | ----------------- | ----------------------------------------------------- |
 | `targeton_id`     | Unique identifier of the target                       |
-| `extended`        | Indicates that the sequence includes flanking regions. Value of the field either be `extended` or empty |
+| `extended`        | Indicates if the sequence includes flanking regions ('extended' if `flanking_region` > 0, otherwise empty) |
 | `reference`       | Reference genome (e.g. GRCh38)                        |
 | `chromosome`      | Chromosome                                 |
 | `flanked_start`   | Genomic start coordinate after flanking               |
