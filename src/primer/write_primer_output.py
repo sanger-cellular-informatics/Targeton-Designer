@@ -37,6 +37,7 @@ def write_primer_output(
     export_dir = existing_dir or timestamped_dir(prefix)
     result = PrimerOutputData(export_dir)
 
+    # DataFrame of primers, each primer on its own row
     primers_df = _get_primers_dataframe(sorted_primer_pairs, primer_type)
 
     if primer_pairs:
@@ -54,6 +55,7 @@ def write_primer_output(
 
         if ipcress_params and ipcress_params.get("write_ipcress_file"):
 
+            # DataFrame of primer pairs, forward and reverse primer on the same row
             primer_pairs_df = _get_primer_pairs_dataframe_for_ipcress(
                 sorted_primer_pairs,  
                 ipcress_params["min_size"], 
@@ -70,11 +72,11 @@ def write_primer_output(
 
 
     if discarded_primer_pairs:
-        discarded_df = _get_discarded_primer_dataframe(discarded_primer_pairs, primer_type)
+        discarded_primers_df = _get_discarded_primer_dataframe(discarded_primer_pairs, primer_type)
         column_order.append('discard_reason')
 
         result.discarded_csv = export_discarded_primers_to_csv(
-                                  discarded_df,
+                                  discarded_primers_df,
                                   export_dir,
                                   column_order
                                   )

@@ -157,7 +157,7 @@ class TestWritePrimerOutputFiles(TestCase):
     def test_export_pairs_for_ipcress_to_csv(self):
         # Arrange
         data = {
-            'id': ['PAIR1', 'PAIR2'],
+            'id': ['TARGETON1_PAIR1_FORWARD', 'TARGETON1_PAIR1_REVERSE'],
             'forward_sequence': ['AAA', 'CCC'],
             'reverse_sequence': ['TTT', 'GGG'],
             'min_size': [5, 5],
@@ -182,7 +182,7 @@ class TestWritePrimerOutputFiles(TestCase):
         with open(result_path, 'r') as file:
             content = file.read()
 
-        expected_content = "PAIR1,AAA,TTT,5,300\nPAIR2,CCC,GGG,5,300\n"
+        expected_content = "TARGETON1_PAIR1_FORWARD,AAA,TTT,5,300\nTARGETON1_PAIR1_REVERSE,CCC,GGG,5,300\n"
 
         self.assertEqual(content, expected_content)
 

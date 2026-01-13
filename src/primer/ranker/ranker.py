@@ -3,6 +3,7 @@ import pandas as pd
 import sys
 
 from primer.ranker.rank_criteria import RankingCriteria, ProductSizeCriteria, StringencyCriteria
+from primer.primer_pair import PrimerPair
 
 from custom_logger.custom_logger import CustomLogger
 
@@ -54,7 +55,7 @@ class Ranker:
             criterion_index: int = _ranking_criteria_names.index(criterion)
             self._ranking_order.append(self._ranking_criteria[criterion_index])
 
-    def rank(self, primer_pairs=list) -> list:
+    def rank(self, primer_pairs=list[PrimerPair]) -> list[PrimerPair]:
         if primer_pairs is None:
             logger.warning("No primer pairs to rank.")
             return []
