@@ -21,6 +21,7 @@ class PrimerOutputData(OutputFilesData):
     csv: str = ''
     discarded_csv: str = ''
     optimal_primer_pairs_csv: str = ''
+    retrieved_fa: str = ''
 
 
 @dataclass
