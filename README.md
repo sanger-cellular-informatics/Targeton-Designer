@@ -634,6 +634,20 @@ wget http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/Homo_sapiens.
 gunzip Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz 
 ``` 
 
+### 3.7 Output file with Ipcress-compatible primer pairs
+CSV file is generated if the write_ipcress_file parameter is set to true in the designer configuration file.
+
+Raw File (`primer_pairs_for_ipcress.csv`)
+```
+LQKA_LibAmp_3,GCCTCCACGACTCCCCAG,CGAGCGCGGAGTTCTGGA,5,300
+LQKA_LibAmp_0,GCCTCCACGACTCCCCAG,GAGCGCGGAGTTCTGGAG,5,300
+LQKA_LibAmp_1,GCCTCCACGACTCCCCAG,GAGCGCGGAGTTCTGGAGTC,5,300
+LQKA_LibAmp_2,GCCTCCACGACTCCCCAG,GAGCGCGGAGTTCTGGAGT,5,300
+LQKA_LibAmp_4,CCTCCACGACTCCCCAGC,CGAGCGCGGAGTTCTGGA,5,300
+```
+
+This file can be used to check for off-target mismatches downstream.
+
 ## 4. For Developers
 
 ### 4.1 Git Hooks
