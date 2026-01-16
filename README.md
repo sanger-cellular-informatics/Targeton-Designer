@@ -32,6 +32,7 @@ The Primer Designer tool includes filtering and ranking of primers.
    4. [Primer3 Output Optimal Primer Pairs CSV file](#34-primer3-output-optimal-primer-pairs-csv-file) 
    5. [Primer3 Output Discarded Primer Pairs CSV file](#35-primer3-output-discarded-primer-pairs-csv-file) 
    6. [Genomic Reference file](#36-genomic-reference-file)
+   7. [Primer3 Sequence FASTA](#37-primer3-sequence-fasta)
 4. [For Developers](#4-for-developers)
    1. [Git Hooks](#41-git-hooks)
    2. [Python debugger](#42-python-debugger)
@@ -247,7 +248,7 @@ Primer3 can be run using either a FASTA file or a chromosome region.
 ./designer.sh primer [--fasta SLICE_FASTA] [--dir OUTPUT_FOLDER] [--primer3_params PRIMER_CONFIG_JSON] [--conf DESIGNER_CONFIG_JSON]
 ```
 
-**If `flanking_region` == 0**  
+**If `flanking_region` = 0**  
 The FASTA sequence is treated as the full template sequence.  
 No Ensembl call is made.  
 Primer placement may occur anywhere in the sequence.  
@@ -634,7 +635,48 @@ wget http://ftp.ensembl.org/pub/release-106/fasta/homo_sapiens/dna/Homo_sapiens.
 gunzip Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz 
 ``` 
 
-### 3.7 Output file with Ipcress-compatible primer pairs
+### 3.7 Primer3 Sequence FASTA
+
+For each target, Primer Designer outputs a FASTA file containing the genomic sequence used by Primer3. This takes into account the setting for `flanking_region` [Running Primer3](#223-running-primer3).
+
+File name:
+```
+primer3_input_sequence.fa
+```
+
+FASTA format:
+The file contains a single FASTA record with the following header specification:
+```
+><targeton_id>:extended:<reference>:<chromosome>:<flanked_start>-<flanked_end>(<strand>):<flanking_length>
+```
+
+When `flanking_region = 0`, the `extended` field becomes empty in the header. For example, with `flanking_region = 0`, the header format is:
+
+```
+><targeton_id>::<reference>:<chromosome>:<flanked_start>-<flanked_end>(<strand>):<flanking_length>
+```
+
+Header Fields:
+
+| Field             | Description                                           |
+| ----------------- | ----------------------------------------------------- |
+| `targeton_id`     | Unique identifier of the target                       |
+| `extended`        | Indicates if the sequence includes flanking regions ('extended' if `flanking_region` > 0, otherwise empty) |
+| `reference`       | Reference genome (e.g. GRCh38)                        |
+| `chromosome`      | Chromosome                                 |
+| `flanked_start`   | Genomic start coordinate after flanking               |
+| `flanked_end`     | Genomic end coordinate after flanking                 |
+| `strand`          | Target strand (`+` or `-`)                            |
+| `flanking_length` | Number of bases added on each side                    |
+
+
+Usage:
+This FASTA output is intended for downstream usage such as:
+- Off-target and specificity analysis (e.g. Ipcress).
+- Manual inspection of genomic context.
+
+
+### 3.8 Output file with Ipcress-compatible primer pairs
 CSV file is generated if the write_ipcress_file parameter is set to true in the designer configuration file.
 
 Raw File (`primer_pairs_for_ipcress.csv`)
@@ -647,6 +689,7 @@ LQKA_LibAmp_4,CCTCCACGACTCCCCAGC,CGAGCGCGGAGTTCTGGA,5,300
 ```
 
 This file can be used to check for off-target mismatches downstream.
+
 
 ## 4. For Developers
 
