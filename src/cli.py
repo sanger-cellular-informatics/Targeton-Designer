@@ -59,13 +59,6 @@ def primer_command(
         args: dict
 ) -> PrimerOutputData:
     PRIMER_TYPE = 'LibAmp'
-
-    # TODO Read parameters from config 
-    IPCRESS_PARAMS = {
-        "write_ipcress_file": True,
-        "min_size": 5,
-        "max_size": 300
-    }
     config = DesignerConfig(args)
 
     # Check input for primer is a FASTA file or a region
@@ -100,7 +93,7 @@ def primer_command(
         primer_type=PRIMER_TYPE,
         column_order=config.csv_column_order,
         existing_dir=export_dir,
-        ipcress_params=IPCRESS_PARAMS
+        ipcress_params=config.ipcress_params
     )
 
     return primer_result

@@ -1,10 +1,11 @@
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 import pandas as pd
 from os import path
 
+from config.ipcress_params import IpcressParameters
 from designer.output_data_classes import PrimerOutputData
 from primer.designed_primer import DesignedPrimer
 from primer.primer_pair import PrimerPair
@@ -32,7 +33,7 @@ def write_primer_output(
     discarded_primer_pairs=[],
     existing_dir='',
     primer_type='LibAmp',
-    ipcress_params=dict,
+    ipcress_params: Optional[IpcressParameters] = None,
 ) -> PrimerOutputData:
     export_dir = existing_dir or timestamped_dir(prefix)
     result = PrimerOutputData(export_dir)
@@ -53,13 +54,13 @@ def write_primer_output(
 
         logger.info(f"Primer files saved: {result.bed}, {result.csv}, {result.optimal_primer_pairs_csv}")
 
-        if ipcress_params and ipcress_params.get("write_ipcress_file"):
+        if ipcress_params and ipcress_params.write_ipcress_file:
 
             # DataFrame of primer pairs, forward and reverse primer on the same row
             primer_pairs_df = _get_primer_pairs_dataframe_for_ipcress(
                 sorted_primer_pairs,  
-                ipcress_params["min_size"], 
-                ipcress_params["max_size"],
+                ipcress_params.min_size,
+                ipcress_params.max_size,
             )
             
             result.primer_pairs_for_ipcress = export_pairs_for_ipcress_to_csv(
