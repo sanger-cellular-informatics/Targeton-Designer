@@ -185,7 +185,7 @@ def _get_primer_pairs_dataframe_for_ipcress(
     primer_pairs_dict = defaultdict(list)
 
     for pair in pairs:
-        primer_pairs_dict['id'].append(_strip_stringency_suffix(pair.id))
+        primer_pairs_dict['id'].append(_normalize_primer_name_to_pair_id(pair.forward.name))
         primer_pairs_dict['forward_sequence'].append(pair.forward.sequence)
         primer_pairs_dict['reverse_sequence'].append(pair.reverse.sequence)
         primer_pairs_dict['min_size'].append(min_size)
@@ -193,9 +193,15 @@ def _get_primer_pairs_dataframe_for_ipcress(
 
     return pd.DataFrame(primer_pairs_dict).round(decimals=3)
 
-def _strip_stringency_suffix(pair_id: str) -> str:
-    head, sep, _ = pair_id.partition("_str")
-    return head if sep else pair_id
+def _normalize_primer_name_to_pair_id(primer_name: str) -> str:
+    match = primer_name.rsplit("_", 1)
+    if len(match) != 2:
+        return primer_name
+
+    head, pair_number = match
+    if head.endswith("F") or head.endswith("R"):
+        head = head[:-1]
+    return f"{head}_{pair_number}"
 
 def _reorder_columns(csv_col_order: List[str],
                      dataframe: pd.DataFrame):

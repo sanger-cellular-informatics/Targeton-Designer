@@ -12,7 +12,7 @@ from collections import defaultdict
 from primer.primer_pair import PrimerPair
 from primer.designed_primer import DesignedPrimer, Interval
 from primer.write_primer_output import _reorder_columns, _add_primer_pair, export_three_optimal_primer_pairs_to_csv, \
-    export_primers_to_csv, export_pairs_for_ipcress_to_csv
+    export_primers_to_csv, export_pairs_for_ipcress_to_csv, _normalize_primer_name_to_pair_id
 
 
 class TestWritePrimerOutputFiles(TestCase):
@@ -231,6 +231,16 @@ class TestWritePrimerOutputFiles(TestCase):
         logs = self.handler.buffer.getvalue().strip()
         
         self.assertEqual(logs, "Less than 3 primer pairs returned by Primer3")   
+
+    def test__normalize_primer_name_to_pair_id(self):
+        self.assertEqual(
+            _normalize_primer_name_to_pair_id("LQKA_LibAmpF_0"),
+            "LQKA_LibAmp_0",
+        )
+        self.assertEqual(
+            _normalize_primer_name_to_pair_id("LQKA_LibAmpR_0"),
+            "LQKA_LibAmp_0",
+        )
 
 
 class TestDataFrameBuild(TestCase):
