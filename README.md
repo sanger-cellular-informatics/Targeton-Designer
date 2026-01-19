@@ -23,7 +23,8 @@ The Primer Designer tool includes filtering and ranking of primers.
        4. [Applying filters from the designer config file](#224-applying-filters-from-the-designer-config-file)
        5. [Applying ranking from the designer config file](#225-applying-ranking-from-the-designer-config-file)
        6. [Specifying column order through the designer config file](#226-specifying-column-order-through-the-designer-config-file)
-       7. [Using the designer config file to set command-line arguments](#227-using-the-designer-config-file-to-set-command-line-arguments)
+       7. [Generating Ipcress-compatible output](#227-generating-ipcress-compatible-output)
+       8. [Using the designer config file to set command-line arguments](#228-using-the-designer-config-file-to-set-command-line-arguments)
 3. [File formats](#3-file-formats)
    1. [Primer3 and Designer FASTA Input File (Slicer FASTA output)](#31-primer3-and-designer-fasta-input-file-slicer-fasta-output) 
    2. [Primer3 Output BED file](#32-primer3-output-bed-file) 
@@ -225,6 +226,8 @@ This file specifies the configuration parameters specific to Primer Designer:
 #225-applying-ranking-from-the-designer-config-file)).
 6. `"csv_column_order"`: The column order for the output CSV files (see [below](
 #226-specifying-column-order-through-the-designer-config-file)).
+7. `"ipcress_parameters"`: Parameters controlling the generation of an Ipcress-compatible primer pairs file for downstream off-target checking.
+
 
 Note: `stringency_vector` corresponds to 'PRIMER_MASK_FAILURE_RATE' in the [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_FAILURE_RATE). This means that a value of 0.1 will apply more stringent settings for the masking algorithm than a value of 1. Please When PRIMER_MASK_TEMPLATE is off,  we recommend setting the `stringency_vector` to a single "dummy" value, e.g., `"stringency_vector": [1]` (as `stringency_vector` is a mandatory field).
 
@@ -365,7 +368,32 @@ Column order can be specified through the user designer config file:
 
 All available columns are indicated in the example above. Note that any columns with names missing in the user designer config file will not be present in the output CSV files.
 
-##### 2.2.7 Using the designer config file to set command-line arguments
+##### 2.2.7 Generating Ipcress-compatible output
+
+Primer Designer can optionally generate an output file compatible with
+[Ipcress](https://manpages.org/ipcress), enabling downstream off-target analysis
+using the generated primer pairs.
+
+The configuration is controlled via the `ipcress_parameters` block:
+```
+{
+  "ipcress_parameters": {
+    "write_ipcress_file": true,
+    "min_size": 5,
+    "max_size": 300
+  }
+}
+```
+Where:
+- `"write_ipcress_file"`: Enables (`true`) or disables (`false`) generation of the Ipcress-compatible output file.
+- `"min_size"`: Minimum allowed PCR product size (passed to Ipcress).
+- `"max_size"`: Maximum allowed PCR product size (passed to Ipcress).
+
+If `write_ipcress_file` is set to `false`, no Ipcress primer file will be generated.
+
+If the `ipcress_parameters` block is missing from a user-defined config file,
+the default settings from `config/default_designer.config.json` will be applied.
+##### 2.2.8 Using the designer config file to set command-line arguments
 
 Command-line arguments (`--dir`, `--fasta`, and `--primer3_params`) can, alternatively, be specified in the user designer config file. 
 Note that, as no command line arguments are specified in `config/default_designer.config.json`, 
@@ -646,6 +674,22 @@ Usage:
 This FASTA output is intended for downstream usage such as:
 - Off-target and specificity analysis (e.g. Ipcress).
 - Manual inspection of genomic context.
+
+
+### 3.8 Output file with Ipcress-compatible primer pairs
+CSV file is generated if the write_ipcress_file parameter is set to true in the designer configuration file.
+
+Raw File (`primer_pairs_for_ipcress.csv`)
+```
+LQKA_LibAmp_3,GCCTCCACGACTCCCCAG,CGAGCGCGGAGTTCTGGA,5,300
+LQKA_LibAmp_0,GCCTCCACGACTCCCCAG,GAGCGCGGAGTTCTGGAG,5,300
+LQKA_LibAmp_1,GCCTCCACGACTCCCCAG,GAGCGCGGAGTTCTGGAGTC,5,300
+LQKA_LibAmp_2,GCCTCCACGACTCCCCAG,GAGCGCGGAGTTCTGGAGT,5,300
+LQKA_LibAmp_4,CCTCCACGACTCCCCAGC,CGAGCGCGGAGTTCTGGA,5,300
+```
+
+This file can be used to check for off-target mismatches downstream.
+
 
 ## 4. For Developers
 

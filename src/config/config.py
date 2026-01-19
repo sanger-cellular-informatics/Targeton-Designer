@@ -1,3 +1,5 @@
+from config.config_helpers import check_non_negative_integer
+from config.ipcress_params import IpcressParameters
 from utils.file_system import parse_json
 
 import sys
@@ -9,9 +11,9 @@ logger = CustomLogger(__name__)
 
 class DesignerConfig:
     def __init__(self, args: dict):
-        default_config_file = 'config/default_designer.config.json'
+        default_config_path = 'config/default_designer.config.json'
 
-        config = DesignerConfig.read_config(default_config_file, args.get('conf', None))
+        config = DesignerConfig.read_config(default_config_path, args.get('conf', None))
 
         # Check if filters exist in configuration.
         if not config.get("filters"):
@@ -26,15 +28,18 @@ class DesignerConfig:
         # Check primer region restriction parameters
         self.flanking_region = config['flanking_region'] or 0
         self.exclusion_region = config['exclusion_region'] or 0
-        if not isinstance(self.flanking_region, int) or self.flanking_region < 0:
-            logger.error("flanking_region must be a non-negative integer")
-            sys.exit(1)
+
+        check_non_negative_integer(name="flanking_region", value=self.flanking_region)
         if not self.flanking_region:
             logger.info(("flanking_region set to 0, so primer placement will not be restricted the flanking_region, "
-                        "and exclusion_region will be ignored."))
-        if not isinstance(self.exclusion_region, int) or self.exclusion_region < 0:
-            logger.error("exclusion_region must be a non-negative integer")
-            sys.exit(1)
+                         "and exclusion_region will be ignored."))
+        check_non_negative_integer(name="exclusion_region", value=self.exclusion_region)
+
+        ipcress_block = config.get("ipcress_parameters")
+        if ipcress_block is not None:
+            self.ipcress_params = IpcressParameters(ipcress_block)
+        else:
+            self.ipcress_params = None
 
         self.stringency_vector = config['stringency_vector']
         self.csv_column_order = config['csv_column_order']
@@ -50,16 +55,16 @@ class DesignerConfig:
 
     @staticmethod
     def read_config(
-            default_config_file: str,
-            config_file: str = None,
+            default_config_path: str,
+            config_path: str = None,
     ) -> dict:
-        default_config = parse_json(default_config_file)
+        default_config = parse_json(default_config_path)
         keys = default_config.keys()
 
-        if config_file is None or config_file == default_config_file:
+        if config_path is None or config_path == default_config_path:
             return default_config
         else:
-            config = parse_json(config_file)
+            config = parse_json(config_path)
 
             for field in keys:
                 config.setdefault(field, default_config[field])
