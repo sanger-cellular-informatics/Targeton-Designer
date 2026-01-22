@@ -118,7 +118,13 @@ def export_three_optimal_primer_pairs_to_csv(df: pd.DataFrame, export_dir: str, 
 def export_pairs_for_ipcress_to_csv(df: pd.DataFrame, export_dir: str, column_order: List[str]) -> str:
     primers_csv_output_path = path.join(export_dir, PRIMER_PAIRS_FOR_IPCRESS_CSV)
 
-    write_dataframe_to_csv(df, column_order, primers_csv_output_path, include_header=False)
+    write_dataframe_to_csv(
+        df,
+        column_order,
+        primers_csv_output_path,
+        include_header=False,
+        sep="\t",
+    )
 
     return primers_csv_output_path
 
@@ -127,9 +133,10 @@ def write_dataframe_to_csv(
     cols: List[str],
     output_path: str,
     include_header: bool = True,
+    sep: str = ",",
 ) -> None:
     df_ordered = _reorder_columns(cols, df)
-    df_ordered.to_csv(output_path, index=False, header=include_header)
+    df_ordered.to_csv(output_path, index=False, header=include_header, sep=sep)
     return None
 
 def _get_primers_dataframe(pairs: List[PrimerPair], primer_type: str) -> pd.DataFrame:
