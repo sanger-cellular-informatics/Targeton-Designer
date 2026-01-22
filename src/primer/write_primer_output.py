@@ -22,7 +22,7 @@ IPCRESS_COLUMN_ORDER = ["id", "forward_sequence", "reverse_sequence", "min_size"
 PRIMER3_OUTPUT_CSV = 'p3_output.csv'
 PRIMER3_DISCARDED_OUTPUT_CSV = 'discarded_pairs.csv'
 OPTIMAL_PRIMERS_CSV = 'optimal_primer_pairs.csv'
-PRIMER_PAIRS_FOR_IPCRESS_CSV = 'primer_pairs_for_ipcress.csv'
+PRIMER_PAIRS_FOR_IPCRESS_TSV = 'primer_pairs_for_ipcress.tsv'
 
 
 def write_primer_output(
@@ -63,7 +63,7 @@ def write_primer_output(
                 ipcress_params.max_size,
             )
             
-            result.primer_pairs_for_ipcress = export_pairs_for_ipcress_to_csv(
+            result.primer_pairs_for_ipcress = export_pairs_for_ipcress_to_tsv(
                 primer_pairs_df, 
                 export_dir, 
                 IPCRESS_COLUMN_ORDER
@@ -115,8 +115,8 @@ def export_three_optimal_primer_pairs_to_csv(df: pd.DataFrame, export_dir: str, 
 
     return primers_csv_output_path
 
-def export_pairs_for_ipcress_to_csv(df: pd.DataFrame, export_dir: str, column_order: List[str]) -> str:
-    primers_csv_output_path = path.join(export_dir, PRIMER_PAIRS_FOR_IPCRESS_CSV)
+def export_pairs_for_ipcress_to_tsv(df: pd.DataFrame, export_dir: str, column_order: List[str]) -> str:
+    primers_csv_output_path = path.join(export_dir, PRIMER_PAIRS_FOR_IPCRESS_TSV)
 
     write_dataframe_to_csv(
         df,
