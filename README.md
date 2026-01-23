@@ -679,13 +679,12 @@ This FASTA output is intended for downstream usage such as:
 ### 3.8 Output file with Ipcress-compatible primer pairs
 CSV file is generated if the write_ipcress_file parameter is set to true in the designer configuration file.
 
-Raw File (`primer_pairs_for_ipcress.csv`)
+Raw File (`primer_pairs_for_ipcress.tsv`)
 ```
-LQKA_LibAmp_3,GCCTCCACGACTCCCCAG,CGAGCGCGGAGTTCTGGA,5,300
-LQKA_LibAmp_0,GCCTCCACGACTCCCCAG,GAGCGCGGAGTTCTGGAG,5,300
-LQKA_LibAmp_1,GCCTCCACGACTCCCCAG,GAGCGCGGAGTTCTGGAGTC,5,300
-LQKA_LibAmp_2,GCCTCCACGACTCCCCAG,GAGCGCGGAGTTCTGGAGT,5,300
-LQKA_LibAmp_4,CCTCCACGACTCCCCAGC,CGAGCGCGGAGTTCTGGA,5,300
+COVQ_LibAmp_4	GGGAACTGGGAGAGTGGACT	TCTCTTGAGGACCTCTGGGG	5	300
+COVQ_LibAmp_8	GGAACTGGGAGAGTGGACTG	TCTCTTGAGGACCTCTGGGG	5	300
+COVQ_LibAmp_0	GAACTGGGAGAGTGGACTGC	TCTCTTGAGGACCTCTGGGG	5	300
+COVQ_LibAmp_3	AACTGGGAGAGTGGACTGCT	TCTCTTGAGGACCTCTGGGG	5	300
 ```
 
 This file can be used to check for off-target mismatches downstream.

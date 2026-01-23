@@ -12,7 +12,7 @@ from collections import defaultdict
 from primer.primer_pair import PrimerPair
 from primer.designed_primer import DesignedPrimer, Interval
 from primer.write_primer_output import _reorder_columns, _add_primer_pair, export_three_optimal_primer_pairs_to_csv, \
-    export_primers_to_csv, export_pairs_for_ipcress_to_csv, _normalize_primer_name_to_pair_id
+    export_primers_to_csv, export_pairs_for_ipcress_to_tsv, _normalize_primer_name_to_pair_id
 
 
 class TestWritePrimerOutputFiles(TestCase):
@@ -154,10 +154,10 @@ class TestWritePrimerOutputFiles(TestCase):
 
         self.assertEqual(content, expected_content)
 
-    def test_export_pairs_for_ipcress_to_csv(self):
+    def test_export_pairs_for_ipcress_to_tsv(self):
         # Arrange
         data = {
-            'id': ['TARGETON1_PAIR1_FORWARD', 'TARGETON1_PAIR1_REVERSE'],
+            'id': ['TARGETON1_PAIR1', 'TARGETON1_PAIR2'],
             'forward_sequence': ['AAA', 'CCC'],
             'reverse_sequence': ['TTT', 'GGG'],
             'min_size': [5, 5],
@@ -169,20 +169,20 @@ class TestWritePrimerOutputFiles(TestCase):
         self.fs.create_dir(export_dir)
 
         # Act
-        result_path = export_pairs_for_ipcress_to_csv(
+        result_path = export_pairs_for_ipcress_to_tsv(
             df,
             export_dir,
             column_order=['id', 'forward_sequence', 'reverse_sequence', 'min_size', 'max_size'],
         )
 
         # Assert
-        expected_path = path.join(export_dir, 'primer_pairs_for_ipcress.csv')
+        expected_path = path.join(export_dir, 'primer_pairs_for_ipcress.tsv')
         self.assertEqual(result_path, expected_path)
 
         with open(result_path, 'r') as file:
             content = file.read()
 
-        expected_content = "TARGETON1_PAIR1_FORWARD,AAA,TTT,5,300\nTARGETON1_PAIR1_REVERSE,CCC,GGG,5,300\n"
+        expected_content = "TARGETON1_PAIR1\tAAA\tTTT\t5\t300\nTARGETON1_PAIR2\tCCC\tGGG\t5\t300\n"
 
         self.assertEqual(content, expected_content)
 
