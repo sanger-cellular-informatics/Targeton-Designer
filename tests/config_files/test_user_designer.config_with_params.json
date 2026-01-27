@@ -1,4 +1,6 @@
 {
+  "flanking_region": 150,
+  "exclusion_region": 5,
   "stringency_vector": [1],
   "csv_column_order": [],
   "filters": {},
