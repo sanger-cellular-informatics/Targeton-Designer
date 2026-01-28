@@ -20,12 +20,12 @@ class DesignerConfig:
     def __init__(self, args: dict):
 
 
-        d_conf = args.get('conf')
+        designer_config_path = args.get('conf')
 
         logger.info(f"Base directory for configuration: {BASE_DIR}")
-        logger.info(f"Using configuration file: {d_conf or DEFAULT_CONFIG_PATH}")
+        logger.info(f"Using configuration file: {designer_config_path or DEFAULT_CONFIG_PATH}")
 
-        config = DesignerConfig.read_config(DEFAULT_CONFIG_PATH, d_conf)
+        config = DesignerConfig.read_config(DEFAULT_CONFIG_PATH, designer_config_path)
 
         # Check if filters exist in configuration.
         if not config.get("filters"):
