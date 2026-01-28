@@ -165,7 +165,7 @@ class TestDesignerConfigClass(TestCase):
         mock_parse_json.assert_any_call("PRIMER3_PARAMS_FROM_ARGS")
 
     @patch('config.config.parse_json')
-    def test_get_params_from_config_file_when_no_args(self, mock_parse_json):
+    def test_get_params_uses_default_primer3_when_no_args(self, mock_parse_json):
         # Arrange
         primer3_params = {"key": "second_value"}
 
@@ -185,10 +185,9 @@ class TestDesignerConfigClass(TestCase):
         # Act
         config = DesignerConfig(args)
 
-        # Assert
-        json_config_expected = parse_json(self.config_with_params_path)
-        self.assertEqual(config.prefix_output_dir, json_config_expected["dir"])
-        self.assertEqual(config.fasta, json_config_expected["fasta"])
+        # Assert - dir and fasta come from config file, primer3_params uses default
+        self.assertEqual(config.prefix_output_dir, "OUTPUT_DIR_FROM_CONFIG_FILE")
+        self.assertEqual(config.fasta, "FASTA_DIR_FROM_CONFIG_FILE")
         self.assertEqual(config.primer3_params, primer3_params)
 
 
