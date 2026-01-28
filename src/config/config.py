@@ -20,15 +20,12 @@ class DesignerConfig:
     def __init__(self, args: dict):
 
 
-        if not args.get('conf'):
-            d_conf = DEFAULT_CONFIG_PATH
-        else:
-            d_conf = args.get('conf')
+        d_conf = args.get('conf')
 
         logger.info(f"Base directory for configuration: {BASE_DIR}")
-        logger.info(f"Using configuration file: {d_conf}")
+        logger.info(f"Using configuration file: {d_conf or DEFAULT_CONFIG_PATH}")
 
-        config = DesignerConfig.read_config(d_conf)
+        config = DesignerConfig.read_config(DEFAULT_CONFIG_PATH, d_conf)
 
         # Check if filters exist in configuration.
         if not config.get("filters"):
@@ -65,10 +62,8 @@ class DesignerConfig:
         self.fasta = args.get('fasta', None) or config.get('fasta', None)
 
         # Use provided primer3_params path from args, otherwise use default primer3 config path
-        if not args.get('primer3_params'):
-            primer3_params_path = DEFAULT_PRIMER3_CONFIG_PATH
-        else:
-            primer3_params_path = args.get('primer3_params')
+        primer3_params_path = (args.get('primer3_params', None) or config.get('primer3_params', None)
+                               or DEFAULT_PRIMER3_CONFIG_PATH)
 
         logger.info(f"Using primer3 parameters file: {primer3_params_path}")
 
