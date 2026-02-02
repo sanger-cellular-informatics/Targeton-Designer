@@ -31,7 +31,7 @@
                        "pair_uid"],
   "ipcress_parameters": {
             "write_ipcress_file": true,
-            "min_size": 5,
-            "max_size": 300
+            "min_size": 36,
+            "max_size": 1000
         }
 }
