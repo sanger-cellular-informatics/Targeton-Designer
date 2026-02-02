@@ -1,9 +1,10 @@
 {
+  "flanking_region": 150,
+  "exclusion_region": 5,
   "stringency_vector": [1],
   "csv_column_order": [],
   "filters": {},
   "ranking": [],
   "dir": "OUTPUT_DIR_FROM_CONFIG_FILE",
-  "fasta": "FASTA_DIR_FROM_CONFIG_FILE",
-  "primer3_params": "PRIMER3_PARAMS_FROM_CONFIG_FILE"
+  "fasta": "FASTA_DIR_FROM_CONFIG_FILE"
 }

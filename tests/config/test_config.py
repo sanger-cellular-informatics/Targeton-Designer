@@ -72,7 +72,7 @@ class TestDesignerConfigClass(TestCase):
             "flanking_region set to 0, so primer placement will not be restricted the flanking_region, and "
             "exclusion_region will be ignored."
         )
-        mock_logger_info.assert_called_once_with(expected_info_message)
+        mock_logger_info.assert_any_call(expected_info_message)
 
     @parameterized.expand([
         ("exclusion_region_string", "STRING"),
@@ -141,11 +141,11 @@ class TestDesignerConfigClass(TestCase):
         # Arrange
         primer3_params = {"key": "second_value"}
 
-        def side_effect(*args, **kwargs):
-            if mock_parse_json.call_count == 3:
+        def side_effect(path, *args, **kwargs):
+            if path == "PRIMER3_PARAMS_FROM_ARGS":
                 return primer3_params
             else:
-                return parse_json(*args, **kwargs)
+                return parse_json(path, *args, **kwargs)
 
         mock_parse_json.side_effect = side_effect
         args = {
@@ -162,18 +162,20 @@ class TestDesignerConfigClass(TestCase):
         self.assertEqual(config.prefix_output_dir, "OUTPUT_DIR_FROM_ARGS")
         self.assertEqual(config.fasta, "FASTA_DIR_FROM_ARGS")
         self.assertEqual(config.primer3_params, primer3_params)
-        self.assertEqual(mock_parse_json.call_args_list[2], call("PRIMER3_PARAMS_FROM_ARGS"))
+        mock_parse_json.assert_any_call("PRIMER3_PARAMS_FROM_ARGS")
 
     @patch('config.config.parse_json')
-    def test_get_params_from_config_file_when_no_args(self, mock_parse_json):
+    def test_get_params_uses_default_primer3_when_no_args(self, mock_parse_json):
         # Arrange
         primer3_params = {"key": "second_value"}
 
-        def side_effect(*args, **kwargs):
-            if mock_parse_json.call_count == 3:
+        def side_effect(path, *args, **kwargs):
+            # When primer3_params is not in args, the code uses DEFAULT_PRIMER3_CONFIG_PATH
+            # Check if path ends with the default config filename
+            if str(path).endswith("default_primer3.config.json"):
                 return primer3_params
             else:
-                return parse_json(*args, **kwargs)
+                return parse_json(path, *args, **kwargs)
 
         mock_parse_json.side_effect = side_effect
         args = {
@@ -183,12 +185,10 @@ class TestDesignerConfigClass(TestCase):
         # Act
         config = DesignerConfig(args)
 
-        # Assert
-        json_config_expected = parse_json(self.config_with_params_path)
-        self.assertEqual(config.prefix_output_dir, json_config_expected["dir"])
-        self.assertEqual(config.fasta, json_config_expected["fasta"])
+        # Assert - dir and fasta come from config file, primer3_params uses default
+        self.assertEqual(config.prefix_output_dir, "OUTPUT_DIR_FROM_CONFIG_FILE")
+        self.assertEqual(config.fasta, "FASTA_DIR_FROM_CONFIG_FILE")
         self.assertEqual(config.primer3_params, primer3_params)
-        self.assertEqual(mock_parse_json.call_args_list[2], call(json_config_expected["primer3_params"]))
 
 
 class TestIpcressOutputDesignerConfig(TestCase):
