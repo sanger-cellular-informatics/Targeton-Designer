@@ -84,7 +84,7 @@ class TestPrimerPair(TestCase):
         uid = 'bc09fcac-07c0-11ef-b244-fa163e9abfe1'
 
         expected = PrimerPair(
-            pair_id="slice_name_0_str0_1",
+            pair_id="slice_name_LibAmp_0_str0_1",
             chromosome="",
             pre_targeton_start=100,
             pre_targeton_end=200,

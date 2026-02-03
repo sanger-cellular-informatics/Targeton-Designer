@@ -9,7 +9,8 @@ from primer.slice_data import SliceData
 
 
 class PrimerPair:
-    def __init__(self, pair_id: str, chromosome: str,
+    def __init__(self, pair_id: str, 
+                       chromosome: str,
                        pre_targeton_start: int,
                        pre_targeton_end: int,
                        product_size: int,
@@ -213,7 +214,7 @@ def build_primer_pairs(
             stringency_string = "_str" + str(stringency).replace(".", "_")
 
             primer_name_with_stringency = primer_name + stringency_string
-            primer_pair_id = slice_data.name + "_" + primer_details['pair'] + stringency_string
+            primer_pair_id = slice_data.name + "_LibAmp_" + primer_details['pair'] + stringency_string
 
             primer_pair_product_size = design['PRIMER_PAIR_' + primer_details['pair'] + '_PRODUCT_SIZE']
 
