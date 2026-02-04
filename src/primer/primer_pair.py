@@ -211,7 +211,7 @@ def build_primer_pairs(
             primer_name = slice_data.name + "_" + libamp_name + "_" + \
                           primer_details['pair']
 
-            stringency_string = "_str" + str(stringency).replace(".", "_")
+            stringency_string = "_str" + str(stringency).replace(".", "")
 
             primer_name_with_stringency = primer_name + stringency_string
             primer_pair_id = slice_data.name + "_LibAmp_" + primer_details['pair'] + stringency_string
