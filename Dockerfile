@@ -22,10 +22,11 @@ WORKDIR /targeton-designer
 
 COPY --chown=$USER_NAME:$GROUP_NAME . /targeton-designer
 
-RUN pip install --upgrade pip setuptools wheel
-RUN pip install --no-cache-dir keeper-secrets-manager-cli
-RUN pip install s3cmd
-RUN pip install -r requirements.txt
+RUN pip install --upgrade pip \
+ && pip install "setuptools<60" wheel \
+ && pip install --no-cache-dir keeper-secrets-manager-cli \
+ && pip install s3cmd \
+ && pip install --no-build-isolation -r requirements.txt
 
 USER $USER_NAME
 ENV HOME=/home/$USER_NAME
