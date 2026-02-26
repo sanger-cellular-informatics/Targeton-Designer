@@ -22,7 +22,8 @@ WORKDIR /targeton-designer
 
 COPY --chown=$USER_NAME:$GROUP_NAME . /targeton-designer
 
-RUN pip install --upgrade pip setuptools wheel \
+RUN pip install --upgrade pip \
+ && pip install "setuptools<60" wheel \
  && pip install --no-cache-dir keeper-secrets-manager-cli \
  && pip install s3cmd \
  && pip install --no-build-isolation -r requirements.txt
