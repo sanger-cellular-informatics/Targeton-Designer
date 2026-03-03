@@ -56,12 +56,22 @@ test:
 docker-release:
   extends: .docker-dind
   stage: deploy
+  before_script:
+    - apk add --update bash git curl
   script:
+    - git fetch origin main
+    - |
+      if ! git branch -r --contains $CI_COMMIT_SHA | grep origin/main; then
+      echo "Tag commit is not in main branch"
+      exit 1
+      fi
     - echo "Building release image for tag $CI_COMMIT_TAG"
     - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG .
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
   rules:
     - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/'
+      when: on_success
+    - when: never
 
 .docker-dind:
   image: docker:23.0.6
