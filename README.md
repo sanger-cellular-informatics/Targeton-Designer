@@ -678,7 +678,7 @@ This FASTA output is intended for downstream usage such as:
 
 
 ### 3.8 Output file with Ipcress-compatible primer pairs
-CSV file is generated if the write_ipcress_file parameter is set to true in the designer configuration file.
+TSV file is generated if the write_ipcress_file parameter is set to true in the designer configuration file.
 
 Raw File (`primer_pairs_for_ipcress.tsv`)
 ```
