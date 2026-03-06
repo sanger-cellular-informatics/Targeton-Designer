@@ -1,23 +1,11 @@
 stages:
   - .pre
   - test
+  - deploy
 
 docker-build:
-  # Use the official docker image.
-  image: docker:23.0.6
+  extends: .docker-dind
   stage: .pre
-  tags:
-    - autoscale
-  services:
-    - name: docker:23.0.6-dind
-      alias: thedockerhost
-  variables:
-    DOCKER_HOST: tcp://thedockerhost:2375/
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: ""
-    GIT_SUBMODULE_STRATEGY: recursive
-  before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   # Default branch leaves tag empty (= latest tag)
   # All other branches are tagged with the escaped branch name (commit ref slug)
   script:
@@ -64,3 +52,42 @@ test:
     - python -m unittest discover --start-directory ./tests --top-level-directory .
   dependencies:
     - docker-build
+
+docker-release:
+  extends: .docker-dind
+  stage: deploy
+  before_script:
+    - apk add --update bash git curl
+  script:
+    - git fetch origin main
+    - |
+      if ! git branch -r --contains $CI_COMMIT_SHA | grep origin/main; then
+      echo "Tag commit is not in main branch"
+      exit 1
+      fi
+    - echo "Building release image for tag $CI_COMMIT_TAG"
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
+  rules:
+    - !reference [.release_on_version_tag, rules]
+
+.docker-dind:
+  image: docker:23.0.6
+  tags:
+    - autoscale
+  services:
+    - name: docker:23.0.6-dind
+      alias: thedockerhost
+  variables:
+    DOCKER_HOST: tcp://thedockerhost:2375/
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+    GIT_SUBMODULE_STRATEGY: recursive
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+
+.release_on_version_tag:
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/'
+      when: on_success
+    - when: never    

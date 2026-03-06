@@ -36,6 +36,7 @@ The Primer Designer tool includes filtering and ranking of primers.
 4. [For Developers](#4-for-developers)
    1. [Git Hooks](#41-git-hooks)
    2. [Python debugger](#42-python-debugger)
+   3. [Release process](#43-release-process)
 5. [Tools and commands no longer in use](#5-tools-and-commands-no-longer-in-use)
    1. [Designer Workflow (Primer3)](#51-designer-workflow-primer3)
    2. [Primer Scoring Tool](#52-primer-scoring-tool)
@@ -677,7 +678,7 @@ This FASTA output is intended for downstream usage such as:
 
 
 ### 3.8 Output file with Ipcress-compatible primer pairs
-CSV file is generated if the write_ipcress_file parameter is set to true in the designer configuration file.
+TSV file is generated if the write_ipcress_file parameter is set to true in the designer configuration file.
 
 Raw File (`primer_pairs_for_ipcress.tsv`)
 ```
@@ -719,6 +720,33 @@ This allows src and submodules inside src to be found.
 
 To debug with vscode, make sure the cwd in the debugger settings are pointed at primer-designer.
 Additionally, make sure the interpreter is pointed at the correct virtual environment (venv/bin/python).
+
+### 4.3 Release process
+
+To create a new release of Primer Designer, follow these steps:
+
+1. **Create a Git tag** in **semantic version format** (e.g., `v0.3.0`) **on a commit from the `main` branch**.  
+   > Tags must always be created from `main` to ensure a stable release.
+
+2. **Push the tag** to the repository:
+
+```
+git tag v0.3.0
+git push origin v0.3.0
+```
+
+3. **GitLab CI pipeline** will be triggered automatically for the tag:
+
+- The pipeline builds a Docker image from the tagged commit.  
+- The image is pushed to the GitLab Container Registry using the **same tag**.
+
+4. **Pull the released image** for use in tdflow or other pipelines:
+
+```
+docker pull registry.gitlab.internal.sanger.ac.uk/sci/targeton-designer:v0.3.0
+```
+
+> This process ensures that the released image corresponds exactly to a stable commit on `main` and can be reliably used in production workflows.
 
 ## 5. Tools and commands no longer in use
 
