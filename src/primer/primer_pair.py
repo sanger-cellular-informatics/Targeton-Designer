@@ -3,7 +3,7 @@ from collections import defaultdict
 import re
 import uuid
 
-from primer.designed_primer import map_to_designed_primer
+from primer.designed_primer import map_to_designed_primer, DesignedPrimer, Interval
 from utils.get_data.hap1 import contain_variant
 from primer.slice_data import SliceData
 
@@ -249,6 +249,82 @@ def build_primer_pairs(
                 pair.reverse_primer_data = primer
 
     primer_pairs = _map_primers_into_designed_primers_objects(primer_pairs)
+    return primer_pairs
+
+def build_primer_pairs2(
+        design,
+        slice_data: SliceData,
+        stringency: float,
+) -> List[PrimerPair]:
+    primer_pairs = []
+
+    primer_pairs_dict_list = design['PRIMER_PAIR']
+    primer_left_dict_list = design['PRIMER_LEFT']
+    primer_right_dict_list = design['PRIMER_RIGHT']
+
+    for index,primer_pair2 in enumerate(primer_pairs_dict_list):
+        pp = PrimerPair(
+            pair_id= slice_data.name + "_LibAmp_" + str(index) + "_str" + str(stringency),
+            chromosome=slice_data.chromosome,
+            pre_targeton_start=slice_data.start,
+            pre_targeton_end=slice_data.end,
+            product_size=primer_pair2["PRODUCT_SIZE"],
+            stringency=stringency,
+            targeton_id=slice_data.targeton_id,
+            uid = str(uuid.uuid1())
+        )
+
+        lefty_dict = primer_left_dict_list[index]
+
+        start_left, end_left = calculate_primer_coords("left",lefty_dict["COORDS"],slice_data.start,slice_data.end,slice_data.strand)
+        lefty = DesignedPrimer(
+            name=f"{slice_data.name}_{name_primers('left', slice_data.strand)}_{index}",
+            penalty=lefty_dict["PENALTY"],
+            pair_id=pp.id,
+            sequence=lefty_dict["SEQUENCE"],
+            coords=Interval(start=lefty_dict["COORDS"][0], end=lefty_dict["COORDS"][1]),
+            primer_start=start_left,
+            primer_end=end_left,
+            strand=determine_primer_strands("left", slice_data.strand),
+            tm=lefty_dict["TM"],
+            gc_percent=lefty_dict["GC_PERCENT"],
+            self_any_th=lefty_dict["SELF_ANY_TH"],
+            self_end_th=lefty_dict["SELF_END_TH"],
+            hairpin_th=lefty_dict["HAIRPIN_TH"],
+            end_stability=lefty_dict["END_STABILITY"]
+
+        )
+        righty_dict = primer_right_dict_list[index]
+
+        start_right, end_right = calculate_primer_coords("right",righty_dict["COORDS"],slice_data.start,slice_data.end,slice_data.strand)
+
+        righty = DesignedPrimer(
+            name=f"{slice_data.name}_{name_primers('right', slice_data.strand)}_{index}",
+            penalty=righty_dict["PENALTY"],
+            pair_id=pp.id,
+            sequence=righty_dict["SEQUENCE"],
+            coords=Interval(start=righty_dict["COORDS"][0], end=righty_dict["COORDS"][1]),
+            primer_start=start_right,
+            primer_end=end_right,
+            strand=determine_primer_strands("right", slice_data.strand),
+            tm=righty_dict["TM"],
+            gc_percent=righty_dict["GC_PERCENT"],
+            self_any_th=righty_dict["SELF_ANY_TH"],
+            self_end_th=righty_dict["SELF_END_TH"],
+            hairpin_th=righty_dict["HAIRPIN_TH"],
+            end_stability=righty_dict["END_STABILITY"]
+        )
+
+
+        if "LibAmpF" in lefty.name and "LibAmpR" in righty.name:
+            pp.forward = lefty
+            pp.reverse = righty
+        else:
+            pp.forward = righty
+            pp.reverse = lefty
+
+        primer_pairs.append(pp)
+
     return primer_pairs
 
 
