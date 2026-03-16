@@ -47,7 +47,23 @@ class TestPrimerPair(TestCase):
         self.assertEqual(False, True)
 
     def test_build_primer_pairs_no_primer_pairs(self):
-        self.assertEqual(False, True)
+        designs = {
+            'PRIMER_INTERNAL': [],
+            'PRIMER_INTERNAL_NUM_RETURNED': 0,
+            'PRIMER_LEFT': [],
+            'PRIMER_LEFT_EXPLAIN': 'considered 8528, not in any ok left region 8528, ok 0',
+            'PRIMER_LEFT_NUM_RETURNED': 0,
+            'PRIMER_PAIR': [],
+            'PRIMER_PAIR_EXPLAIN': 'considered 0, ok 0',
+            'PRIMER_PAIR_NUM_RETURNED': 0,
+            'PRIMER_RIGHT': [],
+            'PRIMER_RIGHT_EXPLAIN': 'considered 8528, not in any ok right region 8528, ok 0',
+            'PRIMER_RIGHT_NUM_RETURNED': 0
+        }
+
+        result = build_primer_pairs(design=designs, slice_data=Mock(), stringency=0.5)
+
+        self.assertEqual(result, [])
 
 
 class TestCalculatePrimerCoords(unittest.TestCase):
