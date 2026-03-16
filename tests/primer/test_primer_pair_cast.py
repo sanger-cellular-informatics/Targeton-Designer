@@ -5,7 +5,8 @@ from parameterized import parameterized
 from unittest.mock import patch, Mock
 
 from primer.designed_primer import Interval, DesignedPrimer
-from primer.primer_pair import build_primer_pairs, PrimerPair
+from primer.primer_pair import PrimerPair
+from primer.build_primer_pairs import build_primer_pairs
 from primer.slice_data import SliceData
 
 

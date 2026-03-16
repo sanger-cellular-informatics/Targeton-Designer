@@ -6,7 +6,8 @@ import os
 
 from primer.slice_data import SliceData
 from primer.primer3_prepare_config import prepare_p3_config
-from primer.primer_pair import PrimerPair, build_primer_pairs
+from primer.primer_pair import PrimerPair
+from primer.build_primer_pairs import build_primer_pairs
 from primer.primer3_handle_errors import format_no_primer_pairs_message, handle_primer3_errors
 
 from custom_logger.custom_logger import CustomLogger

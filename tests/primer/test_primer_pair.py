@@ -6,11 +6,7 @@ from unittest.mock import patch, Mock
 
 from tests.test_data.primer3_output_data import primer3_output_data
 from primer.slice_data import SliceData
-from primer.primer_pair import \
-    PrimerPair, \
-    build_primer_pairs, \
-    name_primers, \
-    calculate_primer_coords
+from primer.build_primer_pairs import name_primers, calculate_primer_coords, build_primer_pairs
 
 
 class TestPrimerPairNamePrimers(TestCase):
