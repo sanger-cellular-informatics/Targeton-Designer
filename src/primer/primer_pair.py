@@ -18,8 +18,6 @@ class PrimerPair:
         self.product_size = product_size
         self.stringency = stringency
         self.targeton_id = targeton_id
-        self.forward_primer_data = {}
-        self.reverse_primer_data = {}
         self.reverse = None
         self.forward = None
 

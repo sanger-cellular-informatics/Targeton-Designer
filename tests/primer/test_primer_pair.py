@@ -6,7 +6,7 @@ from unittest.mock import patch, Mock
 
 from tests.test_data.primer3_output_data import primer3_output_data
 from primer.slice_data import SliceData
-from primer.build_primer_pairs import name_primers, calculate_primer_coords, build_primer_pairs
+from primer.build_primer_pairs import _name_primers, _calculate_primer_coords, build_primer_pairs
 
 
 class TestPrimerPairNamePrimers(TestCase):
@@ -18,7 +18,7 @@ class TestPrimerPairNamePrimers(TestCase):
     ])
     def test_name_primers(self, test_input, strand, expected):
         # act
-        actual = name_primers(test_input, strand)
+        actual = _name_primers(test_input, strand)
 
         # assert
         self.assertEqual(actual, expected)
@@ -80,7 +80,7 @@ class TestCalculatePrimerCoords(unittest.TestCase):
             strand,
             expected_result
     ):
-        result = calculate_primer_coords(side, coords, slice_start, slice_end, strand)
+        result = _calculate_primer_coords(side, coords, slice_start, slice_end, strand)
 
         self.assertEqual(result, expected_result)
 
