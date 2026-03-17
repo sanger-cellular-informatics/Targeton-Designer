@@ -4,7 +4,7 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 from parameterized import parameterized
 from unittest.mock import patch, Mock
 
-from primer.designed_primer import Interval, DesignedPrimer
+from primer.designed_primer import Interval, DesignedPrimer, Orientation, Strand
 from primer.primer_pair import PrimerPair
 from primer.build_primer_pairs import build_primer_pairs
 from primer.slice_data import SliceData
@@ -87,7 +87,8 @@ class TestPrimerPairCast(TestCase):
 
         result = build_primer_pairs(design=design,
                                     slice_data=slice_data,
-                                    stringency=1)
+                                    stringency=1,
+                                    primer_type="LibAmp")
 
         primer1 = PrimerPair(pair_id='AABB_LibAmp_0_str1', uid='9f6b0fea-1e71-11f1-8d25-9aac72ca3ecb', chromosome='19',
                              pre_targeton_start=50398701, pre_targeton_end=50399203, product_size=279,
@@ -96,15 +97,15 @@ class TestPrimerPairCast(TestCase):
         forward1 = DesignedPrimer(name='AABB_LibAmpF_0', penalty=0.14306823076244313,
                                   pair_id='AABB_LibAmp_0_str1', sequence='AGAGGTGTCTCCGGTCAGAA',
                                   coords=Interval(start=401, end=20), primer_start=50398802,
-                                  primer_end=50398821, strand='+', tm=59.887393730886686,
+                                  primer_end=50398821, strand=Strand.POSITIVE, tm=59.887393730886686,
                                   gc_percent=55.0, self_any_th=0.0, self_end_th=0.0,
-                                  hairpin_th=40.83258802708207, end_stability=3.02)
+                                  hairpin_th=40.83258802708207, end_stability=3.02, orientation=Orientation.FORWARD,)
         reverse1 = DesignedPrimer(name='AABB_LibAmpR_0', penalty=0.16915001782036365,
                                   pair_id='AABB_LibAmp_0_str1', sequence='GCAGGAACCTCCAACTCCAA',
                                   coords=Interval(start=123, end=20), primer_start=50399061,
-                                  primer_end=50399080, strand='-', tm=59.88951398263703,
+                                  primer_end=50399080, strand=Strand.NEGATIVE, tm=59.88951398263703,
                                   gc_percent=55.0, self_any_th=0.0, self_end_th=0.0,
-                                  hairpin_th=39.610015792775926, end_stability=3.53)
+                                  hairpin_th=39.610015792775926, end_stability=3.53, orientation=Orientation.REVERSE,)
 
         primer2 = PrimerPair(pair_id='AABB_LibAmp_1_str1', uid='9f6b1986-1e71-11f1-8d25-9aac72ca3ecb', chromosome='19',
                              pre_targeton_start=50398701, pre_targeton_end=50399203, product_size=280, stringency=1,
@@ -115,15 +116,15 @@ class TestPrimerPairCast(TestCase):
                                   sequence='AAGAGGTGTCTCCGGTCAGA',
                                   coords=Interval(start=402, end=20),
                                   primer_start=50398801, primer_end=50398820,
-                                  strand='+', tm=59.887393730886686, gc_percent=55.0,
+                                  strand=Strand.POSITIVE, tm=59.887393730886686, gc_percent=55.0,
                                   self_any_th=0.0, self_end_th=0.0,
-                                  hairpin_th=40.83258802708207, end_stability=3.27)
+                                  hairpin_th=40.83258802708207, end_stability=3.27, orientation=Orientation.FORWARD,)
         reverse2 = DesignedPrimer(name='AABB_LibAmpR_1', penalty=0.16915001782036365,
                                   pair_id='AABB_LibAmp_1_str1', sequence='GCAGGAACCTCCAACTCCAA',
                                   coords=Interval(start=123, end=20), primer_start=50399061,
-                                  primer_end=50399080, strand='-', tm=59.88951398263703, gc_percent=55.0,
+                                  primer_end=50399080, strand=Strand.NEGATIVE, tm=59.88951398263703, gc_percent=55.0,
                                   self_any_th=0.0, self_end_th=0.0, hairpin_th=39.610015792775926,
-                                  end_stability=3.53)
+                                  end_stability=3.53, orientation=Orientation.REVERSE,)
 
         primer3 = PrimerPair(pair_id='AABB_LibAmp_2_str1', uid='9f6b2156-1e71-11f1-8d25-9aac72ca3ecb', chromosome='19',
                              pre_targeton_start=50398701, pre_targeton_end=50399203, product_size=278, stringency=1,
@@ -134,15 +135,15 @@ class TestPrimerPairCast(TestCase):
                                   sequence='GAGGTGTCTCCGGTCAGAAC',
                                   coords=Interval(start=400, end=20),
                                   primer_start=50398803, primer_end=50398822,
-                                  strand='+', tm=59.755822102021625, gc_percent=60.0,
+                                  strand=Strand.POSITIVE, tm=59.755822102021625, gc_percent=60.0,
                                   self_any_th=0.0, self_end_th=0.0,
-                                  hairpin_th=41.99310719958544, end_stability=3.01)
+                                  hairpin_th=41.99310719958544, end_stability=3.01, orientation=Orientation.FORWARD,)
         reverse3 = DesignedPrimer(name='AABB_LibAmpR_2', penalty=0.16915001782036365,
                                   pair_id='AABB_LibAmp_2_str1', sequence='GCAGGAACCTCCAACTCCAA',
                                   coords=Interval(start=123, end=20), primer_start=50399061,
-                                  primer_end=50399080, strand='-', tm=59.88951398263703, gc_percent=55.0,
+                                  primer_end=50399080, strand=Strand.NEGATIVE, tm=59.88951398263703, gc_percent=55.0,
                                   self_any_th=0.0, self_end_th=0.0, hairpin_th=39.610015792775926,
-                                  end_stability=3.53)
+                                  end_stability=3.53, orientation=Orientation.REVERSE,)
 
         self.assertEqual(len(result), 3)
         self.assertEqual(result[0].id, primer1.id)

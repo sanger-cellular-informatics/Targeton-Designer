@@ -252,7 +252,7 @@ def create_bed_row_for_primer(primer: DesignedPrimer, chromosome: str) -> list:
         primer.primer_end,
         primer.name,
         '0',
-        primer.strand
+        primer.strand.value
     ]
 
     return primer_row

@@ -1,4 +1,4 @@
-from primer.designed_primer import DesignedPrimer, Interval
+from primer.designed_primer import DesignedPrimer, Interval, Orientation, Strand
 from primer.primer_pair import PrimerPair
 from primer.slice_data import SliceData
 
@@ -10,6 +10,7 @@ def build_primer_pairs(
         design: dict,
         slice_data: SliceData,
         stringency: float,
+        primer_type: str
 ) -> List[PrimerPair]:
     stringency_tag = str(stringency).replace(".", "")
 
@@ -18,7 +19,7 @@ def build_primer_pairs(
 
     for index, (pair_dict, left_dict, right_dict) in enumerate(zipped):
         primer_pair = PrimerPair(
-            pair_id=f"{slice_data.name}_LibAmp_{index}_str{stringency_tag}",
+            pair_id=f"{slice_data.name}_{primer_type}_{index}_str{stringency_tag}",
             chromosome=slice_data.chromosome,
             pre_targeton_start=slice_data.start,
             pre_targeton_end=slice_data.end,
@@ -28,10 +29,10 @@ def build_primer_pairs(
             uid=str(uuid.uuid1()),
         )
 
-        left_primer = _build_designed_primer("left", left_dict, slice_data, primer_pair.id, index)
-        right_primer = _build_designed_primer("right", right_dict, slice_data, primer_pair.id, index)
+        left_primer = _build_designed_primer("left", left_dict, slice_data, primer_pair.id, index, primer_type)
+        right_primer = _build_designed_primer ("right", right_dict, slice_data, primer_pair.id, index, primer_type)
 
-        _assign_forward_reverse(primer_pair, left_primer, right_primer)
+        _assign_forward_reverse2(primer_pair, left_primer, right_primer)
         primer_pairs.append(primer_pair)
 
     return primer_pairs
@@ -43,24 +44,27 @@ def _build_designed_primer(
         slice: SliceData,
         pair_id: str,
         index: int,
+        primer_type: str
 ) -> DesignedPrimer:
     start, end = _calculate_primer_coords(side, primer_dict["COORDS"], slice.start, slice.end, slice.strand)
+    orientation = Orientation.from_side_and_strand(side=side, strand=slice.strand)
 
     return DesignedPrimer(
-        name=f"{slice.name}_{_name_primers(side, slice.strand)}_{index}",
+        name=f"{slice.name}_{primer_type}{orientation.value}_{index}",
         penalty=primer_dict["PENALTY"],
         pair_id=pair_id,
         sequence=primer_dict["SEQUENCE"],
         coords=Interval(start=primer_dict["COORDS"][0], end=primer_dict["COORDS"][1]),
         primer_start=start,
         primer_end=end,
-        strand=_determine_primer_strands(side, slice.strand),
+        strand=Strand.from_side_and_slice_strand(side=side, slice_strand=slice.strand),
         tm=primer_dict["TM"],
         gc_percent=primer_dict["GC_PERCENT"],
         self_any_th=primer_dict["SELF_ANY_TH"],
         self_end_th=primer_dict["SELF_END_TH"],
         hairpin_th=primer_dict["HAIRPIN_TH"],
         end_stability=primer_dict["END_STABILITY"],
+        orientation=orientation,
     )
 
 
@@ -145,3 +149,14 @@ def _assign_forward_reverse(pp: PrimerPair, left: DesignedPrimer, right: Designe
         pp.forward, pp.reverse = left, right
     else:
         pp.forward, pp.reverse = right, left
+
+def _assign_forward_reverse2(pp: PrimerPair, left: DesignedPrimer, right: DesignedPrimer) -> None:
+    if left.orientation == Orientation.FORWARD and right.orientation == Orientation.REVERSE:
+        pp.forward, pp.reverse = left, right
+    elif left.orientation == Orientation.REVERSE and right.orientation == Orientation.FORWARD:
+        pp.forward, pp.reverse = right, left
+    else:
+        raise ValueError(
+            f"Cannot assign forward/reverse: "
+            f"left.orientation={left.orientation}, right.orientation={right.orientation}"
+        )

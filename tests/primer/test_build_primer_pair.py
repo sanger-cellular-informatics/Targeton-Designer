@@ -4,10 +4,10 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 from parameterized import parameterized
 from unittest.mock import patch, Mock
 
-from primer.designed_primer import Interval, DesignedPrimer
+from primer.designed_primer import Interval, DesignedPrimer, Orientation, Strand
 from primer.primer_pair import PrimerPair
 from primer.slice_data import SliceData
-from primer.build_primer_pairs import _name_primers, _calculate_primer_coords, build_primer_pairs
+from primer.build_primer_pairs import _name_primers, _calculate_primer_coords, build_primer_pairs, _determine_primer_strands
 
 
 class TestPrimerPairNamePrimers(TestCase):
@@ -21,8 +21,28 @@ class TestPrimerPairNamePrimers(TestCase):
         # act
         actual = _name_primers(test_input, strand)
 
+        actual2 = Orientation.from_side_and_strand(test_input, strand)
+
         # assert
         self.assertEqual(actual, expected)
+        self.assertEqual(actual, f"LibAmp{actual2.value}")
+
+class TestPrimerStrands(TestCase):
+    @parameterized.expand([
+        ('left', '+', '+'),
+        ('left', '-', '-'),
+        ('right', '+', '-'),
+        ('right', '-', '+'),
+    ])
+    def test_strands_primers(self, test_input, strand, expected):
+        # act
+        actual = _determine_primer_strands(test_input, strand)
+
+        actual2 = Strand.from_side_and_slice_strand(test_input, strand)
+
+        # assert
+        self.assertEqual(actual, expected)
+        self.assertEqual(actual, actual2.value)
 
 
 class TestBuildPrimerPair(TestCase):
@@ -34,7 +54,7 @@ class TestBuildPrimerPair(TestCase):
             'PRIMER_RIGHT': []
         }
 
-        result = build_primer_pairs(design=designs, slice_data=Mock(), stringency=0.5)
+        result = build_primer_pairs(design=designs, slice_data=Mock(), stringency=0.5, primer_type="LibAmp")
 
         self.assertEqual(result, [])
 
@@ -76,26 +96,26 @@ class TestBuildPrimerPair(TestCase):
                  "HAIRPIN_TH": 40.83258802708207, "END_STABILITY": 3.27}]
         }
 
-        result = build_primer_pairs(design=design, slice_data=slice_data, stringency=1)
+        result = build_primer_pairs(design=design, slice_data=slice_data, stringency=1, primer_type="LibAmp")
 
-        primer1 = PrimerPair(pair_id='AABB_LibAmp_0_str1', uid='9f6b0fea-1e71-11f1-8d25-9aac72ca3ecb', chromosome='19',
+        primer1 = PrimerPair(pair_id='AABB_LibAmp_0_str1', uid='uid', chromosome='19',
                              pre_targeton_start=50398701, pre_targeton_end=50399203, product_size=279,
                              stringency=1, targeton_id='AABB'
                              )
         forward1 = DesignedPrimer(name='AABB_LibAmpF_0', penalty=0.14306823076244313,
                                   pair_id='AABB_LibAmp_0_str1', sequence='AGAGGTGTCTCCGGTCAGAA',
                                   coords=Interval(start=401, end=20), primer_start=50398802,
-                                  primer_end=50398821, strand='+', tm=59.887393730886686,
+                                  primer_end=50398821, strand=Strand.POSITIVE, tm=59.887393730886686,
                                   gc_percent=55.0, self_any_th=0.0, self_end_th=0.0,
-                                  hairpin_th=40.83258802708207, end_stability=3.02)
+                                  hairpin_th=40.83258802708207, end_stability=3.02, orientation=Orientation.FORWARD,)
         reverse1 = DesignedPrimer(name='AABB_LibAmpR_0', penalty=0.16915001782036365,
                                   pair_id='AABB_LibAmp_0_str1', sequence='GCAGGAACCTCCAACTCCAA',
                                   coords=Interval(start=123, end=20), primer_start=50399061,
-                                  primer_end=50399080, strand='-', tm=59.88951398263703,
+                                  primer_end=50399080, strand=Strand.NEGATIVE, tm=59.88951398263703,
                                   gc_percent=55.0, self_any_th=0.0, self_end_th=0.0,
-                                  hairpin_th=39.610015792775926, end_stability=3.53)
+                                  hairpin_th=39.610015792775926, end_stability=3.53, orientation=Orientation.REVERSE,)
 
-        primer2 = PrimerPair(pair_id='AABB_LibAmp_1_str1', uid='9f6b1986-1e71-11f1-8d25-9aac72ca3ecb', chromosome='19',
+        primer2 = PrimerPair(pair_id='AABB_LibAmp_1_str1', uid='uid', chromosome='19',
                              pre_targeton_start=50398701, pre_targeton_end=50399203, product_size=280, stringency=1,
                              targeton_id='AABB',
                              )
@@ -104,15 +124,15 @@ class TestBuildPrimerPair(TestCase):
                                   sequence='AAGAGGTGTCTCCGGTCAGA',
                                   coords=Interval(start=402, end=20),
                                   primer_start=50398801, primer_end=50398820,
-                                  strand='+', tm=59.887393730886686, gc_percent=55.0,
+                                  strand=Strand.POSITIVE, tm=59.887393730886686, gc_percent=55.0,
                                   self_any_th=0.0, self_end_th=0.0,
-                                  hairpin_th=40.83258802708207, end_stability=3.27)
+                                  hairpin_th=40.83258802708207, end_stability=3.27, orientation=Orientation.FORWARD,)
         reverse2 = DesignedPrimer(name='AABB_LibAmpR_1', penalty=0.16915001782036365,
                                   pair_id='AABB_LibAmp_1_str1', sequence='GCAGGAACCTCCAACTCCAA',
                                   coords=Interval(start=123, end=20), primer_start=50399061,
-                                  primer_end=50399080, strand='-', tm=59.88951398263703, gc_percent=55.0,
+                                  primer_end=50399080, strand=Strand.NEGATIVE, tm=59.88951398263703, gc_percent=55.0,
                                   self_any_th=0.0, self_end_th=0.0, hairpin_th=39.610015792775926,
-                                  end_stability=3.53)
+                                  end_stability=3.53, orientation=Orientation.REVERSE,)
         primer1.forward = forward1
         primer1.reverse = reverse1
         primer2.forward = forward2

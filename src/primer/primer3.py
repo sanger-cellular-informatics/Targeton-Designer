@@ -58,7 +58,7 @@ class Primer3:
                 primer_explain.append(msg)
 
             else:
-                built_primer_pairs = build_primer_pairs(designs, slice_data, stringency)
+                built_primer_pairs = build_primer_pairs(designs, slice_data, stringency, primer_type="LibAmp")
                 primer_pairs.extend(built_primer_pairs)
 
         # If Primer3 did not return any primer pairs for at least one stringency
