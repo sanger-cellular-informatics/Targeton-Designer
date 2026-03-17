@@ -30,9 +30,9 @@ def build_primer_pairs(
         )
 
         left_primer = _build_designed_primer("left", left_dict, slice_data, primer_pair.id, index, primer_type)
-        right_primer = _build_designed_primer ("right", right_dict, slice_data, primer_pair.id, index, primer_type)
+        right_primer = _build_designed_primer("right", right_dict, slice_data, primer_pair.id, index, primer_type)
 
-        _assign_forward_reverse2(primer_pair, left_primer, right_primer)
+        _assign_forward_reverse(primer_pair, left_primer, right_primer)
         primer_pairs.append(primer_pair)
 
     return primer_pairs
@@ -66,25 +66,6 @@ def _build_designed_primer(
         end_stability=primer_dict["END_STABILITY"],
         orientation=orientation,
     )
-
-
-def _name_primers(side: str, strand: str) -> str:
-    fwd_primers = {
-        'left': 'LibAmpF',
-        'right': 'LibAmpR',
-    }
-    rev_primers = {
-        'left': 'LibAmpR',
-        'right': 'LibAmpF',
-    }
-    names = {
-        '+': fwd_primers,
-        '-': rev_primers,
-    }
-
-    primer_name = names[strand][side]
-
-    return primer_name
 
 
 def _calculate_primer_coords(side: str, coords: list,
@@ -125,32 +106,7 @@ def _calculate_primer_coords(side: str, coords: list,
     return start, end
 
 
-def _determine_primer_strands(side: str, slice_strand: str) -> str:
-    positive = {
-        'left': '+',
-        'right': '-',
-    }
-
-    negative = {
-        'left': '-',
-        'right': '+',
-    }
-
-    strands = {
-        '+': positive,
-        '-': negative,
-    }
-
-    return strands[slice_strand][side]
-
-
 def _assign_forward_reverse(pp: PrimerPair, left: DesignedPrimer, right: DesignedPrimer) -> None:
-    if "LibAmpF" in left.name and "LibAmpR" in right.name:
-        pp.forward, pp.reverse = left, right
-    else:
-        pp.forward, pp.reverse = right, left
-
-def _assign_forward_reverse2(pp: PrimerPair, left: DesignedPrimer, right: DesignedPrimer) -> None:
     if left.orientation == Orientation.FORWARD and right.orientation == Orientation.REVERSE:
         pp.forward, pp.reverse = left, right
     elif left.orientation == Orientation.REVERSE and right.orientation == Orientation.FORWARD:

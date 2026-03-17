@@ -10,7 +10,7 @@ from tests.utils.utils import CapturingStreamHandler
 
 from collections import defaultdict
 from primer.primer_pair import PrimerPair
-from primer.designed_primer import DesignedPrimer, Interval
+from primer.designed_primer import DesignedPrimer, Interval, Strand, Orientation
 from primer.write_primer_output import _reorder_columns, _add_primer_pair, export_three_optimal_primer_pairs_to_csv, \
     export_primers_to_csv, export_pairs_for_ipcress_to_tsv
 
@@ -256,7 +256,8 @@ class TestDataFrameBuild(TestCase):
                 coords=Interval(start=169, end=20),
                 primer_start=42931146,
                 primer_end=42931166,
-                strand="+",
+                strand=Strand.POSITIVE,
+                orientation=Orientation.FORWARD,
                 tm=60.0,
                 gc_percent=50.0,
                 self_any_th=0.0,
@@ -273,7 +274,8 @@ class TestDataFrameBuild(TestCase):
                 coords=Interval(start=41, end=20),
                 primer_start=42930996,
                 primer_end=42931016,
-                strand="-",
+                strand=Strand.NEGATIVE,
+                orientation=Orientation.REVERSE,
                 tm=59.8,
                 gc_percent=50.1,
                 self_any_th=0.1,
@@ -353,7 +355,8 @@ class TestDataFrameBuild(TestCase):
                 coords=Interval(start=169, end=20),
                 primer_start=42931139,
                 primer_end=42931159,
-                strand="+",
+                strand=Strand.POSITIVE,
+                orientation=Orientation.FORWARD,
                 tm=60.1,
                 gc_percent=50.2,
                 self_any_th=0.2,
@@ -370,7 +373,8 @@ class TestDataFrameBuild(TestCase):
                 coords=Interval(start=41, end=20),
                 primer_start=42930996,
                 primer_end=42931016,
-                strand="-",
+                strand=Strand.POSITIVE,
+                orientation=Orientation.REVERSE,
                 tm=59.9,
                 gc_percent=50.3,
                 self_any_th=0.3,

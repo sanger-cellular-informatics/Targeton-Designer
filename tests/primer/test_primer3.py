@@ -2,7 +2,7 @@ import unittest
 from pyfakefs.fake_filesystem_unittest import TestCase
 from unittest.mock import patch
 
-from primer.designed_primer import DesignedPrimer, Interval
+from primer.designed_primer import DesignedPrimer, Interval, Strand, Orientation
 from primer.primer_pair import PrimerPair
 from primer.primer3 import Primer3
 from primer.slice_data import SliceData
@@ -70,7 +70,8 @@ class IntegrationTestPrimer3(TestCase):
             coords=Interval(start=209, end=19),
             primer_start=42929594,
             primer_end=42929612,
-            strand="+",
+            strand=Strand.POSITIVE,
+            orientation=Orientation.FORWARD,
             tm=61.037136143940415,
             gc_percent=57.89473684210526,
             self_any_th=0.0,
@@ -87,7 +88,8 @@ class IntegrationTestPrimer3(TestCase):
             coords=Interval(start=0, end=18),
             primer_start=42929786,
             primer_end=42929803,
-            strand="-",
+            strand=Strand.NEGATIVE,
+            orientation=Orientation.REVERSE,
             tm=61.40005435509431,
             gc_percent=72.22222222222223,
             self_any_th=0.0,

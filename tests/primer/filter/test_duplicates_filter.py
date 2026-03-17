@@ -1,6 +1,7 @@
+import unittest
 from unittest import TestCase
 
-from primer.designed_primer import DesignedPrimer, Interval
+from primer.designed_primer import DesignedPrimer, Interval, Strand, Orientation
 from primer.filter.duplicates_filter import DuplicatesFilter
 from primer.primer_pair import PrimerPair
 from primer.primer_pair_discarded import PrimerPairDiscarded
@@ -17,7 +18,8 @@ class TestDuplicatesFilter(TestCase):
             coords=Interval(start=199, end=18),
             primer_start=10,
             primer_end=20,
-            strand="+",
+            strand=Strand.POSITIVE,
+            orientation=Orientation.FORWARD,
             tm=60.0,
             gc_percent=50.0,
             self_any_th=30.0,
@@ -63,3 +65,6 @@ class TestDuplicatesFilter(TestCase):
         self.assertEqual(len(filter_response.primer_pairs_to_discard), 1)
         self.assertIn(PrimerPairDiscarded(pair_min_stringency, DuplicatesFilter.reason_discarded),
                       filter_response.primer_pairs_to_discard)
+
+if __name__ == '__main__':
+    unittest.main()

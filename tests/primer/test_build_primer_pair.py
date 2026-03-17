@@ -7,42 +7,7 @@ from unittest.mock import patch, Mock
 from primer.designed_primer import Interval, DesignedPrimer, Orientation, Strand
 from primer.primer_pair import PrimerPair
 from primer.slice_data import SliceData
-from primer.build_primer_pairs import _name_primers, _calculate_primer_coords, build_primer_pairs, _determine_primer_strands
-
-
-class TestPrimerPairNamePrimers(TestCase):
-    @parameterized.expand([
-        ('left', '+', 'LibAmpF'),
-        ('left', '-', 'LibAmpR'),
-        ('right', '+', 'LibAmpR'),
-        ('right', '-', 'LibAmpF'),
-    ])
-    def test_name_primers(self, test_input, strand, expected):
-        # act
-        actual = _name_primers(test_input, strand)
-
-        actual2 = Orientation.from_side_and_strand(test_input, strand)
-
-        # assert
-        self.assertEqual(actual, expected)
-        self.assertEqual(actual, f"LibAmp{actual2.value}")
-
-class TestPrimerStrands(TestCase):
-    @parameterized.expand([
-        ('left', '+', '+'),
-        ('left', '-', '-'),
-        ('right', '+', '-'),
-        ('right', '-', '+'),
-    ])
-    def test_strands_primers(self, test_input, strand, expected):
-        # act
-        actual = _determine_primer_strands(test_input, strand)
-
-        actual2 = Strand.from_side_and_slice_strand(test_input, strand)
-
-        # assert
-        self.assertEqual(actual, expected)
-        self.assertEqual(actual, actual2.value)
+from primer.build_primer_pairs import _calculate_primer_coords, build_primer_pairs
 
 
 class TestBuildPrimerPair(TestCase):
