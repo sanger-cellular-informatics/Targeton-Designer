@@ -14,14 +14,14 @@ class Orientation(Enum):
     @classmethod
     def from_side_and_strand(cls, side: str, strand: str) -> "Orientation":
         mapping = {
-            ("+", "left"): cls.FORWARD,
-            ("+", "right"): cls.REVERSE,
-            ("-", "left"): cls.REVERSE,
-            ("-", "right"): cls.FORWARD,
+            ("left", "+"): cls.FORWARD,
+            ("right", "+"): cls.REVERSE,
+            ("left", "-"): cls.REVERSE,
+            ("right", "-"): cls.FORWARD,
         }
 
         try:
-            return mapping[(strand, side)]
+            return mapping[(side, strand)]
         except KeyError:
             raise ValueError(f"Invalid combination: strand={strand}, side={side}")
 
@@ -32,14 +32,14 @@ class Strand(Enum):
     @classmethod
     def from_side_and_slice_strand(cls, side: str, slice_strand: str) -> "Strand":
         mapping = {
-            ("+", "left"): cls.POSITIVE,
-            ("+", "right"): cls.NEGATIVE,
-            ("-", "left"): cls.NEGATIVE,
-            ("-", "right"): cls.POSITIVE,
+            ("left", "+"): cls.POSITIVE,
+            ("right", "+"): cls.NEGATIVE,
+            ("left", "-"): cls.NEGATIVE,
+            ("right", "-"): cls.POSITIVE,
         }
 
         try:
-            return mapping[(slice_strand, side)]
+            return mapping[(side, slice_strand)]
         except KeyError:
             raise ValueError(f"Invalid combination: slice_strand={slice_strand}, side={side}")
 
@@ -90,6 +90,7 @@ class DesignedPrimer:
             self.primer_start,
             self.primer_end,
             self.strand,
+            self.orientation,
             self.tm,
             self.gc_percent,
             self.self_any_th,
