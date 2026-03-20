@@ -1,6 +1,6 @@
 import unittest
 
-from primer.designed_primer import DesignedPrimer, Interval
+from primer.designed_primer import DesignedPrimer, Interval, Strand, Orientation
 from primer.primer_pair import PrimerPair
 from primer.filter.hap1_variant_filter import HAP1VariantFilter
 from primer.primer_pair_discarded import PrimerPairDiscarded
@@ -18,7 +18,8 @@ class TestHAP1VariantFilter(unittest.TestCase):
             coords=Interval(start=199, end=18),
             primer_start=11540,
             primer_end=11545,
-            strand="+",
+            strand=Strand.POSITIVE,
+            orientation=Orientation.FORWARD,
             tm=60.0,
             gc_percent=50.0,
             self_any_th=30.0,
@@ -35,7 +36,8 @@ class TestHAP1VariantFilter(unittest.TestCase):
             coords=Interval(start=199, end=18),
             primer_start=10,
             primer_end=20,
-            strand="+",
+            strand=Strand.POSITIVE,
+            orientation=Orientation.FORWARD,
             tm=60.0,
             gc_percent=50.0,
             self_any_th=30.0,
@@ -81,3 +83,6 @@ class TestHAP1VariantFilter(unittest.TestCase):
         self.assertEqual(len(filter_response.primer_pairs_to_discard), 1)
         self.assertIn(PrimerPairDiscarded(pair_with_variant, reason_discarded=HAP1VariantFilter.reason_discarded),
                       filter_response.primer_pairs_to_discard)
+
+if __name__ == '__main__':
+    unittest.main()
