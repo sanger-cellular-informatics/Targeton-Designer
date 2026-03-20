@@ -1,11 +1,12 @@
 import logging
+import unittest
 from unittest import TestCase
 from unittest.mock import patch
 
 from tests.utils.utils import CapturingStreamHandler
 
 
-from primer.designed_primer import DesignedPrimer, Interval
+from primer.designed_primer import DesignedPrimer, Interval, Strand, Orientation
 from primer.filter.duplicates_filter import DuplicatesFilter
 from primer.filter.hap1_variant_filter import HAP1VariantFilter
 from primer.filter.filter_manager import FilterManager
@@ -27,7 +28,8 @@ class TestFilterManager(TestCase):
             coords=Interval(start=199, end=18),
             primer_start=11540,
             primer_end=11545,
-            strand="+",
+            strand=Strand.POSITIVE,
+            orientation=Orientation.FORWARD,
             tm=60.0,
             gc_percent=50.0,
             self_any_th=30.0,
@@ -44,7 +46,8 @@ class TestFilterManager(TestCase):
             coords=Interval(start=199, end=18),
             primer_start=10,
             primer_end=20,
-            strand="+",
+            strand=Strand.POSITIVE,
+            orientation=Orientation.FORWARD,
             tm=60.0,
             gc_percent=50.0,
             self_any_th=30.0,
@@ -317,3 +320,6 @@ class TestFilterManager(TestCase):
         expected_error_message = ("Wrong value(s) provided for 'duplicates, HAP1_variant' in config file "
                                   "(only takes true or false). Unable to apply filtering - Exiting programme")
         logger_error.assert_called_once_with(expected_error_message)
+
+if __name__ == '__main__':
+    unittest.main()

@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from enum import Enum
 
 
 @dataclass
@@ -6,6 +7,41 @@ class Interval:
     start: int
     end: int
 
+class Orientation(Enum):
+    FORWARD = "F"
+    REVERSE = "R"
+
+    @classmethod
+    def from_side_and_strand(cls, side: str, strand: str) -> "Orientation":
+        mapping = {
+            ("left", "+"): cls.FORWARD,
+            ("right", "+"): cls.REVERSE,
+            ("left", "-"): cls.REVERSE,
+            ("right", "-"): cls.FORWARD,
+        }
+
+        try:
+            return mapping[(side, strand)]
+        except KeyError:
+            raise ValueError(f"Invalid combination: strand={strand}, side={side}")
+
+class Strand(Enum):
+    NEGATIVE = "-"
+    POSITIVE = "+"
+
+    @classmethod
+    def from_side_and_slice_strand(cls, side: str, slice_strand: str) -> "Strand":
+        mapping = {
+            ("left", "+"): cls.POSITIVE,
+            ("right", "+"): cls.NEGATIVE,
+            ("left", "-"): cls.NEGATIVE,
+            ("right", "-"): cls.POSITIVE,
+        }
+
+        try:
+            return mapping[(side, slice_strand)]
+        except KeyError:
+            raise ValueError(f"Invalid combination: slice_strand={slice_strand}, side={side}")
 
 @dataclass
 class DesignedPrimer:
@@ -16,13 +52,14 @@ class DesignedPrimer:
     coords: Interval
     primer_start: int
     primer_end: int
-    strand: str
+    strand: Strand
     tm: float
     gc_percent: float
     self_any_th: float
     self_end_th: float
     hairpin_th: float
     end_stability: float
+    orientation: Orientation
 
     def __eq__(self, other):
         if isinstance(other, DesignedPrimer):
@@ -34,6 +71,7 @@ class DesignedPrimer:
                     self.primer_start == other.primer_start and
                     self.primer_end == other.primer_end and
                     self.strand == other.strand and
+                    self.orientation == other.orientation and
                     self.tm == other.tm and
                     self.gc_percent == other.gc_percent and
                     self.self_any_th == other.self_any_th and
@@ -52,6 +90,7 @@ class DesignedPrimer:
             self.primer_start,
             self.primer_end,
             self.strand,
+            self.orientation,
             self.tm,
             self.gc_percent,
             self.self_any_th,
@@ -59,22 +98,3 @@ class DesignedPrimer:
             self.hairpin_th,
             self.end_stability
         ))
-
-
-def map_to_designed_primer(primer: dict):
-    return DesignedPrimer(
-        name=primer["primer"],
-        penalty=primer["penalty"],
-        pair_id=primer["pair_id"],
-        sequence=primer["sequence"],
-        coords=Interval(primer["coords"][0], primer["coords"][1]),
-        primer_start=primer["primer_start"],
-        primer_end=primer["primer_end"],
-        strand=primer["strand"],
-        tm=primer["tm"],
-        gc_percent=primer["gc_percent"],
-        self_any_th=primer["self_any_th"],
-        self_end_th=primer["self_end_th"],
-        hairpin_th=primer["hairpin_th"],
-        end_stability=primer["end_stability"]
-    )

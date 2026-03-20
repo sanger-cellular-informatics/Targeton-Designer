@@ -1,9 +1,10 @@
 import logging
+import unittest
 from unittest import TestCase
 
 from primer.ranker.ranker import Ranker
 from primer.primer_pair import PrimerPair
-from primer.designed_primer import DesignedPrimer, Interval
+from primer.designed_primer import DesignedPrimer, Interval, Strand, Orientation
 from tests.utils.utils import CapturingStreamHandler
 
 class RankerTest(TestCase):
@@ -33,7 +34,8 @@ class RankerTest(TestCase):
             coords=Interval(start=199, end=18),
             primer_start=11540,
             primer_end=11545,
-            strand="+",
+            strand=Strand.POSITIVE,
+            orientation=Orientation.FORWARD,
             tm=60.0,
             gc_percent=50.0,
             self_any_th=30.0,
@@ -50,7 +52,8 @@ class RankerTest(TestCase):
             coords=Interval(start=299, end=18),
             primer_start=11640,
             primer_end=11645,
-            strand="-",
+            strand=Strand.NEGATIVE,
+            orientation=Orientation.REVERSE,
             tm=60.0,
             gc_percent=50.0,
             self_any_th=30.0,
@@ -311,3 +314,6 @@ def _assert_pairs_by_id_stringency_product_size(
         [(pair.id, pair.stringency, pair.product_size) for pair in pairs],
         expected,
     )
+
+if __name__ == '__main__':
+    unittest.main()
