@@ -29,8 +29,8 @@ def build_primer_pairs(
             uid=str(uuid.uuid1()),
         )
 
-        left_primer = _build_designed_primer("left", left_dict, slice_data, primer_pair.id, index, primer_type)
-        right_primer = _build_designed_primer("right", right_dict, slice_data, primer_pair.id, index, primer_type)
+        left_primer = _build_designed_primer("left", left_dict, slice_data, primer_pair.id, index, primer_type, stringency_tag)
+        right_primer = _build_designed_primer("right", right_dict, slice_data, primer_pair.id, index, primer_type, stringency_tag)
 
         _assign_forward_reverse(primer_pair, left_primer, right_primer)
         primer_pairs.append(primer_pair)
@@ -44,13 +44,14 @@ def _build_designed_primer(
         slice: SliceData,
         pair_id: str,
         index: int,
-        primer_type: str
+        primer_type: str,
+        stringency_tag: str,
 ) -> DesignedPrimer:
     start, end = _calculate_primer_coords(side, primer_dict["COORDS"], slice.start, slice.end, slice.strand)
     orientation = Orientation.from_side_and_strand(side=side, strand=slice.strand)
 
     return DesignedPrimer(
-        name=f"{slice.name}_{primer_type}{orientation.value}_{index}",
+        name=f"{slice.name}_{primer_type}{orientation.value}_{index}_str{stringency_tag}",
         penalty=primer_dict["PENALTY"],
         pair_id=pair_id,
         sequence=primer_dict["SEQUENCE"],

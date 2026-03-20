@@ -61,39 +61,39 @@ class TestBuildPrimerPair(TestCase):
                  "HAIRPIN_TH": 40.83258802708207, "END_STABILITY": 3.27}]
         }
 
-        result = build_primer_pairs(design=design, slice_data=slice_data, stringency=1, primer_type="LibAmp")
+        result = build_primer_pairs(design=design, slice_data=slice_data, stringency=0.1, primer_type="LibAmp")
 
-        primer1 = PrimerPair(pair_id='AABB_LibAmp_0_str1', uid='uid', chromosome='19',
+        primer1 = PrimerPair(pair_id='AABB_LibAmp_0_str01', uid='uid', chromosome='19',
                              pre_targeton_start=50398701, pre_targeton_end=50399203, product_size=279,
-                             stringency=1, targeton_id='AABB'
+                             stringency=0.1, targeton_id='AABB'
                              )
-        forward1 = DesignedPrimer(name='AABB_LibAmpF_0', penalty=0.14306823076244313,
-                                  pair_id='AABB_LibAmp_0_str1', sequence='AGAGGTGTCTCCGGTCAGAA',
+        forward1 = DesignedPrimer(name='AABB_LibAmpF_0_str01', penalty=0.14306823076244313,
+                                  pair_id='AABB_LibAmp_0_str01', sequence='AGAGGTGTCTCCGGTCAGAA',
                                   coords=Interval(start=401, end=20), primer_start=50398802,
                                   primer_end=50398821, strand=Strand.POSITIVE, tm=59.887393730886686,
                                   gc_percent=55.0, self_any_th=0.0, self_end_th=0.0,
                                   hairpin_th=40.83258802708207, end_stability=3.02, orientation=Orientation.FORWARD,)
-        reverse1 = DesignedPrimer(name='AABB_LibAmpR_0', penalty=0.16915001782036365,
-                                  pair_id='AABB_LibAmp_0_str1', sequence='GCAGGAACCTCCAACTCCAA',
+        reverse1 = DesignedPrimer(name='AABB_LibAmpR_0_str01', penalty=0.16915001782036365,
+                                  pair_id='AABB_LibAmp_0_str01', sequence='GCAGGAACCTCCAACTCCAA',
                                   coords=Interval(start=123, end=20), primer_start=50399061,
                                   primer_end=50399080, strand=Strand.NEGATIVE, tm=59.88951398263703,
                                   gc_percent=55.0, self_any_th=0.0, self_end_th=0.0,
                                   hairpin_th=39.610015792775926, end_stability=3.53, orientation=Orientation.REVERSE,)
 
-        primer2 = PrimerPair(pair_id='AABB_LibAmp_1_str1', uid='uid', chromosome='19',
-                             pre_targeton_start=50398701, pre_targeton_end=50399203, product_size=280, stringency=1,
+        primer2 = PrimerPair(pair_id='AABB_LibAmp_1_str01', uid='uid', chromosome='19',
+                             pre_targeton_start=50398701, pre_targeton_end=50399203, product_size=280, stringency=0.1,
                              targeton_id='AABB',
                              )
-        forward2 = DesignedPrimer(name='AABB_LibAmpF_1', penalty=0.14336040019384827,
-                                  pair_id='AABB_LibAmp_1_str1',
+        forward2 = DesignedPrimer(name='AABB_LibAmpF_1_str01', penalty=0.14336040019384827,
+                                  pair_id='AABB_LibAmp_1_str01',
                                   sequence='AAGAGGTGTCTCCGGTCAGA',
                                   coords=Interval(start=402, end=20),
                                   primer_start=50398801, primer_end=50398820,
                                   strand=Strand.POSITIVE, tm=59.887393730886686, gc_percent=55.0,
                                   self_any_th=0.0, self_end_th=0.0,
                                   hairpin_th=40.83258802708207, end_stability=3.27, orientation=Orientation.FORWARD,)
-        reverse2 = DesignedPrimer(name='AABB_LibAmpR_1', penalty=0.16915001782036365,
-                                  pair_id='AABB_LibAmp_1_str1', sequence='GCAGGAACCTCCAACTCCAA',
+        reverse2 = DesignedPrimer(name='AABB_LibAmpR_1_str01', penalty=0.16915001782036365,
+                                  pair_id='AABB_LibAmp_1_str01', sequence='GCAGGAACCTCCAACTCCAA',
                                   coords=Interval(start=123, end=20), primer_start=50399061,
                                   primer_end=50399080, strand=Strand.NEGATIVE, tm=59.88951398263703, gc_percent=55.0,
                                   self_any_th=0.0, self_end_th=0.0, hairpin_th=39.610015792775926,
@@ -104,8 +104,35 @@ class TestBuildPrimerPair(TestCase):
         primer2.reverse = reverse2
 
         self.assertEqual(len(result), 2)
-        self.assertEqual(result[0], primer1)
-        self.assertEqual(result[1], primer2)
+        self.assertEqual(result[0].id, primer1.id)
+        self.assertEqual(result[0].chromosome, primer1.chromosome)
+        self.assertEqual(result[0].pre_targeton_start, primer1.pre_targeton_start)
+        self.assertEqual(result[0].pre_targeton_end, primer1.pre_targeton_end)
+        self.assertEqual(result[0].product_size, primer1.product_size)
+        self.assertEqual(result[0].stringency, primer1.stringency)
+        self.assertEqual(result[0].targeton_id, primer1.targeton_id)
+
+        self.assertEqual(result[0].forward.name, forward1.name)
+        self.assertEqual(result[0].forward.pair_id, forward1.pair_id)
+        self.assertEqual(result[0].forward, forward1)
+        self.assertEqual(result[0].reverse.name, reverse1.name)
+        self.assertEqual(result[0].reverse.pair_id, reverse1.pair_id)
+        self.assertEqual(result[0].reverse, reverse1)
+
+        self.assertEqual(result[1].id, primer2.id)
+        self.assertEqual(result[1].chromosome, primer2.chromosome)
+        self.assertEqual(result[1].pre_targeton_start, primer2.pre_targeton_start)
+        self.assertEqual(result[1].pre_targeton_end, primer2.pre_targeton_end)
+        self.assertEqual(result[1].product_size, primer2.product_size)
+        self.assertEqual(result[1].stringency, primer2.stringency)
+        self.assertEqual(result[1].targeton_id, primer2.targeton_id)
+
+        self.assertEqual(result[1].forward.name, forward2.name)
+        self.assertEqual(result[1].forward.pair_id, forward2.pair_id)
+        self.assertEqual(result[1].forward, forward2)
+        self.assertEqual(result[1].reverse.name, reverse2.name)
+        self.assertEqual(result[1].reverse.pair_id, reverse2.pair_id)
+        self.assertEqual(result[1].reverse, reverse2)
 
 
 class TestCalculatePrimerCoords(unittest.TestCase):
