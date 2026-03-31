@@ -9,8 +9,10 @@ The format is based on Keep a Changelog and this project adheres to Semantic Ver
 ## [v1.0.0] - March 31, 2026
 
 ### Added
-- Introduced ranking of primers by stringency, improving prioritisation based on more stringent evaluation criteria.
-- Added support for ranking by product size, enabling better selection based on amplicon length.
+- Output primer pairs in ipcress-compatible format when "ipcress_parameters" are set up in designer configuration.
+- Use kmer-list masking to prevent designing primers in repetitive or non-specific regions.
+- Rank primers based on kmer-masking stringency (using the PRIMER_MASK_FAILURE_RATE Primer3 parameter).
+- Support for ranking primers by product size.
 - Implemented additional filtering capabilities for:
   - duplicates
   - HAP1_variant
@@ -27,10 +29,6 @@ The following commands are no longer in use:
 - generate_targeton_csv
 - collate_primer_data
 - post_primers
-
-### Notes
-- This release represents the current state of `main` as of the tagged version.
-- Update this section with meaningful release notes when finalising the release.
 
 ---
 
