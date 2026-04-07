@@ -122,6 +122,10 @@ test: setup-venv
 download-kmers:
 	bash download_kmer_lists.sh
 
+IMAGE_TAG ?= latest
+DOCKER_REPO ?= gitlab-registry.internal.sanger.ac.uk
+DOCKER_IMAGE_NAME ?= targeton-designer
+
 build-docker:
 	@ver=$$(docker version --format '{{.Server.Version}}' 2>&1 | sed -E 's/([0-9]+).*/\1/')
 	@echo Docker version $$ver
@@ -131,14 +135,14 @@ build-docker:
 		export DOCKER_BUILDKIT=1
 	fi
 	echo docker repo = ${DOCKER_REPO}
-	echo docker image = ${DOCKER_IMAGE_NAME}
-	if [ "$(docker images -q ${DOCKER_IMAGE_NAME} 2> /dev/null)" != "" ]; then
-		@echo "docker image already exists. ${DOCKER_IMAGE_NAME}"
+	echo docker image = ${DOCKER_IMAGE_NAME}:${IMAGE_TAG}
+	if [ "$(docker images -q ${DOCKER_IMAGE_NAME}:${IMAGE_TAG} 2> /dev/null)" != "" ]; then
+		@echo "docker image already exists. ${DOCKER_IMAGE_NAME}:${IMAGE_TAG}"
 	else
 		@echo "Building docker image..."
-		@docker build --pull -t "${DOCKER_IMAGE_NAME}" .;
+		@docker build --pull -t "${DOCKER_IMAGE_NAME}:${IMAGE_TAG}" .
 		if [[ ${DOCKER_REPO} != "local" ]]; then
-			@docker push "${DOCKER_IMAGE_NAME}" 
+			@docker push "${DOCKER_IMAGE_NAME}:${IMAGE_TAG}"
 		fi
 	fi
 
