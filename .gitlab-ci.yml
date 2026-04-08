@@ -27,7 +27,7 @@ docker-build:
 
 test:
   # Reuse built container.
-  image: ${DOCKER_REPO}/${DOCKER_NAME}:${DOCKER_IMAGE_TAG}
+  image: ${DOCKER_REPO}/${DOCKER_NAME}:${CI_COMMIT_SHA}
   stage: test
   tags:
     - autoscale
