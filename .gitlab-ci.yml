@@ -10,6 +10,8 @@ docker-build:
   # All other branches are tagged with the escaped branch name (commit ref slug)
   script:
       - apk add --update make && apk add --update bash && apk add --update sudo && apk add --update git && apk add --update curl
+      - echo "DOCKER_TAG value = $DOCKER_TAG"
+      - echo "CI_COMMIT_SHA = $CI_COMMIT_SHA"
       - make build-docker DOCKER_TAG=$CI_COMMIT_SHA
   # Run this job in a branch where a Dockerfile exists
   rules:
