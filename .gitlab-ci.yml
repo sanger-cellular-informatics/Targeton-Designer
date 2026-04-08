@@ -12,6 +12,10 @@ docker-build:
       - apk add --update make && apk add --update bash && apk add --update sudo && apk add --update git && apk add --update curl
       - echo "DOCKER_TAG value = $DOCKER_TAG"
       - echo "CI_COMMIT_SHA = $CI_COMMIT_SHA"
+      - echo "Building with registry = $CI_REGISTRY_IMAGE"
+      - echo "DOCKER_REPO = $DOCKER_REPO"
+      - echo "DOCKER_NAME = $DOCKER_NAME"
+      - echo "Building with registry = $CI_REGISTRY_IMAGE"
       - make build-docker DOCKER_TAG=$CI_COMMIT_SHA
   # Run this job in a branch where a Dockerfile exists
   rules:
