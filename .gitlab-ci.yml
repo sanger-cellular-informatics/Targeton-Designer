@@ -27,7 +27,7 @@ docker-build:
 
 test:
   # Reuse built container.
-  image: $DOCKER_IMAGE_NAME
+  image: ${DOCKER_REPO}/${DOCKER_NAME}:${DOCKER_IMAGE_TAG}
   stage: test
   tags:
     - autoscale
