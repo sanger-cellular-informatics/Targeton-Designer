@@ -130,16 +130,17 @@ build-docker:
 		docker buildx install
 		export DOCKER_BUILDKIT=1
 	fi
-	echo docker repo = ${DOCKER_REPO}
-	echo docker image = ${DOCKER_IMAGE_NAME}
-	if [ "$(docker images -q ${DOCKER_IMAGE_NAME} 2> /dev/null)" != "" ]; then
-		@echo "docker image already exists. ${DOCKER_IMAGE_NAME}"
-	else
-		@echo "Building docker image..."
-		@docker build --pull -t "${DOCKER_IMAGE_NAME}" .;
-		if [[ ${DOCKER_REPO} != "local" ]]; then
-			@docker push "${DOCKER_IMAGE_NAME}"
-		fi
+	@IMAGE="${DOCKER_REPO}/${DOCKER_NAME}:${DOCKER_TAG}"; \
+	echo "docker repo = ${DOCKER_REPO}"; \
+	echo "docker image = $$IMAGE"; \
+	if [ "$$(docker images -q $$IMAGE 2> /dev/null)" != "" ]; then \
+		echo "docker image already exists. $$IMAGE"; \
+	else \
+		echo "Building docker image..."; \
+		docker build --pull -t "$$IMAGE" .; \
+		if [[ ${DOCKER_REPO} != "local" ]]; then \
+			docker push "$$IMAGE"; \
+		fi; \
 	fi
 
 build-docker-test: build-docker
