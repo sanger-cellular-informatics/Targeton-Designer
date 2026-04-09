@@ -63,6 +63,7 @@ docker-release:
     - echo "Building release image $CI_REGISTRY_IMAGE"
     - echo "Building release image for tag $CI_COMMIT_TAG"
     - echo "DOCKER_IMAGE_NAME = $DOCKER_IMAGE_NAME"
+    - docker pull $DOCKER_IMAGE_NAME
     - docker tag $DOCKER_IMAGE_NAME $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
   rules:
