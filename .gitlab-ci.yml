@@ -13,13 +13,8 @@ docker-build:
       - make build-docker
   # Run this job in a branch where a Dockerfile exists
   rules:
-    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
-      exists:
+      - exists:
         - Dockerfile
-    - changes:
-      - requirements.txt
-      - Dockerfile
-      - Makefile
 
 test:
   # Reuse built container.
