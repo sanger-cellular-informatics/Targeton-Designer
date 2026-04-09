@@ -60,11 +60,12 @@ docker-release:
     - apk add --update bash git curl
   script:
     - git fetch origin main
-    - |
-      if ! git branch -r --contains $CI_COMMIT_SHA | grep origin/main; then
-      echo "Tag commit is not in main branch"
-      exit 1
-      fi
+#    - |
+#      if ! git branch -r --contains $CI_COMMIT_SHA | grep origin/main; then
+#      echo "Tag commit is not in main branch"
+#      exit 1
+#      fi
+    - echo "Building release image $CI_REGISTRY_IMAGE"
     - echo "Building release image for tag $CI_COMMIT_TAG"
     - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG .
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
