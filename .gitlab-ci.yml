@@ -15,25 +15,28 @@ stages:
 
 docker-build:
   extends: .docker-build
+  stage: .pre
   variables:
     DOCKERFILE_PATH: "Dockerfile"
     DOCKER_BUILD_CONTEXT: "."
   rules:
-      - exists:
-        - Dockerfile
+    - exists:
+      - Dockerfile
 
 semgrep-sast:
   stage: test
-  allow_failure: true
+  needs:
+    - docker-build
 
 test:
-  # Reuse built container.
   image: $DOCKER_IMAGE_NAME
   stage: test
   tags:
     - autoscale
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
+  needs:
+    - docker-build
   before_script:
     - export KSM_CONFIG=$KSM_CONFIG
     - export SECRET_UID=$SECRET_KEY_UID
@@ -55,11 +58,14 @@ test:
     - ls kmer
   script:
     - python -m unittest discover --start-directory ./tests --top-level-directory .
-  dependencies:
-    - docker-build
 
 docker-release:
   extends: .push-to-registry
   stage: deploy
+  needs:
+    - docker-build
+    - test
+    - semgrep-sast
+  when: on_success
   rules:
     - !reference [.version_tag, rules]
