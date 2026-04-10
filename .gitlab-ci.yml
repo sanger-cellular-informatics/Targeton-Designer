@@ -31,9 +31,6 @@ docker-build:
 semgrep-sast:
   stage: test
   allow_failure: true
-  rules:
-    - !reference [.merge_request_or_default_branch, rules]
-    - !reference [.version_tag, rules]
 
 test:
   # Reuse built container.
