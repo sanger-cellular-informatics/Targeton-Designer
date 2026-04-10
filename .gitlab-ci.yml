@@ -1,3 +1,15 @@
+include:
+  - template: Security/SAST.gitlab-ci.yml
+  - project: 'sci/cicd-templates'
+    ref: 'v0.0.2'
+    file:
+      - '/base/docker-dind.yml'
+      - '/jobs/docker-build.yml'
+      - '/jobs/python-test-from-built-image.yml'
+      - '/jobs/push-to-registry.yml'
+      - '/rules/merge-request-or-default-branch.yml'
+      - '/rules/version-tag.yml'
+
 stages:
   - .pre
   - test
@@ -15,6 +27,13 @@ docker-build:
   rules:
       - exists:
         - Dockerfile
+
+semgrep-sast:
+  stage: test
+  allow_failure: true
+  rules:
+    - !reference [.merge_request_or_default_branch, rules]
+    - !reference [.version_tag, rules]
 
 test:
   # Reuse built container.
