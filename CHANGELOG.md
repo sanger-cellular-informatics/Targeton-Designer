@@ -6,7 +6,7 @@ The format is based on Keep a Changelog and this project adheres to Semantic Ver
 
 ---
 
-## [v1.0.0] - March 31, 2026
+## [v1.0.0] - April 14, 2026
 
 ### Added
 - Output primer pairs in ipcress-compatible format when "ipcress_parameters" are set up in designer configuration.
