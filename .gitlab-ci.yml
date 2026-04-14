@@ -25,6 +25,8 @@ docker-build:
 
 semgrep-sast:
   stage: test
+  needs:
+    - docker-build
   rules:
     - when: always
 
