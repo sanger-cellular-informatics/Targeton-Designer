@@ -1,34 +1,42 @@
+include:
+  - template: Security/SAST.gitlab-ci.yml
+  - project: 'sci/cicd-templates'
+    ref: 'v0.0.3'
+    file:
+      - '/base/docker-dind.yml'
+      - '/jobs/docker-build.yml'
+      - '/jobs/push-to-registry.yml'
+      - '/rules/version-tag.yml'
+
 stages:
   - .pre
   - test
   - deploy
 
 docker-build:
-  extends: .docker-dind
+  extends: .docker-build
   stage: .pre
-  # Default branch leaves tag empty (= latest tag)
-  # All other branches are tagged with the escaped branch name (commit ref slug)
-  script:
-      - apk add --update make && apk add --update bash && apk add --update sudo && apk add --update git && apk add --update curl
-      - make build-docker
-  # Run this job in a branch where a Dockerfile exists
+  variables:
+    DOCKERFILE_PATH: "Dockerfile"
+    DOCKER_BUILD_CONTEXT: "."
   rules:
-    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
-      exists:
-        - Dockerfile
-    - changes:
-      - requirements.txt
+    - exists:
       - Dockerfile
-      - Makefile
+
+semgrep-sast:
+  stage: test
+  rules:
+    - when: always
 
 test:
-  # Reuse built container.
   image: $DOCKER_IMAGE_NAME
   stage: test
   tags:
     - autoscale
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
+  needs:
+    - docker-build
   before_script:
     - export KSM_CONFIG=$KSM_CONFIG
     - export SECRET_UID=$SECRET_KEY_UID
@@ -50,44 +58,16 @@ test:
     - ls kmer
   script:
     - python -m unittest discover --start-directory ./tests --top-level-directory .
-  dependencies:
-    - docker-build
+  rules:
+    - when: always
 
 docker-release:
-  extends: .docker-dind
+  extends: .push-to-registry
   stage: deploy
-  before_script:
-    - apk add --update bash git curl
-  script:
-    - git fetch origin main
-    - |
-      if ! git branch -r --contains $CI_COMMIT_SHA | grep origin/main; then
-      echo "Tag commit is not in main branch"
-      exit 1
-      fi
-    - echo "Building release image for tag $CI_COMMIT_TAG"
-    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG .
-    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
+  needs:
+    - docker-build
+    - test
+    - semgrep-sast
+  when: on_success
   rules:
-    - !reference [.release_on_version_tag, rules]
-
-.docker-dind:
-  image: docker:23.0.6
-  tags:
-    - autoscale
-  services:
-    - name: docker:23.0.6-dind
-      alias: thedockerhost
-  variables:
-    DOCKER_HOST: tcp://thedockerhost:2375/
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: ""
-    GIT_SUBMODULE_STRATEGY: recursive
-  before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-
-.release_on_version_tag:
-  rules:
-    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/'
-      when: on_success
-    - when: never    
+    - !reference [.version_tag, rules]
