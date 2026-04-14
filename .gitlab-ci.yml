@@ -58,6 +58,8 @@ test:
     - ls kmer
   script:
     - python -m unittest discover --start-directory ./tests --top-level-directory .
+  rules:
+    - when: always
 
 docker-release:
   extends: .push-to-registry
