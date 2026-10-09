@@ -49,6 +49,7 @@ class ParsedInputArguments:
         region = args.get('region', None)
         strand = args.get('strand', None)
         targeton_id = args.get('targeton_id', None)
+        reference_genome = args.get('reference_genome', None)
 
         group_region = all([region, targeton_id])
         group_region_partial = any([region, targeton_id]) and not group_region
@@ -198,6 +199,11 @@ def add_input_args(parser):
         choices=['+', '-'],
         default='+',
         help="strand '+' (default) or '-'",
+        type=str
+    )
+    parser.add_argument(
+        '--reference_genome',
+        help="Path to reference genome FASTA file",
         type=str
     )
 

@@ -65,6 +65,15 @@ class DesignerConfig:
         primer3_params_path = (args.get('primer3_params', None) or config.get('primer3_params', None)
                                or DEFAULT_PRIMER3_CONFIG_PATH)
 
+        self.reference_genome = (
+            args.get('reference_genome', None)
+            or config.get('reference_genome', None)
+        )
+
+        if self.reference_genome:
+            check_file_exists(self.reference_genome)
+
+
         logger.info(f"Using primer3 parameters file: {primer3_params_path}")
 
         self.primer3_params = parse_json(primer3_params_path)
@@ -86,3 +95,8 @@ class DesignerConfig:
                 config.setdefault(field, default_config[field])
 
         return config
+
+
+def check_file_exists(file):
+    if not os.path.exists(file):
+        raise FileNotFoundError(f'Unable to find file: {file}')

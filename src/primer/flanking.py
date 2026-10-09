@@ -4,6 +4,7 @@ import json
 from custom_logger.custom_logger import CustomLogger
 
 from primer.ensembl import get_seq_from_ensembl_by_coords
+from utils.bio_utils import get_seq_from_fasta_by_coords
 
 # Initialize logger
 logger = CustomLogger(__name__)
@@ -22,6 +23,7 @@ def build_flanked_slice(
     flanking: int,
     mode: str,
     note: str = "",
+    reference_genome: str = ""
 ) -> tuple[int, int, str]:
     """
       1. Computes flanked coordinates
@@ -39,12 +41,24 @@ def build_flanked_slice(
         flanking=flanking,
     )
 
-    flanked_seq = get_seq_from_ensembl_by_coords(
-        chromosome=chromosome,
-        start=flanked_start,
-        end=flanked_end,
-        strand=strand,
-    )
+
+    if reference_genome:
+        # chr added to chromosome as expected in input and FASTA file
+        # was removed when parsing region to obtain chromosome
+        flanked_seq = get_seq_from_fasta_by_coords(
+            fasta_file=reference_genome,
+            chromosome='chr' + chromosome,
+            start=flanked_start,
+            end=flanked_end,
+            strand=strand,
+        )
+    else:
+        flanked_seq = get_seq_from_ensembl_by_coords(
+            chromosome=chromosome,
+            start=flanked_start,
+            end=flanked_end,
+            strand=strand,
+        )
 
     if mode is not None:
         _log_flanking_summary(

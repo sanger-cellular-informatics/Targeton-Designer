@@ -77,7 +77,8 @@ class SliceData:
                  chromosome: str,
                  bases: str,
                  flanking_region: int,
-                 exclusion_region: int):
+                 exclusion_region: int,
+                 reference_genome: str | None = None):
         self.name = name
         self.start = start
         self.end = end
@@ -87,6 +88,7 @@ class SliceData:
         self.targeton_id = name[0:4]
         self.flanking_region = flanking_region
         self.exclusion_region = exclusion_region
+        self.reference_genome = reference_genome
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, SliceData):
@@ -122,17 +124,29 @@ class SliceData:
     @property
     def surrounding_region(self) -> str:
         flanking = self.flanking_region
+        reference_genome = self.reference_genome
 
-        return get_seq_from_ensembl_by_coords(
-            chromosome=self.chromosome,
-            start=self.start - flanking,
-            end=self.end + flanking
-        )
+        if reference_genome:
+            return get_seq_from_fasta_by_coords(
+                fasta_file=reference_genome,
+                chromosome=self.chromosome,
+                start=self.start - flanking,
+                end=self.end + flanking,
+                strand=self.strand,
+            )
+        else:
+            return get_seq_from_ensembl_by_coords(
+                chromosome=self.chromosome,
+                start=self.start - flanking,
+                end=self.end + flanking,
+                strand=self.strand
+            )
 
     @staticmethod
     def get_first_slice_data(fasta: str,
                              flanking: int,
-                             exclusion_region:int) -> 'SliceData':
+                             exclusion_region: int,
+                             reference_genome: str | None = None) -> 'SliceData':
 
         with open(fasta) as fasta_data:
             rows = SeqIO.parse(fasta_data, 'fasta')
@@ -163,8 +177,13 @@ class SliceData:
                 bases=fasta_seq,
                 flanking_region=flanking,
                 exclusion_region=exclusion_region)
-        
+
         # flanking > 0
+        if reference_genome:
+            seq_src = 'reference genome'
+        else:
+            seq_src = 'Ensembl REST API'
+
         flanked_start, flanked_end, flanked_seq = build_flanked_slice(
             chromosome=chromosome,
             target_region_start=target_region_start,
@@ -172,7 +191,8 @@ class SliceData:
             strand=strand,
             flanking=flanking,
             mode="FASTA",
-            note="original FASTA template discarded; sequence retrieved from Ensembl",
+            note="original FASTA template discarded; sequence retrieved from " + seq_src,
+            reference_genome=reference_genome
         )
 
         return SliceData(
@@ -183,7 +203,8 @@ class SliceData:
             chromosome=chromosome,
             bases=flanked_seq,
             flanking_region=flanking,
-            exclusion_region=exclusion_region
+            exclusion_region=exclusion_region,
+            reference_genome=reference_genome
         )
 
     @staticmethod
@@ -191,14 +212,15 @@ class SliceData:
                               region: str,
                               strand: str,
                               flanking: int,
-                              exclusion_region: int) -> 'SliceData':
+                              exclusion_region: int,
+                              reference_genome: str | None = None) -> 'SliceData':
 
         fields = parse_region_string(region)
 
         chromosome = fields["chromosome"]
         target_region_start = fields["start"]
         target_region_end = fields["end"]
-        
+
         flanked_start, flanked_end, flanked_seq = build_flanked_slice(
             chromosome=chromosome,
             target_region_start=target_region_start,
@@ -206,6 +228,7 @@ class SliceData:
             strand=strand,
             flanking=flanking,
             mode="REGION",
+            reference_genome=reference_genome
         )
 
         return SliceData(
@@ -216,5 +239,6 @@ class SliceData:
             chromosome=chromosome,
             bases=flanked_seq,
             flanking_region=flanking if flanking > 0 else 0,
-            exclusion_region=exclusion_region
+            exclusion_region=exclusion_region,
+            reference_genome=reference_genome
         )

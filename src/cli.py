@@ -66,13 +66,15 @@ def primer_command(
         validate_fasta_format(config.fasta)
         slice_data = SliceData.get_first_slice_data(config.fasta,
                                                     config.flanking_region,
-                                                    config.exclusion_region)
+                                                    config.exclusion_region,
+                                                    config.reference_genome)
     else:
         slice_data = SliceData.get_slice_from_region(args['targeton_id'],
                                                      args['region'],
                                                      args['strand'],
                                                      config.flanking_region,
-                                                     config.exclusion_region)
+                                                     config.exclusion_region,
+                                                     config.reference_genome)
 
     export_dir = timestamped_dir(config.prefix_output_dir)
     fasta_path = export_p3_input_fasta(slice_data, export_dir)

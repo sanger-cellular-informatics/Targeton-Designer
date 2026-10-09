@@ -52,6 +52,9 @@ class BasePrimerIntegrationTest(TestCase):
         # Common config
         self.config_file_path = r"./tests/config_files/test_user_primer3.config.json"
         self.designer_config = r"./tests/config_files/test_user_designer.config.json"
+        # Reference genome set to a fixture FASTA file so config file checks pass
+        # Sequence returned from reference genome FASTA is mocked in tests
+        self.reference_genome = r"./tests/integration/fixtures/fasta_example.fa"
 
         self.mock_config = {
             "stringency_vector": [1, 2, 3],
@@ -61,8 +64,9 @@ class BasePrimerIntegrationTest(TestCase):
             "filters": {"duplicates": True, "HAP1_variant": True},
         }
 
-    def run_primer_test(self, cli_args_builder):
+    def run_primer_test(self, cli_args_builder, mock_fasta_sequence):
         """Helper to run primer_command using a temporary directory"""
+
         with TemporaryDirectory() as tmpdir:
             # Use the tmpdir in the CLI arguments
             cli_args = cli_args_builder(tmpdir)
@@ -71,8 +75,14 @@ class BasePrimerIntegrationTest(TestCase):
             with patch.object(sys, "argv", cli_args):
                 parsed_input = ParsedInputArguments()
                 args = parsed_input.get_args()
-                # Act
-                primer_result = primer_command(args=args)
+
+                with patch(
+                    "primer.flanking.get_seq_from_fasta_by_coords",
+                    return_value=mock_fasta_sequence,
+                ) as mock_get_sequence:
+
+                    # Act
+                    primer_result = primer_command(args=args)
 
                 # Shared assertions
                 self._assert_primer_outputs(primer_result, args)
@@ -147,6 +157,16 @@ class TestPrimerIntegrationFasta(BasePrimerIntegrationTest):
         self.fasta_file_path = r"./tests/integration/fixtures/test_mask.fa"
 
     def test_primer_output_from_fasta(self):
+        mock_fasta_sequence = (
+            "AAATAGAGGGACTTGGCTCAAGAACATGCAGTGAATCTGTGGCAGAGCCAGGCCCTGGCCCTCTCTTAGGGAGGGG"
+            "TGCAAGGGGAAAGGAAAAGGAAGACTGGGTCCTGGCCCCTGGCTTGCTCACCCAGGCTGCATCTCCCCCTGCAGGTG"
+            "ATCGAGGAGTTCTACAACCAGACATGGGTCCACCGCTATGGGGAGAGCATCCTGCCCACCACGCTCACCACGCTCTG"
+            "GTCCCTCTCAGTGGCCATCTTTTCTGTTGGGGGCATGATTGGCTCCTTCTCTGTGGGCCTTTTCGTTAACCGCTTTG"
+            "GCCGGTAAGTAGGAGAGGTCCTGGCACTGCCCTTGGAGGGCCCATGCCCTCCTGCCCAGGGAGTCCCAGATGGGGTG"
+            "GGAGGTAGGGGAGACTTATCTGCCTGTTCCAGGGTATTACCTCTGACCCAGCCCCTCGGAGCCCAAGGAATGTGGGC"
+            "ACTGGCCTGACCTGTGACCCCGTCCCCAGGCGGAATTCAATGCTGATGAT"
+        )
+
         self.run_primer_test(lambda tmpdir: [
             "./designer.sh",
             "primer",
@@ -154,7 +174,8 @@ class TestPrimerIntegrationFasta(BasePrimerIntegrationTest):
             "--dir", tmpdir,
             "--conf", self.designer_config,
             "--primer3_params", self.config_file_path,
-        ])
+            "--reference_genome", self.reference_genome
+        ], mock_fasta_sequence)
 
 
 class TestPrimerIntegrationRegion(BasePrimerIntegrationTest):
@@ -167,6 +188,16 @@ class TestPrimerIntegrationRegion(BasePrimerIntegrationTest):
         self.region = "chr7:44490404-44490605"
 
     def test_primer_output_from_region(self):
+
+        mock_fasta_sequence = (
+            "CCGCGCTTCAAATTACTGAAGCCATTCTCACAAGCTCAACCCCAGGACACCAGGAAAAGGAGGAAACAGGCTGGGAGA"
+            "GCTTGGAGGAGCGGGCGCCAGGAGTCAGGGCAGGCCGGGGGCGGCGGCTCCCCAGACCGCAGGCCCGCCCGCCTCACC"
+            "TGCAGCACCAAGGCCTGCGCGGCCCCGGGCGGGAAGCCCATGCGGTCCGATGGGTGGCGCAGCAAGCGATAGAAGTCTG"
+            "TCTTGCGGTAGAGGAAGCCAAAGAGAACGCGCAGGAAATCCTGGACGTTGCCCACGTGCTGCAGGATGCCCAAAAGGGC"
+            "CTGGTCATACAGCTCGGCCGCCCCTGTCTCCATGTCGCCTCCCGCCCTAGGTACGCTTCACACACACAGCGCCGCCTCA"
+            "GACCTGCCGACTGGCCACTTCCGGCGTCCGCAGCCAACGGCTCCGCCGGACGGCGCGGCTGCGGAACTTCCGGTCCGTG"
+            "CTCGTTCGGCCCCCGCGGCCCCGGGCTGTT"
+        )
         self.run_primer_test(lambda tmpdir: [
             "./designer.sh",
             "primer",
@@ -176,7 +207,8 @@ class TestPrimerIntegrationRegion(BasePrimerIntegrationTest):
             "--dir", tmpdir,
             "--conf", self.designer_config,
             "--primer3_params", self.config_file_path,
-        ])
+            "--reference_genome", self.reference_genome
+        ], mock_fasta_sequence)
 
 
 class TestTargetonCSVIntegration(TestCase):
@@ -224,7 +256,7 @@ class TestPrimerDesignerIntegration(TestCase):
                 result = collate_primer_designer_data_command(
                     design_output_data,
                     prefix=args['dir']
-                    )
+                )
                 path_json = Path(result.json)
                 path_csv = Path(result.csv)
 
