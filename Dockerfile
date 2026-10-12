@@ -1,5 +1,5 @@
 # Stage 1: Development Image
-FROM python:3.10.12-slim-bullseye AS development
+FROM python:3.10.12-slim-bookworm AS development
 
 ARG GROUP_NAME=pd_group
 ARG GROUP_ID=1001
@@ -33,7 +33,7 @@ ENV HOME=/home/$USER_NAME
 WORKDIR /home/$USER_NAME
 
 # Stage 2: Production Image
-FROM python:3.10.12-slim-bullseye AS production
+FROM python:3.10.12-slim-bookworm AS production
 
 ARG GROUP_NAME=pd_group
 ARG GROUP_ID=1001
