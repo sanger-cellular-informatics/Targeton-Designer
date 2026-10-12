@@ -1,7 +1,7 @@
 include:
   - template: Security/SAST.gitlab-ci.yml
   - project: 'sci/cicd-templates'
-    ref: 'v0.0.3'
+    ref: 'v0.0.4'
     file:
       - '/base/docker-dind.yml'
       - '/jobs/docker-build.yml'
@@ -32,7 +32,7 @@ test:
   image: $DOCKER_IMAGE_NAME
   stage: test
   tags:
-    - autoscale
+    - autoscale-v2
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   needs:
