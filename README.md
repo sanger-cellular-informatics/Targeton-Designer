@@ -190,6 +190,39 @@ To run the `primer` command using region as input instead of a FASTA file use:
 ./designer.sh primer --region chr7:44490254-44490755 --targeton_id STEQ
 ```
 
+**Using a reference genome**
+
+To retrieve region from a local reference genome file, provide `reference_genome` either as a command-line option or in the Designer configuration file.
+
+If no reference genome is specified, Primer Designer uses the Ensembl REST API, frozen at release 116.
+
+**Specify a reference genome on the command line**
+
+```bash
+./designer.sh primer \
+  --region chr7:44490254-44490755 \
+  --targeton_id STEQ \
+  --reference_genome /path/to/reference/genome.fa
+```
+**Specify a reference genome in the Designer configuration**
+
+Update a custom Designer configuration file, for example `custom_designer.conf.json`
+
+```
+"reference_genome": "/path/to/reference/genome.fa",
+```
+
+Then provide the configuration file on the command line:
+
+
+```bash
+./designer.sh primer \
+  --region chr7:44490254-44490755 \
+  --targeton_id STEQ \
+  --conf custom_designer.conf.json
+```
+
+
 ### 2.2 Primer Designer Tool
 
 Primer Designer uses 2 types of config:
@@ -220,17 +253,20 @@ You can pass your own user Primer3 config file to the `primer` command using the
 This file specifies the configuration parameters specific to Primer Designer:
 1. `"flanking_region"`: The *total* length of the sequences up- and downstream of the target region, where primers will be generated. Set to 0 to allow primer placement anywhere in the sequence (any `exclusion_region` values will be ignored).
 2. `"exclusion_region"`: The length of the up- and downstream sequences immediately adjacent to the target region where primers must not be placed. This is contained within the `"flanking_region"` region. The difference between `flanking_region` and `exclusion_region` cannot be less than `PRIMER_MIN_LEN` (see [Primer3 config](#221-primer3-parameters-config)).
-3. `"stringency_vector"`: A vector of different stringencies to be applied when running Primer3.
-4. `"filters"`: Any filters that should be applied to the list of primer pairs provided by Primer3 (see [below](
+3. `"reference_genome"`: Path to a reference genome to retreive sequence from when `--region` is specified or when flanking sequence needs to be retrieved.
+4. `"stringency_vector"`: A vector of different stringencies to be applied when running Primer3.
+5. `"filters"`: Any filters that should be applied to the list of primer pairs provided by Primer3 (see [below](
 #224-applying-filters-from-the-designer-config-file)).
-5. `"ranking"`: The order in which primer pairs should be ranked in the output CSV files (see [below](
+6. `"ranking"`: The order in which primer pairs should be ranked in the output CSV files (see [below](
 #225-applying-ranking-from-the-designer-config-file)).
-6. `"csv_column_order"`: The column order for the output CSV files (see [below](
+7. `"csv_column_order"`: The column order for the output CSV files (see [below](
 #226-specifying-column-order-through-the-designer-config-file)).
-7. `"ipcress_parameters"`: Parameters controlling the generation of an Ipcress-compatible primer pairs file for downstream off-target checking.
+8. `"ipcress_parameters"`: Parameters controlling the generation of an Ipcress-compatible primer pairs file for downstream off-target checking.
 
 
 Note: `stringency_vector` corresponds to 'PRIMER_MASK_FAILURE_RATE' in the [Primer3 Manual](https://primer3.org/manual.html#PRIMER_MASK_FAILURE_RATE). This means that a value of 0.1 will apply more stringent settings for the masking algorithm than a value of 1. Please When PRIMER_MASK_TEMPLATE is off,  we recommend setting the `stringency_vector` to a single "dummy" value, e.g., `"stringency_vector": [1]` (as `stringency_vector` is a mandatory field).
+
+Note: If no `reference_genome` is specified, Primer Designer uses the Ensembl REST API, frozen at release 116.
 
 The default configuration can be found in `config/default_designer.config.json` (which should NOT be moved, deleted or edited). 
 This file contains the default configuration that will be applied if no user config file is provided.
@@ -267,6 +303,8 @@ Example command:
 
 Note: If auto-flanking requests coordinates beyond the chromosome start or end, the region is clamped safely.
 
+Note: If no `reference_genome` is specified on the command line or in the Design config, Primer Designer uses the Ensembl REST API, frozen at release 116.
+
 **Using a chromosome region (REGION MODE):**
 
 ```sh
@@ -283,6 +321,8 @@ Example command:
 ```
 
 Note: If auto-flanking requests coordinates beyond the chromosome start or end, the region is clamped safely.
+
+Note: If no `reference_genome` is specified on the command line or in the Design config, Primer Designer uses the Ensembl REST API, frozen at release 116.
 
 The **region**  must follow the format: `chr<value>:<start>-<end>`
 
