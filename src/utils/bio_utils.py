@@ -26,7 +26,7 @@ def get_seq_from_fasta_by_coords(
         with pysam.FastaFile(str(fasta_path)) as fasta:
             # pysam uses 0-based, end-exclusive coordinates.
             sequence = fasta.fetch(chromosome, start - 1, end).upper()
-    except (OSError, ValueError) as exc:
+    except (OSError, ValueError, KeyError) as exc:
         raise ValueError(
             f"Could not fetch {chromosome}:{start}-{end} from {fasta_path}. "
             "Check the FASTA index, chromosome name, and coordinates."
@@ -34,6 +34,6 @@ def get_seq_from_fasta_by_coords(
 
     if strand == "-":
         # reverse complement
-        sequence = Seq(sequence).reverse_complement()
+        sequence = str(Seq(sequence).reverse_complement())
 
     return sequence
