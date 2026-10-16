@@ -59,13 +59,13 @@ The Primer Designer tool includes filtering and ranking of primers.
 Clone the Primer Designer repository and `cd` into it by using the following command.
 Recursively pull any submodules.
 ```sh
-git clone --recurse-submodule https://gitlab.internal.sanger.ac.uk/sci/targeton-designer.git
-cd targeton-designer
+git clone --recurse-submodule https://gitlab.internal.sanger.ac.uk/sci/primer-designer
+cd primer-designer/
 ```
 
-Please note that the repository on GitLab is currently named `targeton-designer` due to the project's previous name, Targeton Designer. 
-The project has since been renamed to Primer Designer, and the repository name will be updated accordingly in the future. 
-We apologise for any confusion this may cause.
+Please note that the repository on GitLab has been renamed from `targeton-designer` to `primer-designer`
+Please update any bookmarks and Git remotes to use the new repository name
+
 
 ### 1.2 Installing Dependencies
 
