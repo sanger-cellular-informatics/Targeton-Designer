@@ -41,13 +41,10 @@ def build_flanked_slice(
         flanking=flanking,
     )
 
-
     if reference_genome:
-        # chr added to chromosome as expected in input and FASTA file
-        # was removed when parsing region to obtain chromosome
         flanked_seq = get_seq_from_fasta_by_coords(
             fasta_file=reference_genome,
-            chromosome='chr' + chromosome,
+            chromosome=chromosome,
             start=flanked_start,
             end=flanked_end,
             strand=strand,
