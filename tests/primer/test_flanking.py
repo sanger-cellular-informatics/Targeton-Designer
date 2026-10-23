@@ -96,6 +96,7 @@ class TestClamping(TestCase):
 
 
 class TestBuildFlankedSlice(TestCase):
+    @patch("primer.flanking.get_seq_from_fasta_by_coords")
     @patch("primer.flanking.get_seq_from_ensembl_by_coords")
     @patch("primer.flanking._get_flanked_coordinates")
     @patch("primer.flanking.logger")
@@ -103,52 +104,80 @@ class TestBuildFlankedSlice(TestCase):
         self,
         mock_logger,
         mock_get_flanked_coords,
-        mock_get_seq,
+        mock_get_seq_from_ensembl,
+        mock_get_seq_from_fasta,
     ):
         """
         build_flanked_slice should:
           - compute flanked coordinates
-          - fetch the sequence
+          - fetch the sequence from Ensembl or a reference FASTA
           - log summary if mode is provided
         """
-        mock_get_flanked_coords.return_value = (100, 200)
-        mock_get_seq.return_value = "ACGT" * 25  # 100 bp
-
-        flanked_start, flanked_end, flanked_seq = flanking.build_flanked_slice(
-            chromosome="19",
-            target_region_start=120,
-            target_region_end=180,
-            strand="+",
-            flanking=20,
-            mode="REGION",
-            note="test-note",
+        sources = (
+            ("Ensembl", ""),
+            ("reference_genome", "/path/to/reference.fa"),
         )
 
-        self.assertEqual(flanked_start, 100)
-        self.assertEqual(flanked_end, 200)
-        self.assertEqual(flanked_seq, "ACGT" * 25)
+        for source, reference_genome in sources:
+            with self.subTest(source=source):
+                mock_get_flanked_coords.reset_mock()
+                mock_get_seq_from_ensembl.reset_mock()
+                mock_get_seq_from_fasta.reset_mock()
+                mock_logger.reset_mock()
 
-        # helper called correctly
-        mock_get_flanked_coords.assert_called_once_with(
-            chromosome="19",
-            target_region_start=120,
-            target_region_end=180,
-            flanking=20,
-        )
+                mock_get_flanked_coords.return_value = (100, 200)
+                mock_get_seq_from_ensembl.return_value = "ACGT" * 25  # 100 bp
+                mock_get_seq_from_fasta.return_value = "ACGT" * 25  # 100 bp
 
-        # Ensembl sequence requested with flanked coords
-        mock_get_seq.assert_called_once_with(
-            chromosome="19",
-            start=100,
-            end=200,
-            strand="+",
-        )
+                flanked_start, flanked_end, flanked_seq = (
+                    flanking.build_flanked_slice(
+                        chromosome="19",
+                        target_region_start=120,
+                        target_region_end=180,
+                        strand="+",
+                        flanking=20,
+                        mode="REGION",
+                        note="test-note",
+                        reference_genome=reference_genome,
+                    )
+                )
 
-        self.assertTrue(mock_logger.info.called)
-        logged_args, _ = mock_logger.info.call_args
-        first_arg = logged_args[0]
-        self.assertIn("Region mode", first_arg)
-        self.assertIn("test-note", first_arg)
+            self.assertEqual(flanked_start, 100)
+            self.assertEqual(flanked_end, 200)
+            self.assertEqual(flanked_seq, "ACGT" * 25)
+
+            # helper called correctly
+            mock_get_flanked_coords.assert_called_once_with(
+                chromosome="19",
+                target_region_start=120,
+                target_region_end=180,
+                flanking=20,
+            )
+
+            if source == "Ensembl":
+                # Ensembl sequence requested with flanked coords
+                mock_get_seq_from_ensembl.assert_called_once_with(
+                    chromosome="19",
+                    start=100,
+                    end=200,
+                    strand="+",
+                )
+                mock_get_seq_from_fasta.assert_not_called()
+            else:
+                mock_get_seq_from_fasta.assert_called_once_with(
+                    fasta_file="/path/to/reference.fa",
+                    chromosome="19",
+                    start=100,
+                    end=200,
+                    strand="+",
+                )
+                mock_get_seq_from_ensembl.assert_not_called()
+
+            self.assertTrue(mock_logger.info.called)
+            logged_args, _ = mock_logger.info.call_args
+            first_arg = logged_args[0]
+            self.assertIn("Region mode", first_arg)
+            self.assertIn("test-note", first_arg)
 
 
 class TestChromosomeLength(TestCase):
