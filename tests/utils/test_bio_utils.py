@@ -47,12 +47,6 @@ class TestGetSeqFromFastaByCoords(unittest.TestCase):
                 self.fasta_path, "chr1", start=1, end=1, strand="forward"
             )
 
-    def test_rejects_a_missing_fasta(self):
-        missing_path = self.fasta_path.parent / "missing.fa"
-
-        with self.assertRaisesRegex(FileNotFoundError, "FASTA file not found"):
-            get_seq_from_fasta_by_coords(missing_path, "chr1", start=1, end=1)
-
     def test_wraps_an_unknown_chromosome_error(self):
         with self.assertRaisesRegex(ValueError, "Could not fetch chrX:1-1"):
             get_seq_from_fasta_by_coords(self.fasta_path, "chrX", start=1, end=1)

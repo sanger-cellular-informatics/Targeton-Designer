@@ -19,8 +19,6 @@ def get_seq_from_fasta_by_coords(
         raise ValueError("strand must be '+' or '-'.")
 
     fasta_path = Path(fasta_file)
-    if not fasta_path.is_file():
-        raise FileNotFoundError(f"FASTA file not found: {fasta_path}")
 
     try:
         with pysam.FastaFile(str(fasta_path)) as fasta:
