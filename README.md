@@ -59,7 +59,7 @@ The Primer Designer tool includes filtering and ranking of primers.
 Clone the Primer Designer repository and `cd` into it by using the following command.
 Recursively pull any submodules.
 ```sh
-git clone --recurse-submodule https://gitlab.internal.sanger.ac.uk/sci/primer-designer
+git clone --recurse-submodule git@gitlab.internal.sanger.ac.uk:sci/primer-designer.git
 cd primer-designer/
 ```
 
@@ -253,7 +253,7 @@ You can pass your own user Primer3 config file to the `primer` command using the
 This file specifies the configuration parameters specific to Primer Designer:
 1. `"flanking_region"`: The *total* length of the sequences up- and downstream of the target region, where primers will be generated. Set to 0 to allow primer placement anywhere in the sequence (any `exclusion_region` values will be ignored).
 2. `"exclusion_region"`: The length of the up- and downstream sequences immediately adjacent to the target region where primers must not be placed. This is contained within the `"flanking_region"` region. The difference between `flanking_region` and `exclusion_region` cannot be less than `PRIMER_MIN_LEN` (see [Primer3 config](#221-primer3-parameters-config)).
-3. `"reference_genome"`: Path to a reference genome to retreive sequence from when `--region` is specified or when flanking sequence needs to be retrieved.
+3. `"reference_genome"`: Path to a reference genome to retrieve sequence from when `--region` is specified or when flanking sequence needs to be retrieved.
 4. `"stringency_vector"`: A vector of different stringencies to be applied when running Primer3.
 5. `"filters"`: Any filters that should be applied to the list of primer pairs provided by Primer3 (see [below](
 #224-applying-filters-from-the-designer-config-file)).
@@ -287,13 +287,18 @@ Primer3 can be run using either a FASTA file or a chromosome region.
 
 **If `flanking_region` = 0**  
 The FASTA sequence is treated as the full template sequence.  
-No Ensembl call is made.  
-Primer placement may occur anywhere in the sequence.  
+
+Primer placement may occur anywhere in the sequence.
+
+Note: The FASTA sequence provided is used. Primer Designer does not check or retrieve additional sequence from the `reference_genome` if specified or the Ensembl REST API.
 
 **If `flanking_region` > 0**  
 The FASTA header must contain genomic coordinates in the format:`<name>::<chr>:<start>-<end>(<strand>)`
 The coordinates are interpreted as the internal (target) region.  
-Primer Designer automatically extends this region by `flanking_region` bases on each side and retrieves the extended sequence from Ensembl.  
+Primer Designer automatically extends this region by `flanking_region` bases on each side and retrieves the extended sequence.
+
+Note: If no `reference_genome` is specified on the command line or in the Design config, Primer Designer uses the Ensembl REST API, frozen at release 116.
+
 The final extended sequence becomes the Primer3 template.
 
 Example command:
@@ -303,7 +308,6 @@ Example command:
 
 Note: If auto-flanking requests coordinates beyond the chromosome start or end, the region is clamped safely.
 
-Note: If no `reference_genome` is specified on the command line or in the Design config, Primer Designer uses the Ensembl REST API, frozen at release 116.
 
 **Using a chromosome region (REGION MODE):**
 
