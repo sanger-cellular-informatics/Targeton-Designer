@@ -3,6 +3,7 @@ from Bio import SeqIO
 
 from primer.ensembl import get_seq_from_ensembl_by_coords
 from primer.flanking import build_flanked_slice
+from utils.bio_utils import get_seq_from_fasta_by_coords
 from custom_logger.custom_logger import CustomLogger
 
 # Initialize logger
