@@ -79,7 +79,7 @@ class BasePrimerIntegrationTest(TestCase):
                 with patch(
                     "primer.flanking.get_seq_from_fasta_by_coords",
                     return_value=mock_fasta_sequence,
-                ) as mock_get_sequence:
+                ):
 
                     # Act
                     primer_result = primer_command(args=args)
