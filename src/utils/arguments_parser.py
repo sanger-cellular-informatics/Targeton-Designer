@@ -49,7 +49,6 @@ class ParsedInputArguments:
         region = args.get('region', None)
         strand = args.get('strand', None)
         targeton_id = args.get('targeton_id', None)
-        reference_genome = args.get('reference_genome', None)
 
         group_region = all([region, targeton_id])
         group_region_partial = any([region, targeton_id]) and not group_region
