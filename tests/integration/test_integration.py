@@ -52,7 +52,7 @@ class BasePrimerIntegrationTest(TestCase):
         # Common config
         self.config_file_path = r"./tests/config_files/test_user_primer3.config.json"
         self.designer_config = r"./tests/config_files/test_user_designer.config.json"
-        # Reference genome set to a fixture FASTA file so config file checks pass
+        # Reference genome set to a fixture FASTA file so DesignConfig checks pass
         # Sequence returned from reference genome FASTA is mocked in tests
         self.reference_genome = r"./tests/integration/fixtures/fasta_example.fa"
 
