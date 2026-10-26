@@ -18,15 +18,13 @@ def get_seq_from_fasta_by_coords(
     if strand not in {"+", "-"}:
         raise ValueError("strand must be '+' or '-'.")
 
-    fasta_path = Path(fasta_file)
-
     try:
-        with pysam.FastaFile(str(fasta_path)) as fasta:
+        with pysam.FastaFile(str(fasta_file)) as fasta:
             # pysam uses 0-based, end-exclusive coordinates.
             sequence = fasta.fetch(chromosome, start - 1, end).upper()
     except (OSError, ValueError, KeyError) as exc:
         raise ValueError(
-            f"Could not fetch {chromosome}:{start}-{end} from {fasta_path}. "
+            f"Could not fetch {chromosome}:{start}-{end} from {fasta_file}. "
             "Check the FASTA index, chromosome name, and coordinates."
         ) from exc
 
