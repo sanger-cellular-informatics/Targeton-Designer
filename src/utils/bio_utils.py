@@ -27,7 +27,7 @@ def get_seq_from_fasta_by_coords(
         raise ValueError(f"Could not open FASTA file: {fasta_file}.") from exc
 
     with fasta:
-        references = set(fasta.references)
+        references = fasta.references
 
         if chromosome in references:
             fasta_chromosome = chromosome
@@ -44,7 +44,7 @@ def get_seq_from_fasta_by_coords(
 
         if end > chromosome_length:
             raise ValueError(
-                f"Coordinates {start}-{end} exceed the length of "
+                f"End coordinate {end} exceeds the length of "
                 f"{fasta_chromosome} ({chromosome_length} bases)."
             )
 

@@ -85,7 +85,7 @@ class TestGetSeqFromFastaByCoords(unittest.TestCase):
 
     def test_rejects_a_range_starting_beyond_the_chromosome_length(self):
         # chr1 is 16 bases long in this test FASTA.
-        with self.assertRaisesRegex(ValueError, "exceed the length"):
+        with self.assertRaisesRegex(ValueError, "exceeds the length"):
             get_seq_from_fasta_by_coords(
                 self.chr_fasta_path, "1", start=17, end=20
             )
