@@ -2,6 +2,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
 from unittest.mock import MagicMock, patch
+from parameterized import parameterized
 
 import pysam
 
@@ -27,23 +28,18 @@ class TestGetSeqFromFastaByCoords(unittest.TestCase):
     def tearDownClass(self):
         self.temp_dir.cleanup()
 
-    def test_resolves_unprefixed_input_to_chr_prefixed_fasta_contig(self):
+    @parameterized.expand([
+        ("no_chr_fasta_no_chr_input", "no_chr_fasta_path", "1"),
+        ("no_chr_fasta_chr_input", "no_chr_fasta_path", "chr1"),
+        ("chr_fasta_no_chr_input", "chr_fasta_path", "1"),
+        ("chr_fasta_chr_input", "chr_fasta_path", "chr1"),
+    ])
+    def test_resolves_chromosome_input_to_fasta_contig(
+        self, test_name, fasta_path_attribute, chromosome
+    ):
+        fasta_path = getattr(self, fasta_path_attribute)
         sequence = get_seq_from_fasta_by_coords(
-            self.chr_fasta_path, "1", start=2, end=7
-        )
-
-        self.assertEqual(sequence, "CGTTGC")
-
-    def test_fetches_from_an_unprefixed_fasta_contig(self):
-        sequence = get_seq_from_fasta_by_coords(
-            self.no_chr_fasta_path, "1", start=2, end=7
-        )
-
-        self.assertEqual(sequence, "CGTTGC")
-
-    def test_resolves_chr_prefixed_input_to_unprefixed_fasta_contig(self):
-        sequence = get_seq_from_fasta_by_coords(
-            self.no_chr_fasta_path, "chr1", start=2, end=7
+            fasta_path, chromosome, start=2, end=7
         )
 
         self.assertEqual(sequence, "CGTTGC")
