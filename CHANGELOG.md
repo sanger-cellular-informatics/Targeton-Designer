@@ -2,9 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on Keep a Changelog and this project adheres to Semantic Versioning.
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project follows Semantic Versioning where applicable.
 
 ---
+## [v1.1.0] - November 9th, 2026
+
+### Added
+- Option to retrieve sequences from a local reference genome, the path to which is specified with `reference_genome`.
+FASTA headers with or without a `chr` prefix (e.g. `1` or `chr1`) are supported
+
+### Changed
+- Updated to use v0.0.4 of `cicd-templates` and runner tag updated
+
 
 ## [v1.0.0] - April 14, 2026
 
