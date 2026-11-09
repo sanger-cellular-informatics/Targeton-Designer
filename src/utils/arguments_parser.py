@@ -200,6 +200,11 @@ def add_input_args(parser):
         help="strand '+' (default) or '-'",
         type=str
     )
+    parser.add_argument(
+        '--reference_genome',
+        help="Path to reference genome FASTA file",
+        type=str
+    )
 
     # OUTPUTS
     parser.add_argument(

@@ -78,6 +78,8 @@ class TestSliceData(TestCase):
         self.assertEqual(result.strand, expected.strand)
         self.assertEqual(result.bases, expected.bases)
         self.assertEqual(result.chromosome, expected.chromosome)
+        # Checking that reference_genome set to None when not passed
+        self.assertIsNone(result.reference_genome)
 
     #when flanking_region is > 0
     @patch('primer.flanking.get_seq_from_ensembl_by_coords')
@@ -120,6 +122,59 @@ class TestSliceData(TestCase):
         self.assertEqual(result.bases, fake_extended_seq)
         self.assertEqual(result.flanking_region, flanking)
         self.assertEqual(result.exclusion_region, exclusion_region)
+        # Checking that reference_genome set to None when not passed
+        self.assertIsNone(result.reference_genome)
+
+    @patch('primer.slice_data.build_flanked_slice')
+    def test_get_first_slice_with_flanking_passes_reference_genome(
+        self,
+        mock_build_flanked_slice,
+    ):
+
+        fasta_file = 'one_slice.fa'
+        reference_genome = 'reference.fa'
+
+        # Target region is 6 bases GTGATC
+        self.fs.create_file(
+            fasta_file,
+            contents='>region1_1::chr1:5-10(+)\nGTGATC',
+        )
+
+        # Flanked region is chr1:3-12 ten bases
+        # Original target sequence in positions 5-10
+        mock_build_flanked_slice.return_value = (3, 12, 'AAGTGATCTT')
+
+        result = SliceData.get_first_slice_data(
+            fasta=fasta_file,
+            flanking=2,
+            exclusion_region=0,
+            reference_genome=reference_genome,
+        )
+
+        mock_build_flanked_slice.assert_called_once_with(
+            chromosome='1',
+            target_region_start=5,
+            target_region_end=10,
+            strand='+',
+            flanking=2,
+            mode='FASTA',
+            note=(
+                'original FASTA template discarded; '
+                'sequence retrieved from reference genome'
+            ),
+            reference_genome=reference_genome,
+        )
+
+        self.assertEqual(result.name, 'region1_1')
+        self.assertEqual(result.start, 3)
+        self.assertEqual(result.end, 12)
+        self.assertEqual(result.strand, '+')
+        self.assertEqual(result.chromosome, '1')
+        self.assertEqual(result.bases, 'AAGTGATCTT')
+        self.assertEqual(result.flanking_region, 2)
+        self.assertEqual(result.exclusion_region, 0)
+        self.assertEqual(result.reference_genome, reference_genome)
+
 
     @patch('custom_logger.custom_logger.CustomLogger.warning')
     def test_get_first_slice_when_more_than_one_slice(self, logger_warning):
