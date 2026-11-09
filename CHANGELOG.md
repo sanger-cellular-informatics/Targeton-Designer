@@ -13,6 +13,8 @@ FASTA headers with or without a `chr` prefix (e.g. `1` or `chr1`) are supported
 
 ### Changed
 - Updated to use v0.0.4 of `cicd-templates` and runner tag updated
+- Updated the Python Docker base image OS from Debian 11 (Bullseye) to Debian 12 (Bookworm)
+
 
 
 ## [v1.0.0] - April 14, 2026
