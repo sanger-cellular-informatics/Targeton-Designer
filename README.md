@@ -769,14 +769,14 @@ Additionally, make sure the interpreter is pointed at the correct virtual enviro
 
 To create a new release of Primer Designer, follow these steps:
 
-1. **Create a Git tag** in **semantic version format** (e.g., `v0.3.0`) **on a commit from the `main` branch**.  
+1. **Create an annotated Git tag** in **semantic version format** (e.g., `v1.0.0`) **on a commit from the `main` branch**.
    > Tags must always be created from `main` to ensure a stable release.
 
 2. **Push the tag** to the repository:
 
 ```
-git tag v0.3.0
-git push origin v0.3.0
+git tag -a v1.0.0 -m "Release v1.0.0"
+git push origin v1.0.0
 ```
 
 3. **GitLab CI pipeline** will be triggered automatically for the tag:
@@ -787,7 +787,7 @@ git push origin v0.3.0
 4. **Pull the released image** for use in tdflow or other pipelines:
 
 ```
-docker pull registry.gitlab.internal.sanger.ac.uk/sci/targeton-designer:v0.3.0
+docker pull registry.gitlab.internal.sanger.ac.uk/sci/targeton-designer:v1.0.0
 ```
 
 > This process ensures that the released image corresponds exactly to a stable commit on `main` and can be reliably used in production workflows.
