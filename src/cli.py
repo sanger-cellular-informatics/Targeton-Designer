@@ -41,7 +41,7 @@ logger = CustomLogger(__name__)
 
 def version_command():
     python_version = sys.version
-    version = '0.0.1'
+    version = '1.1.0'
 
     print('Primer Designer version: ', version)
     print('Python version: ', python_version)
